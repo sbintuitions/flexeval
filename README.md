@@ -4,14 +4,21 @@
 
 **Flexible evaluation tool for language models. Easy to extend, highly customizable!**
 
+<h4 align="center">
+    <p>
+        <b>English</b> |
+        <a href="https://github.com/sbintuitions/flexeval/blob/main/README_ja.md">日本語</a> |
+    </p>
+</h4>
+
 With FlexEval, you can evaluate language models with:
 
-* Zero/few-shot prompt tasks
+* Zero/few-shot in-context learning tasks
 * Open-ended text-generation benchmarks such as [MT-Bench](https://github.com/lm-sys/FastChat/tree/main/fastchat/llm_judge) with automatic evaluation using GPT-4
 * Log-probability-based multiple-choice tasks 
 * Computing perplexity of text data
 
-... and more!
+For more use cases, see the [documentation](https://sbintuitions.github.io/flexeval/).
 
 
 ## Key Features
@@ -47,9 +54,9 @@ The results saved in `--saved_dir` contain:
 * `outputs.jsonl`: The outputs of the language model that comes with instance-level metrics.
 
 You can flexibly customize the evaluation by specifying command-line arguments or configuration files.
-Besides the hugging face model, you can also evaluate models via [OpenAI ChatGPT](https://openai.com/index/openai-api/) and [vLLM](https://github.com/vllm-project/vllm), and other models can be readily added!
+Besides the [Transformers](https://github.com/huggingface/transformers) model, you can also evaluate models via [OpenAI ChatGPT](https://openai.com/index/openai-api/) and [vLLM](https://github.com/vllm-project/vllm), and other models can be readily added!
 
 ## Next Steps
-* Run `flexeval_presets` to check the list of off-the-shelf presets. You can find the details in the [Preset Configs](./docs/preset_configs/index.md) section.
-* See [Getting Started](./docs/getting_started.md) to check the tutorial examples for other kinds of tasks.
-* See the [Configuration Guide](./docs/configuration_guide.md) to set up your evaluation.
+* Run `flexeval_presets` to check the list of off-the-shelf presets in addition to `commonsense_qa`. You can find the details in the [Preset Configs](https://sbintuitions.github.io/flexeval/preset_configs/) section.
+* See [Getting Started](https://sbintuitions.github.io/flexeval/getting_started/) to check the tutorial examples for other kinds of tasks.
+* See the [Configuration Guide](https://sbintuitions.github.io/flexeval/configuration_guide/) to set up your evaluation.

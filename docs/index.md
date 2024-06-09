@@ -47,10 +47,10 @@ The results saved in `--saved_dir` contain:
 * `outputs.jsonl`: The outputs of the language model that comes with instance-level metrics.
 
 You can flexibly customize the evaluation by specifying command-line arguments or configuration files.
-Besides the hugging face model, you can also evaluate models via [OpenAI ChatGPT](https://openai.com/index/openai-api/) and [vLLM](https://github.com/vllm-project/vllm), and other models can be readily added!
+Besides the [Transformers](https://github.com/huggingface/transformers) model, you can also evaluate models via [OpenAI ChatGPT](https://openai.com/index/openai-api/) and [vLLM](https://github.com/vllm-project/vllm), and other models can be readily added!
 
 ## Next Steps
 
-* Run `flexeval_presets` to check the list of off-the-shelf presets. You can find the details in the [Preset Configs](./preset_configs/index.md) section.
+* Run `flexeval_presets` to check the list of off-the-shelf presets in addition to `commonsense_qa`. You can find the details in the [Preset Configs](./preset_configs/index.md) section.
 * See [Getting Started](./getting_started.md) to check the tutorial examples for other kinds of tasks.
 * See the [Configuration Guide](./configuration_guide.md) to set up your evaluation.
