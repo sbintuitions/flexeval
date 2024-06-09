@@ -35,7 +35,7 @@ pip install flexeval
 
 ## クイックスタート
 
-以下の例では、`aio` というクイズに回答するタスクを使って、hugging face モデル `sbintuitions/tiny-lm` を評価します。
+以下の例では、`aio` （[AI王](https://sites.google.com/view/project-aio/home)）というクイズに回答するタスクを使って、hugging face モデル `sbintuitions/tiny-lm` を評価します。
 
 ```bash
 flexeval_lm \
