@@ -1,0 +1,1358 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="../getting_started/">
+      
+      
+        <link rel="next" href="../how_to/">
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.25">
+    
+    
+      
+        <title>Configuration Guide - flexeval</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.6543a935.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="green" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#how-to-configure-your-own-evaluation" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="flexeval" class="md-header__button md-logo" aria-label="flexeval" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            flexeval
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Configuration Guide
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="flexeval" class="md-nav__button md-logo" aria-label="flexeval" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    flexeval
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    FlexEval
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../installation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Installation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../getting_started/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Getting Started
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Configuration Guide
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    Configuration Guide
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      Overview
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#customizing-the-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Customizing the Configuration
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#argument-overrides" class="md-nav__link">
+    <span class="md-ellipsis">
+      Argument Overrides
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#whats-next" class="md-nav__link">
+    <span class="md-ellipsis">
+      What's Next?
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../how_to/" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    How to
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            How to
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../how_to/configure_few_shot_examples/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Configure Few-shot Examples
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../how_to/evaluate_with_llm_judges/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Evaluate with LLM Judges
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../how_to/implement_your_own_module/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Implement Your Own Class
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../design_principles/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Design Principles
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../preset_configs/" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    Preset Configs
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_7" id="__nav_7_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            Preset Configs
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_1" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../preset_configs/EvalSetup/" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    EvalSetup
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_7_1" id="__nav_7_1_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7_1">
+            <span class="md-nav__icon md-icon"></span>
+            EvalSetup
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../preset_configs/EvalSetup/code_generation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Code generation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../preset_configs/EvalSetup/en_chat/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    En chat
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../preset_configs/EvalSetup/en_generation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    En generation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../preset_configs/EvalSetup/en_multiple_choice/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    En multiple choice
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../preset_configs/EvalSetup/en_preplexity/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    En preplexity
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../preset_configs/EvalSetup/ja_chat/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Ja chat
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../preset_configs/EvalSetup/ja_generation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Ja generation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../preset_configs/EvalSetup/ja_multiple_choice/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Ja multiple choice
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../preset_configs/EvalSetup/translation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Translation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../preset_configs/Metric/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Metric
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../preset_configs/PairwiseJudge/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    PairwiseJudge
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../api_reference/" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    API Reference
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_8" id="__nav_8_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            API Reference
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api_reference/ChatDataset/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ChatDataset
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api_reference/EvalSetup/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    EvalSetup
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api_reference/FewShotGenerator/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    FewShotGenerator
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api_reference/GenerationDataset/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    GenerationDataset
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api_reference/LanguageModel/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    LanguageModel
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api_reference/MatchMaker/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    MatchMaker
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api_reference/Metric/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Metric
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api_reference/MultipleChoiceDataset/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    MultipleChoiceDataset
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api_reference/Normalizer/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Normalizer
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api_reference/PairwiseJudge/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    PairwiseJudge
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api_reference/PairwiseScorer/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    PairwiseScorer
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api_reference/PromptTemplate/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    PromptTemplate
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api_reference/TextDataset/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    TextDataset
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api_reference/Tokenizer/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Tokenizer
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      Overview
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#customizing-the-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Customizing the Configuration
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#argument-overrides" class="md-nav__link">
+    <span class="md-ellipsis">
+      Argument Overrides
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#whats-next" class="md-nav__link">
+    <span class="md-ellipsis">
+      What's Next?
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+<h1 id="how-to-configure-your-own-evaluation">How to configure your own evaluation<a class="headerlink" href="#how-to-configure-your-own-evaluation" title="Permanent link">&para;</a></h1>
+<h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
+<p><code>flexeval</code> allows you to evaluate any language model with any task, any prompt, and any metric via the <code>flexeval_lm</code> command.
+The CLI command is implemented on <a href="https://github.com/omni-us/jsonargparse">jsonargparse</a>, which allows a flexible configuration either by CLI arguments or by a configuration file.</p>
+<p>There are many ways to write configuration files, but for now let's see how to define a config for the argument <code>--eval_setup</code>.
+You can check the configuration for preset setups by running the following command:</p>
+<div class="highlight"><pre><span></span><code>flexeval_presets<span class="w"> </span>commonsense_qa
+</code></pre></div>
+<p>This command will show the configuration for the <code>commonsense_qa</code> setup.
+The content is written in the <a href="https://jsonnet.org/">jsonnet</a> format, which is a superset of JSON.</p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>If you want to convert it to JSON, install <code>jsonnet</code> command and run <code>flexeval_presets commonsense_qa | jsonnet -</code>.</p>
+</div>
+<p>The skeleton of the configuration is as follows:</p>
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;class_path&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Generation&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;init_args&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;eval_dataset&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;class_path&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;HfGenerationDataset&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;init_args&quot;</span><span class="p">:</span><span class="w"> </span><span class="err">...</span><span class="p">},</span>
+<span class="w">    </span><span class="nt">&quot;prompt_template&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;class_path&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Jinja2PromptTemplate&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;init_args&quot;</span><span class="p">:</span><span class="w"> </span><span class="err">...</span><span class="p">},</span>
+<span class="w">    </span><span class="nt">&quot;gen_kwargs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;max_new_tokens&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">32</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;stop_sequences&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;」&quot;</span><span class="p">]},</span>
+<span class="w">    </span><span class="nt">&quot;metrics&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[{</span><span class="nt">&quot;class_path&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;CharF1&quot;</span><span class="p">},</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;class_path&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ExactMatch&quot;</span><span class="p">}],</span>
+<span class="w">    </span><span class="nt">&quot;batch_size&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">4</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>The fields <code>class_path</code> and <code>init_args</code> directly mirror the initialization of the specified class.</p>
+<p>At the top level, <code>"class_path": "Generation"</code> specifies what kind of <a href="../api_reference/EvalSetup/"><code>EvalSetup</code></a> to use.
+Currently, there are four types of <code>EvalSetup</code>: <a href="../api_reference/EvalSetup/#flexeval.scripts.flexeval_lm.Generation"><code>Generation</code></a>, <a href="../api_reference/EvalSetup/#flexeval.scripts.flexeval_lm.ChatResponse"><code>ChatResponse</code></a>, <a href="../api_reference/EvalSetup/#flexeval.scripts.flexeval_lm.MultipleChoice"><code>MultipleChoice</code></a>, and <a href="../api_reference/EvalSetup/#flexeval.scripts.flexeval_lm.Perplexity"><code>Perplexity</code></a>.</p>
+<p>Then, <code>Generation</code> is composed of the following components:</p>
+<ul>
+<li><code>eval_dataset</code>: The dataset to evaluate. You can choose from concrete classes inheriting <a href="../api_reference/GenerationDataset/"><code>GenerationDataset</code></a>. Most presets use <a href="../api_reference/GenerationDataset/#flexeval.core.generation_dataset.hf_dataset.HfGenerationDataset"><code>HfGenerationDataset</code></a>, which load datasets from <a href="https://huggingface.co/docs/datasets/index">Hugging Face Hub</a>.</li>
+<li><code>prompt_template</code>: The template to generate prompts fed to the language model. We have <a href="../api_reference/PromptTemplate/#flexeval.core.prompt_template.jinja2.Jinja2PromptTemplate"><code>Jinja2PromptTemplate</code></a>, which uses <a href="https://jinja.palletsprojects.com/en/3.1.x/">Jinja2</a> to embed the data from <a href="../api_reference/GenerationDataset/"><code>GenerationDataset</code></a> into the prompt.</li>
+<li><code>gen_kwargs</code>: The keyword arguments passed to <a href="../api_reference/LanguageModel/#flexeval.core.language_model.base.LanguageModel.batch_complete_text"><code>LanguageModel.batch_complete_text</code></a>. For example, <code>max_new_tokens</code> and <code>stop_sequences</code> are used to control the generation process. Acceptable arguments depend on the underlying implementation of the generation function (e.g., <code>generate()</code> in <code>transformers</code>).</li>
+<li><code>metrics</code>: The metrics to compute. You can choose from concrete classes inheriting <a href="../api_reference/Metric/"><code>Metric</code></a>. These modules take the outputs of the language model, the references, and dataset values, and compute the metrics.</li>
+</ul>
+<p>Please refer to the <a href="../api_reference/">API reference</a> for available classes and their arguments.</p>
+<h2 id="customizing-the-configuration">Customizing the Configuration<a class="headerlink" href="#customizing-the-configuration" title="Permanent link">&para;</a></h2>
+<p>Writing a configuration file from scratch is a bit cumbersome, so we recommend starting from the preset configurations and modifying them as needed.</p>
+<div class="highlight"><pre><span></span><code>flexeval_presets<span class="w"> </span>commonsense_qa<span class="w"> </span>&gt;<span class="w"> </span>my_config.jsonnet
+</code></pre></div>
+<p>Then, pass your config file to <code>--eval_setup</code> argument.</p>
+<div class="highlight"><pre><span></span><code>flexeval_lm<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--language_model<span class="w"> </span>HuggingFaceLM<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--language_model.model_name<span class="w"> </span><span class="s2">&quot;sbintuitions/tiny-lm&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--eval_setup<span class="w"> </span><span class="s2">&quot;my_config.jsonnet&quot;</span>
+</code></pre></div>
+<div class="admonition info">
+<p class="admonition-title">Info</p>
+<p>Under the hood, the preset name like <code>commonsense_qa</code> is resolved to the corresponding configuration file under <code>flexeval/preset_configs</code> in the library.</p>
+</div>
+<h2 id="argument-overrides">Argument Overrides<a class="headerlink" href="#argument-overrides" title="Permanent link">&para;</a></h2>
+<p><a href="https://github.com/omni-us/jsonargparse">jsonargparse</a> allows you to flexibly combine configuration files and CLI arguments.
+You can override the argument values by specifying them in the CLI.</p>
+<div class="highlight"><pre><span></span><code>flexeval_lm<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--language_model<span class="w"> </span>HuggingFaceLM<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--language_model.model_name<span class="w"> </span><span class="s2">&quot;sbintuitions/tiny-lm&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--eval_setup<span class="w"> </span><span class="s2">&quot;commonsense_qa&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--eval_setup.batch_size<span class="w"> </span><span class="m">8</span>
+</code></pre></div>
+<p>The value of <code>--eval_setup.batch_size</code> overrides the value defined in the config file of <code>commonsense_qa</code>.</p>
+<h2 id="whats-next">What's Next?<a class="headerlink" href="#whats-next" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Proceed to <a href="../how_to/">How to</a> to find examples that suit your needs.</li>
+<li>Look at the <a href="../api_reference/">API reference</a> to see the available classes and their arguments.</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "..", "features": [], "search": "../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.081f42fc.min.js"></script>
+      
+    
+  </body>
+</html>

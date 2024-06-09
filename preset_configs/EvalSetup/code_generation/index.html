@@ -1,0 +1,1552 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="../">
+      
+      
+        <link rel="next" href="../en_chat/">
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.25">
+    
+    
+      
+        <title>Code generation - flexeval</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.6543a935.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="green" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#jhumaneval" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="flexeval" class="md-header__button md-logo" aria-label="flexeval" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            flexeval
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Code generation
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="flexeval" class="md-nav__button md-logo" aria-label="flexeval" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    flexeval
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    FlexEval
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../installation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Installation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../getting_started/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Getting Started
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../configuration_guide/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Configuration Guide
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../how_to/" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    How to
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            How to
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../how_to/configure_few_shot_examples/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Configure Few-shot Examples
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../how_to/evaluate_with_llm_judges/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Evaluate with LLM Judges
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../how_to/implement_your_own_module/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Implement Your Own Class
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../design_principles/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Design Principles
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" checked>
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    Preset Configs
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_7" id="__nav_7_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            Preset Configs
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_1" checked>
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    EvalSetup
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_7_1" id="__nav_7_1_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_1_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_7_1">
+            <span class="md-nav__icon md-icon"></span>
+            EvalSetup
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Code generation
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    Code generation
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#jhumaneval" class="md-nav__link">
+    <span class="md-ellipsis">
+      jhumaneval
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#jhumaneval_tab_indent" class="md-nav__link">
+    <span class="md-ellipsis">
+      jhumaneval_tab_indent
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mbpp" class="md-nav__link">
+    <span class="md-ellipsis">
+      mbpp
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mbpp_tab_indent" class="md-nav__link">
+    <span class="md-ellipsis">
+      mbpp_tab_indent
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#openai_humaneval" class="md-nav__link">
+    <span class="md-ellipsis">
+      openai_humaneval
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#openai_humaneval_tab_indent" class="md-nav__link">
+    <span class="md-ellipsis">
+      openai_humaneval_tab_indent
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../en_chat/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    En chat
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../en_generation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    En generation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../en_multiple_choice/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    En multiple choice
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../en_preplexity/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    En preplexity
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ja_chat/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Ja chat
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ja_generation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Ja generation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ja_multiple_choice/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Ja multiple choice
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../translation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Translation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Metric/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Metric
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../PairwiseJudge/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    PairwiseJudge
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../api_reference/" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    API Reference
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_8" id="__nav_8_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            API Reference
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../api_reference/ChatDataset/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ChatDataset
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../api_reference/EvalSetup/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    EvalSetup
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../api_reference/FewShotGenerator/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    FewShotGenerator
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../api_reference/GenerationDataset/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    GenerationDataset
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../api_reference/LanguageModel/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    LanguageModel
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../api_reference/MatchMaker/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    MatchMaker
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../api_reference/Metric/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Metric
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../api_reference/MultipleChoiceDataset/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    MultipleChoiceDataset
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../api_reference/Normalizer/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Normalizer
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../api_reference/PairwiseJudge/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    PairwiseJudge
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../api_reference/PairwiseScorer/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    PairwiseScorer
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../api_reference/PromptTemplate/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    PromptTemplate
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../api_reference/TextDataset/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    TextDataset
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../api_reference/Tokenizer/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Tokenizer
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#jhumaneval" class="md-nav__link">
+    <span class="md-ellipsis">
+      jhumaneval
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#jhumaneval_tab_indent" class="md-nav__link">
+    <span class="md-ellipsis">
+      jhumaneval_tab_indent
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mbpp" class="md-nav__link">
+    <span class="md-ellipsis">
+      mbpp
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mbpp_tab_indent" class="md-nav__link">
+    <span class="md-ellipsis">
+      mbpp_tab_indent
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#openai_humaneval" class="md-nav__link">
+    <span class="md-ellipsis">
+      openai_humaneval
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#openai_humaneval_tab_indent" class="md-nav__link">
+    <span class="md-ellipsis">
+      openai_humaneval_tab_indent
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  <h1>Code generation</h1>
+
+<h2 id="jhumaneval">jhumaneval<a class="headerlink" href="#jhumaneval" title="Permanent link">&para;</a></h2>
+<p>Zero-shot Python code generation task in Japanese.</p>
+<p>References:</p>
+<ul>
+<li><a href="https://huggingface.co/datasets/kogi-jwu/jhumaneval">Hugging Face Dataset</a></li>
+<li><a href="https://www.anlp.jp/proceedings/annual_meeting/2024/pdf_dir/P10-9.pdf">LLM は日本語追加学習により言語間知識転移を起こすのか？</a>
+<div class="highlight"><pre><span></span><code>{
+  class_path: &#39;Generation&#39;,
+  init_args: {
+    eval_dataset: {
+      class_path: &#39;HfGenerationDataset&#39;,
+      init_args: {
+        dataset_name: &#39;kogi-jwu/jhumaneval&#39;,
+        split: &#39;test&#39;,
+        references_template: &#39;{{ test }}\n\ncheck({{ entry_point }})\n&#39;,
+      },
+    },
+    prompt_template: {
+      class_path: &#39;Jinja2PromptTemplate&#39;,
+      init_args: {
+        template: |||
+          {{ prompt }}
+        |||,
+      },
+    },
+    metrics: [
+      { class_path: &#39;CodeEval&#39;, init_args: { code_prompt_template: &#39;{{ prompt }}&#39; } },
+    ],
+    gen_kwargs: { max_new_tokens: 512, stop_sequences: [&#39;\nclass&#39;, &#39;\ndef&#39;, &#39;\n#&#39;, &#39;\n@&#39;, &#39;\nprint&#39;, &#39;\nif&#39;, &#39;\n```&#39;] },
+    batch_size: 4,
+  },
+}
+</code></pre></div></li>
+</ul>
+<h2 id="jhumaneval_tab_indent">jhumaneval_tab_indent<a class="headerlink" href="#jhumaneval_tab_indent" title="Permanent link">&para;</a></h2>
+<p>Zero-shot Python code generation task in Japanese.</p>
+<p>This is a version of jhumaneval preprocessed to replace indentation spaces with tabs.
+Some models (e.g., Llama) seems to have trouble with spaces in the prompt.
+<div class="highlight"><pre><span></span><code>local original_config = import &#39;./jhumaneval.jsonnet&#39;;
+
+original_config {
+  init_args+: {
+    eval_dataset+: {
+      init_args+: {
+        references_template: &#39;{{ test | replace(&quot;    &quot;, &quot;\t&quot;) }}\n\ncheck({{ entry_point }})\n&#39;,
+      },
+    },
+    prompt_template+: {
+      init_args+: {
+        template: |||
+          {{ prompt | replace(&quot;    &quot;, &quot;\t&quot;) }}
+        |||,
+      },
+    },
+    metrics: [
+      { class_path: &#39;CodeEval&#39;, init_args: { code_prompt_template: &#39;{{ prompt | replace(&quot;    &quot;, &quot;\t&quot;) }}&#39; } },
+    ],
+  },
+}
+</code></pre></div></p>
+<h2 id="mbpp">mbpp<a class="headerlink" href="#mbpp" title="Permanent link">&para;</a></h2>
+<p>Mostly Basic Python Problems (MBPP) is a dataset of crowd-sourced programming problems.</p>
+<p>References:</p>
+<ul>
+<li><a href="https://huggingface.co/datasets/mbpp">Hugging Face Dataset</a></li>
+<li><a href="https://arxiv.org/abs/2108.07732">Program Synthesis with Large Language Models</a>
+<div class="highlight"><pre><span></span><code>local dataset_base_args = {
+  dataset_name: &#39;mbpp&#39;,
+  subset: &#39;sanitized&#39;,
+  references_template: &#39;{{ test_list }}&#39;,
+};
+
+{
+  class_path: &#39;Generation&#39;,
+  init_args: {
+    eval_dataset: {
+      class_path: &#39;HfGenerationDataset&#39;,
+      init_args: dataset_base_args { split: &#39;test&#39; },
+    },
+    few_shot_generator: {
+      class_path: &#39;RandomFewShotGenerator&#39;,
+      init_args: {
+        dataset: {
+          class_path: &#39;HfGenerationDataset&#39;,
+          init_args: dataset_base_args { split: &#39;prompt&#39; },
+        },
+        num_shots: 3,
+      },
+    },
+    prompt_template: {
+      class_path: &#39;Jinja2PromptTemplate&#39;,
+      init_args: {
+        template: |||
+          {% for item in few_shot_data %}
+          ## Question
+          {{ item.prompt }}
+          ## Test cases
+          ```python
+          {{ item.test_list | join(&#39;\n&#39;) }}
+          ```
+          ## Code
+          ```python
+          {{ item.code }}
+          ```
+          {% endfor %}
+          ## Question
+          {{ prompt }}
+          ## Test cases
+          ```python
+          {{ test_list | join(&#39;\n&#39;) }}
+          ```
+          ## Code
+          ```python
+
+        |||,
+      },
+    },
+    metrics: [
+      { class_path: &#39;CodeEval&#39; },
+    ],
+    gen_kwargs: { max_new_tokens: 512, stop_sequences: [&#39;```&#39;] },
+    batch_size: 4,
+  },
+}
+</code></pre></div></li>
+</ul>
+<h2 id="mbpp_tab_indent">mbpp_tab_indent<a class="headerlink" href="#mbpp_tab_indent" title="Permanent link">&para;</a></h2>
+<p>Mostly Basic Python Problems (MBPP) is a dataset of crowd-sourced programming problems.</p>
+<p>This is a version of openai_humaneval preprocessed to replace indentation spaces with tabs.
+Some models (e.g., Llama) seems to have trouble with spaces in the prompt.
+<div class="highlight"><pre><span></span><code>local original_config = import &#39;./mbpp.jsonnet&#39;;
+
+original_config {
+  init_args+: {
+    prompt_template+: {
+      init_args+: {
+        template: |||
+          {% for item in few_shot_data %}
+          ## Question
+          {{ item.prompt }}
+          ## Test cases
+          ```python
+          {{ item.test_list | join(&#39;\n&#39;) }}
+          ```
+          ## Code
+          ```python
+          {{ item.code | replace(&#39;    &#39;, &#39;\t&#39;) }}
+          ```
+          {% endfor %}
+          ## Question
+          {{ prompt }}
+          ## Test cases
+          ```python
+          {{ test_list | join(&#39;\n&#39;) }}
+          ```
+          ## Code
+          ```python
+
+        |||,
+      },
+    },
+  },
+}
+</code></pre></div></p>
+<h2 id="openai_humaneval">openai_humaneval<a class="headerlink" href="#openai_humaneval" title="Permanent link">&para;</a></h2>
+<p>Zero-shot Python code generation task developed by OpenAI.</p>
+<p>References:</p>
+<ul>
+<li><a href="https://huggingface.co/datasets/openai_humaneval">Hugging Face Dataset</a></li>
+<li><a href="https://arxiv.org/abs/2107.03374">Evaluating Large Language Models Trained on Code</a>
+<div class="highlight"><pre><span></span><code>{
+  class_path: &#39;Generation&#39;,
+  init_args: {
+    eval_dataset: {
+      class_path: &#39;HfGenerationDataset&#39;,
+      init_args: {
+        dataset_name: &#39;openai_humaneval&#39;,
+        split: &#39;test&#39;,
+        references_template: &#39;{{ test }}\n\ncheck({{ entry_point }})\n&#39;,
+      },
+    },
+    prompt_template: {
+      class_path: &#39;Jinja2PromptTemplate&#39;,
+      init_args: {
+        template: |||
+          {{ prompt }}
+        |||,
+      },
+    },
+    metrics: [
+      { class_path: &#39;CodeEval&#39;, init_args: { code_prompt_template: &#39;{{ prompt }}&#39; } },
+    ],
+    gen_kwargs: { max_new_tokens: 512, stop_sequences: [&#39;\nclass&#39;, &#39;\ndef&#39;, &#39;\n#&#39;, &#39;\n@&#39;, &#39;\nprint&#39;, &#39;\nif&#39;, &#39;\n```&#39;] },
+    batch_size: 4,
+  },
+}
+</code></pre></div></li>
+</ul>
+<h2 id="openai_humaneval_tab_indent">openai_humaneval_tab_indent<a class="headerlink" href="#openai_humaneval_tab_indent" title="Permanent link">&para;</a></h2>
+<p>Zero-shot Python code generation task developed by OpenAI.</p>
+<p>This is a version of openai_humaneval preprocessed to replace indentation spaces with tabs.
+Some models (e.g., Llama) seems to have trouble with spaces in the prompt.
+<div class="highlight"><pre><span></span><code>local original_config = import &#39;./openai_humaneval.jsonnet&#39;;
+
+original_config {
+  init_args+: {
+    eval_dataset+: {
+      init_args+: {
+        references_template: &#39;{{ test | replace(&quot;    &quot;, &quot;\t&quot;) }}\n\ncheck({{ entry_point }})\n&#39;,
+      },
+    },
+    prompt_template+: {
+      init_args+: {
+        template: |||
+          {{ prompt | replace(&quot;    &quot;, &quot;\t&quot;) }}
+        |||,
+      },
+    },
+    metrics: [
+      { class_path: &#39;CodeEval&#39;, init_args: { code_prompt_template: &#39;{{ prompt | replace(&quot;    &quot;, &quot;\t&quot;) }}&#39; } },
+    ],
+  },
+}
+</code></pre></div></p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../../..", "features": [], "search": "../../../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.081f42fc.min.js"></script>
+      
+    
+  </body>
+</html>

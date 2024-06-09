@@ -1,0 +1,1377 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="../configure_few_shot_examples/">
+      
+      
+        <link rel="next" href="../implement_your_own_module/">
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.25">
+    
+    
+      
+        <title>Evaluate with LLM Judges - flexeval</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.6543a935.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="green" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#evaluate-with-llm-judges" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="flexeval" class="md-header__button md-logo" aria-label="flexeval" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            flexeval
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Evaluate with LLM Judges
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="flexeval" class="md-nav__button md-logo" aria-label="flexeval" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    flexeval
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    FlexEval
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../installation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Installation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting_started/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Getting Started
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../configuration_guide/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Configuration Guide
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    How to
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            How to
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../configure_few_shot_examples/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Configure Few-shot Examples
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Evaluate with LLM Judges
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    Evaluate with LLM Judges
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#single-judge-evaluation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Single Judge Evaluation
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pairwise-judge-evaluation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Pairwise Judge Evaluation
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#whats-next" class="md-nav__link">
+    <span class="md-ellipsis">
+      What's Next?
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../implement_your_own_module/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Implement Your Own Class
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../design_principles/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Design Principles
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../preset_configs/" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    Preset Configs
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_7" id="__nav_7_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            Preset Configs
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_1" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../preset_configs/EvalSetup/" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    EvalSetup
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_7_1" id="__nav_7_1_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7_1">
+            <span class="md-nav__icon md-icon"></span>
+            EvalSetup
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../preset_configs/EvalSetup/code_generation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Code generation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../preset_configs/EvalSetup/en_chat/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    En chat
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../preset_configs/EvalSetup/en_generation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    En generation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../preset_configs/EvalSetup/en_multiple_choice/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    En multiple choice
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../preset_configs/EvalSetup/en_preplexity/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    En preplexity
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../preset_configs/EvalSetup/ja_chat/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Ja chat
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../preset_configs/EvalSetup/ja_generation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Ja generation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../preset_configs/EvalSetup/ja_multiple_choice/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Ja multiple choice
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../preset_configs/EvalSetup/translation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Translation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../preset_configs/Metric/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Metric
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../preset_configs/PairwiseJudge/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    PairwiseJudge
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../api_reference/" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    API Reference
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_8" id="__nav_8_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            API Reference
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api_reference/ChatDataset/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ChatDataset
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api_reference/EvalSetup/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    EvalSetup
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api_reference/FewShotGenerator/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    FewShotGenerator
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api_reference/GenerationDataset/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    GenerationDataset
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api_reference/LanguageModel/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    LanguageModel
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api_reference/MatchMaker/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    MatchMaker
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api_reference/Metric/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Metric
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api_reference/MultipleChoiceDataset/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    MultipleChoiceDataset
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api_reference/Normalizer/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Normalizer
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api_reference/PairwiseJudge/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    PairwiseJudge
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api_reference/PairwiseScorer/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    PairwiseScorer
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api_reference/PromptTemplate/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    PromptTemplate
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api_reference/TextDataset/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    TextDataset
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api_reference/Tokenizer/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Tokenizer
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#single-judge-evaluation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Single Judge Evaluation
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pairwise-judge-evaluation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Pairwise Judge Evaluation
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#whats-next" class="md-nav__link">
+    <span class="md-ellipsis">
+      What's Next?
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+<h1 id="evaluate-with-llm-judges">Evaluate with LLM Judges<a class="headerlink" href="#evaluate-with-llm-judges" title="Permanent link">&para;</a></h1>
+<p>Evaluation of chat model is difficult since the response is open-ended and manually evaluating the responses is not scalable.
+One solution is to use a LLM as an evaluator.</p>
+<h2 id="single-judge-evaluation">Single Judge Evaluation<a class="headerlink" href="#single-judge-evaluation" title="Permanent link">&para;</a></h2>
+<p>First, we need to generate responses from the chat model.
+In this example, we use ChatGPT with the following command:</p>
+<div class="highlight"><pre><span></span><code><span class="nb">export</span><span class="w"> </span><span class="nv">OPENAI_API_KEY</span><span class="o">=</span><span class="s2">&quot;YOUR_API_KEY&quot;</span>
+
+flexeval_lm<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--language_model<span class="w"> </span>OpenAIChatGPT<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--language_model.model_name<span class="w"> </span><span class="s2">&quot;gpt-3.5-turbo&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--eval_setup<span class="w"> </span><span class="s2">&quot;mt-en&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--save_dir<span class="w"> </span><span class="s2">&quot;results/mt-en_gpt3.5-turbo&quot;</span>
+</code></pre></div>
+<p>Now you have the model outputs in <code>results/mt-en-gpt3.5-turbo/outputs.jsonl</code>.</p>
+<p>Let's evaluate the responses with GPT4.
+The LLM evaluation is implemented as a <code>Metric</code> class and we will use a preset metric named <code>assistant_eval_gpt4_en_single_turn</code>.
+You can check its configuration with the following command:</p>
+<div class="highlight"><pre><span></span><code>flexeval_presets<span class="w"> </span>assistant_eval_gpt4_en_single_turn
+</code></pre></div>
+<p>In this metric, GPT4 is asked to rate the responses with the score from 1 to 10.
+The score is extracted as the last digit found in the evaluator's output.</p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>To take a closer look at the prompt template, combine pipeline with <code>jsonnet</code> and <code>jq</code>:</p>
+<div class="highlight"><pre><span></span><code>flexeval_presets<span class="w"> </span>assistant_eval_gpt4_en_single_turn<span class="w"> </span><span class="p">|</span><span class="w"> </span>jsonnet<span class="w"> </span>-<span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span>-r<span class="w"> </span><span class="s2">&quot;.init_args.prompt_template.init_args.template&quot;</span>
+</code></pre></div>
+</div>
+<p>Perform automatic evaluation with GPT4 with the following command:</p>
+<div class="highlight"><pre><span></span><code>flexeval_file<span class="w"> </span><span class="se">\</span>
+<span class="w">   </span>--eval_file<span class="w"> </span><span class="s2">&quot;results/mt-en-gpt3.5-turbo/outputs.jsonl&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">   </span>--metrics<span class="w"> </span><span class="s2">&quot;assistant_eval_gpt4_en_single_turn&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">   </span>--save_dir<span class="w"> </span><span class="s2">&quot;results/mt-en_gpt3.5-turbo/eval_by_gpt4&quot;</span>
+</code></pre></div>
+<p>☕️ It may take a while to finish the evaluation...</p>
+<p>By hitting <code>cat results/mt-en-gpt3.5-turbo/eval_by_gpt4/metrics.json</code>, you can see the evaluation result like <code>{"llm_score": 7.795}</code>.
+The evaluation for each response is stored in <code>results/mt-en-gpt3.5-turbo/eval_by_gpt4/outputs.jsonl</code>.</p>
+<p>You can check the output of the evaluator LLM in the <code>llm_score_output</code> field.</p>
+<div class="highlight"><pre><span></span><code>head<span class="w"> </span>-n<span class="w"> </span><span class="m">1</span><span class="w"> </span>results/mt-en-gpt3.5-turbo/eval_by_gpt4/outputs.jsonl<span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span>-r<span class="w"> </span><span class="s2">&quot;.llm_output&quot;</span>
+</code></pre></div>
+<div class="admonition info">
+<p class="admonition-title">Info</p>
+<p><code>flexeval_file</code> just runs the same evaluation as <code>flexeval_lm</code> but with the given file.
+So, theoretically, you can perform the same evaluation with <code>flexeval_lm</code> in one go:</p>
+<div class="highlight"><pre><span></span><code>flexeval_lm<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--language_model<span class="w"> </span>OpenAIChatGPT<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--language_model.model_name<span class="w"> </span><span class="s2">&quot;gpt-3.5-turbo&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--eval_setup<span class="w"> </span><span class="s2">&quot;mt-en&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--metrics+<span class="o">=</span><span class="s2">&quot;assistant_eval_gpt4_en_single_turn&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--save_dir<span class="w"> </span><span class="s2">&quot;results/mt-en_gpt3.5-turbo&quot;</span>
+</code></pre></div>
+<p>Yet, we recommend separate the response generation (<code>flexeval_lm</code>) and evaluation (<code>flexeval_file</code>) so that you don't lost the response by some errors in the evaluation process.</p>
+</div>
+<h2 id="pairwise-judge-evaluation">Pairwise Judge Evaluation<a class="headerlink" href="#pairwise-judge-evaluation" title="Permanent link">&para;</a></h2>
+<p>Sometimes, evaluating chat models individually cannot capture a subtle difference between models.
+In such cases, pairwise evaluation is useful.</p>
+<p>The overview of process is generating the responses using <code>flexeval_lm</code> and evaluating them with <code>flexeval_pairwise</code>.</p>
+<p>In this example, we will compare the responses from GPT3.5 and GPT-4o.</p>
+<p>First, generate the responses with GPT3.5.
+You can skip this if you have already generated the responses.</p>
+<div class="highlight"><pre><span></span><code><span class="nb">export</span><span class="w"> </span><span class="nv">OPENAI_API_KEY</span><span class="o">=</span><span class="s2">&quot;YOUR_API_KEY&quot;</span>
+
+flexeval_lm<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--language_model<span class="w"> </span>OpenAIChatGPT<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--language_model.model_name<span class="w"> </span><span class="s2">&quot;gpt-3.5-turbo&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--eval_setup<span class="w"> </span><span class="s2">&quot;mt-en&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--save_dir<span class="w"> </span><span class="s2">&quot;results/mt-en_gpt3.5-turbo&quot;</span>
+</code></pre></div>
+<p>Generate the responses with GPT-4o.</p>
+<div class="highlight"><pre><span></span><code>flexeval_lm<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--language_model<span class="w"> </span>OpenAIChatGPT<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--language_model.model_name<span class="w"> </span><span class="s2">&quot;gpt-4o&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--eval_setup<span class="w"> </span><span class="s2">&quot;mt-en&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--save_dir<span class="w"> </span><span class="s2">&quot;results/mt-en_gpt-4o&quot;</span>
+</code></pre></div>
+<p>Now, compare the responses with GPT-4.</p>
+<div class="highlight"><pre><span></span><code>flexeval_pairwise<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--lm_output_paths.gpt_3_5<span class="w"> </span><span class="s2">&quot;results/mt-en_gpt3.5-turbo/outputs.jsonl&quot;</span><span class="w">  </span><span class="se">\</span>
+<span class="w">  </span>--lm_output_paths.gpt_4o<span class="w"> </span><span class="s2">&quot;results/mt-en_gpt-4o/outputs.jsonl&quot;</span><span class="w">  </span><span class="se">\</span>
+<span class="w">  </span>--judge<span class="w"> </span><span class="s2">&quot;assistant_judge_gpt4_en_single_turn&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--save_dir<span class="w"> </span><span class="s2">&quot;results/mt-en_gpt3.5_vs_gpt4o&quot;</span>
+</code></pre></div>
+<p>☕️ It may take a while to finish the evaluation...</p>
+<p>You can see the result in <code>results/mt-en_gpt3.5_vs_gpt4o/scores.json</code>.</p>
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;win_rate&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;gpt_4o&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">85.3125</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;gpt_3_5&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">14.6875</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">&quot;bradley_terry&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;gpt_4o&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1152.8129577165919</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;gpt_3_5&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">847.1870422834081</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>The <code>win_rate</code> shows the percentage of wins of each model.
+The <code>bradley_terry</code> shows <a href="https://en.wikipedia.org/wiki/Bradley%E2%80%93Terry_model">the Bradley-Terry score</a> of each model.</p>
+<h2 id="whats-next">What's Next?<a class="headerlink" href="#whats-next" title="Permanent link">&para;</a></h2>
+<ul>
+<li>To define your own LLM evaluator, see <a href="../../configuration_guide/">Configuration Guide</a>.</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.081f42fc.min.js"></script>
+      
+    
+  </body>
+</html>
