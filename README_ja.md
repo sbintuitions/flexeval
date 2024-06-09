@@ -18,7 +18,7 @@ FlexEval は言語モデル評価のためのツールです。以下のよう�
 * 対数尤度に基づく多肢選択タスク
 * テキストのパープレキシティの計算
 
-その他のユースケースについては、[ドキュメント](https://sbintuitions.github.io/flexeval/)を参照してください。
+その他のユースケースについては、[ドキュメント（英語）](https://sbintuitions.github.io/flexeval/)を参照してください。
 
 ## 主な特徴
 
