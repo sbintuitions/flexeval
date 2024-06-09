@@ -1,0 +1,60 @@
+site_name: flexeval
+
+markdown_extensions:
+    # Configure Table of Contents
+    # https://squidfunk.github.io/mkdocs-material/setup/extensions/python-markdown/#table-of-contents
+    - toc:
+        permalink: true
+        toc_depth: 2
+    # Required to add admonitions
+    # https://squidfunk.github.io/mkdocs-material/reference/admonitions/
+    - admonition
+    - pymdownx.details
+    - pymdownx.superfences
+
+theme:
+  name: "material"
+  palette:
+      primary: "green"
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            docstring_section_style: list
+            docstring_style: google
+            show_root_heading: yes
+            show_root_toc_entry: yes
+            show_root_full_path: no
+            show_object_full_path: no
+            show_category_heading: no
+            show_if_no_docstring: yes
+            show_signature: yes
+            show_signature_annotations: yes
+            show_bases: no
+            show_source: yes
+            separate_signature: yes
+            members_order: source
+            summary: no
+  - gen-files:
+      scripts:
+      - docs/api_reference.py
+      - docs/preset_configs.py
+  - literate-nav:
+  - section-index
+
+nav:
+- index.md
+- Installation: installation.md
+- Getting Started: getting_started.md
+- Configuration Guide: configuration_guide.md
+- How to:
+    - how_to/index.md
+    - Configure Few-shot Examples: how_to/configure_few_shot_examples.md
+    - Evaluate with LLM Judges: how_to/evaluate_with_llm_judges.md
+    - Implement Your Own Class: how_to/implement_your_own_module.md
+- Design Principles: design_principles.md
+- Preset Configs: preset_configs/
+- API Reference: api_reference/

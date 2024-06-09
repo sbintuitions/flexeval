@@ -1,0 +1,89 @@
+name: Run tests
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      no-cache:
+        description: "Run tests without cache"
+        default: false
+        required: false
+        type: boolean
+
+jobs:
+  run-tests:
+    runs-on: ubuntu-22.04-4-cores-16GB-RAM-150GB-SSD
+    strategy:
+      matrix:
+        # 3.11.9, which is picked up by GithubAction by default, doesn't work because of argparse or something...
+        python-version: ["3.8", "3.9", "3.10", "3.11.6"]
+    env:
+      NO_CACHE: ${{ github.event.inputs.no-cache || 'false' }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Poetry
+        run: |
+          pipx install poetry
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: "poetry"
+          cache-dependency-path: "poetry.lock"
+
+      - name: Install dependencies
+        # vllm (ray) can't be installed on python 3.8
+        run: |
+          if [ "${{ matrix.python-version }}" == "3.8" ]; then
+              poetry install --only main,dev
+          else
+              poetry install --only main,dev --all-extras
+          fi
+
+      - name: Run tests
+        run: |
+          poetry run pytest -v -s ./tests
+
+  lint_check:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.8", "3.9", "3.10", "3.11"]
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install Poetry
+        run: |
+          pipx install poetry
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dev dependencies
+        run: |
+          poetry install --only dev
+
+      - name: Check Ruff
+        run: |
+          poetry run ruff check
+          poetry run ruff format --check
+
+  markdown_lint_check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: markdownlint-cli
+        uses: nosborn/github-action-markdown-cli@v3.3.0
+        with:
+          files: docs
+          config_file: .markdownlint.yaml
