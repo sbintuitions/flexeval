@@ -42,6 +42,7 @@ The following minimal example evaluates the hugging face model `sbintuitions/tin
 flexeval_lm \
   --language_model HuggingFaceLM \
   --language_model.model_name "sbintuitions/tiny-lm" \
+  --language_model.tokenizer_kwargs '{use_fast: false}' \
   --eval_setup "commonsense_qa" \
   --save_dir "results/commonsense_qa"
 ```

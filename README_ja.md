@@ -41,6 +41,7 @@ pip install flexeval
 flexeval_lm \
   --language_model HuggingFaceLM \
   --language_model.model_name "sbintuitions/tiny-lm" \
+  --language_model.tokenizer_kwargs '{use_fast: false}' \
   --eval_setup "aio" \
   --save_dir "results/aio"
 ```
