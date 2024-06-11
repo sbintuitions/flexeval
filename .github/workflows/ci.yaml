@@ -17,7 +17,7 @@ on:
 
 jobs:
   run-tests:
-    runs-on: ubuntu-22.04-4-cores-16GB-RAM-150GB-SSD
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         # 3.11.9, which is picked up by GithubAction by default, doesn't work because of argparse or something...
