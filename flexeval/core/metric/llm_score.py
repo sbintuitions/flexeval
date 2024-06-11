@@ -109,7 +109,7 @@ class ChatLLMScore(Metric):
         self,
         language_model: LanguageModel,
         prompt_template: PromptTemplate,
-        system_message: str | None = None,
+        system_message: str | PromptTemplate | None = None,
         batch_size: int = 4,
     ) -> None:
         self._language_model = language_model
@@ -151,9 +151,13 @@ class ChatLLMScore(Metric):
             evaluator_input = self._prompt_template.embed_input(prompt_inputs)
             input_chat_messages = [{"role": "user", "content": evaluator_input}]
             if self._system_message:
+                if isinstance(self._system_message, str):
+                    system_message = self._system_message
+                else:
+                    system_message = self._system_message.embed_input(prompt_inputs)
                 input_chat_messages.insert(
                     0,
-                    {"role": "system", "content": self._system_message},
+                    {"role": "system", "content": system_message},
                 )
             evaluator_input_list.append(input_chat_messages)
 

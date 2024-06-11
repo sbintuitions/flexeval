@@ -33,5 +33,6 @@ Translated and adapted from [lm-sys/FastChat](https://github.com/lm-sys/FastChat
         |||,
       },
     },
+    system_message: "あなたは優秀な助手です。",
   },
 }
