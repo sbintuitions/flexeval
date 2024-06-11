@@ -26,7 +26,7 @@ class ChatLLMPairwiseJudge(PairwiseJudge):
         self,
         language_model: LanguageModel,
         prompt_template: PromptTemplate,
-        system_message: str | None = None,
+        system_message: str | PromptTemplate | None = None,
     ) -> None:
         self._language_model = language_model
         self._prompt_template = prompt_template

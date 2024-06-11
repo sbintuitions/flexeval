@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import re
-from typing import Optional, Union
 
 from flexeval.core.language_model import LanguageModel
 from flexeval.core.prompt_template import PromptTemplate
@@ -110,7 +109,7 @@ class ChatLLMScore(Metric):
         self,
         language_model: LanguageModel,
         prompt_template: PromptTemplate,
-        system_message: Optional[Union[str, PromptTemplate]] = None,
+        system_message: str | PromptTemplate | None = None,
         batch_size: int = 4,
     ) -> None:
         self._language_model = language_model
