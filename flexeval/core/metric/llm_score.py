@@ -152,12 +152,12 @@ class ChatLLMScore(Metric):
             input_chat_messages = [{"role": "user", "content": evaluator_input}]
             if self._system_message:
                 if isinstance(self._system_message, str):
-                    __system_message = self._system_message
+                    system_message = self._system_message
                 else:
-                    __system_message = self._system_message.embed_input(prompt_inputs)
+                    system_message = self._system_message.embed_input(prompt_inputs)
                 input_chat_messages.insert(
                     0,
-                    {"role": "system", "content": __system_message},
+                    {"role": "system", "content": system_message},
                 )
             evaluator_input_list.append(input_chat_messages)
 
