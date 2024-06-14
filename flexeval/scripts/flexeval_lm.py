@@ -320,6 +320,8 @@ def main() -> None:  # noqa: C901, PLR0912, PLR0915
                     f"Overwriting the existing file: {save_dir / CONFIG_FILE_NAME}",
                 )
 
+                save_json(task_config, save_dir / CONFIG_FILE_NAME)
+
         try:
             with Timer() as timer:
                 metrics, outputs = eval_setup.evaluate_lm(
