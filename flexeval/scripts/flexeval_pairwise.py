@@ -90,6 +90,10 @@ def main() -> None:
             if resolved_config_path is not None:
                 sys.argv[i + 1] = resolved_config_path
 
+    # Add the current directory to sys.path
+    # to enable importing modules from the directory where this script is executed.
+    sys.path.append(os.environ.get("ADDITIONAL_MODULES_PATH", "./"))
+
     args = parser.parse_args()
     logger.info(args)
 

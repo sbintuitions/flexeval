@@ -247,3 +247,50 @@ def test_if_saved_config_can_be_reused_to_run_eval(command: list[str]) -> None:
             if key in {"save_dir", "config"}:
                 continue
             assert saved_config[key] == new_saved_config[key]
+
+
+def test_if_flexeval_lm_loads_custom_module() -> None:
+    custom_metric_code = """\
+from flexeval import Metric, MetricResult
+
+
+class MyCustomMetric(Metric):
+    def evaluate(
+        self,
+        lm_outputs,
+        task_inputs_list,
+        references_list,
+    ) -> MetricResult:
+        length_ratios = [
+            len(lm_output) / len(references[0])  # Assuming a single reference
+            for lm_output, references in zip(lm_outputs, references_list)
+        ]
+
+        return MetricResult(
+            {"length_ratio": sum(length_ratios) / len(length_ratios)},
+            instance_details=[{"length_ratio": ratio} for ratio in length_ratios],
+        )
+"""
+    with tempfile.TemporaryDirectory() as f:
+        # We need to add the temp directory to sys.path so that the custom module can be imported
+        os.environ["ADDITIONAL_MODULES_PATH"] = f
+
+        # make a custom module file
+        custom_module_dir = Path(f) / "custom_modules"
+        custom_module_dir.mkdir()
+        # make __init__.py
+        custom_module_dir.joinpath("__init__.py").touch()
+        custom_module_path = custom_module_dir / "my_custom_metric.py"
+        custom_module_path.write_text(custom_metric_code)
+
+        command = [
+            *GENERATION_CMD,
+            "--eval_setup.metrics+=custom_modules.my_custom_metric.MyCustomMetric",
+            "--save_dir",
+            f,
+        ]
+
+        result = subprocess.run(command, check=False)
+        assert result.returncode == 0
+
+        check_if_eval_results_are_correctly_saved(f)

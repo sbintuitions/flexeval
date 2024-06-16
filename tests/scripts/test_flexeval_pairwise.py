@@ -116,3 +116,42 @@ def test_if_saved_config_can_be_reused_to_run_eval() -> None:
             if key in {"save_dir", "config"}:
                 continue
             assert saved_config[key] == new_saved_config[key]
+
+
+def test_if_flexeval_pairwise_loads_custom_module() -> None:
+    custom_judge_code = """\
+from flexeval import PairwiseJudge, Winner
+
+class CustomPairwiseJudge(PairwiseJudge):
+    def judge(self, model1_item, model2_item):
+        return Winner.DRAW, "custom"
+
+    def batch_judge(self, batch_model_items):
+        return [(Winner.DRAW, "custom") for _ in batch_model_items]
+    """
+
+    with tempfile.TemporaryDirectory() as f:
+        dummy_model_data_path = str(Path(f) / "dummy_model_data.jsonl")
+        with open(dummy_model_data_path, "w") as file:
+            file.write(json.dumps({"lm_output": "dummy"}) + "\n")
+
+        # make a custom module file
+        custom_module_path = Path(f) / "my_custom_judge.py"
+        custom_module_path.write_text(custom_judge_code)
+
+        # We need to add the temp directory to sys.path so that the custom module can be imported
+        os.environ["ADDITIONAL_MODULES_PATH"] = f
+
+        # fmt: off
+        command = [
+            "flexeval_pairwise",
+            "--lm_output_paths", json.dumps({"model1": dummy_model_data_path, "model2": dummy_model_data_path}),
+            "--judge", "my_custom_judge.CustomPairwiseJudge",
+            "--save_dir", f,
+        ]
+        # fmt: on
+
+        result = subprocess.run(command, check=False)
+        assert result.returncode == os.EX_OK
+
+        check_if_eval_results_are_correctly_saved(f)

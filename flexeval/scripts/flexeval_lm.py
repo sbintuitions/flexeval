@@ -188,6 +188,7 @@ def main() -> None:  # noqa: C901, PLR0912, PLR0915
         "You can specify the parameters, the path to the config file, or the name of the preset config.",
         enable_path=True,
     )
+    # Saving arguments
     parser.add_argument(
         "--save_dir",
         type=str,
@@ -200,11 +201,13 @@ def main() -> None:  # noqa: C901, PLR0912, PLR0915
         default=False,
         help="Overwrite the save_dir if it exists",
     )
+    # Argument parsing arguments
     parser.add_argument(
         "--config",
         action=ActionConfigFile,
         help="Path to the config file",
     )
+    # Metadata
     parser.add_argument(
         "--metadata",
         type=Dict[str, Any],
@@ -229,6 +232,10 @@ def main() -> None:  # noqa: C901, PLR0912, PLR0915
             resolved_config_path = config_name_resolver(maybe_preset_name)
             if resolved_config_path is not None:
                 sys.argv[i + 1] = resolved_config_path
+
+    # Add the current directory to sys.path
+    # to enable importing modules from the directory where this script is executed.
+    sys.path.append(os.environ.get("ADDITIONAL_MODULES_PATH", "./"))
 
     args = parser.parse_args()
     logger.info(args)
