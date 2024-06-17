@@ -79,7 +79,7 @@ def main() -> None:
 
     # Add the current directory to sys.path
     # to enable importing modules from the directory where this script is executed.
-    sys.path.append(os.environ.get("ADDITIONAL_MODULES_PATH", os.getcwd()))
+    sys.path.append(os.environ.get("ADDITIONAL_MODULES_PATH", Path.cwd()))
 
     args = parser.parse_args()
     logger.info(args)
