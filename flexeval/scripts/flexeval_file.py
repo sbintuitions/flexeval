@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import logging
 import os
+import sys
 from importlib.metadata import version
 from pathlib import Path
 from typing import Any, Dict, List, Union
@@ -75,6 +76,10 @@ def main() -> None:
         action=ActionConfigFile,
         help="Path to the config file",
     )
+
+    # Add the current directory to sys.path
+    # to enable importing modules from the directory where this script is executed.
+    sys.path.append(os.environ.get("ADDITIONAL_MODULES_PATH", "./"))
 
     args = parser.parse_args()
     logger.info(args)
