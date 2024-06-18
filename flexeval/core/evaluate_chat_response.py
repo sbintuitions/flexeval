@@ -39,7 +39,8 @@ def evaluate_chat_response(  # noqa: C901,PLR0912
                     if not isinstance(few_shot_instances[0], ChatInstance):
                         msg = f"Invalid instance type: {type(few_shot_instances[0])}"
                         raise TypeError(msg)
-                    input_messages_list[input_id] += [*few_shot_instances, *input_messages_list[input_id]]
+                    few_shot_messages = [m for instance in few_shot_instances for m in instance.messages]
+                    input_messages_list[input_id] += [*few_shot_messages, *input_messages_list[input_id]]
 
             if not eval_dataset.require_incremental_response():
                 lm_outputs = language_model.batch_generate_chat_response(
