@@ -31,7 +31,6 @@ local dataset_base_args = {
     prompt_template: {
       class_path: 'Jinja2PromptTemplate',
       init_args: {
-
         template: |||
           文の極性について「ポジティブ」か「ネガティブ」かで答えてください。
           {% for item in few_shot_data %}

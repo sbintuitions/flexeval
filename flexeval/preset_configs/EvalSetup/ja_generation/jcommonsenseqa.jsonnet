@@ -33,7 +33,6 @@ local dataset_base_args = {
     prompt_template: {
       class_path: 'Jinja2PromptTemplate',
       init_args: {
-
         template: |||
           正しい答えは何でしょう？
           {% for item in few_shot_data %}

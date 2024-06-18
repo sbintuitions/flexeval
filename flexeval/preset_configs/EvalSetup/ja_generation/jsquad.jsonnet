@@ -33,7 +33,6 @@ local dataset_base_args = {
     prompt_template: {
       class_path: 'Jinja2PromptTemplate',
       init_args: {
-
         template: |||
           質問に対する回答を文章から一言で抜き出してください。
           {% for item in few_shot_data %}

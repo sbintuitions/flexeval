@@ -1,6 +1,7 @@
 import pytest
 
 from flexeval.core.metric import CodeEval
+from flexeval.core.metric.normalizer import Normalizer, RegexNormalizer
 
 
 @pytest.mark.parametrize(
@@ -13,6 +14,22 @@ from flexeval.core.metric import CodeEval
 )
 def test_correct_code(code: str, test_case: str) -> None:
     code_eval = CodeEval()
+    metric_result = code_eval.evaluate([code], references_list=[[test_case]])
+    assert metric_result.summary == {"pass@1": 1.0}
+
+
+@pytest.mark.parametrize(
+    ("code", "test_case", "normalizer"),
+    [
+        (
+            "```python\ndef add(a, b):\n    return a + b\n```",
+            "assert add(1, 2) == 3",
+            RegexNormalizer("```python(.*?)```"),
+        ),
+    ],
+)
+def test_correct_code_with_normalizer(code: str, test_case: str, normalizer: Normalizer) -> None:
+    code_eval = CodeEval(normalizer=normalizer)
     metric_result = code_eval.evaluate([code], references_list=[[test_case]])
     assert metric_result.summary == {"pass@1": 1.0}
 

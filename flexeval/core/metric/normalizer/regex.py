@@ -12,7 +12,7 @@ class RegexNormalizer(Normalizer):
     """
 
     def __init__(self, pattern: str) -> None:
-        self._pattern = re.compile(pattern)
+        self._pattern = re.compile(pattern, flags=re.DOTALL)
 
     def normalize(self, text: str) -> str:
         found = self._pattern.findall(text)
