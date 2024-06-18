@@ -22,6 +22,7 @@ class CodeEval(Metric):
         code_prompt_template: A Jinja2 template string that will prepend the generated code.
             The template should contain variables that will be replaced with the values in `task_inputs_list`.
             If `None`, the code prompt will be the generated code itself.
+        normalizer: A normalizer applied to model outputs before evaluation.
     """
 
     def __init__(self, code_prompt_template: str | None = None, normalizer: Normalizer | None = None) -> None:
@@ -50,6 +51,9 @@ class CodeEval(Metric):
             task_inputs_list,
             references_list,
         ):
+            if self._normalizer is not None:
+                lm_output = self._normalizer.normalize(lm_output)  # noqa: PLW2901
+
             generated_function = lm_output
             if self._code_prompt_template is not None:
                 generated_function = self._code_prompt_template.render(**task_inputs) + lm_output
