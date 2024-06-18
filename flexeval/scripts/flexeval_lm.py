@@ -66,6 +66,7 @@ class EvalSetup(ABC):
 class ChatResponse(EvalSetup):
     eval_dataset: ChatDataset
     gen_kwargs: dict[str, Any]
+    few_shot_generator: FewShotGenerator | None = None
     metrics: list[Metric] | Metric | None = None
     batch_size: int = 4
 
@@ -83,6 +84,7 @@ class ChatResponse(EvalSetup):
             eval_dataset=self.eval_dataset,
             metrics=metrics,
             batch_size=self.batch_size,
+            few_shot_generator=self.few_shot_generator,
         )
 
 

@@ -11,6 +11,7 @@ from flexeval.core.evaluate_generation import evaluate_generation
 from flexeval.core.evaluate_multiple_choice import evaluate_multiple_choice
 from flexeval.core.evaluate_pairwise import Match, evaluate_pairwise
 from flexeval.core.evaluate_perplexity import evaluate_perplexity
+from flexeval.core.few_shot_generator import RandomFewShotGenerator
 from flexeval.core.metric import ExactMatch
 from flexeval.core.prompt_template import Jinja2PromptTemplate
 from tests.dummy_modules import (
@@ -23,14 +24,27 @@ from tests.dummy_modules import (
 )
 
 
-@pytest.mark.parametrize("require_incremental_response", [True, False])
-def test_evaluate_chat_response(require_incremental_response: bool) -> None:
+@pytest.mark.parametrize(
+    ("require_incremental_response", "use_few_shot"),
+    [
+        (True, True),
+        (True, False),
+        (False, True),
+        (False, False),
+    ],
+)
+def test_evaluate_chat_response(require_incremental_response: bool, use_few_shot: bool) -> None:
+    few_shot_generator = None
+    if use_few_shot:
+        few_shot_generator = RandomFewShotGenerator(dataset=DummyChatDataset(), num_shots=1, num_trials_to_avoid_leak=0)
+
     metrics, outputs = evaluate_chat_response(
         language_model=DummyLanguageModel(),
         gen_kwargs={},
         eval_dataset=DummyChatDataset(
             require_incremental_response=require_incremental_response,
         ),
+        few_shot_generator=few_shot_generator,
         metrics=[],
         batch_size=1,
     )
@@ -38,12 +52,22 @@ def test_evaluate_chat_response(require_incremental_response: bool) -> None:
     assert isinstance(outputs, list)
 
 
-def test_evaluate_generation() -> None:
+@pytest.mark.parametrize("use_few_shot", [True, False])
+def test_evaluate_generation(use_few_shot: bool) -> None:
+    few_shot_generator = None
+    if use_few_shot:
+        few_shot_generator = RandomFewShotGenerator(
+            dataset=DummyGenerationDataset(),
+            num_shots=1,
+            num_trials_to_avoid_leak=0,
+        )
+
     metrics, outputs = evaluate_generation(
         language_model=DummyLanguageModel(),
         gen_kwargs={},
         eval_dataset=DummyGenerationDataset(),
         prompt_template=Jinja2PromptTemplate("{{text}}"),
+        few_shot_generator=few_shot_generator,
         metrics=[ExactMatch()],
         batch_size=1,
     )
@@ -51,11 +75,21 @@ def test_evaluate_generation() -> None:
     assert isinstance(outputs, list)
 
 
-def test_evaluate_multiple_choice() -> None:
+@pytest.mark.parametrize("use_few_shot", [True, False])
+def test_evaluate_multiple_choice(use_few_shot: bool) -> None:
+    few_shot_generator = None
+    if use_few_shot:
+        few_shot_generator = RandomFewShotGenerator(
+            dataset=DummyMultipleChoiceDataset(),
+            num_shots=1,
+            num_trials_to_avoid_leak=0,
+        )
+
     metrics, outputs = evaluate_multiple_choice(
         language_model=DummyLanguageModel(),
         eval_dataset=DummyMultipleChoiceDataset(),
         prompt_template=Jinja2PromptTemplate("{{text}}"),
+        few_shot_generator=few_shot_generator,
         batch_size=1,
     )
     assert isinstance(metrics, dict)
