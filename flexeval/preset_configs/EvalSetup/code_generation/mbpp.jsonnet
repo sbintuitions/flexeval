@@ -7,25 +7,22 @@ References:
 * [Program Synthesis with Large Language Models](https://arxiv.org/abs/2108.07732)
 */
 local dataset_base_args = {
-  dataset_name: 'mbpp',
-  subset: 'sanitized',
-  references_template: '{{ test_list }}',
+  class_path: 'HfGenerationDataset',
+  init_args: {
+    dataset_name: 'mbpp',
+    subset: 'sanitized',
+    references_template: '{{ test_list }}',
+  },
 };
 
 {
   class_path: 'Generation',
   init_args: {
-    eval_dataset: {
-      class_path: 'HfGenerationDataset',
-      init_args: dataset_base_args { split: 'test' },
-    },
+    eval_dataset: dataset_base_args { init_args+: { split: 'test' } },
     few_shot_generator: {
       class_path: 'RandomFewShotGenerator',
       init_args: {
-        dataset: {
-          class_path: 'HfGenerationDataset',
-          init_args: dataset_base_args { split: 'prompt' },
-        },
+        dataset: dataset_base_args { init_args+: { split: 'prompt' } },
         num_shots: 3,
       },
     },

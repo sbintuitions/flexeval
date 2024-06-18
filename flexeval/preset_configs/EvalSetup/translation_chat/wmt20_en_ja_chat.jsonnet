@@ -1,6 +1,7 @@
 /*
 This dataset is created as a test set for the WMT20 shared task on news translation.
-This is Japanese to English translation.
+This is English to Japanese translation.
+This is a evaluation setup for chat LLMs.
 
 References:
 
@@ -8,8 +9,8 @@ References:
 * [2020 Fifth Conference on Machine Translation (WMT20)](https://www.statmt.org/wmt20/)
 */
 local dataset = {
-  class_path: 'SacreBleuDataset',
-  init_args: { dataset_name: 'wmt20', langpair: 'ja-en' },
+  class_path: 'SacreBleuChatDataset',
+  init_args: { dataset_name: 'wmt20', langpair: 'en-ja' },
 };
 
 {
@@ -30,16 +31,16 @@ local dataset = {
       init_args: {
         template: |||
           {% for item in few_shot_data %}
-          Ja: `{{ item.source }}`
-          En: `{{ item.references[0] }}`
+          En: `{{ item.source }}`
+          Ja: `{{ item.references[0] }}`
           {% endfor %}
-          Ja: `{{ source }}`
-          En: `
+          En: `{{ source }}`
+          Ja: `
         |||,
       },
     },
     metrics: [
-      { class_path: 'BLEU', init_args: { tokenize_option: 'intl' } },
+      { class_path: 'BLEU', init_args: { tokenize_option: 'ja-mecab' } },
     ],
     gen_kwargs: { max_new_tokens: 128, stop_sequences: ['`'] },
     batch_size: 4,

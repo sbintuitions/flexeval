@@ -32,7 +32,6 @@ local dataset_base_args = {
     prompt_template: {
       class_path: 'Jinja2PromptTemplate',
       init_args: {
-
         template: |||
           前提と仮説の関係を「中立」、「含意」、「矛盾」の中から回答してください。
           {% for item in few_shot_data %}

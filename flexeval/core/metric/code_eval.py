@@ -8,6 +8,7 @@ import evaluate
 from flexeval.core.utils.jinja2_env import JINJA2_ENV
 
 from .base import Metric, MetricResult
+from .normalizer import Normalizer
 
 # by default, the program is not allowed to execute code and we need to set this environment variable
 os.environ["HF_ALLOW_CODE_EVAL"] = "1"
@@ -23,13 +24,14 @@ class CodeEval(Metric):
             If `None`, the code prompt will be the generated code itself.
     """
 
-    def __init__(self, code_prompt_template: str | None = None) -> None:
+    def __init__(self, code_prompt_template: str | None = None, normalizer: Normalizer | None = None) -> None:
         self._code_prompt_template = None
         if code_prompt_template is not None:
             self._code_prompt_template = JINJA2_ENV.from_string(
                 code_prompt_template,
             )
         self._code_eval = evaluate.load("code_eval")
+        self._normalizer = normalizer
 
     def evaluate(
         self,

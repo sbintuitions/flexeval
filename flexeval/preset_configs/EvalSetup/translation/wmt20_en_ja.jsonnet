@@ -28,7 +28,6 @@ local dataset = {
     prompt_template: {
       class_path: 'Jinja2PromptTemplate',
       init_args: {
-
         template: |||
           {% for item in few_shot_data %}
           En: `{{ item.source }}`

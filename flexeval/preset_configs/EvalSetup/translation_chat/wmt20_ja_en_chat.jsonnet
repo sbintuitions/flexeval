@@ -1,6 +1,7 @@
 /*
 This dataset is created as a test set for the WMT20 shared task on news translation.
 This is Japanese to English translation.
+This is a evaluation setup for chat LLMs.
 
 References:
 
@@ -8,7 +9,7 @@ References:
 * [2020 Fifth Conference on Machine Translation (WMT20)](https://www.statmt.org/wmt20/)
 */
 local dataset = {
-  class_path: 'SacreBleuDataset',
+  class_path: 'SacreBleuChatDataset',
   init_args: { dataset_name: 'wmt20', langpair: 'ja-en' },
 };
 

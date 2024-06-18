@@ -1,5 +1,6 @@
 /*
 AI王 (AI king) is a Japanese quiz dataset developed for research and competition purposes.
+This is a evaluation setup for chat LLMs.
 
 References:
 
@@ -8,40 +9,30 @@ References:
 * [JAQKET: クイズを題材にした日本語 QA データセットの構築](https://www.anlp.jp/proceedings/annual_meeting/2020/pdf_dir/P2-24.pdf)
 */
 local dataset_base_args = {
-  class_path: 'HfGenerationDataset',
+  class_path: 'HfChatDataset',
   init_args: {
     dataset_name: 'llm-book/aio',
+    input_template: '{{ question }}',
     references_template: '{{ answers }}',
   },
 };
 
 {
-  class_path: 'Generation',
+  class_path: 'ChatResponse',
   init_args: {
     eval_dataset: dataset_base_args { init_args+: { split: 'validation' } },
     few_shot_generator: {
       class_path: 'RandomFewShotGenerator',
       init_args: {
         dataset: dataset_base_args { init_args+: { split: 'train' } },
-        num_shots: 0,
-      },
-    },
-    prompt_template: {
-      class_path: 'Jinja2PromptTemplate',
-      init_args: {
-        template: |||
-          {% for item in few_shot_data -%}
-          {{ item.question }}答えは「{{ item.references[0] }}」
-          {% endfor -%}
-          {{ question }}答えは「
-        |||,
+        num_shots: 4,
       },
     },
     metrics: [
       { class_path: 'CharF1', init_args: { normalizer: { class_path: 'AIONormalizer' } } },
       { class_path: 'ExactMatch', init_args: { normalizer: { class_path: 'AIONormalizer' } } },
     ],
-    gen_kwargs: { max_new_tokens: 32, stop_sequences: ['」'] },
+    gen_kwargs: { max_new_tokens: 32 },
     batch_size: 4,
   },
 }
