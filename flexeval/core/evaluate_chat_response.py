@@ -36,11 +36,16 @@ def evaluate_chat_response(  # noqa: C901,PLR0912
             if few_shot_generator is not None:
                 for input_id in range(len(input_messages_list)):
                     few_shot_instances = few_shot_generator(eval_inputs=input_messages_list[input_id])
-                    if not isinstance(few_shot_instances[0], ChatInstance):
-                        msg = f"Invalid instance type: {type(few_shot_instances[0])}"
-                        raise TypeError(msg)
-                    few_shot_messages = [m for instance in few_shot_instances for m in instance.messages]
-                    input_messages_list[input_id] += [*few_shot_messages, *input_messages_list[input_id]]
+                    few_shot_messages: list[dict[str, str]] = []
+                    for few_shot_instance in few_shot_instances:
+                        if not isinstance(few_shot_instance, ChatInstance):
+                            msg = f"Invalid instance type: {type(few_shot_instance)}"
+                            raise TypeError(msg)
+                        few_shot_messages += few_shot_instance.messages
+                        if few_shot_instance.references:
+                            # use the first reference as the assistant message
+                            few_shot_messages += [{"role": "assistant", "content": few_shot_instance.references[0]}]
+                    input_messages_list[input_id] = [*few_shot_messages, *input_messages_list[input_id]]
 
             if not eval_dataset.require_incremental_response():
                 lm_outputs = language_model.batch_generate_chat_response(

@@ -4,6 +4,7 @@ import json
 import logging
 import os
 import sys
+import traceback
 from abc import ABC, abstractmethod
 from collections import defaultdict
 from dataclasses import dataclass
@@ -345,7 +346,10 @@ def main() -> None:  # noqa: C901, PLR0912, PLR0915
                     save_jsonl(outputs, save_dir / OUTPUTS_FILE_NAME)
 
         except Exception as e:  # noqa: BLE001
-            logger.warning(f"Error in evaluation:\n{e}")
+            stack_trace_str = "".join(traceback.format_exception(None, e, e.__traceback__))
+            logger.warning(
+                f"Error in evaluation:\n{e}\n{stack_trace_str}",
+            )
 
 
 if __name__ == "__main__":
