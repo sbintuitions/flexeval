@@ -18,13 +18,13 @@ local dataset_base_args = {
 };
 
 {
-  class_path: 'Generation',
+  class_path: 'ChatResponse',
   init_args: {
-    eval_dataset: dataset_base_args { init_args+: { split: 'test', input_tempate: '問題: {{ question }}' } },
+    eval_dataset: dataset_base_args { init_args+: { split: 'test', input_template: '問題: {{ question }}' } },
     few_shot_generator: {
       class_path: 'RandomFewShotGenerator',
       init_args: {
-        dataset: dataset_base_args { init_args+: { split: 'train', input_tempate: '{{ question }}' } },
+        dataset: dataset_base_args { init_args+: { split: 'train', input_template: '{{ question }}' } },
         num_shots: 4,
       },
     },

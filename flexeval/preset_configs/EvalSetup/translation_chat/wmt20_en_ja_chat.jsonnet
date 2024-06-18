@@ -14,7 +14,7 @@ local dataset = {
 };
 
 {
-  class_path: 'Generation',
+  class_path: 'ChatResponse',
   init_args: {
     eval_dataset: dataset,
     few_shot_generator: {
@@ -24,19 +24,6 @@ local dataset = {
         // but `RandomFewShotGenerator` will avoid using the same few-shot isntances as the input.
         dataset: dataset,
         num_shots: 4,
-      },
-    },
-    prompt_template: {
-      class_path: 'Jinja2PromptTemplate',
-      init_args: {
-        template: |||
-          {% for item in few_shot_data %}
-          En: `{{ item.source }}`
-          Ja: `{{ item.references[0] }}`
-          {% endfor %}
-          En: `{{ source }}`
-          Ja: `
-        |||,
       },
     },
     metrics: [
