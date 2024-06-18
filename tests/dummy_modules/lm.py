@@ -25,4 +25,6 @@ class DummyLanguageModel(LanguageModel):
         chat_messages_list: list[list[dict[str, str]]],
         **kwargs,
     ) -> list[str]:
-        return ["This is response."] * len(chat_messages_list)
+        messages_as_text = [json.dumps(messages) for messages in chat_messages_list]
+        kwargs_as_text = json.dumps(kwargs)
+        return [m + kwargs_as_text for m in messages_as_text]

@@ -8,6 +8,7 @@ class DummyChatDataset(ChatDataset):
         self._data = [
             [{"role": "sysmtem", "text": "You are a helpful assistant."}, {"role": "user", "text": "Help me!"}],
             [{"role": "user", "text": "Hello, world!"}],
+            [{"role": "user", "text": "I'd like to book a flight to Paris."}],
         ]
         self._require_incremental_response = require_incremental_response
 

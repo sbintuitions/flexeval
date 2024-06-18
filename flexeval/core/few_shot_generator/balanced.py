@@ -38,7 +38,10 @@ class BalancedFewShotGenerator(FewShotGenerator):
             label_to_ids[instance.references[0]].append(i)
         self._label_to_ids = label_to_ids
 
-    def _sample_instances(self, eval_inputs: dict[str, Any] | None = None) -> list[GenerationInstance]:
+    def _sample_instances(
+        self,
+        eval_inputs: list[dict[str, Any]] | dict[str, Any] | None = None,
+    ) -> list[GenerationInstance]:
         # Shuffle labels
         labels = list(self._label_to_ids.keys())
         self._rnd.shuffle(labels)

@@ -4,6 +4,7 @@ import json
 import logging
 import os
 import sys
+import traceback
 from abc import ABC, abstractmethod
 from collections import defaultdict
 from dataclasses import dataclass
@@ -66,6 +67,7 @@ class EvalSetup(ABC):
 class ChatResponse(EvalSetup):
     eval_dataset: ChatDataset
     gen_kwargs: dict[str, Any]
+    few_shot_generator: FewShotGenerator | None = None
     metrics: list[Metric] | Metric | None = None
     batch_size: int = 4
 
@@ -83,6 +85,7 @@ class ChatResponse(EvalSetup):
             eval_dataset=self.eval_dataset,
             metrics=metrics,
             batch_size=self.batch_size,
+            few_shot_generator=self.few_shot_generator,
         )
 
 
@@ -343,7 +346,10 @@ def main() -> None:  # noqa: C901, PLR0912, PLR0915
                     save_jsonl(outputs, save_dir / OUTPUTS_FILE_NAME)
 
         except Exception as e:  # noqa: BLE001
-            logger.warning(f"Error in evaluation:\n{e}")
+            stack_trace_str = "".join(traceback.format_exception(None, e, e.__traceback__))
+            logger.warning(
+                f"Error in evaluation:\n{e}\n{stack_trace_str}",
+            )
 
 
 if __name__ == "__main__":

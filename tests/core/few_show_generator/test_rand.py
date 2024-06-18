@@ -1,6 +1,7 @@
 import pytest
 
 from flexeval.core.few_shot_generator.rand import Dataset, RandomFewShotGenerator
+from tests.dummy_modules.chat_dataset import DummyChatDataset
 from tests.dummy_modules.generation_dataset import DummyGenerationDataset
 from tests.dummy_modules.multiple_choice_dataset import DummyMultipleChoiceDataset
 
@@ -10,6 +11,7 @@ from tests.dummy_modules.multiple_choice_dataset import DummyMultipleChoiceDatas
     [
         (1, DummyGenerationDataset()),
         (2, DummyMultipleChoiceDataset()),
+        (2, DummyChatDataset()),
     ],
 )
 def test_random_few_shot_generator(num_shots: int, dataset: Dataset) -> None:
@@ -27,6 +29,7 @@ def test_random_few_shot_generator(num_shots: int, dataset: Dataset) -> None:
     [
         (42, DummyMultipleChoiceDataset()),
         (777, DummyGenerationDataset()),
+        (0, DummyChatDataset()),
     ],
 )
 def test_if_random_seed_is_consistent(seed: int, dataset: Dataset) -> None:
@@ -40,6 +43,7 @@ def test_if_random_seed_is_consistent(seed: int, dataset: Dataset) -> None:
     [
         DummyMultipleChoiceDataset(),
         DummyGenerationDataset(),
+        DummyChatDataset(),
     ],
 )
 def test_if_results_are_random(dataset: Dataset) -> None:
@@ -49,8 +53,15 @@ def test_if_results_are_random(dataset: Dataset) -> None:
     assert sampled_instances_1 != sampled_instances_2
 
 
-def test_if_few_show_sampler_avoids_leak() -> None:
-    dataset = DummyGenerationDataset()
+@pytest.mark.parametrize(
+    "dataset",
+    [
+        DummyMultipleChoiceDataset(),
+        DummyGenerationDataset(),
+        DummyChatDataset(),
+    ],
+)
+def test_if_few_show_sampler_avoids_leak(dataset: Dataset) -> None:
     eval_inputs = dataset[0].inputs
 
     # First check if the eval_instance may be in the sampled instances with `num_trials_to_avoid_leak=0`

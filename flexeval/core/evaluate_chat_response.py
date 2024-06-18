@@ -6,6 +6,7 @@ from typing import Any
 from tqdm import tqdm
 
 from .chat_dataset import ChatDataset, ChatInstance
+from .few_shot_generator import FewShotGenerator
 from .language_model import LanguageModel
 from .metric import Metric
 from .utils.data_util import batch_iter
@@ -13,12 +14,13 @@ from .utils.data_util import batch_iter
 logger = logging.getLogger(__name__)
 
 
-def evaluate_chat_response(
+def evaluate_chat_response(  # noqa: C901,PLR0912
     language_model: LanguageModel,
     gen_kwargs: dict[str, Any],
     eval_dataset: ChatDataset,
     metrics: list[Metric],
     batch_size: int,
+    few_shot_generator: FewShotGenerator | None = None,
 ) -> tuple[dict[str, float], list[dict[str, Any]]]:
     logger.info(f"Evaluate the model with gen_kwargs: {gen_kwargs}")
 
@@ -26,10 +28,25 @@ def evaluate_chat_response(
     references_list: list[list[str]] = []
     extra_info_list: list[dict[str, Any]] = []
     with tqdm(total=len(eval_dataset)) as pbar:
-        for i, batch in enumerate(batch_iter(eval_dataset, batch_size)):
+        for batch_id, batch in enumerate(batch_iter(eval_dataset, batch_size)):
             batch: list[ChatInstance]
 
             input_messages_list = [chat_instance.messages for chat_instance in batch]
+
+            if few_shot_generator is not None:
+                for input_id in range(len(input_messages_list)):
+                    few_shot_instances = few_shot_generator(eval_inputs=input_messages_list[input_id])
+                    few_shot_messages: list[dict[str, str]] = []
+                    for few_shot_instance in few_shot_instances:
+                        if not isinstance(few_shot_instance, ChatInstance):
+                            msg = f"Invalid instance type: {type(few_shot_instance)}"
+                            raise TypeError(msg)
+                        few_shot_messages += few_shot_instance.messages
+                        if few_shot_instance.references:
+                            # use the first reference as the assistant message
+                            few_shot_messages += [{"role": "assistant", "content": few_shot_instance.references[0]}]
+                    input_messages_list[input_id] = [*few_shot_messages, *input_messages_list[input_id]]
+
             if not eval_dataset.require_incremental_response():
                 lm_outputs = language_model.batch_generate_chat_response(
                     input_messages_list,
@@ -65,7 +82,7 @@ def evaluate_chat_response(
             references_list += [chat_instance.references for chat_instance in batch]
             extra_info_list += [chat_instance.extra_info for chat_instance in batch]
 
-            if i == 0:
+            if batch_id == 0:
                 logger.info("Example of the conversation")
                 logger.info(f"{all_messages_list[0]}")
 
