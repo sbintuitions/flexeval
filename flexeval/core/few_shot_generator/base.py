@@ -3,11 +3,12 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import Any, Union
 
+from flexeval.core.chat_dataset import ChatDataset, ChatInstance
 from flexeval.core.generation_dataset import GenerationDataset, GenerationInstance
 from flexeval.core.multiple_choice_dataset import MultipleChoiceDataset, MultipleChoiceInstance
 
-Dataset = Union[GenerationDataset, MultipleChoiceDataset]
-Instance = Union[GenerationInstance, MultipleChoiceInstance]
+Dataset = Union[GenerationDataset, MultipleChoiceDataset, ChatDataset]
+Instance = Union[GenerationInstance, MultipleChoiceInstance, ChatInstance]
 
 
 class FewShotGenerator(ABC):
@@ -15,10 +16,27 @@ class FewShotGenerator(ABC):
         self._num_trials_to_avoid_leak = num_trials_to_avoid_leak
 
     @abstractmethod
-    def _sample_instances(self, eval_inputs: dict[str, Any] | None = None) -> list[Instance]:
+    def _sample_instances(self, eval_inputs: list[dict[str, Any]] | dict[str, Any] | None = None) -> list[Instance]:
+        """
+        Sample instances for few-shot learning.
+        This method should be implemented in the derived class.
+        """
         raise NotImplementedError
 
-    def __call__(self, eval_inputs: dict[str, Any] | None = None) -> list[Instance]:
+    def __call__(self, eval_inputs: list[dict[str, Any]] | dict[str, Any] | None = None) -> list[Instance]:
+        """
+        Sample instances for few-shot learning.
+        This method calls `_sample_instances` and
+        checks if the sampled instances have the same inputs as the evaluation instance.
+
+        Args:
+            eval_inputs: The inputs of the evaluation instance.
+                This is used to avoid data leakage
+                by checking if the sampled instances have the same inputs as the evaluation instance.
+
+        Returns:
+            A list of instances for few-shot learning.
+        """
         sampled_instances = self._sample_instances(eval_inputs=eval_inputs)
 
         # check if the sampled instances are the same as the eval_instance

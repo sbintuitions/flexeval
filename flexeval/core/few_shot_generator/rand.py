@@ -27,6 +27,6 @@ class RandomFewShotGenerator(FewShotGenerator):
         self._num_shots = num_shots
         self._rnd = random.Random(seed)
 
-    def _sample_instances(self, eval_inputs: dict[str, Any] | None = None) -> list[Instance]:
+    def _sample_instances(self, eval_inputs: list[dict[str, Any]] | dict[str, Any] | None = None) -> list[Instance]:
         sampled_indices = self._rnd.sample(range(len(self._dataset)), self._num_shots)
         return [self._dataset[i] for i in sampled_indices]

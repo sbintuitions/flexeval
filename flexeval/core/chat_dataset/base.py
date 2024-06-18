@@ -43,6 +43,15 @@ class ChatInstance:
             msg = "extra_info cannot contain a key named 'messages'. It will conflict with the 'messages' attribute."
             raise ValueError(msg)
 
+    @property
+    def inputs(self) -> list[dict[str, str]]:
+        """
+        Alias for `messages`.
+        This is used in `FewShotGenerator` so that it can access the inputs with the same attribute name as
+        `GenerationInstance` and `MultipleChoiceInstance`.
+        """
+        return self.messages
+
 
 class ChatDataset(ABC):
     """A dataset holding `ChatInstance`."""
