@@ -17,6 +17,8 @@ def test_rouge(lm_outputs: list[str], expected_outputs: list[list[str]], cer_sco
     rouge = XER(tokenizer=WhitespaceTokenizer())
     metric_result = rouge.evaluate(lm_outputs=lm_outputs, references_list=expected_outputs)
 
+    assert len(metric_result.instance_details) == len(lm_outputs)
+
     key = "cer_score"
     assert key in metric_result.summary
     assert isinstance(metric_result.summary[key], float)

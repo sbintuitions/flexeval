@@ -20,3 +20,4 @@ def test_exact_match(lm_outputs: list[str], expected_outputs: list[list[str]], s
     metric_result = metric.evaluate(lm_outputs, expected_outputs)
     assert metric_result.summary["char_f1"] == score
     assert metric_result.instance_details[0]["char_f1"] == score
+    assert len(metric_result.instance_details) == len(lm_outputs)

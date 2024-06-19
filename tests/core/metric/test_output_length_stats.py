@@ -17,3 +17,4 @@ def test_output_length_stats(lm_outputs: list[str], expected_summary: dict[str, 
     metric_result = metric.evaluate(lm_outputs=lm_outputs, references_list=[])
     assert metric_result.summary == pytest.approx(expected_summary)
     assert metric_result.instance_details[0]["output_length"] == len(lm_outputs[0])
+    assert len(metric_result.instance_details) == len(lm_outputs)
