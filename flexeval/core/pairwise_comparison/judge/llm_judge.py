@@ -1,15 +1,14 @@
 from __future__ import annotations
 
-import logging
 import re
 from typing import Any
+
+from loguru import logger
 
 from flexeval.core.language_model.base import LanguageModel
 from flexeval.core.prompt_template.base import PromptTemplate
 
 from .base import PairwiseJudge, Winner
-
-logger = logging.getLogger(__name__)
 
 
 class ChatLLMPairwiseJudge(PairwiseJudge):

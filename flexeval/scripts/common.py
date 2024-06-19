@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import contextlib
 import json
-import logging
 import subprocess
 import sys
 import time
@@ -12,13 +11,8 @@ from pathlib import Path
 from typing import Any, Iterable, TypeVar
 
 from jsonargparse import ArgumentParser, Namespace
+from loguru import logger
 from typing_extensions import Self
-
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s %(levelname)s %(filename)s:%(lineno)d %(message)s",
-)
-logger = logging.getLogger(__name__)
 
 METRIC_FILE_NAME = "metrics.json"
 OUTPUTS_FILE_NAME = "outputs.jsonl"

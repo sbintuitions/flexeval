@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import logging
 import os
 import sys
 from importlib.metadata import version
@@ -8,6 +7,7 @@ from pathlib import Path
 from typing import Any, Dict, List
 
 from jsonargparse import ActionConfigFile, ArgumentParser
+from loguru import logger
 
 from flexeval import Match, MatchMaker, PairwiseJudge, PairwiseScorer, evaluate_pairwise
 
@@ -23,12 +23,6 @@ from .common import (
     save_json,
     save_jsonl,
 )
-
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s %(levelname)s %(filename)s:%(lineno)d %(message)s",
-)
-logger = logging.getLogger(__name__)
 
 
 def main() -> None:

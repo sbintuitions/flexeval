@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import json
-import logging
 import os
 import sys
 from importlib.metadata import version
@@ -10,6 +9,7 @@ from typing import Any, Dict, List, Union
 
 import _jsonnet
 from jsonargparse import ActionConfigFile, ArgumentParser
+from loguru import logger
 
 from flexeval import ChatDataset, GenerationDataset, Metric, evaluate_from_file
 
@@ -25,12 +25,6 @@ from .common import (
     save_json,
     save_jsonl,
 )
-
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s %(levelname)s %(filename)s:%(lineno)d %(message)s",
-)
-logger = logging.getLogger(__name__)
 
 
 def main() -> None:

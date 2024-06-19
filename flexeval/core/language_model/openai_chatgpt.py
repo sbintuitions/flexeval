@@ -1,15 +1,13 @@
 from __future__ import annotations
 
 import asyncio
-import logging
 from typing import Awaitable, Callable, TypeVar
 
 import openai
+from loguru import logger
 from openai import AsyncOpenAI
 
 from .base import LanguageModel
-
-logger = logging.getLogger(__name__)
 
 T = TypeVar("T")
 

@@ -1,20 +1,14 @@
 from __future__ import annotations
 
-import logging
 from collections import defaultdict
 
 import numpy as np
 import pandas as pd
+from loguru import logger
 
 from flexeval.core.pairwise_comparison.judge.base import Winner
 
 from .base import PairwiseScorer
-
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s %(levelname)s %(filename)s:%(lineno)d %(message)s",
-)
-logger = logging.getLogger(__name__)
 
 
 class BradleyTerryScorer(PairwiseScorer):

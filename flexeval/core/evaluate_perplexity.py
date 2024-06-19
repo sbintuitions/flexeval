@@ -1,18 +1,16 @@
 from __future__ import annotations
 
-import logging
 import math
 from collections import defaultdict
 from typing import Sequence
 
+from loguru import logger
 from tqdm import tqdm
 
 from .language_model import LanguageModel
 from .metric.tokenizer import Tokenizer
 from .text_dataset import TextDataset
 from .utils.data_util import batch_iter
-
-logger = logging.getLogger(__name__)
 
 
 def evaluate_perplexity(

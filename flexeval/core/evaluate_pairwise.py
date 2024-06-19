@@ -1,8 +1,9 @@
 from __future__ import annotations
 
-import logging
 from dataclasses import asdict
 from typing import Any
+
+from loguru import logger
 
 from .pairwise_comparison import (
     AllCombinations,
@@ -15,8 +16,6 @@ from .pairwise_comparison import (
     WinRateScorer,
 )
 from .utils.data_util import batch_iter
-
-logger = logging.getLogger(__name__)
 
 
 def evaluate_pairwise(

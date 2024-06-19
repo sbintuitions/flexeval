@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-import logging
 from typing import Any, Sequence
 
+from loguru import logger
 from tqdm import tqdm
 
 from .chat_dataset import ChatDataset, ChatInstance
@@ -10,8 +10,6 @@ from .few_shot_generator import FewShotGenerator
 from .language_model import LanguageModel
 from .metric import Metric
 from .utils.data_util import batch_iter
-
-logger = logging.getLogger(__name__)
 
 
 def evaluate_chat_response(  # noqa: C901,PLR0912

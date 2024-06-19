@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import logging
 import os
 import time
 from typing import Any, Callable
@@ -8,10 +7,9 @@ from typing import Any, Callable
 import numpy as np
 from googleapiclient import discovery
 from googleapiclient.errors import HttpError
+from loguru import logger
 
 from .base import Metric, MetricResult
-
-logger = logging.getLogger(__name__)
 
 PERSPECTIVE_API_KEY = os.getenv("PERSPECTIVE_API_KEY")
 
