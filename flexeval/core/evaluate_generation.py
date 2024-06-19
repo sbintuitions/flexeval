@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-import logging
 from typing import Any, Sequence
 
+from loguru import logger
 from tqdm import tqdm
 
 from .few_shot_generator import FewShotGenerator
@@ -11,8 +11,6 @@ from .language_model import LanguageModel
 from .metric import Metric
 from .prompt_template import PromptTemplate
 from .utils.data_util import batch_iter
-
-logger = logging.getLogger(__name__)
 
 
 def evaluate_generation(  # noqa: C901

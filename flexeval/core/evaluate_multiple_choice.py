@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-import logging
 from typing import Any, Sequence
 
+from loguru import logger
 from tqdm import tqdm
 
 from .few_shot_generator import FewShotGenerator
@@ -10,8 +10,6 @@ from .language_model import LanguageModel
 from .multiple_choice_dataset import MultipleChoiceDataset, MultipleChoiceInstance
 from .prompt_template import PromptTemplate
 from .utils.data_util import batch_iter
-
-logger = logging.getLogger(__name__)
 
 
 def evaluate_multiple_choice(

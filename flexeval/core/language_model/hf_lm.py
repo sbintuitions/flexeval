@@ -1,17 +1,15 @@
 from __future__ import annotations
 
 import contextlib
-import logging
 from typing import Any, Literal, TypeVar
 
 import torch
 import torch.nn.functional as F  # noqa: N812
 import transformers
+from loguru import logger
 from transformers import AutoModelForCausalLM, AutoTokenizer, BatchEncoding, PreTrainedModel, PreTrainedTokenizer
 
 from .base import LanguageModel
-
-logger = logging.getLogger(__name__)
 
 T = TypeVar("T")
 

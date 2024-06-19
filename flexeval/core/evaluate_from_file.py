@@ -1,15 +1,14 @@
 from __future__ import annotations
 
 import json
-import logging
 from os import PathLike
 from typing import Any
+
+from loguru import logger
 
 from .chat_dataset import ChatDataset
 from .generation_dataset import GenerationDataset
 from .metric import Metric
-
-logger = logging.getLogger(__name__)
 
 
 def evaluate_from_file(

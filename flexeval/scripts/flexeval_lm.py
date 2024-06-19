@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import json
-import logging
 import os
 import re
 import sys
@@ -15,6 +14,7 @@ from typing import Any, Dict
 
 import _jsonnet
 from jsonargparse import ActionConfigFile, ArgumentParser, Namespace
+from loguru import logger
 
 from flexeval import (
     ChatDataset,
@@ -44,12 +44,6 @@ from .common import (
     save_json,
     save_jsonl,
 )
-
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s %(levelname)s %(filename)s:%(lineno)d %(message)s",
-)
-logger = logging.getLogger(__name__)
 
 
 class EvalSetup(ABC):
