@@ -23,3 +23,4 @@ def test_bleu(lm_outputs: list[str], expected_outputs: list[list[str]], score: f
     metric_result = bleu.evaluate(lm_outputs=lm_outputs, references_list=expected_outputs)
     assert metric_result.summary["bleu_score"] == pytest.approx(score)
     assert metric_result.instance_details[0]["bleu_score"] == pytest.approx(score)
+    assert len(metric_result.instance_details) == len(lm_outputs)

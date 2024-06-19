@@ -32,7 +32,7 @@ class BLEU(Metric):
 
         # we need restructure the references to match the format expected by sacrebleu
         max_num_refs = max(len(refs) for refs in references_list)
-        references: list[list[str]] = []
+        references_for_sacrebleu: list[list[str]] = []
         for i in range(max_num_refs):
             set_of_references: list[str] = []
             for refs_for_source in references_list:
@@ -40,10 +40,12 @@ class BLEU(Metric):
                     set_of_references.append(refs_for_source[i])
                 else:
                     set_of_references.append("")
-            references.append(set_of_references)
+            references_for_sacrebleu.append(set_of_references)
 
-        bleu = self._bleu.corpus_score([o.strip() for o in lm_outputs], references)
-        sentence_bleu_list = [self._bleu.sentence_score(o.strip(), refs) for o, refs in zip(lm_outputs, references)]
+        bleu = self._bleu.corpus_score([o.strip() for o in lm_outputs], references_for_sacrebleu)
+        sentence_bleu_list = [
+            self._bleu.sentence_score(o.strip(), refs) for o, refs in zip(lm_outputs, references_list)
+        ]
 
         return MetricResult(
             {
