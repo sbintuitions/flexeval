@@ -19,20 +19,18 @@ async def _retry_on_error(
 ) -> Awaitable[T] | None:
     for i in range(max_num_trials):
         try:
-            # 関数を実行する
             return await openai_call()
         except openai.APIError as e:  # noqa: PERF203
-            # 試行回数が上限に達したらエラーを送出
             if i == max_num_trials - 1:
                 raise
-            logger.info(f"エラーを受け取りました：{e}")
+            logger.info(f"We got an error：{e}")
             wait_time_seconds = first_wait_time * (2**i)
-            logger.info(f"{wait_time_seconds}秒待機します")
+            logger.info(f"Wait for {wait_time_seconds} seconds...")
             await asyncio.sleep(wait_time_seconds)
     return None
 
 
-class OpenAIChatGPT(LanguageModel):
+class OpenAIChatAPI(LanguageModel):
     """
     LanguageModel implementation using OpenAI's ChatGPT API.
 
