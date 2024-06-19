@@ -17,3 +17,4 @@ def test_exact_match(lm_outputs: list[str], expected_outputs: list[list[str]], s
     metric_result = metric.evaluate(lm_outputs, references_list=expected_outputs)
     assert metric_result.summary["exact_match"] == score
     assert isinstance(metric_result.instance_details[0]["exact_match"], int)
+    assert len(metric_result.instance_details) == len(lm_outputs)
