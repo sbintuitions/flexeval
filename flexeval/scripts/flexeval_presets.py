@@ -7,6 +7,10 @@ import sys
 from pathlib import Path
 
 
+def _bold_text(text: str) -> str:
+    return f"\033[1m{text}\033[0m"
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Show predefined configurations.")
 
@@ -44,7 +48,7 @@ def main() -> None:
             sys.exit(os.EX_OK)
 
     for config_class, available_configs in all_configs.items():
-        sys.stdout.write(f"{config_class}\n")
+        sys.stdout.write(f"{_bold_text(config_class)}\n")
         sys.stdout.write("\t" + json.dumps(available_configs))
 
         if config_class == "EvalSetup":
