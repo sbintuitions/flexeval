@@ -235,8 +235,10 @@ def main() -> None:  # noqa: C901, PLR0912, PLR0915
         if arg == "--eval_setup" or re.match(r"^--eval_setups\.[^.]+$", arg):
             maybe_preset_name = sys.argv[i + 1]
             resolved_config_path = config_name_resolver(maybe_preset_name)
-            if resolved_config_path is not None:
-                sys.argv[i + 1] = _jsonnet.evaluate_file(resolved_config_path)
+            if resolved_config_path is None:
+                msg = f"Invalid preset name or config path: {maybe_preset_name}"
+                raise ValueError(msg)
+            sys.argv[i + 1] = _jsonnet.evaluate_file(resolved_config_path)
 
     # Overrides the arguments in `--eval_setups`
     # because jsonargparse does not support override `dict[str, EvalSetup]`
