@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import itertools
 import json
 import tempfile
 
@@ -25,15 +26,10 @@ from tests.dummy_modules import (
 
 
 @pytest.mark.parametrize(
-    ("require_incremental_response", "use_few_shot"),
-    [
-        (True, True),
-        (True, False),
-        (False, True),
-        (False, False),
-    ],
+    ("require_incremental_response", "use_few_shot", "max_instances"),
+    list(itertools.product([True, False], [True, False], [None, 1])),
 )
-def test_evaluate_chat_response(require_incremental_response: bool, use_few_shot: bool) -> None:
+def test_evaluate_chat_response(require_incremental_response: bool, use_few_shot: bool, max_instances: int) -> None:
     few_shot_generator = None
     if use_few_shot:
         few_shot_generator = RandomFewShotGenerator(dataset=DummyChatDataset(), num_shots=1, num_trials_to_avoid_leak=0)
@@ -47,9 +43,13 @@ def test_evaluate_chat_response(require_incremental_response: bool, use_few_shot
         few_shot_generator=few_shot_generator,
         metrics=[],
         batch_size=1,
+        max_instances=max_instances,
     )
     assert isinstance(metrics, dict)
     assert isinstance(outputs, list)
+
+    if max_instances is not None:
+        assert len(outputs) <= max_instances
 
 
 @pytest.mark.parametrize("use_few_shot", [True, False])
@@ -75,8 +75,8 @@ def test_evaluate_generation(use_few_shot: bool) -> None:
     assert isinstance(outputs, list)
 
 
-@pytest.mark.parametrize("use_few_shot", [True, False])
-def test_evaluate_multiple_choice(use_few_shot: bool) -> None:
+@pytest.mark.parametrize(("use_few_shot", "max_instances"), list(itertools.product([True, False], [None, 1])))
+def test_evaluate_multiple_choice(use_few_shot: bool, max_instances: int) -> None:
     few_shot_generator = None
     if use_few_shot:
         few_shot_generator = RandomFewShotGenerator(
@@ -91,16 +91,25 @@ def test_evaluate_multiple_choice(use_few_shot: bool) -> None:
         prompt_template=Jinja2PromptTemplate("{{text}}"),
         few_shot_generator=few_shot_generator,
         batch_size=1,
+        max_instances=max_instances,
     )
     assert isinstance(metrics, dict)
     assert isinstance(outputs, list)
 
+    if max_instances is not None:
+        assert len(outputs) <= max_instances
 
-def test_evaluate_perplexity() -> None:
+
+@pytest.mark.parametrize(
+    "max_instances",
+    [None, 1],
+)
+def test_evaluate_perplexity(max_instances: int) -> None:
     metrics = evaluate_perplexity(
         language_model=DummyLanguageModel(),
         eval_dataset=DummyTextDataset(),
         batch_size=1,
+        max_instances=max_instances,
     )
     assert isinstance(metrics, dict)
 

@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import json
 from os import PathLike
-from typing import Iterator
 
 from .base import TextDataset
 
@@ -17,11 +16,14 @@ class JsonlTextDataset(TextDataset):
     """
 
     def __init__(self, file_path: str | PathLike[str], field: str) -> None:
-        self._file_path = file_path
-        self._field = field
-
-    def __iter__(self) -> Iterator[str]:
-        with open(self._file_path) as f:
+        self._text_list: list[str] = []
+        with open(file_path) as f:
             for line in f:
                 item = json.loads(line)
-                yield item[self._field]
+                self._text_list.append(item[field])
+
+    def __len__(self) -> int:
+        return len(self._text_list)
+
+    def __getitem__(self, item: int) -> str:
+        return self._text_list[item]

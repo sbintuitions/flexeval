@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
+from typing import Sequence
 
 
 @dataclass
@@ -26,7 +27,7 @@ class MultipleChoiceInstance:
     """
 
 
-class MultipleChoiceDataset(ABC):
+class MultipleChoiceDataset(Sequence[MultipleChoiceInstance], ABC):
     @abstractmethod
     def __len__(self) -> int:
         """

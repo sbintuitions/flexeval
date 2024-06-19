@@ -70,6 +70,7 @@ class ChatResponse(EvalSetup):
     few_shot_generator: FewShotGenerator | None = None
     metrics: list[Metric] | Metric | None = None
     batch_size: int = 4
+    max_instances: int | None = None
 
     def evaluate_lm(
         self,
@@ -85,6 +86,7 @@ class ChatResponse(EvalSetup):
             eval_dataset=self.eval_dataset,
             metrics=metrics,
             batch_size=self.batch_size,
+            max_instances=self.max_instances,
             few_shot_generator=self.few_shot_generator,
         )
 
@@ -97,6 +99,7 @@ class Generation(EvalSetup):
     few_shot_generator: FewShotGenerator | None = None
     metrics: list[Metric] | Metric | None = None
     batch_size: int = 4
+    max_instances: int | None = None
 
     def evaluate_lm(
         self,
@@ -114,6 +117,7 @@ class Generation(EvalSetup):
             few_shot_generator=self.few_shot_generator,
             metrics=metrics,
             batch_size=self.batch_size,
+            max_instances=self.max_instances,
         )
 
 
@@ -123,6 +127,7 @@ class MultipleChoice(EvalSetup):
     prompt_template: PromptTemplate
     few_shot_generator: FewShotGenerator | None = None
     batch_size: int = 4
+    max_instances: int | None = None
 
     def evaluate_lm(
         self,
@@ -134,6 +139,7 @@ class MultipleChoice(EvalSetup):
             prompt_template=self.prompt_template,
             few_shot_generator=self.few_shot_generator,
             batch_size=self.batch_size,
+            max_instances=self.max_instances,
         )
 
 
@@ -142,6 +148,7 @@ class Perplexity(EvalSetup):
     eval_dataset: TextDataset
     batch_size: int = 4
     tokenizer: Tokenizer | None = None
+    max_instances: int | None = None
 
     def evaluate_lm(
         self,
@@ -152,6 +159,7 @@ class Perplexity(EvalSetup):
             eval_dataset=self.eval_dataset,
             batch_size=self.batch_size,
             tokenizer=self.tokenizer,
+            max_instances=self.max_instances,
         )
         return metrics, None
 

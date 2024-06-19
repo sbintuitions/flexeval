@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import logging
-from typing import Any
+from typing import Any, Sequence
 
 from tqdm import tqdm
 
@@ -20,17 +20,20 @@ def evaluate_chat_response(  # noqa: C901,PLR0912
     eval_dataset: ChatDataset,
     metrics: list[Metric],
     batch_size: int,
+    max_instances: int | None = None,
     few_shot_generator: FewShotGenerator | None = None,
 ) -> tuple[dict[str, float], list[dict[str, Any]]]:
     logger.info(f"Evaluate the model with gen_kwargs: {gen_kwargs}")
 
+    eval_instances: Sequence[ChatInstance] = eval_dataset
+    if max_instances is not None:
+        eval_instances = [eval_dataset[i] for i in range(min(max_instances, len(eval_dataset)))]
+
     all_messages_list: list[list[dict[str, str]]] = []
     references_list: list[list[str]] = []
     extra_info_list: list[dict[str, Any]] = []
-    with tqdm(total=len(eval_dataset)) as pbar:
-        for batch_id, batch in enumerate(batch_iter(eval_dataset, batch_size)):
-            batch: list[ChatInstance]
-
+    with tqdm(total=len(eval_instances)) as pbar:
+        for batch_id, batch in enumerate(batch_iter(eval_instances, batch_size)):
             input_messages_list = [chat_instance.messages for chat_instance in batch]
 
             if few_shot_generator is not None:

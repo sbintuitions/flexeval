@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import logging
-from typing import Any
+from typing import Any, Sequence
 
 from tqdm import tqdm
 
@@ -19,11 +19,16 @@ def evaluate_multiple_choice(
     eval_dataset: MultipleChoiceDataset,
     prompt_template: PromptTemplate,
     batch_size: int,
+    max_instances: int | None = None,
     few_shot_generator: FewShotGenerator | None = None,
 ) -> tuple[dict[str, float], list[dict[str, Any]]]:
+    eval_instances: Sequence[MultipleChoiceInstance] = eval_dataset
+    if max_instances is not None:
+        eval_instances = [eval_dataset[i] for i in range(min(max_instances, len(eval_dataset)))]
+
     results: list[dict[str, Any]] = []
-    with tqdm(total=len(eval_dataset)) as pbar:
-        for batch_id, batch in enumerate(batch_iter(eval_dataset, batch_size)):
+    with tqdm(total=len(eval_instances)) as pbar:
+        for batch_id, batch in enumerate(batch_iter(eval_instances, batch_size)):
             batch: list[MultipleChoiceInstance]
 
             batch_prefixes: list[str] = []
