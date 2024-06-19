@@ -1,14 +1,18 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import Iterator
+from typing import Sequence
 
 
-class TextDataset(ABC):
+class TextDataset(Sequence[str], ABC):
     """
     This class represents a dataset of text examples.
     """
 
     @abstractmethod
-    def __iter__(self) -> Iterator[str]:
+    def __len__(self) -> int:
+        pass
+
+    @abstractmethod
+    def __getitem__(self, item: int) -> str:
         pass

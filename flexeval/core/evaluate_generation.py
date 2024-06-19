@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import logging
-from typing import Any
+from typing import Any, Sequence
 
 from tqdm import tqdm
 
@@ -15,22 +15,27 @@ from .utils.data_util import batch_iter
 logger = logging.getLogger(__name__)
 
 
-def evaluate_generation(
+def evaluate_generation(  # noqa: C901
     language_model: LanguageModel,
     gen_kwargs: dict[str, Any],
     eval_dataset: GenerationDataset,
     prompt_template: PromptTemplate,
     metrics: list[Metric],
     batch_size: int,
+    max_instances: int | None = None,
     few_shot_generator: FewShotGenerator | None = None,
 ) -> tuple[dict[str, float], list[dict[str, Any]]]:
     logger.info(f"Evaluate the model with gen_kwargs: {gen_kwargs}")
     logger.info(f"Prompt template: {prompt_template}")
-    eval_instance_list: list[GenerationInstance] = []
+
+    eval_instances: Sequence[GenerationInstance] = eval_dataset
+    if max_instances is not None:
+        eval_instances = [eval_dataset[i] for i in range(min(max_instances, len(eval_dataset)))]
+
     lm_prompt_list: list[str] = []
     lm_output_list: list[str] = []
-    with tqdm(total=len(eval_dataset)) as pbar:
-        for i, batch in enumerate(batch_iter(eval_dataset, batch_size)):
+    with tqdm(total=len(eval_instances)) as pbar:
+        for i, batch in enumerate(batch_iter(eval_instances, batch_size)):
             lm_prompts: list[str] = []
             for eval_instance in batch:
                 template_inputs = eval_instance.inputs
@@ -59,17 +64,16 @@ def evaluate_generation(
                 logger.info(f"lm_outputs: {lm_outputs[0]}")
 
             lm_prompt_list += lm_prompts
-            eval_instance_list += batch
             lm_output_list += lm_outputs
 
             pbar.update(len(batch))
     metrics_summary_dict: dict[str, float] = {}
-    instance_metrics_list: list[dict[str, Any]] = [{} for _ in range(len(eval_instance_list))]
+    instance_metrics_list: list[dict[str, Any]] = [{} for _ in range(len(eval_instances))]
     for metric in metrics:
         metric_result = metric.evaluate(
             lm_outputs=lm_output_list,
-            references_list=[i.references for i in eval_instance_list],
-            task_inputs_list=[i.inputs for i in eval_instance_list],
+            references_list=[i.references for i in eval_instances],
+            task_inputs_list=[i.inputs for i in eval_instances],
         )
 
         metrics_summary_dict.update(metric_result.summary)
@@ -93,7 +97,7 @@ def evaluate_generation(
         for lm_prompt, lm_output, eval_instance, instance_metrics in zip(
             lm_prompt_list,
             lm_output_list,
-            eval_instance_list,
+            eval_instances,
             instance_metrics_list,
         )
     ]

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, Sequence
 
 
 @dataclass
@@ -53,7 +53,7 @@ class ChatInstance:
         return self.messages
 
 
-class ChatDataset(ABC):
+class ChatDataset(Sequence[ChatInstance], ABC):
     """A dataset holding `ChatInstance`."""
 
     @abstractmethod

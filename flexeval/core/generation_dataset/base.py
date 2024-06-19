@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
+from typing import Sequence
 
 
 @dataclass
@@ -22,7 +23,7 @@ class GenerationInstance:
     """
 
 
-class GenerationDataset(ABC):
+class GenerationDataset(Sequence[GenerationInstance], ABC):
     """A dataset holding `GenerationInstance`."""
 
     @abstractmethod
