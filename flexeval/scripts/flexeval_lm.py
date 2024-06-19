@@ -7,11 +7,11 @@ import re
 import sys
 import traceback
 from abc import ABC, abstractmethod
+from collections import defaultdict
 from dataclasses import dataclass
 from importlib.metadata import version
 from pathlib import Path
 from typing import Any, Dict
-from collections import defaultdict
 
 import _jsonnet
 from jsonargparse import ActionConfigFile, ArgumentParser, Namespace
@@ -237,8 +237,7 @@ def main() -> None:  # noqa: C901, PLR0912, PLR0915
             maybe_preset_name = sys.argv[i + 1]
             resolved_config_path = config_name_resolver(maybe_preset_name)
             if resolved_config_path is None:
-                msg = f"Invalid preset name or config path: {maybe_preset_name}"
-                raise ValueError(msg)
+                continue
             sys.argv[i + 1] = _jsonnet.evaluate_file(resolved_config_path)
 
     # Overrides the arguments in `--eval_setups`
