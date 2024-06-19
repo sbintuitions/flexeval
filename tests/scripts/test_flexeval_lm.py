@@ -91,7 +91,7 @@ def test_evaluate_suite_cli() -> None:
         command = [
             "flexeval_lm",
             "--language_model", "tests.dummy_modules.DummyLanguageModel",
-            "--eval_setup", "tests/dummy_modules/configs/eval_suite.jsonnet",
+            "--eval_setups", "tests/dummy_modules/configs/eval_suite.jsonnet",
             "--save_dir", f,
         ]
         # fmt: on
@@ -112,17 +112,24 @@ def test_evaluate_suite_cli() -> None:
     [
         ["--eval_setup", "generation"],
         ["--eval_setup", "multiple_choice"],
-        ["--eval_setup.gen", "generation", "--eval_setup.multi", "multiple_choice"],
+        ["--eval_setups.gen", "generation", "--eval_setups.multi", "multiple_choice"],
         [
-            "--eval_setup.gen",
+            "--eval_setups.gen",
             "generation",
-            "--eval_setup.multi",
+            "--eval_setups.multi",
             str(Path(__file__).parent.parent / "dummy_modules" / "configs" / "multiple_choice.jsonnet"),
         ],
         # with overrides
         ["--eval_setup", "generation", "--eval_setup.batch_size", "8"],
         ["--eval_setup", "generation", "--eval_setup.gen_kwargs.do_sample", "true"],
-        ["--eval_setup.gen", "generation", "--eval_setup.gen.batch_size", "8", "--eval_setup.multi", "multiple_choice"],
+        [
+            "--eval_setups.gen",
+            "generation",
+            "--eval_setups.gen.batch_size",
+            "8",
+            "--eval_setups.multi",
+            "multiple_choice",
+        ],
     ],
 )
 def test_flexeval_lm_with_preset_config(eval_setup_args: list[str]) -> None:
@@ -145,11 +152,22 @@ def test_flexeval_lm_with_preset_config(eval_setup_args: list[str]) -> None:
 
 
 @pytest.mark.parametrize(
-    ("batch_size", "do_sample"),
-    [(8, True), (4, False)],
+    ("batch_size", "do_sample", "is_eval_setups"),
+    [(8, True, True), (4, False, False)],
 )
-def test_if_flexeval_lm_with_preset_correctly_overridden(batch_size: int, do_sample: bool) -> None:
+def test_if_flexeval_lm_with_preset_correctly_overridden(
+    batch_size: int,
+    do_sample: bool,
+    is_eval_setups: bool,
+) -> None:
     os.environ["PRESET_CONFIG_EVAL_DIR"] = str(Path(__file__).parent.parent / "dummy_modules" / "configs")
+
+    if is_eval_setups:
+        eval_setup_arg = "eval_setups.gen"
+        save_folder_name = "gen"
+    else:
+        eval_setup_arg = "eval_setup"
+        save_folder_name = None
 
     # first run without overrides
     # the result will be compared to the one with overrides
@@ -158,16 +176,20 @@ def test_if_flexeval_lm_with_preset_correctly_overridden(batch_size: int, do_sam
         command = [
             "flexeval_lm",
             "--language_model", "tests.dummy_modules.DummyLanguageModel",
-            "--eval_setup", "generation",
+            f"--{eval_setup_arg}", "generation",
             "--save_dir", f,
         ]
         # fmt: on
         result = subprocess.run(command, check=False)
         assert result.returncode == 0
 
-        check_if_eval_results_are_correctly_saved(f)
+        save_dir = Path(f)
+        if save_folder_name:
+            save_dir = Path(f) / save_folder_name
 
-        outputs_without_overrides = read_jsonl(next(Path(f).rglob(OUTPUTS_FILE_NAME)))
+        check_if_eval_results_are_correctly_saved(save_dir)
+
+        outputs_without_overrides = read_jsonl(next(Path(save_dir).rglob(OUTPUTS_FILE_NAME)))
 
     # run with overrides
     with tempfile.TemporaryDirectory() as f:
@@ -175,9 +197,9 @@ def test_if_flexeval_lm_with_preset_correctly_overridden(batch_size: int, do_sam
         command = [
             "flexeval_lm",
             "--language_model", "tests.dummy_modules.DummyLanguageModel",
-            "--eval_setup", "generation",
-            "--eval_setup.batch_size", str(batch_size),
-            "--eval_setup.gen_kwargs.do_sample", str(do_sample),
+            f"--{eval_setup_arg}", "generation",
+            f"--{eval_setup_arg}.batch_size", str(batch_size),
+            f"--{eval_setup_arg}.gen_kwargs.do_sample", str(do_sample),
             "--save_dir", f,
         ]
         # fmt: on
@@ -185,9 +207,13 @@ def test_if_flexeval_lm_with_preset_correctly_overridden(batch_size: int, do_sam
         result = subprocess.run(command, check=False)
         assert result.returncode == 0
 
-        check_if_eval_results_are_correctly_saved(f)
+        save_dir = Path(f)
+        if save_folder_name:
+            save_dir = Path(f) / save_folder_name
 
-        with open(next(Path(f).rglob(CONFIG_FILE_NAME))) as f_json:
+        check_if_eval_results_are_correctly_saved(save_dir)
+
+        with open(next(Path(save_dir).rglob(CONFIG_FILE_NAME))) as f_json:
             saved_config = json.load(f_json)
         assert saved_config["eval_setup"]["init_args"]["batch_size"] == batch_size
         assert saved_config["eval_setup"]["init_args"]["gen_kwargs"]["do_sample"] == do_sample
