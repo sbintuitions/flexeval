@@ -7,6 +7,7 @@ from importlib.metadata import version
 from pathlib import Path
 from typing import Any, Dict, List
 
+import _jsonnet
 from jsonargparse import ActionConfigFile, ArgumentParser
 
 from flexeval import Match, MatchMaker, PairwiseJudge, PairwiseScorer, evaluate_pairwise
@@ -79,16 +80,12 @@ def main() -> None:
     config_name_resolver = ConfigNameResolver(config_preset_directory)
 
     # Resolve the preset name to the path to the config file before parsing the arguments.
-    # This is necessary when the preset name is passed with overriding arguments like
-    # `--judge preset_name --judge.param value`
-    # In this case, jsonargparse does not know preset_name represents a module and
-    # the overriding arguments will erase the preset name.
     for i, arg in enumerate(sys.argv[:-1]):
         if arg == "--judge":
             maybe_preset_name = sys.argv[i + 1]
             resolved_config_path = config_name_resolver(maybe_preset_name)
             if resolved_config_path is not None:
-                sys.argv[i + 1] = resolved_config_path
+                sys.argv[i + 1] = _jsonnet.evaluate_file(resolved_config_path)
 
     # Add the current directory to sys.path
     # to enable importing modules from the directory where this script is executed.

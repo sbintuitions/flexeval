@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import itertools
 import os
 import subprocess
 import tempfile
@@ -13,17 +14,23 @@ from .test_flexeval_lm import CHAT_RESPONSE_CMD, GENERATION_CMD, check_if_eval_r
 
 
 @pytest.mark.parametrize(
-    ("flexeval_lm_command", "metrics_args"),
-    [
-        (CHAT_RESPONSE_CMD, ["--metrics", "ExactMatch"]),
-        (GENERATION_CMD, ["--metrics", "ExactMatch", "--metrics+=CharF1"]),
-        (CHAT_RESPONSE_CMD, ["--metrics", "exact_match"]),
-        (GENERATION_CMD, ["--metrics", "exact_match", "--metrics+=CharF1"]),
-    ],
+    ("flexeval_lm_command", "metrics_args", "override_args"),
+    list(
+        itertools.product(
+            [CHAT_RESPONSE_CMD, GENERATION_CMD],
+            [
+                ["--metrics", "ExactMatch"],
+                ["--metrics", "exact_match"],
+                ["--metrics", "ExactMatch", "--metrics+=CharF1"],
+            ],
+            [[], ["--metrics.normalizer", "AIONormalizer"]],
+        ),
+    ),
 )
 def test_if_outputs_from_flexval_lm_can_be_passed_to_flexeval_file(
     flexeval_lm_command: list[str],
     metrics_args: list[str],
+    override_args: list[str],
 ) -> None:
     os.environ["PRESET_CONFIG_METRIC_DIR"] = str(Path(__file__).parent.parent / "dummy_modules" / "configs")
 
@@ -41,6 +48,7 @@ def test_if_outputs_from_flexval_lm_can_be_passed_to_flexeval_file(
                 "flexeval_file",
                 "--eval_file", str(output_file_path),
                 *metrics_args,
+                *override_args,
                 "--save_dir", str(save_path_flexeval_file),
             ],
             check=False,

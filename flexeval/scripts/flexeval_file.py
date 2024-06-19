@@ -20,7 +20,6 @@ from .common import (
     ConfigNameResolver,
     Timer,
     get_env_metadata,
-    instantiate_module_from_path,
     raise_error_if_results_already_exist,
     save_json,
     save_jsonl,
@@ -33,7 +32,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
-def main() -> None:
+def main() -> None:  # noqa: C901
     parser = ArgumentParser(parser_mode="jsonnet")
     parser.add_argument(
         "--eval_file",
@@ -43,7 +42,7 @@ def main() -> None:
     )
     parser.add_argument(
         "--metrics",
-        type=Union[List[Union[Metric, str]], Union[Metric, str]],
+        type=Union[List[Metric], Metric],
         required=True,
         help="You can specify the parameters, the path to the config file, or the name of the preset config.",
     )
@@ -77,6 +76,26 @@ def main() -> None:
         help="Path to the config file",
     )
 
+    config_preset_directory = os.environ.get(
+        "PRESET_CONFIG_METRIC_DIR",
+        Path(__file__).parent.parent / "preset_configs" / "Metric",
+    )
+    config_name_resolver = ConfigNameResolver(config_preset_directory)
+    # Resolve the preset name to the path to the config file before parsing the arguments.
+    for i, arg in enumerate(sys.argv[:-1]):
+        if arg == "--metrics":
+            maybe_preset_name = sys.argv[i + 1]
+            resolved_config_path = config_name_resolver(maybe_preset_name)
+            if resolved_config_path is None:
+                continue
+            sys.argv[i + 1] = _jsonnet.evaluate_file(resolved_config_path)
+    for i, arg in enumerate(sys.argv):
+        if arg.startswith("--metrics+="):
+            maybe_preset_name = arg.split("=", 1)[1]
+            resolved_config_path = config_name_resolver(maybe_preset_name)
+            if resolved_config_path is not None:
+                sys.argv[i] = "--metrics+=" + _jsonnet.evaluate_file(resolved_config_path)
+
     # Add the current directory to sys.path
     # to enable importing modules from the directory where this script is executed.
     sys.path.append(os.environ.get("ADDITIONAL_MODULES_PATH", Path.cwd()))
@@ -97,21 +116,6 @@ def main() -> None:
     logger.info(f"flexeval version: {version('flexeval')}")
 
     args = parser.instantiate_classes(args)
-
-    config_preset_directory = os.environ.get(
-        "PRESET_CONFIG_METRIC_DIR",
-        Path(__file__).parent.parent / "preset_configs" / "Metric",
-    )
-    config_name_resolver = ConfigNameResolver(config_preset_directory)
-    for i, metric in enumerate(args.metrics):
-        if isinstance(metric, str):
-            metric_config_path = config_name_resolver(metric)
-            if metric_config_path is None:
-                msg = f"Invalid metric: {metric}"
-                raise ValueError(msg)
-            instantiated_metric = instantiate_module_from_path(metric_config_path, Metric)
-            args.metrics[i] = instantiated_metric
-            args_as_dict["metrics"][i] = json.loads(_jsonnet.evaluate_file(metric_config_path))
 
     if args.save_dir is not None:
         logger.info(f"Saving the config to {Path(args.save_dir) / CONFIG_FILE_NAME}")
