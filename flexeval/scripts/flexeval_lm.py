@@ -11,6 +11,7 @@ from dataclasses import dataclass
 from importlib.metadata import version
 from pathlib import Path
 from typing import Any, Dict
+from collections import defaultdict
 
 import _jsonnet
 from jsonargparse import ActionConfigFile, ArgumentParser, Namespace
@@ -243,19 +244,17 @@ def main() -> None:  # noqa: C901, PLR0912, PLR0915
     # Overrides the arguments in `--eval_setups`
     # because jsonargparse does not support override `dict[str, EvalSetup]`
     params_for_eval_setups: dict[str, dict[str, Any]] = {}
-    overrides_for_eval_setups: dict[str, dict[str, str]] = {}
+    overrides_for_eval_setups: dict[str, dict[str, str]] = defaultdict(dict)
     indices_to_pop: list[int] = []
     for i, arg in enumerate(sys.argv[:-1]):
         if re.match(r"^--eval_setups\.[^.]+$", arg):
             setup_name = arg.split(".")[1]
             params_for_eval_setups[setup_name] = json.loads(sys.argv[i + 1])
-            overrides_for_eval_setups[setup_name] = {}
             indices_to_pop += [i, i + 1]
         elif re.match(r"^--eval_setups\.[^.]+\..*?$", arg):
             setup_name = arg.split(".")[1]
             override_key = ".".join(arg.split(".")[2:])
-            override_value = sys.argv[i + 1]
-            overrides_for_eval_setups[setup_name][override_key] = override_value
+            overrides_for_eval_setups[setup_name][override_key] = sys.argv[i + 1]
             indices_to_pop += [i, i + 1]
     sys.argv = [a for i, a in enumerate(sys.argv) if i not in indices_to_pop]
     for eval_key in params_for_eval_setups:
