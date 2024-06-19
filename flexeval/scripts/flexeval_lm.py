@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import logging
 import os
+import re
 import sys
 import traceback
 from abc import ABC, abstractmethod
@@ -10,7 +11,7 @@ from collections import defaultdict
 from dataclasses import dataclass
 from importlib.metadata import version
 from pathlib import Path
-from typing import Any, Dict, Union
+from typing import Any, Dict
 
 import _jsonnet
 from jsonargparse import ActionConfigFile, ArgumentParser, Namespace
@@ -37,9 +38,8 @@ from .common import (
     OUTPUTS_FILE_NAME,
     ConfigNameResolver,
     Timer,
-    get_args_from_path,
     get_env_metadata,
-    instantiate_module_from_path,
+    override_jsonargparse_params,
     raise_error_if_results_already_exist,
     save_json,
     save_jsonl,
@@ -194,9 +194,16 @@ def main() -> None:  # noqa: C901, PLR0912, PLR0915
     )
     parser.add_argument(
         "--eval_setup",
-        type=Union[Union[EvalSetup, str], Dict[str, Union[EvalSetup, str]]],
-        help="Evaluation setups. "
+        type=EvalSetup,
+        help="A single evaluation setup. "
         "You can specify the parameters, the path to the config file, or the name of the preset config.",
+        enable_path=True,
+    )
+    parser.add_argument(
+        "--eval_setups",
+        type=Dict[str, EvalSetup],
+        help="A dictionary of evaluation setups. "
+        "The key is the folder name where the outputs will be saved, and the value is the EvalSetup object. ",
         enable_path=True,
     )
     # Saving arguments
@@ -233,80 +240,60 @@ def main() -> None:  # noqa: C901, PLR0912, PLR0915
     config_name_resolver = ConfigNameResolver(config_preset_directory)
 
     # Resolve the preset name to the path to the config file before parsing the arguments.
-    # This is necessary when the preset name is passed with overriding arguments like
-    # `--eval_setup preset_name --eval_setup.param value`
-    # In this case, jsonargparse does not know preset_name represents a module and
-    # the overriding arguments will erase the preset name.
     for i, arg in enumerate(sys.argv[:-1]):
-        if arg == "--eval_setup":
+        if arg == "--eval_setup" or re.match(r"^--eval_setups\.[^.]+$", arg):
             maybe_preset_name = sys.argv[i + 1]
             resolved_config_path = config_name_resolver(maybe_preset_name)
-            if resolved_config_path is not None:
-                sys.argv[i + 1] = resolved_config_path
+            if resolved_config_path is None:
+                continue
+            sys.argv[i + 1] = _jsonnet.evaluate_file(resolved_config_path)
+
+    # Overrides the arguments in `--eval_setups`
+    # because jsonargparse does not support override `dict[str, EvalSetup]`
+    params_for_eval_setups: dict[str, dict[str, Any]] = {}
+    overrides_for_eval_setups: dict[str, dict[str, str]] = defaultdict(dict)
+    indices_to_pop: list[int] = []
+    for i, arg in enumerate(sys.argv[:-1]):
+        if re.match(r"^--eval_setups\.[^.]+$", arg):
+            setup_name = arg.split(".")[1]
+            params_for_eval_setups[setup_name] = json.loads(sys.argv[i + 1])
+            indices_to_pop += [i, i + 1]
+        elif re.match(r"^--eval_setups\.[^.]+\..*?$", arg):
+            setup_name = arg.split(".")[1]
+            override_key = ".".join(arg.split(".")[2:])
+            overrides_for_eval_setups[setup_name][override_key] = sys.argv[i + 1]
+            indices_to_pop += [i, i + 1]
+    sys.argv = [a for i, a in enumerate(sys.argv) if i not in indices_to_pop]
+    for eval_key in params_for_eval_setups:
+        for override_key, override_value in overrides_for_eval_setups[eval_key].items():
+            override_jsonargparse_params(params_for_eval_setups[eval_key], override_key, override_value)
+    for eval_key, eval_config in params_for_eval_setups.items():
+        sys.argv += [f"--eval_setups.{eval_key}", json.dumps(eval_config)]
 
     # Add the current directory to sys.path
     # to enable importing modules from the directory where this script is executed.
     sys.path.append(os.environ.get("ADDITIONAL_MODULES_PATH", Path.cwd()))
 
     args = parser.parse_args()
+    if args.eval_setup and args.eval_setups:
+        msg = "You can not specify both --eval_setup and --eval_setups."
+        raise ValueError(msg)
+
     logger.info(args)
     logger.info(f"flexeval version: {version('flexeval')}")
 
     config_dict = as_dict(args)  # this will be used to save the config
-
     args = parser.instantiate_classes(args)
 
-    # normalize the format of eval_setups (a single object or a dict of objects) to a list of tuples
-    eval_setups_and_metadata: list[list[EvalSetup | str, dict, Path | None]] = []
-    if isinstance(args.eval_setup, dict):
-        # parse the nested arguments
-        overrides: dict[str, dict[str, Any]] = defaultdict(dict)
-        for override_path, value in args.eval_setup.items():
-            if "." in override_path:
-                main_key, sub_key = override_path.split(".", 1)
-                overrides[main_key][sub_key] = value
-
-        # Parse the main arguments.
-        for setup_name, eval_setup in args.eval_setup.items():
-            if "." in setup_name:
-                continue
-
-            eval_config_dict = config_dict["eval_setup"][setup_name]
-
-            # If `eval_setup` is a string, it is a preset name or a config path,
-            # We need to resolve it.
-            if isinstance(eval_setup, str):
-                # replace eval_setup with an actual `EvalSetup` object
-                eval_config_path = config_name_resolver(eval_setup)
-                if eval_config_path is None:
-                    msg = f"Invalid eval_setup: {eval_setup}"
-                    raise ValueError(msg)
-                eval_setup = instantiate_module_from_path(eval_config_path, EvalSetup, overrides[setup_name])  # noqa: PLW2901
-
-                # replace config_dict to save with the content of the resolved config file
-                eval_config_dict = as_dict(get_args_from_path(eval_config_path, EvalSetup, overrides[setup_name]))
-
-            setup_save_dir = Path(args.save_dir) / setup_name if args.save_dir else None
-            eval_setups_and_metadata.append([eval_setup, eval_config_dict, setup_save_dir])
-    else:
-        # When passed a single object, the preset name must have been resolved in sys.argv (see above).
-        eval_setups_and_metadata.append(
-            [args.eval_setup, config_dict["eval_setup"], Path(args.save_dir) if args.save_dir else None],
-        )
-
-    # If a eval_setup is specified as a preset config name, resolve the config path and instantiate the object
-    for i, (eval_setup, _, _) in enumerate(eval_setups_and_metadata):
-        if isinstance(eval_setup, str):
-            # replace eval_setup with an actual `EvalSetup` object
-            eval_config_path = config_name_resolver(eval_setup)
-            if eval_config_path is None:
-                msg = f"Invalid eval_setup: {eval_setup}"
-                raise ValueError(msg)
-            eval_setups_and_metadata[i][0] = instantiate_module_from_path(eval_config_path, EvalSetup)
-
-            # replace config_dict to save with the content of the resolved config file
-            eval_config_dict = json.loads(_jsonnet.evaluate_file(eval_config_path))
-            eval_setups_and_metadata[i][1] = eval_config_dict
+    # normalize args.eval_setup or args.eval_setups into a list of tuples
+    eval_setups_and_metadata: list[EvalSetup, dict[str, Any], Path] = []
+    if args.eval_setup:
+        save_dir = Path(args.save_dir) if args.save_dir else None
+        eval_setups_and_metadata.append((args.eval_setup, config_dict["eval_setup"], save_dir))
+    if args.eval_setups:
+        for save_folder_name, eval_setup in args.eval_setups.items():
+            save_dir = Path(args.save_dir) / save_folder_name if args.save_dir else None
+            eval_setups_and_metadata.append((eval_setup, config_dict["eval_setups"][save_folder_name], save_dir))
 
     # run evaluation
     for eval_setup, eval_setup_config, save_dir in eval_setups_and_metadata:

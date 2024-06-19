@@ -149,3 +149,17 @@ class Timer:
 
     def __exit__(self, type_, value, traceback) -> None:  # noqa: ANN001
         self.time = time.perf_counter() - self.start
+
+
+def override_jsonargparse_params(params: dict[str, Any], nested_key: str, new_value: Any) -> dict[str, Any]:  # noqa: ANN401
+    keys = nested_key.split(".")
+    current_params = params
+    for k in keys[:-1]:  # Navigate to the last dictionary
+        if "init_args" in current_params:
+            current_params = current_params["init_args"]
+        current_params = current_params[k]
+
+    if "init_args" in current_params:
+        current_params = current_params["init_args"]
+    current_params[keys[-1]] = new_value
+    return params
