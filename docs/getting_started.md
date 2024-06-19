@@ -108,7 +108,7 @@ Evaluating chat models may require a different setup.
 export OPENAI_API_KEY="YOUR_API_KEY"
 
 flexeval_lm \
-  --language_model OpenAIChatGPT \
+  --language_model OpenAIChatAPI \
   --language_model.model_name "gpt-3.5-turbo" \
   --eval_setup "mt-en" \
   --save_dir "results/mt-en/gpt-3.5-turbo"

@@ -7,7 +7,7 @@ Translated and adapted from [lm-sys/FastChat](https://github.com/lm-sys/FastChat
 {
   class_path: 'ChatLLMPairwiseJudge',
   init_args: {
-    language_model: { class_path: 'OpenAIChatGPT', init_args: { model_name: 'gpt-4-turbo-2024-04-09' } },
+    language_model: { class_path: 'OpenAIChatAPI', init_args: { model_name: 'gpt-4-turbo-2024-04-09' } },
     prompt_template: {
       class_path: 'Jinja2PromptTemplate',
       init_args: {

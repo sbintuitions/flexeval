@@ -12,7 +12,7 @@ In this example, we use ChatGPT with the following command:
 export OPENAI_API_KEY="YOUR_API_KEY"
 
 flexeval_lm \
-  --language_model OpenAIChatGPT \
+  --language_model OpenAIChatAPI \
   --language_model.model_name "gpt-3.5-turbo" \
   --eval_setup "mt-en" \
   --save_dir "results/mt-en_gpt3.5-turbo"
@@ -64,7 +64,7 @@ head -n 1 results/mt-en-gpt3.5-turbo/eval_by_gpt4/outputs.jsonl | jq -r ".llm_ou
 
     ```bash
     flexeval_lm \
-      --language_model OpenAIChatGPT \
+      --language_model OpenAIChatAPI \
       --language_model.model_name "gpt-3.5-turbo" \
       --eval_setup "mt-en" \
       --metrics+="assistant_eval_gpt4_en_single_turn" \
@@ -89,7 +89,7 @@ You can skip this if you have already generated the responses.
 export OPENAI_API_KEY="YOUR_API_KEY"
 
 flexeval_lm \
-  --language_model OpenAIChatGPT \
+  --language_model OpenAIChatAPI \
   --language_model.model_name "gpt-3.5-turbo" \
   --eval_setup "mt-en" \
   --save_dir "results/mt-en_gpt3.5-turbo"
@@ -99,7 +99,7 @@ Generate the responses with GPT-4o.
 
 ```bash
 flexeval_lm \
-  --language_model OpenAIChatGPT \
+  --language_model OpenAIChatAPI \
   --language_model.model_name "gpt-4o" \
   --eval_setup "mt-en" \
   --save_dir "results/mt-en_gpt-4o"

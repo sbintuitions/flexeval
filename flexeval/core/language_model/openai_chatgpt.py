@@ -30,7 +30,7 @@ async def _retry_on_error(
     return None
 
 
-class OpenAIChatGPT(LanguageModel):
+class OpenAIChatAPI(LanguageModel):
     """
     LanguageModel implementation using OpenAI's ChatGPT API.
 
