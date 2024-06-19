@@ -10,7 +10,7 @@ from os import PathLike
 from pathlib import Path
 from typing import Any, Iterable, TypeVar
 
-from jsonargparse import ArgumentParser, Namespace
+from jsonargparse import ArgumentParser
 from loguru import logger
 from typing_extensions import Self
 
@@ -55,13 +55,6 @@ def load_jsonl(path: str | PathLike[str]) -> list[dict[str, Any]]:
         return [json.loads(line) for line in f]
 
 
-def get_git_hash() -> str | None:
-    try:
-        return subprocess.check_output(["git", "rev-parse", "HEAD"]).decode("utf-8").strip()  # noqa: S607
-    except subprocess.CalledProcessError:
-        return None
-
-
 def get_env_metadata() -> dict[str, Any]:
     git_hash: str | None = None
     with contextlib.suppress(subprocess.CalledProcessError):
@@ -100,22 +93,6 @@ class ConfigNameResolver:
 
 
 Module = TypeVar("Module", bound=Any)
-
-
-def get_args_from_path(
-    config_path: str,
-    module_type: type[Module],
-    overrides: dict[str, Any] | None = None,
-) -> Namespace:
-    parser = ArgumentParser(parser_mode="jsonnet")
-    parser.add_argument("--module", type=module_type, required=True, enable_path=True)
-
-    args_to_parse = ["--module", config_path]
-    overrides = overrides or {}
-    for key, value in overrides.items():
-        args_to_parse += [f"--module.{key}", value]
-
-    return parser.parse_args(args_to_parse)
 
 
 def instantiate_module_from_path(

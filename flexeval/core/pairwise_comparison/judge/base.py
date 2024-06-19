@@ -26,23 +26,6 @@ class PairwiseJudge(ABC):
     """
 
     @abstractmethod
-    def judge(
-        self,
-        model1_item: dict[str, Any],
-        model2_item: dict[str, Any],
-    ) -> tuple[Winner, str]:
-        """
-        Judge which model is better given two items.
-
-        Args:
-            model1_item: The first model item, containing the model output and other information needed for judging.
-            model2_item: The second model item, containing the model output and other information needed for judging.
-
-        Returns:
-            A tuple of the winner and the rationale.
-        """
-
-    @abstractmethod
     def batch_judge(
         self,
         batch_model_items: list[tuple[dict[str, Any], dict[str, Any]]],

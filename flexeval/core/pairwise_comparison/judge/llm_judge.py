@@ -59,9 +59,6 @@ class ChatLLMPairwiseJudge(PairwiseJudge):
         else:
             return winner, rationale
 
-    def judge(self, model1_item: dict[str, Any], model2_item: dict[str, Any]) -> tuple[Winner, str]:
-        return self.batch_judge([(model1_item, model2_item)])[0]
-
     def batch_judge(self, batch_model_items: list[tuple[dict[str, Any], dict[str, Any]]]) -> list[tuple[Winner, str]]:
         input_chat_messages_list: list[list[dict[str, str]]] = []
         for model1_item, model2_item in batch_model_items:
