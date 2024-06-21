@@ -502,6 +502,27 @@
   
   
     <li class="md-nav__item">
+      <a href="../EvalSetup/code_chat/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Code chat
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../EvalSetup/code_generation/" class="md-nav__link">
         
   
@@ -586,11 +607,11 @@
   
   
     <li class="md-nav__item">
-      <a href="../EvalSetup/en_preplexity/" class="md-nav__link">
+      <a href="../EvalSetup/en_perplexity/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
-    En preplexity
+    En perplexity
   </span>
   
 
@@ -675,6 +696,27 @@
   
   <span class="md-ellipsis">
     Translation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../EvalSetup/translation_chat/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Translation chat
   </span>
   
 
@@ -1205,7 +1247,7 @@ Originally used to generate scores for MT-bench or Vicuna-bench.</p>
 <div class="highlight"><pre><span></span><code>{
   class_path: &#39;ChatLLMPairwiseJudge&#39;,
   init_args: {
-    language_model: { class_path: &#39;OpenAIChatGPT&#39;, init_args: { model_name: &#39;gpt-4-turbo-2024-04-09&#39; } },
+    language_model: { class_path: &#39;OpenAIChatAPI&#39;, init_args: { model_name: &#39;gpt-4-turbo-2024-04-09&#39; } },
     prompt_template: {
       class_path: &#39;Jinja2PromptTemplate&#39;,
       init_args: {
@@ -1247,7 +1289,7 @@ Originally used to generate scores for the Japanese versions of MT-bench or Vicu
 <div class="highlight"><pre><span></span><code>{
   class_path: &#39;ChatLLMPairwiseJudge&#39;,
   init_args: {
-    language_model: { class_path: &#39;OpenAIChatGPT&#39;, init_args: { model_name: &#39;gpt-4-turbo-2024-04-09&#39; } },
+    language_model: { class_path: &#39;OpenAIChatAPI&#39;, init_args: { model_name: &#39;gpt-4-turbo-2024-04-09&#39; } },
     prompt_template: {
       class_path: &#39;Jinja2PromptTemplate&#39;,
       init_args: {
@@ -1255,12 +1297,6 @@ Originally used to generate scores for the Japanese versions of MT-bench or Vicu
           {% set question = model1_item[&quot;task_inputs&quot;][&quot;messages&quot;][0][&quot;content&quot;] -%}
           {% set model1_chat = model1_item[&quot;task_inputs&quot;][&quot;messages&quot;] -%}
           {% set model2_chat = model2_item[&quot;task_inputs&quot;][&quot;messages&quot;] -%}
-          [指示]
-          {% if references|length &gt; 0 -%}
-          以下に示されるユーザーの質問に対する2つのAIアシスタントの応答の品質を評価してください。回答の内容がユーザーの指示に従っており、ユーザーの質問によりよく答えているアシスタントを選んでください。参照回答、アシスタント1の回答、アシスタント2の回答が与えられるので、どちらのアシスタントの回答が優れているかを評価してください。評価の際には、まずそれぞれのアシスタントの回答を参照回答と比較し、回答の誤りを見つけて修正してください。立場が偏らないようにし、回答の提示順があなたの判断に影響しないようにしてください。回答の長さが評価に影響しないこと、特定のアシスタントの名前を好まないこと、できるだけ客観的であること、に気をつけてください。説明の後に、最終的な判断を以下の形式に従って出力してください：アシスタント1が優れていれば[[1]]、アシスタント2が優れていれば[[2]]、同点の場合は[[3]]
-          {%- else -%}
-          以下に示されるユーザーの質問に対する2つのAIアシスタントの応答の品質を評価してください。回答の内容がユーザーの指示に従っており、ユーザーの質問によりよく答えているアシスタントを選んでください。具体的には、回答の有用性、関連性、正確性、深さ、創造性、詳細レベルなどの要素を考慮する必要があります。評価の際には、まず2つの回答を比較し、簡単な説明をしてください。立場が偏らないようにし、回答の提示順があなたの判断に影響しないようにしてください。回答の長さが評価に影響しないこと、特定のアシスタントの名前を好まないこと、できるだけ客観的であること、に気をつけてください。説明の後に、最終的な判断を以下の形式に従って出力してください：アシスタント1が優れていれば[[1]]、アシスタント2が優れていれば[[2]]、同点の場合は[[3]]
-          {%- endif %}
 
           [ユーザの質問]
           {{ model1_item[&quot;task_inputs&quot;][&quot;chat&quot;][0][&quot;content&quot;] }}
@@ -1276,6 +1312,18 @@ Originally used to generate scores for the Japanese versions of MT-bench or Vicu
           [アシスタント2の回答開始]
           {% if model2_chat|length == 1 %}{{ model2_item[&quot;lm_output&quot;] }}{% else %}{{ model2_chat[1][&quot;content&quot;] }}{% endif %}
           [アシスタント2の回答終了]
+        |||,
+      },
+    },
+    system_message: {
+      class_path: &#39;Jinja2PromptTemplate&#39;,
+      init_args: {
+        template: |||
+          {% if references|length &gt; 0 -%}
+          あなたは、回答の質をチェックするための審判員です。以下に示されるユーザーの質問に対する2つのAIアシスタントの応答の品質を評価してください。回答の内容がユーザーの指示に従っており、ユーザーの質問によりよく答えているアシスタントを選んでください。参照回答、アシスタント1の回答、アシスタント2の回答が与えられるので、どちらのアシスタントの回答が優れているかを評価してください。評価の際には、まずそれぞれのアシスタントの回答を参照回答と比較し、回答の誤りを見つけて修正してください。立場が偏らないようにし、回答の提示順があなたの判断に影響しないようにしてください。回答の長さが評価に影響しないこと、特定のアシスタントの名前を好まないこと、できるだけ客観的であること、に気をつけてください。説明の後に、最終的な判断を以下の形式に従って出力してください：アシスタント1が優れていれば[[1]]、アシスタント2が優れていれば[[2]]、同点の場合は[[3]]
+          {%- else -%}
+          あなたは、回答の質をチェックするための審判員です。以下に示されるユーザーの質問に対する2つのAIアシスタントの応答の品質を評価してください。回答の内容がユーザーの指示に従っており、ユーザーの質問によりよく答えているアシスタントを選んでください。具体的には、回答の有用性、関連性、正確性、深さ、創造性、詳細レベルなどの要素を考慮する必要があります。評価の際には、まず2つの回答を比較し、簡単な説明をしてください。立場が偏らないようにし、回答の提示順があなたの判断に影響しないようにしてください。回答の長さが評価に影響しないこと、特定のアシスタントの名前を好まないこと、できるだけ客観的であること、に気をつけてください。説明の後に、最終的な判断を以下の形式に従って出力してください：アシスタント1が優れていれば[[1]]、アシスタント2が優れていれば[[2]]、同点の場合は[[3]]
+          {%- endif %}
         |||,
       },
     },

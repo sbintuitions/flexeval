@@ -500,6 +500,27 @@
   
   
     <li class="md-nav__item">
+      <a href="../../preset_configs/EvalSetup/code_chat/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Code chat
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../preset_configs/EvalSetup/code_generation/" class="md-nav__link">
         
   
@@ -584,11 +605,11 @@
   
   
     <li class="md-nav__item">
-      <a href="../../preset_configs/EvalSetup/en_preplexity/" class="md-nav__link">
+      <a href="../../preset_configs/EvalSetup/en_perplexity/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
-    En preplexity
+    En perplexity
   </span>
   
 
@@ -673,6 +694,27 @@
   
   <span class="md-ellipsis">
     Translation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../preset_configs/EvalSetup/translation_chat/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Translation chat
   </span>
   
 
@@ -935,9 +977,9 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#flexeval.core.language_model.openai_chatgpt.OpenAIChatGPT" class="md-nav__link">
+  <a href="#flexeval.core.language_model.openai_chatgpt.OpenAIChatAPI" class="md-nav__link">
     <span class="md-ellipsis">
-      OpenAIChatGPT
+      OpenAIChatAPI
     </span>
   </a>
   
@@ -1200,9 +1242,9 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#flexeval.core.language_model.openai_chatgpt.OpenAIChatGPT" class="md-nav__link">
+  <a href="#flexeval.core.language_model.openai_chatgpt.OpenAIChatAPI" class="md-nav__link">
     <span class="md-ellipsis">
-      OpenAIChatGPT
+      OpenAIChatAPI
     </span>
   </a>
   
@@ -1739,7 +1781,9 @@ If specified, this overrides the default chat template of the tokenizer.</p>
 
               <details class="quote">
                 <summary>Source code in <code>flexeval/core/language_model/hf_lm.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">140</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">138</span>
+<span class="normal">139</span>
+<span class="normal">140</span>
 <span class="normal">141</span>
 <span class="normal">142</span>
 <span class="normal">143</span>
@@ -2033,7 +2077,11 @@ If specified, this overrides the default chat template of the tokenizer.</p>
 <span class="normal">431</span>
 <span class="normal">432</span>
 <span class="normal">433</span>
-<span class="normal">434</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">HuggingFaceLM</span><span class="p">(</span><span class="n">LanguageModel</span><span class="p">):</span>
+<span class="normal">434</span>
+<span class="normal">435</span>
+<span class="normal">436</span>
+<span class="normal">437</span>
+<span class="normal">438</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">HuggingFaceLM</span><span class="p">(</span><span class="n">LanguageModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    LanguageModel implementation using Hugging Face Transformers.</span>
 
@@ -2073,13 +2121,17 @@ If specified, this overrides the default chat template of the tokenizer.</p>
         <span class="n">model_kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="n">model_kwargs</span><span class="p">}</span>  <span class="c1"># copy kwargs to avoid modifying the original dict</span>
         <span class="k">if</span> <span class="s2">&quot;device_map&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">model_kwargs</span><span class="p">:</span>
             <span class="n">model_kwargs</span><span class="p">[</span><span class="s2">&quot;device_map&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span>
-        <span class="k">if</span> <span class="s2">&quot;torch_dtype&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">model_kwargs</span> <span class="ow">or</span> <span class="n">model_kwargs</span><span class="p">[</span><span class="s2">&quot;torch_dtype&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;auto&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s2">&quot;torch_dtype&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">model_kwargs</span><span class="p">:</span>
             <span class="c1"># You need to set torch_dtype to use the optimal dtype for the model.</span>
             <span class="c1"># https://huggingface.co/docs/transformers/main/main_classes/model#model-instantiation-dtype</span>
             <span class="n">model_kwargs</span><span class="p">[</span><span class="s2">&quot;torch_dtype&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span>
-        <span class="k">else</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">model_kwargs</span><span class="p">[</span><span class="s2">&quot;torch_dtype&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;auto&quot;</span><span class="p">:</span>
             <span class="c1"># Convert string to torch.dtype</span>
-            <span class="n">model_kwargs</span><span class="p">[</span><span class="s2">&quot;torch_dtype&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">torch</span><span class="p">,</span> <span class="n">model_kwargs</span><span class="p">[</span><span class="s2">&quot;torch_dtype&quot;</span><span class="p">])</span>
+            <span class="c1"># We allow either &quot;bfloat16&quot; or &quot;torch.bfloat16&quot;</span>
+            <span class="n">torch_dtype_str</span> <span class="o">=</span> <span class="n">model_kwargs</span><span class="p">[</span><span class="s2">&quot;torch_dtype&quot;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">torch_dtype_str</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;torch.&quot;</span><span class="p">):</span>
+                <span class="n">torch_dtype_str</span> <span class="o">=</span> <span class="n">torch_dtype_str</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="s2">&quot;torch.&quot;</span><span class="p">)</span> <span class="p">:]</span>
+            <span class="n">model_kwargs</span><span class="p">[</span><span class="s2">&quot;torch_dtype&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">torch</span><span class="p">,</span> <span class="n">torch_dtype_str</span><span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">model_kwargs</span><span class="p">[</span><span class="s2">&quot;torch_dtype&quot;</span><span class="p">],</span> <span class="n">torch</span><span class="o">.</span><span class="n">dtype</span><span class="p">):</span>
                 <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Invalid torch_dtype: </span><span class="si">{</span><span class="n">model_kwargs</span><span class="p">[</span><span class="s1">&#39;torch_dtype&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
@@ -2142,7 +2194,9 @@ If specified, this overrides the default chat template of the tokenizer.</p>
             <span class="c1"># Ex. &quot;」&quot; -&gt; &quot;ãĢį&quot;</span>
             <span class="k">if</span> <span class="n">stop_token_id</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tokenizer</span><span class="o">.</span><span class="n">unk_token_id</span><span class="p">:</span>
                 <span class="c1"># In such a case, we try to get the ID by calling the encode method.</span>
-                <span class="n">stop_token_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tokenizer</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">stop_seq</span><span class="p">,</span> <span class="n">add_special_tokens</span><span class="o">=</span><span class="kc">False</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+                <span class="n">stop_seq_tokens</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tokenizer</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">stop_seq</span><span class="p">,</span> <span class="n">add_special_tokens</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">stop_seq_tokens</span><span class="p">:</span>
+                    <span class="n">stop_token_id</span> <span class="o">=</span> <span class="n">stop_seq_tokens</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
             <span class="c1"># If the token does not match the specified string itself, we do not include it as a stop token id</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tokenizer</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">stop_token_id</span><span class="p">)</span> <span class="o">!=</span> <span class="n">stop_seq</span><span class="p">:</span>
                 <span class="k">continue</span>
@@ -2358,7 +2412,9 @@ If specified, this overrides the default chat template of the tokenizer.</p>
 
             <details class="quote">
               <summary>Source code in <code>flexeval/core/language_model/hf_lm.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">158</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">156</span>
+<span class="normal">157</span>
+<span class="normal">158</span>
 <span class="normal">159</span>
 <span class="normal">160</span>
 <span class="normal">161</span>
@@ -2416,7 +2472,9 @@ If specified, this overrides the default chat template of the tokenizer.</p>
 <span class="normal">213</span>
 <span class="normal">214</span>
 <span class="normal">215</span>
-<span class="normal">216</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<span class="normal">216</span>
+<span class="normal">217</span>
+<span class="normal">218</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">model_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">model_kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -2438,13 +2496,17 @@ If specified, this overrides the default chat template of the tokenizer.</p>
     <span class="n">model_kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="n">model_kwargs</span><span class="p">}</span>  <span class="c1"># copy kwargs to avoid modifying the original dict</span>
     <span class="k">if</span> <span class="s2">&quot;device_map&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">model_kwargs</span><span class="p">:</span>
         <span class="n">model_kwargs</span><span class="p">[</span><span class="s2">&quot;device_map&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span>
-    <span class="k">if</span> <span class="s2">&quot;torch_dtype&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">model_kwargs</span> <span class="ow">or</span> <span class="n">model_kwargs</span><span class="p">[</span><span class="s2">&quot;torch_dtype&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;auto&quot;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="s2">&quot;torch_dtype&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">model_kwargs</span><span class="p">:</span>
         <span class="c1"># You need to set torch_dtype to use the optimal dtype for the model.</span>
         <span class="c1"># https://huggingface.co/docs/transformers/main/main_classes/model#model-instantiation-dtype</span>
         <span class="n">model_kwargs</span><span class="p">[</span><span class="s2">&quot;torch_dtype&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span>
-    <span class="k">else</span><span class="p">:</span>
+    <span class="k">elif</span> <span class="n">model_kwargs</span><span class="p">[</span><span class="s2">&quot;torch_dtype&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;auto&quot;</span><span class="p">:</span>
         <span class="c1"># Convert string to torch.dtype</span>
-        <span class="n">model_kwargs</span><span class="p">[</span><span class="s2">&quot;torch_dtype&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">torch</span><span class="p">,</span> <span class="n">model_kwargs</span><span class="p">[</span><span class="s2">&quot;torch_dtype&quot;</span><span class="p">])</span>
+        <span class="c1"># We allow either &quot;bfloat16&quot; or &quot;torch.bfloat16&quot;</span>
+        <span class="n">torch_dtype_str</span> <span class="o">=</span> <span class="n">model_kwargs</span><span class="p">[</span><span class="s2">&quot;torch_dtype&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">torch_dtype_str</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;torch.&quot;</span><span class="p">):</span>
+            <span class="n">torch_dtype_str</span> <span class="o">=</span> <span class="n">torch_dtype_str</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="s2">&quot;torch.&quot;</span><span class="p">)</span> <span class="p">:]</span>
+        <span class="n">model_kwargs</span><span class="p">[</span><span class="s2">&quot;torch_dtype&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">torch</span><span class="p">,</span> <span class="n">torch_dtype_str</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">model_kwargs</span><span class="p">[</span><span class="s2">&quot;torch_dtype&quot;</span><span class="p">],</span> <span class="n">torch</span><span class="o">.</span><span class="n">dtype</span><span class="p">):</span>
             <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Invalid torch_dtype: </span><span class="si">{</span><span class="n">model_kwargs</span><span class="p">[</span><span class="s1">&#39;torch_dtype&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
@@ -2496,11 +2558,7 @@ If specified, this overrides the default chat template of the tokenizer.</p>
 
             <details class="quote">
               <summary>Source code in <code>flexeval/core/language_model/hf_lm.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">257</span>
-<span class="normal">258</span>
-<span class="normal">259</span>
-<span class="normal">260</span>
-<span class="normal">261</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">261</span>
 <span class="normal">262</span>
 <span class="normal">263</span>
 <span class="normal">264</span>
@@ -2550,7 +2608,11 @@ If specified, this overrides the default chat template of the tokenizer.</p>
 <span class="normal">308</span>
 <span class="normal">309</span>
 <span class="normal">310</span>
-<span class="normal">311</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@torch</span><span class="o">.</span><span class="n">inference_mode</span><span class="p">()</span>
+<span class="normal">311</span>
+<span class="normal">312</span>
+<span class="normal">313</span>
+<span class="normal">314</span>
+<span class="normal">315</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@torch</span><span class="o">.</span><span class="n">inference_mode</span><span class="p">()</span>
 <span class="k">def</span> <span class="nf">batch_complete_text</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">text_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
@@ -2626,11 +2688,7 @@ If specified, this overrides the default chat template of the tokenizer.</p>
 
             <details class="quote">
               <summary>Source code in <code>flexeval/core/language_model/hf_lm.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">313</span>
-<span class="normal">314</span>
-<span class="normal">315</span>
-<span class="normal">316</span>
-<span class="normal">317</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">317</span>
 <span class="normal">318</span>
 <span class="normal">319</span>
 <span class="normal">320</span>
@@ -2640,7 +2698,11 @@ If specified, this overrides the default chat template of the tokenizer.</p>
 <span class="normal">324</span>
 <span class="normal">325</span>
 <span class="normal">326</span>
-<span class="normal">327</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">batch_generate_chat_response</span><span class="p">(</span>
+<span class="normal">327</span>
+<span class="normal">328</span>
+<span class="normal">329</span>
+<span class="normal">330</span>
+<span class="normal">331</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">batch_generate_chat_response</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">chat_messages_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]],</span>
     <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
@@ -2676,11 +2738,7 @@ If specified, this overrides the default chat template of the tokenizer.</p>
 
             <details class="quote">
               <summary>Source code in <code>flexeval/core/language_model/hf_lm.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">329</span>
-<span class="normal">330</span>
-<span class="normal">331</span>
-<span class="normal">332</span>
-<span class="normal">333</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">333</span>
 <span class="normal">334</span>
 <span class="normal">335</span>
 <span class="normal">336</span>
@@ -2781,7 +2839,11 @@ If specified, this overrides the default chat template of the tokenizer.</p>
 <span class="normal">431</span>
 <span class="normal">432</span>
 <span class="normal">433</span>
-<span class="normal">434</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@torch</span><span class="o">.</span><span class="n">inference_mode</span><span class="p">()</span>
+<span class="normal">434</span>
+<span class="normal">435</span>
+<span class="normal">436</span>
+<span class="normal">437</span>
+<span class="normal">438</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@torch</span><span class="o">.</span><span class="n">inference_mode</span><span class="p">()</span>
 <span class="k">def</span> <span class="nf">batch_compute_log_probs</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">text_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
@@ -2905,11 +2967,11 @@ If specified, this overrides the default chat template of the tokenizer.</p>
 
 
 
-<h2 id="flexeval.core.language_model.openai_chatgpt.OpenAIChatGPT" class="doc doc-heading">
-            <span class="doc doc-object-name doc-class-name">OpenAIChatGPT</span>
+<h2 id="flexeval.core.language_model.openai_chatgpt.OpenAIChatAPI" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">OpenAIChatAPI</span>
 
 
-<a href="#flexeval.core.language_model.openai_chatgpt.OpenAIChatGPT" class="headerlink" title="Permanent link">&para;</a></h2>
+<a href="#flexeval.core.language_model.openai_chatgpt.OpenAIChatAPI" class="headerlink" title="Permanent link">&para;</a></h2>
 
 
     <div class="doc doc-contents first">
@@ -2944,7 +3006,11 @@ If specified, this overrides the default chat template of the tokenizer.</p>
 
               <details class="quote">
                 <summary>Source code in <code>flexeval/core/language_model/openai_chatgpt.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 37</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 33</span>
+<span class="normal"> 34</span>
+<span class="normal"> 35</span>
+<span class="normal"> 36</span>
+<span class="normal"> 37</span>
 <span class="normal"> 38</span>
 <span class="normal"> 39</span>
 <span class="normal"> 40</span>
@@ -3027,11 +3093,7 @@ If specified, this overrides the default chat template of the tokenizer.</p>
 <span class="normal">117</span>
 <span class="normal">118</span>
 <span class="normal">119</span>
-<span class="normal">120</span>
-<span class="normal">121</span>
-<span class="normal">122</span>
-<span class="normal">123</span>
-<span class="normal">124</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">OpenAIChatGPT</span><span class="p">(</span><span class="n">LanguageModel</span><span class="p">):</span>
+<span class="normal">120</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">OpenAIChatAPI</span><span class="p">(</span><span class="n">LanguageModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    LanguageModel implementation using OpenAI&#39;s ChatGPT API.</span>
 
@@ -3137,11 +3199,11 @@ If specified, this overrides the default chat template of the tokenizer.</p>
 <div class="doc doc-object doc-function">
 
 
-<h3 id="flexeval.core.language_model.openai_chatgpt.OpenAIChatGPT.__init__" class="doc doc-heading">
+<h3 id="flexeval.core.language_model.openai_chatgpt.OpenAIChatAPI.__init__" class="doc doc-heading">
             <span class="doc doc-object-name doc-function-name">__init__</span>
 
 
-<a href="#flexeval.core.language_model.openai_chatgpt.OpenAIChatGPT.__init__" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#flexeval.core.language_model.openai_chatgpt.OpenAIChatAPI.__init__" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature highlight"><pre><span></span><code><span class="fm">__init__</span><span class="p">(</span><span class="nf">model_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;gpt-3.5-turbo&#39;</span><span class="p">,</span> <span class="n">api_headers</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
 </code></pre></div>
 
@@ -3149,15 +3211,15 @@ If specified, this overrides the default chat template of the tokenizer.</p>
 
             <details class="quote">
               <summary>Source code in <code>flexeval/core/language_model/openai_chatgpt.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">46</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
 <span class="normal">47</span>
 <span class="normal">48</span>
 <span class="normal">49</span>
-<span class="normal">50</span>
-<span class="normal">51</span>
-<span class="normal">52</span>
-<span class="normal">53</span>
-<span class="normal">54</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<span class="normal">50</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">model_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;gpt-3.5-turbo&quot;</span><span class="p">,</span>
     <span class="n">api_headers</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -3175,11 +3237,11 @@ If specified, this overrides the default chat template of the tokenizer.</p>
 <div class="doc doc-object doc-function">
 
 
-<h3 id="flexeval.core.language_model.openai_chatgpt.OpenAIChatGPT.batch_complete_text" class="doc doc-heading">
+<h3 id="flexeval.core.language_model.openai_chatgpt.OpenAIChatAPI.batch_complete_text" class="doc doc-heading">
             <span class="doc doc-object-name doc-function-name">batch_complete_text</span>
 
 
-<a href="#flexeval.core.language_model.openai_chatgpt.OpenAIChatGPT.batch_complete_text" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#flexeval.core.language_model.openai_chatgpt.OpenAIChatAPI.batch_complete_text" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">batch_complete_text</span><span class="p">(</span><span class="n">text_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">stop_sequences</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">max_new_tokens</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
 </code></pre></div>
 
@@ -3187,7 +3249,11 @@ If specified, this overrides the default chat template of the tokenizer.</p>
 
             <details class="quote">
               <summary>Source code in <code>flexeval/core/language_model/openai_chatgpt.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 98</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 94</span>
+<span class="normal"> 95</span>
+<span class="normal"> 96</span>
+<span class="normal"> 97</span>
+<span class="normal"> 98</span>
 <span class="normal"> 99</span>
 <span class="normal">100</span>
 <span class="normal">101</span>
@@ -3199,11 +3265,7 @@ If specified, this overrides the default chat template of the tokenizer.</p>
 <span class="normal">107</span>
 <span class="normal">108</span>
 <span class="normal">109</span>
-<span class="normal">110</span>
-<span class="normal">111</span>
-<span class="normal">112</span>
-<span class="normal">113</span>
-<span class="normal">114</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">batch_complete_text</span><span class="p">(</span>
+<span class="normal">110</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">batch_complete_text</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">text_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
     <span class="n">stop_sequences</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -3229,11 +3291,11 @@ If specified, this overrides the default chat template of the tokenizer.</p>
 <div class="doc doc-object doc-function">
 
 
-<h3 id="flexeval.core.language_model.openai_chatgpt.OpenAIChatGPT.batch_generate_chat_response" class="doc doc-heading">
+<h3 id="flexeval.core.language_model.openai_chatgpt.OpenAIChatAPI.batch_generate_chat_response" class="doc doc-heading">
             <span class="doc doc-object-name doc-function-name">batch_generate_chat_response</span>
 
 
-<a href="#flexeval.core.language_model.openai_chatgpt.OpenAIChatGPT.batch_generate_chat_response" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#flexeval.core.language_model.openai_chatgpt.OpenAIChatAPI.batch_generate_chat_response" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">batch_generate_chat_response</span><span class="p">(</span><span class="n">chat_messages_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
 </code></pre></div>
 
@@ -3241,15 +3303,15 @@ If specified, this overrides the default chat template of the tokenizer.</p>
 
             <details class="quote">
               <summary>Source code in <code>flexeval/core/language_model/openai_chatgpt.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">116</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">112</span>
+<span class="normal">113</span>
+<span class="normal">114</span>
+<span class="normal">115</span>
+<span class="normal">116</span>
 <span class="normal">117</span>
 <span class="normal">118</span>
 <span class="normal">119</span>
-<span class="normal">120</span>
-<span class="normal">121</span>
-<span class="normal">122</span>
-<span class="normal">123</span>
-<span class="normal">124</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">batch_generate_chat_response</span><span class="p">(</span>
+<span class="normal">120</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">batch_generate_chat_response</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">chat_messages_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]],</span>
     <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>

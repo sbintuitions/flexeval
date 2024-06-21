@@ -9,7 +9,7 @@
       
       
       
-        <link rel="prev" href="../">
+        <link rel="prev" href="../code_chat/">
       
       
         <link rel="next" href="../en_chat/">
@@ -501,6 +501,27 @@
                 
   
   
+  
+  
+    <li class="md-nav__item">
+      <a href="../code_chat/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Code chat
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
     
   
   
@@ -678,11 +699,11 @@
   
   
     <li class="md-nav__item">
-      <a href="../en_preplexity/" class="md-nav__link">
+      <a href="../en_perplexity/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
-    En preplexity
+    En perplexity
   </span>
   
 
@@ -767,6 +788,27 @@
   
   <span class="md-ellipsis">
     Translation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../translation_chat/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Translation chat
   </span>
   
 
@@ -1339,25 +1381,22 @@ original_config {
 <li><a href="https://huggingface.co/datasets/mbpp">Hugging Face Dataset</a></li>
 <li><a href="https://arxiv.org/abs/2108.07732">Program Synthesis with Large Language Models</a>
 <div class="highlight"><pre><span></span><code>local dataset_base_args = {
-  dataset_name: &#39;mbpp&#39;,
-  subset: &#39;sanitized&#39;,
-  references_template: &#39;{{ test_list }}&#39;,
+  class_path: &#39;HfGenerationDataset&#39;,
+  init_args: {
+    dataset_name: &#39;mbpp&#39;,
+    subset: &#39;sanitized&#39;,
+    references_template: &#39;{{ test_list }}&#39;,
+  },
 };
 
 {
   class_path: &#39;Generation&#39;,
   init_args: {
-    eval_dataset: {
-      class_path: &#39;HfGenerationDataset&#39;,
-      init_args: dataset_base_args { split: &#39;test&#39; },
-    },
+    eval_dataset: dataset_base_args { init_args+: { split: &#39;test&#39; } },
     few_shot_generator: {
       class_path: &#39;RandomFewShotGenerator&#39;,
       init_args: {
-        dataset: {
-          class_path: &#39;HfGenerationDataset&#39;,
-          init_args: dataset_base_args { split: &#39;prompt&#39; },
-        },
+        dataset: dataset_base_args { init_args+: { split: &#39;prompt&#39; } },
         num_shots: 3,
       },
     },

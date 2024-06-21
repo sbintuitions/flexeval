@@ -500,6 +500,27 @@
   
   
     <li class="md-nav__item">
+      <a href="../../preset_configs/EvalSetup/code_chat/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Code chat
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../preset_configs/EvalSetup/code_generation/" class="md-nav__link">
         
   
@@ -584,11 +605,11 @@
   
   
     <li class="md-nav__item">
-      <a href="../../preset_configs/EvalSetup/en_preplexity/" class="md-nav__link">
+      <a href="../../preset_configs/EvalSetup/en_perplexity/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
-    En preplexity
+    En perplexity
   </span>
   
 
@@ -673,6 +694,27 @@
   
   <span class="md-ellipsis">
     Translation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../preset_configs/EvalSetup/translation_chat/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Translation chat
   </span>
   
 
@@ -1272,7 +1314,12 @@
 
               <details class="quote">
                 <summary>Source code in <code>flexeval/scripts/flexeval_lm.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">65</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">60</span>
+<span class="normal">61</span>
+<span class="normal">62</span>
+<span class="normal">63</span>
+<span class="normal">64</span>
+<span class="normal">65</span>
 <span class="normal">66</span>
 <span class="normal">67</span>
 <span class="normal">68</span>
@@ -1292,13 +1339,14 @@
 <span class="normal">82</span>
 <span class="normal">83</span>
 <span class="normal">84</span>
-<span class="normal">85</span>
-<span class="normal">86</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span>
+<span class="normal">85</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">ChatResponse</span><span class="p">(</span><span class="n">EvalSetup</span><span class="p">):</span>
     <span class="n">eval_dataset</span><span class="p">:</span> <span class="n">ChatDataset</span>
     <span class="n">gen_kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span>
+    <span class="n">few_shot_generator</span><span class="p">:</span> <span class="n">FewShotGenerator</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">metrics</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Metric</span><span class="p">]</span> <span class="o">|</span> <span class="n">Metric</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">4</span>
+    <span class="n">max_instances</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="k">def</span> <span class="nf">evaluate_lm</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -1314,6 +1362,8 @@
             <span class="n">eval_dataset</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">eval_dataset</span><span class="p">,</span>
             <span class="n">metrics</span><span class="o">=</span><span class="n">metrics</span><span class="p">,</span>
             <span class="n">batch_size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span><span class="p">,</span>
+            <span class="n">max_instances</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">max_instances</span><span class="p">,</span>
+            <span class="n">few_shot_generator</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">few_shot_generator</span><span class="p">,</span>
         <span class="p">)</span>
 </code></pre></div></td></tr></table></div>
               </details>
@@ -1374,6 +1424,28 @@
 
 
 
+<h3 id="flexeval.scripts.flexeval_lm.ChatResponse.few_shot_generator" class="doc doc-heading">
+            <span class="doc doc-object-name doc-attribute-name">few_shot_generator</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-class-attribute"><code>class-attribute</code></small>
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+<a href="#flexeval.scripts.flexeval_lm.ChatResponse.few_shot_generator" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">few_shot_generator</span><span class="p">:</span> <span class="n">FewShotGenerator</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
 <h3 id="flexeval.scripts.flexeval_lm.ChatResponse.metrics" class="doc doc-heading">
             <span class="doc doc-object-name doc-attribute-name">metrics</span>
 
@@ -1414,6 +1486,28 @@
 
 </div>
 
+<div class="doc doc-object doc-attribute">
+
+
+
+<h3 id="flexeval.scripts.flexeval_lm.ChatResponse.max_instances" class="doc doc-heading">
+            <span class="doc doc-object-name doc-attribute-name">max_instances</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-class-attribute"><code>class-attribute</code></small>
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+<a href="#flexeval.scripts.flexeval_lm.ChatResponse.max_instances" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">max_instances</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+    </div>
+
+</div>
+
 
 
 <div class="doc doc-object doc-function">
@@ -1424,7 +1518,7 @@
 
 
 <a href="#flexeval.scripts.flexeval_lm.ChatResponse.__init__" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="fm">__init__</span><span class="p">(</span><span class="nf">eval_dataset</span><span class="p">:</span> <span class="n">ChatDataset</span><span class="p">,</span> <span class="n">gen_kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">metrics</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Metric</span><span class="p">]</span> <span class="o">|</span> <span class="n">Metric</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">4</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="fm">__init__</span><span class="p">(</span><span class="nf">eval_dataset</span><span class="p">:</span> <span class="n">ChatDataset</span><span class="p">,</span> <span class="n">gen_kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">few_shot_generator</span><span class="p">:</span> <span class="n">FewShotGenerator</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">metrics</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Metric</span><span class="p">]</span> <span class="o">|</span> <span class="n">Metric</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">4</span><span class="p">,</span> <span class="n">max_instances</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -1448,7 +1542,10 @@
 
             <details class="quote">
               <summary>Source code in <code>flexeval/scripts/flexeval_lm.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">72</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">69</span>
+<span class="normal">70</span>
+<span class="normal">71</span>
+<span class="normal">72</span>
 <span class="normal">73</span>
 <span class="normal">74</span>
 <span class="normal">75</span>
@@ -1461,8 +1558,7 @@
 <span class="normal">82</span>
 <span class="normal">83</span>
 <span class="normal">84</span>
-<span class="normal">85</span>
-<span class="normal">86</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">evaluate_lm</span><span class="p">(</span>
+<span class="normal">85</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">evaluate_lm</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">language_model</span><span class="p">:</span> <span class="n">LanguageModel</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]:</span>
@@ -1476,6 +1572,8 @@
         <span class="n">eval_dataset</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">eval_dataset</span><span class="p">,</span>
         <span class="n">metrics</span><span class="o">=</span><span class="n">metrics</span><span class="p">,</span>
         <span class="n">batch_size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span><span class="p">,</span>
+        <span class="n">max_instances</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">max_instances</span><span class="p">,</span>
+        <span class="n">few_shot_generator</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">few_shot_generator</span><span class="p">,</span>
     <span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -1509,15 +1607,15 @@
 
               <details class="quote">
                 <summary>Source code in <code>flexeval/scripts/flexeval_lm.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">54</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span>
 <span class="normal">55</span>
 <span class="normal">56</span>
-<span class="normal">57</span>
-<span class="normal">58</span>
-<span class="normal">59</span>
-<span class="normal">60</span>
-<span class="normal">61</span>
-<span class="normal">62</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">EvalSetup</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+<span class="normal">57</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">EvalSetup</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Abstract class to give evaluation functions a common interface.&quot;&quot;&quot;</span>
 
     <span class="nd">@abstractmethod</span>
@@ -1560,12 +1658,12 @@
 
             <details class="quote">
               <summary>Source code in <code>flexeval/scripts/flexeval_lm.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">57</span>
-<span class="normal">58</span>
-<span class="normal">59</span>
-<span class="normal">60</span>
-<span class="normal">61</span>
-<span class="normal">62</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@abstractmethod</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span>
+<span class="normal">55</span>
+<span class="normal">56</span>
+<span class="normal">57</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@abstractmethod</span>
 <span class="k">def</span> <span class="nf">evaluate_lm</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">language_model</span><span class="p">:</span> <span class="n">LanguageModel</span><span class="p">,</span>
@@ -1605,7 +1703,8 @@
 
               <details class="quote">
                 <summary>Source code in <code>flexeval/scripts/flexeval_lm.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 89</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 88</span>
+<span class="normal"> 89</span>
 <span class="normal"> 90</span>
 <span class="normal"> 91</span>
 <span class="normal"> 92</span>
@@ -1630,7 +1729,8 @@
 <span class="normal">111</span>
 <span class="normal">112</span>
 <span class="normal">113</span>
-<span class="normal">114</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span>
+<span class="normal">114</span>
+<span class="normal">115</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">Generation</span><span class="p">(</span><span class="n">EvalSetup</span><span class="p">):</span>
     <span class="n">eval_dataset</span><span class="p">:</span> <span class="n">GenerationDataset</span>
     <span class="n">prompt_template</span><span class="p">:</span> <span class="n">PromptTemplate</span>
@@ -1638,6 +1738,7 @@
     <span class="n">few_shot_generator</span><span class="p">:</span> <span class="n">FewShotGenerator</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">metrics</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Metric</span><span class="p">]</span> <span class="o">|</span> <span class="n">Metric</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">4</span>
+    <span class="n">max_instances</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="k">def</span> <span class="nf">evaluate_lm</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -1655,6 +1756,7 @@
             <span class="n">few_shot_generator</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">few_shot_generator</span><span class="p">,</span>
             <span class="n">metrics</span><span class="o">=</span><span class="n">metrics</span><span class="p">,</span>
             <span class="n">batch_size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span><span class="p">,</span>
+            <span class="n">max_instances</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">max_instances</span><span class="p">,</span>
         <span class="p">)</span>
 </code></pre></div></td></tr></table></div>
               </details>
@@ -1798,6 +1900,28 @@
 
 </div>
 
+<div class="doc doc-object doc-attribute">
+
+
+
+<h3 id="flexeval.scripts.flexeval_lm.Generation.max_instances" class="doc doc-heading">
+            <span class="doc doc-object-name doc-attribute-name">max_instances</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-class-attribute"><code>class-attribute</code></small>
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+<a href="#flexeval.scripts.flexeval_lm.Generation.max_instances" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">max_instances</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+    </div>
+
+</div>
+
 
 
 <div class="doc doc-object doc-function">
@@ -1808,7 +1932,7 @@
 
 
 <a href="#flexeval.scripts.flexeval_lm.Generation.__init__" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="fm">__init__</span><span class="p">(</span><span class="nf">eval_dataset</span><span class="p">:</span> <span class="n">GenerationDataset</span><span class="p">,</span> <span class="n">prompt_template</span><span class="p">:</span> <span class="n">PromptTemplate</span><span class="p">,</span> <span class="n">gen_kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">few_shot_generator</span><span class="p">:</span> <span class="n">FewShotGenerator</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">metrics</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Metric</span><span class="p">]</span> <span class="o">|</span> <span class="n">Metric</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">4</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="fm">__init__</span><span class="p">(</span><span class="nf">eval_dataset</span><span class="p">:</span> <span class="n">GenerationDataset</span><span class="p">,</span> <span class="n">prompt_template</span><span class="p">:</span> <span class="n">PromptTemplate</span><span class="p">,</span> <span class="n">gen_kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">few_shot_generator</span><span class="p">:</span> <span class="n">FewShotGenerator</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">metrics</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Metric</span><span class="p">]</span> <span class="o">|</span> <span class="n">Metric</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">4</span><span class="p">,</span> <span class="n">max_instances</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -1848,7 +1972,8 @@
 <span class="normal">111</span>
 <span class="normal">112</span>
 <span class="normal">113</span>
-<span class="normal">114</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">evaluate_lm</span><span class="p">(</span>
+<span class="normal">114</span>
+<span class="normal">115</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">evaluate_lm</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">language_model</span><span class="p">:</span> <span class="n">LanguageModel</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]:</span>
@@ -1864,6 +1989,7 @@
         <span class="n">few_shot_generator</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">few_shot_generator</span><span class="p">,</span>
         <span class="n">metrics</span><span class="o">=</span><span class="n">metrics</span><span class="p">,</span>
         <span class="n">batch_size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span><span class="p">,</span>
+        <span class="n">max_instances</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">max_instances</span><span class="p">,</span>
     <span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -1899,8 +2025,7 @@
 
               <details class="quote">
                 <summary>Source code in <code>flexeval/scripts/flexeval_lm.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">117</span>
-<span class="normal">118</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">118</span>
 <span class="normal">119</span>
 <span class="normal">120</span>
 <span class="normal">121</span>
@@ -1916,12 +2041,16 @@
 <span class="normal">131</span>
 <span class="normal">132</span>
 <span class="normal">133</span>
-<span class="normal">134</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span>
+<span class="normal">134</span>
+<span class="normal">135</span>
+<span class="normal">136</span>
+<span class="normal">137</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">MultipleChoice</span><span class="p">(</span><span class="n">EvalSetup</span><span class="p">):</span>
     <span class="n">eval_dataset</span><span class="p">:</span> <span class="n">MultipleChoiceDataset</span>
     <span class="n">prompt_template</span><span class="p">:</span> <span class="n">PromptTemplate</span>
     <span class="n">few_shot_generator</span><span class="p">:</span> <span class="n">FewShotGenerator</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">4</span>
+    <span class="n">max_instances</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="k">def</span> <span class="nf">evaluate_lm</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -1933,6 +2062,7 @@
             <span class="n">prompt_template</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">prompt_template</span><span class="p">,</span>
             <span class="n">few_shot_generator</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">few_shot_generator</span><span class="p">,</span>
             <span class="n">batch_size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span><span class="p">,</span>
+            <span class="n">max_instances</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">max_instances</span><span class="p">,</span>
         <span class="p">)</span>
 </code></pre></div></td></tr></table></div>
               </details>
@@ -2033,6 +2163,28 @@
 
 </div>
 
+<div class="doc doc-object doc-attribute">
+
+
+
+<h3 id="flexeval.scripts.flexeval_lm.MultipleChoice.max_instances" class="doc doc-heading">
+            <span class="doc doc-object-name doc-attribute-name">max_instances</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-class-attribute"><code>class-attribute</code></small>
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+<a href="#flexeval.scripts.flexeval_lm.MultipleChoice.max_instances" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">max_instances</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+    </div>
+
+</div>
+
 
 
 <div class="doc doc-object doc-function">
@@ -2043,7 +2195,7 @@
 
 
 <a href="#flexeval.scripts.flexeval_lm.MultipleChoice.__init__" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="fm">__init__</span><span class="p">(</span><span class="nf">eval_dataset</span><span class="p">:</span> <span class="n">MultipleChoiceDataset</span><span class="p">,</span> <span class="n">prompt_template</span><span class="p">:</span> <span class="n">PromptTemplate</span><span class="p">,</span> <span class="n">few_shot_generator</span><span class="p">:</span> <span class="n">FewShotGenerator</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">4</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="fm">__init__</span><span class="p">(</span><span class="nf">eval_dataset</span><span class="p">:</span> <span class="n">MultipleChoiceDataset</span><span class="p">,</span> <span class="n">prompt_template</span><span class="p">:</span> <span class="n">PromptTemplate</span><span class="p">,</span> <span class="n">few_shot_generator</span><span class="p">:</span> <span class="n">FewShotGenerator</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">4</span><span class="p">,</span> <span class="n">max_instances</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -2067,9 +2219,7 @@
 
             <details class="quote">
               <summary>Source code in <code>flexeval/scripts/flexeval_lm.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">124</span>
-<span class="normal">125</span>
-<span class="normal">126</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">126</span>
 <span class="normal">127</span>
 <span class="normal">128</span>
 <span class="normal">129</span>
@@ -2077,7 +2227,10 @@
 <span class="normal">131</span>
 <span class="normal">132</span>
 <span class="normal">133</span>
-<span class="normal">134</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">evaluate_lm</span><span class="p">(</span>
+<span class="normal">134</span>
+<span class="normal">135</span>
+<span class="normal">136</span>
+<span class="normal">137</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">evaluate_lm</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">language_model</span><span class="p">:</span> <span class="n">LanguageModel</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]:</span>
@@ -2087,6 +2240,7 @@
         <span class="n">prompt_template</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">prompt_template</span><span class="p">,</span>
         <span class="n">few_shot_generator</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">few_shot_generator</span><span class="p">,</span>
         <span class="n">batch_size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span><span class="p">,</span>
+        <span class="n">max_instances</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">max_instances</span><span class="p">,</span>
     <span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -2122,10 +2276,7 @@
 
               <details class="quote">
                 <summary>Source code in <code>flexeval/scripts/flexeval_lm.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">137</span>
-<span class="normal">138</span>
-<span class="normal">139</span>
-<span class="normal">140</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">140</span>
 <span class="normal">141</span>
 <span class="normal">142</span>
 <span class="normal">143</span>
@@ -2138,11 +2289,17 @@
 <span class="normal">150</span>
 <span class="normal">151</span>
 <span class="normal">152</span>
-<span class="normal">153</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span>
+<span class="normal">153</span>
+<span class="normal">154</span>
+<span class="normal">155</span>
+<span class="normal">156</span>
+<span class="normal">157</span>
+<span class="normal">158</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">Perplexity</span><span class="p">(</span><span class="n">EvalSetup</span><span class="p">):</span>
     <span class="n">eval_dataset</span><span class="p">:</span> <span class="n">TextDataset</span>
     <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">4</span>
     <span class="n">tokenizer</span><span class="p">:</span> <span class="n">Tokenizer</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">max_instances</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="k">def</span> <span class="nf">evaluate_lm</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -2153,6 +2310,7 @@
             <span class="n">eval_dataset</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">eval_dataset</span><span class="p">,</span>
             <span class="n">batch_size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span><span class="p">,</span>
             <span class="n">tokenizer</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tokenizer</span><span class="p">,</span>
+            <span class="n">max_instances</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">max_instances</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="k">return</span> <span class="n">metrics</span><span class="p">,</span> <span class="kc">None</span>
 </code></pre></div></td></tr></table></div>
@@ -2233,6 +2391,28 @@
 
 </div>
 
+<div class="doc doc-object doc-attribute">
+
+
+
+<h3 id="flexeval.scripts.flexeval_lm.Perplexity.max_instances" class="doc doc-heading">
+            <span class="doc doc-object-name doc-attribute-name">max_instances</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-class-attribute"><code>class-attribute</code></small>
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+<a href="#flexeval.scripts.flexeval_lm.Perplexity.max_instances" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">max_instances</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+    </div>
+
+</div>
+
 
 
 <div class="doc doc-object doc-function">
@@ -2243,7 +2423,7 @@
 
 
 <a href="#flexeval.scripts.flexeval_lm.Perplexity.__init__" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="fm">__init__</span><span class="p">(</span><span class="nf">eval_dataset</span><span class="p">:</span> <span class="n">TextDataset</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">4</span><span class="p">,</span> <span class="n">tokenizer</span><span class="p">:</span> <span class="n">Tokenizer</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="fm">__init__</span><span class="p">(</span><span class="nf">eval_dataset</span><span class="p">:</span> <span class="n">TextDataset</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">4</span><span class="p">,</span> <span class="n">tokenizer</span><span class="p">:</span> <span class="n">Tokenizer</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">max_instances</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -2267,17 +2447,18 @@
 
             <details class="quote">
               <summary>Source code in <code>flexeval/scripts/flexeval_lm.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">143</span>
-<span class="normal">144</span>
-<span class="normal">145</span>
-<span class="normal">146</span>
-<span class="normal">147</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">147</span>
 <span class="normal">148</span>
 <span class="normal">149</span>
 <span class="normal">150</span>
 <span class="normal">151</span>
 <span class="normal">152</span>
-<span class="normal">153</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">evaluate_lm</span><span class="p">(</span>
+<span class="normal">153</span>
+<span class="normal">154</span>
+<span class="normal">155</span>
+<span class="normal">156</span>
+<span class="normal">157</span>
+<span class="normal">158</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">evaluate_lm</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">language_model</span><span class="p">:</span> <span class="n">LanguageModel</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]:</span>
@@ -2286,6 +2467,7 @@
         <span class="n">eval_dataset</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">eval_dataset</span><span class="p">,</span>
         <span class="n">batch_size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span><span class="p">,</span>
         <span class="n">tokenizer</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tokenizer</span><span class="p">,</span>
+        <span class="n">max_instances</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">max_instances</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="k">return</span> <span class="n">metrics</span><span class="p">,</span> <span class="kc">None</span>
 </code></pre></div></td></tr></table></div>

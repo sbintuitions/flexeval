@@ -500,6 +500,27 @@
   
   
     <li class="md-nav__item">
+      <a href="../../preset_configs/EvalSetup/code_chat/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Code chat
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../preset_configs/EvalSetup/code_generation/" class="md-nav__link">
         
   
@@ -584,11 +605,11 @@
   
   
     <li class="md-nav__item">
-      <a href="../../preset_configs/EvalSetup/en_preplexity/" class="md-nav__link">
+      <a href="../../preset_configs/EvalSetup/en_perplexity/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
-    En preplexity
+    En perplexity
   </span>
   
 
@@ -673,6 +694,27 @@
   
   <span class="md-ellipsis">
     Translation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../preset_configs/EvalSetup/translation_chat/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Translation chat
   </span>
   
 
@@ -1270,8 +1312,7 @@
 
               <details class="quote">
                 <summary>Source code in <code>flexeval/core/generation_dataset/base.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">25</span>
-<span class="normal">26</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">26</span>
 <span class="normal">27</span>
 <span class="normal">28</span>
 <span class="normal">29</span>
@@ -1285,7 +1326,8 @@
 <span class="normal">37</span>
 <span class="normal">38</span>
 <span class="normal">39</span>
-<span class="normal">40</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">GenerationDataset</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+<span class="normal">40</span>
+<span class="normal">41</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">GenerationDataset</span><span class="p">(</span><span class="n">Sequence</span><span class="p">[</span><span class="n">GenerationInstance</span><span class="p">],</span> <span class="n">ABC</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;A dataset holding `GenerationInstance`.&quot;&quot;&quot;</span>
 
     <span class="nd">@abstractmethod</span>
@@ -1337,12 +1379,12 @@
 
             <details class="quote">
               <summary>Source code in <code>flexeval/core/generation_dataset/base.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">28</span>
-<span class="normal">29</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">29</span>
 <span class="normal">30</span>
 <span class="normal">31</span>
 <span class="normal">32</span>
-<span class="normal">33</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@abstractmethod</span>
+<span class="normal">33</span>
+<span class="normal">34</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@abstractmethod</span>
 <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns the number of instances in the dataset.</span>
@@ -1375,12 +1417,12 @@
 
             <details class="quote">
               <summary>Source code in <code>flexeval/core/generation_dataset/base.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">35</span>
-<span class="normal">36</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">36</span>
 <span class="normal">37</span>
 <span class="normal">38</span>
 <span class="normal">39</span>
-<span class="normal">40</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@abstractmethod</span>
+<span class="normal">40</span>
+<span class="normal">41</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@abstractmethod</span>
 <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GenerationInstance</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns the i-th instance.</span>
@@ -1422,8 +1464,7 @@
 
               <details class="quote">
                 <summary>Source code in <code>flexeval/core/generation_dataset/base.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 7</span>
-<span class="normal"> 8</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 8</span>
 <span class="normal"> 9</span>
 <span class="normal">10</span>
 <span class="normal">11</span>
@@ -1437,7 +1478,8 @@
 <span class="normal">19</span>
 <span class="normal">20</span>
 <span class="normal">21</span>
-<span class="normal">22</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span>
+<span class="normal">22</span>
+<span class="normal">23</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">GenerationInstance</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A dataclass representing a single input-output pair of a generation task.</span>

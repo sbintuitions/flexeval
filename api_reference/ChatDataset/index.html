@@ -500,6 +500,27 @@
   
   
     <li class="md-nav__item">
+      <a href="../../preset_configs/EvalSetup/code_chat/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Code chat
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../preset_configs/EvalSetup/code_generation/" class="md-nav__link">
         
   
@@ -584,11 +605,11 @@
   
   
     <li class="md-nav__item">
-      <a href="../../preset_configs/EvalSetup/en_preplexity/" class="md-nav__link">
+      <a href="../../preset_configs/EvalSetup/en_perplexity/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
-    En preplexity
+    En perplexity
   </span>
   
 
@@ -673,6 +694,27 @@
   
   <span class="md-ellipsis">
     Translation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../preset_configs/EvalSetup/translation_chat/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Translation chat
   </span>
   
 
@@ -863,6 +905,15 @@
   <a href="#flexeval.core.chat_dataset.hf_dataset.HfChatDataset" class="md-nav__link">
     <span class="md-ellipsis">
       HfChatDataset
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#flexeval.core.chat_dataset.sacrebleu_dataset.SacreBleuChatDataset" class="md-nav__link">
+    <span class="md-ellipsis">
+      SacreBleuChatDataset
     </span>
   </a>
   
@@ -1217,6 +1268,15 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#flexeval.core.chat_dataset.sacrebleu_dataset.SacreBleuChatDataset" class="md-nav__link">
+    <span class="md-ellipsis">
+      SacreBleuChatDataset
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1252,16 +1312,7 @@
 
               <details class="quote">
                 <summary>Source code in <code>flexeval/core/chat_dataset/base.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">47</span>
-<span class="normal">48</span>
-<span class="normal">49</span>
-<span class="normal">50</span>
-<span class="normal">51</span>
-<span class="normal">52</span>
-<span class="normal">53</span>
-<span class="normal">54</span>
-<span class="normal">55</span>
-<span class="normal">56</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">56</span>
 <span class="normal">57</span>
 <span class="normal">58</span>
 <span class="normal">59</span>
@@ -1276,7 +1327,16 @@
 <span class="normal">68</span>
 <span class="normal">69</span>
 <span class="normal">70</span>
-<span class="normal">71</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">ChatDataset</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+<span class="normal">71</span>
+<span class="normal">72</span>
+<span class="normal">73</span>
+<span class="normal">74</span>
+<span class="normal">75</span>
+<span class="normal">76</span>
+<span class="normal">77</span>
+<span class="normal">78</span>
+<span class="normal">79</span>
+<span class="normal">80</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">ChatDataset</span><span class="p">(</span><span class="n">Sequence</span><span class="p">[</span><span class="n">ChatInstance</span><span class="p">],</span> <span class="n">ABC</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;A dataset holding `ChatInstance`.&quot;&quot;&quot;</span>
 
     <span class="nd">@abstractmethod</span>
@@ -1337,12 +1397,12 @@
 
             <details class="quote">
               <summary>Source code in <code>flexeval/core/chat_dataset/base.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">50</span>
-<span class="normal">51</span>
-<span class="normal">52</span>
-<span class="normal">53</span>
-<span class="normal">54</span>
-<span class="normal">55</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@abstractmethod</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">59</span>
+<span class="normal">60</span>
+<span class="normal">61</span>
+<span class="normal">62</span>
+<span class="normal">63</span>
+<span class="normal">64</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@abstractmethod</span>
 <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns the number of chat instances in the dataset.</span>
@@ -1375,12 +1435,12 @@
 
             <details class="quote">
               <summary>Source code in <code>flexeval/core/chat_dataset/base.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">57</span>
-<span class="normal">58</span>
-<span class="normal">59</span>
-<span class="normal">60</span>
-<span class="normal">61</span>
-<span class="normal">62</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@abstractmethod</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">66</span>
+<span class="normal">67</span>
+<span class="normal">68</span>
+<span class="normal">69</span>
+<span class="normal">70</span>
+<span class="normal">71</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@abstractmethod</span>
 <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ChatInstance</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns the i-th chat instance.</span>
@@ -1415,14 +1475,14 @@ model should generate responses for each utterance incrementally.</p>
 
             <details class="quote">
               <summary>Source code in <code>flexeval/core/chat_dataset/base.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">64</span>
-<span class="normal">65</span>
-<span class="normal">66</span>
-<span class="normal">67</span>
-<span class="normal">68</span>
-<span class="normal">69</span>
-<span class="normal">70</span>
-<span class="normal">71</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@abstractmethod</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">73</span>
+<span class="normal">74</span>
+<span class="normal">75</span>
+<span class="normal">76</span>
+<span class="normal">77</span>
+<span class="normal">78</span>
+<span class="normal">79</span>
+<span class="normal">80</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@abstractmethod</span>
 <span class="k">def</span> <span class="nf">require_incremental_response</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;If true, the inputs consist of multiple user utterances and the</span>
 <span class="sd">    model should generate responses for each utterance incrementally.</span>
@@ -1502,7 +1562,16 @@ model should generate responses for each utterance incrementally.</p>
 <span class="normal">41</span>
 <span class="normal">42</span>
 <span class="normal">43</span>
-<span class="normal">44</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">ChatInstance</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A dataclass representing a single chat that will be fed to a chat language model.</span>
@@ -1539,6 +1608,15 @@ model should generate responses for each utterance incrementally.</p>
         <span class="k">if</span> <span class="s2">&quot;messages&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">extra_info</span><span class="p">:</span>
             <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;extra_info cannot contain a key named &#39;messages&#39;. It will conflict with the &#39;messages&#39; attribute.&quot;</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">inputs</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Alias for `messages`.</span>
+<span class="sd">        This is used in `FewShotGenerator` so that it can access the inputs with the same attribute name as</span>
+<span class="sd">        `GenerationInstance` and `MultipleChoiceInstance`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">messages</span>
 </code></pre></div></td></tr></table></div>
               </details>
 
@@ -1630,6 +1708,31 @@ The model's response will be evaluated against these references.</p>
     <div class="doc doc-contents ">
 
       <p>Extra information that can be used by passing to <code>Metric</code>.</p>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h3 id="flexeval.core.chat_dataset.base.ChatInstance.inputs" class="doc doc-heading">
+            <span class="doc doc-object-name doc-attribute-name">inputs</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+  </span>
+
+<a href="#flexeval.core.chat_dataset.base.ChatInstance.inputs" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">inputs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+      <p>Alias for <code>messages</code>.
+This is used in <code>FewShotGenerator</code> so that it can access the inputs with the same attribute name as
+<code>GenerationInstance</code> and <code>MultipleChoiceInstance</code>.</p>
     </div>
 
 </div>
@@ -2459,6 +2562,219 @@ This class only supports single-turn chat.</p>
     <span class="n">extra_info</span> <span class="o">=</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="n">template</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="o">**</span><span class="n">item</span><span class="p">)</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">template</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_extra_info_templates</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
 
     <span class="k">return</span> <span class="n">ChatInstance</span><span class="p">(</span><span class="n">messages</span><span class="o">=</span><span class="n">messages</span><span class="p">,</span> <span class="n">references</span><span class="o">=</span><span class="n">references</span><span class="p">,</span> <span class="n">extra_info</span><span class="o">=</span><span class="n">extra_info</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="flexeval.core.chat_dataset.sacrebleu_dataset.SacreBleuChatDataset" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">SacreBleuChatDataset</span>
+
+
+<a href="#flexeval.core.chat_dataset.sacrebleu_dataset.SacreBleuChatDataset" class="headerlink" title="Permanent link">&para;</a></h2>
+
+
+    <div class="doc doc-contents first">
+
+
+      <p>Load datasets from the <a href="https://github.com/mjpost/sacrebleu">sacrebleu</a> library.
+The available datasets are defined in sacrebleu.DATASETS.</p>
+
+              <details class="quote">
+                <summary>Source code in <code>flexeval/core/chat_dataset/sacrebleu_dataset.py</code></summary>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">SacreBleuChatDataset</span><span class="p">(</span><span class="n">ChatDataset</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Load datasets from the [sacrebleu](https://github.com/mjpost/sacrebleu) library.</span>
+<span class="sd">    The available datasets are defined in sacrebleu.DATASETS.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">langpair</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_source_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">sacrebleu</span><span class="o">.</span><span class="n">DATASETS</span><span class="p">[</span><span class="n">dataset_name</span><span class="p">]</span><span class="o">.</span><span class="n">source</span><span class="p">(</span><span class="n">langpair</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_references_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">[</span><span class="n">r</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">refs</span><span class="p">]</span> <span class="k">for</span> <span class="n">refs</span> <span class="ow">in</span> <span class="n">sacrebleu</span><span class="o">.</span><span class="n">DATASETS</span><span class="p">[</span><span class="n">dataset_name</span><span class="p">]</span><span class="o">.</span><span class="n">references</span><span class="p">(</span><span class="n">langpair</span><span class="p">)</span>
+        <span class="p">]</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_source_list</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_references_list</span><span class="p">):</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;The number of source and reference pairs should be the same.&quot;</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">require_incremental_response</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_source_list</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ChatInstance</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">ChatInstance</span><span class="p">(</span>
+            <span class="n">messages</span><span class="o">=</span><span class="p">[{</span><span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;user&quot;</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_source_list</span><span class="p">[</span><span class="n">i</span><span class="p">]}],</span>
+            <span class="n">references</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_references_list</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+            <span class="n">extra_info</span><span class="o">=</span><span class="p">{},</span>
+        <span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+              </details>
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="flexeval.core.chat_dataset.sacrebleu_dataset.SacreBleuChatDataset.__init__" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">__init__</span>
+
+
+<a href="#flexeval.core.chat_dataset.sacrebleu_dataset.SacreBleuChatDataset.__init__" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="fm">__init__</span><span class="p">(</span><span class="nf">dataset_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">langpair</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+            <details class="quote">
+              <summary>Source code in <code>flexeval/core/chat_dataset/sacrebleu_dataset.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">langpair</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_source_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">sacrebleu</span><span class="o">.</span><span class="n">DATASETS</span><span class="p">[</span><span class="n">dataset_name</span><span class="p">]</span><span class="o">.</span><span class="n">source</span><span class="p">(</span><span class="n">langpair</span><span class="p">))</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_references_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">[</span><span class="n">r</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">refs</span><span class="p">]</span> <span class="k">for</span> <span class="n">refs</span> <span class="ow">in</span> <span class="n">sacrebleu</span><span class="o">.</span><span class="n">DATASETS</span><span class="p">[</span><span class="n">dataset_name</span><span class="p">]</span><span class="o">.</span><span class="n">references</span><span class="p">(</span><span class="n">langpair</span><span class="p">)</span>
+    <span class="p">]</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_source_list</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_references_list</span><span class="p">):</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;The number of source and reference pairs should be the same.&quot;</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="flexeval.core.chat_dataset.sacrebleu_dataset.SacreBleuChatDataset.require_incremental_response" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">require_incremental_response</span>
+
+
+<a href="#flexeval.core.chat_dataset.sacrebleu_dataset.SacreBleuChatDataset.require_incremental_response" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">require_incremental_response</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">bool</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+            <details class="quote">
+              <summary>Source code in <code>flexeval/core/chat_dataset/sacrebleu_dataset.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">21</span>
+<span class="normal">22</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">require_incremental_response</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">return</span> <span class="kc">False</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="flexeval.core.chat_dataset.sacrebleu_dataset.SacreBleuChatDataset.__len__" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">__len__</span>
+
+
+<a href="#flexeval.core.chat_dataset.sacrebleu_dataset.SacreBleuChatDataset.__len__" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="fm">__len__</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">int</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+            <details class="quote">
+              <summary>Source code in <code>flexeval/core/chat_dataset/sacrebleu_dataset.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">24</span>
+<span class="normal">25</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_source_list</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="flexeval.core.chat_dataset.sacrebleu_dataset.SacreBleuChatDataset.__getitem__" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">__getitem__</span>
+
+
+<a href="#flexeval.core.chat_dataset.sacrebleu_dataset.SacreBleuChatDataset.__getitem__" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="fm">__getitem__</span><span class="p">(</span><span class="nf">i</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ChatInstance</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+            <details class="quote">
+              <summary>Source code in <code>flexeval/core/chat_dataset/sacrebleu_dataset.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ChatInstance</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">ChatInstance</span><span class="p">(</span>
+        <span class="n">messages</span><span class="o">=</span><span class="p">[{</span><span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;user&quot;</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_source_list</span><span class="p">[</span><span class="n">i</span><span class="p">]}],</span>
+        <span class="n">references</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_references_list</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+        <span class="n">extra_info</span><span class="o">=</span><span class="p">{},</span>
+    <span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>

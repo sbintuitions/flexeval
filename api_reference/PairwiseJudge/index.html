@@ -500,6 +500,27 @@
   
   
     <li class="md-nav__item">
+      <a href="../../preset_configs/EvalSetup/code_chat/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Code chat
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../preset_configs/EvalSetup/code_generation/" class="md-nav__link">
         
   
@@ -584,11 +605,11 @@
   
   
     <li class="md-nav__item">
-      <a href="../../preset_configs/EvalSetup/en_preplexity/" class="md-nav__link">
+      <a href="../../preset_configs/EvalSetup/en_perplexity/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
-    En preplexity
+    En perplexity
   </span>
   
 
@@ -673,6 +694,27 @@
   
   <span class="md-ellipsis">
     Translation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../preset_configs/EvalSetup/translation_chat/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Translation chat
   </span>
   
 
@@ -1251,45 +1293,11 @@
 <span class="normal">35</span>
 <span class="normal">36</span>
 <span class="normal">37</span>
-<span class="normal">38</span>
-<span class="normal">39</span>
-<span class="normal">40</span>
-<span class="normal">41</span>
-<span class="normal">42</span>
-<span class="normal">43</span>
-<span class="normal">44</span>
-<span class="normal">45</span>
-<span class="normal">46</span>
-<span class="normal">47</span>
-<span class="normal">48</span>
-<span class="normal">49</span>
-<span class="normal">50</span>
-<span class="normal">51</span>
-<span class="normal">52</span>
-<span class="normal">53</span>
-<span class="normal">54</span>
-<span class="normal">55</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">PairwiseJudge</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+<span class="normal">38</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">PairwiseJudge</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Judge which model is better given two items.</span>
 
 <span class="sd">    The output is a tuple of the winner and the rationale.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="nd">@abstractmethod</span>
-    <span class="k">def</span> <span class="nf">judge</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">model1_item</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
-        <span class="n">model2_item</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Winner</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Judge which model is better given two items.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            model1_item: The first model item, containing the model output and other information needed for judging.</span>
-<span class="sd">            model2_item: The second model item, containing the model output and other information needed for judging.</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            A tuple of the winner and the rationale.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
 
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">batch_judge</span><span class="p">(</span>
@@ -1316,97 +1324,6 @@
 
 
 
-
-<div class="doc doc-object doc-function">
-
-
-<h3 id="flexeval.core.pairwise_comparison.judge.base.PairwiseJudge.judge" class="doc doc-heading">
-            <span class="doc doc-object-name doc-function-name">judge</span>
-
-
-  <span class="doc doc-labels">
-      <small class="doc doc-label doc-label-abstractmethod"><code>abstractmethod</code></small>
-  </span>
-
-<a href="#flexeval.core.pairwise_comparison.judge.base.PairwiseJudge.judge" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">judge</span><span class="p">(</span><span class="n">model1_item</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">model2_item</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Winner</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span>
-</code></pre></div>
-
-    <div class="doc doc-contents ">
-
-      <p>Judge which model is better given two items.</p>
-
-
-<p><span class="doc-section-title">Parameters:</span></p>
-    <ul>
-        <li class="doc-section-item field-body">
-          <b><code>model1_item</code></b>
-              (<code>dict[str, <span title="typing.Any">Any</span>]</code>)
-          –
-          <div class="doc-md-description">
-            <p>The first model item, containing the model output and other information needed for judging.</p>
-          </div>
-        </li>
-        <li class="doc-section-item field-body">
-          <b><code>model2_item</code></b>
-              (<code>dict[str, <span title="typing.Any">Any</span>]</code>)
-          –
-          <div class="doc-md-description">
-            <p>The second model item, containing the model output and other information needed for judging.</p>
-          </div>
-        </li>
-    </ul>
-
-
-<p><span class="doc-section-title">Returns:</span></p>
-    <ul>
-        <li class="doc-section-item field-body">
-              <code>tuple[<a class="autorefs autorefs-internal" title="flexeval.core.pairwise_comparison.judge.base.Winner" href="#flexeval.core.pairwise_comparison.judge.base.Winner">Winner</a>, str]</code>
-          –
-          <div class="doc-md-description">
-            <p>A tuple of the winner and the rationale.</p>
-          </div>
-        </li>
-    </ul>
-
-            <details class="quote">
-              <summary>Source code in <code>flexeval/core/pairwise_comparison/judge/base.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">28</span>
-<span class="normal">29</span>
-<span class="normal">30</span>
-<span class="normal">31</span>
-<span class="normal">32</span>
-<span class="normal">33</span>
-<span class="normal">34</span>
-<span class="normal">35</span>
-<span class="normal">36</span>
-<span class="normal">37</span>
-<span class="normal">38</span>
-<span class="normal">39</span>
-<span class="normal">40</span>
-<span class="normal">41</span>
-<span class="normal">42</span>
-<span class="normal">43</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@abstractmethod</span>
-<span class="k">def</span> <span class="nf">judge</span><span class="p">(</span>
-    <span class="bp">self</span><span class="p">,</span>
-    <span class="n">model1_item</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
-    <span class="n">model2_item</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Winner</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Judge which model is better given two items.</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        model1_item: The first model item, containing the model output and other information needed for judging.</span>
-<span class="sd">        model2_item: The second model item, containing the model output and other information needed for judging.</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">        A tuple of the winner and the rationale.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-</code></pre></div></td></tr></table></div>
-            </details>
-    </div>
-
-</div>
 
 <div class="doc doc-object doc-function">
 
@@ -1442,17 +1359,17 @@
 
             <details class="quote">
               <summary>Source code in <code>flexeval/core/pairwise_comparison/judge/base.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">45</span>
-<span class="normal">46</span>
-<span class="normal">47</span>
-<span class="normal">48</span>
-<span class="normal">49</span>
-<span class="normal">50</span>
-<span class="normal">51</span>
-<span class="normal">52</span>
-<span class="normal">53</span>
-<span class="normal">54</span>
-<span class="normal">55</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@abstractmethod</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@abstractmethod</span>
 <span class="k">def</span> <span class="nf">batch_judge</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">batch_model_items</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]],</span>
@@ -1670,7 +1587,7 @@
         </li>
         <li class="doc-section-item field-body">
           <b><code>system_message</code></b>
-              (<code>str | None</code>, default:
+              (<code>str | <a class="autorefs autorefs-internal" title="flexeval.core.prompt_template.base.PromptTemplate" href="../PromptTemplate/#flexeval.core.prompt_template.base.PromptTemplate">PromptTemplate</a> | None</code>, default:
                   <code>None</code>
 )
           –
@@ -1682,7 +1599,8 @@
 
               <details class="quote">
                 <summary>Source code in <code>flexeval/core/pairwise_comparison/judge/llm_judge.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">15</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">14</span>
+<span class="normal">15</span>
 <span class="normal">16</span>
 <span class="normal">17</span>
 <span class="normal">18</span>
@@ -1749,7 +1667,10 @@
 <span class="normal">79</span>
 <span class="normal">80</span>
 <span class="normal">81</span>
-<span class="normal">82</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">ChatLLMPairwiseJudge</span><span class="p">(</span><span class="n">PairwiseJudge</span><span class="p">):</span>
+<span class="normal">82</span>
+<span class="normal">83</span>
+<span class="normal">84</span>
+<span class="normal">85</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">ChatLLMPairwiseJudge</span><span class="p">(</span><span class="n">PairwiseJudge</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Pairwise judge using a chat language model to compare two model outputs.</span>
 
@@ -1763,7 +1684,7 @@
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">language_model</span><span class="p">:</span> <span class="n">LanguageModel</span><span class="p">,</span>
         <span class="n">prompt_template</span><span class="p">:</span> <span class="n">PromptTemplate</span><span class="p">,</span>
-        <span class="n">system_message</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">system_message</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">PromptTemplate</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_language_model</span> <span class="o">=</span> <span class="n">language_model</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_prompt_template</span> <span class="o">=</span> <span class="n">prompt_template</span>
@@ -1797,9 +1718,6 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">winner</span><span class="p">,</span> <span class="n">rationale</span>
 
-    <span class="k">def</span> <span class="nf">judge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model1_item</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">model2_item</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Winner</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">batch_judge</span><span class="p">([(</span><span class="n">model1_item</span><span class="p">,</span> <span class="n">model2_item</span><span class="p">)])[</span><span class="mi">0</span><span class="p">]</span>
-
     <span class="k">def</span> <span class="nf">batch_judge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch_model_items</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="n">Winner</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]:</span>
         <span class="n">input_chat_messages_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">model1_item</span><span class="p">,</span> <span class="n">model2_item</span> <span class="ow">in</span> <span class="n">batch_model_items</span><span class="p">:</span>
@@ -1813,7 +1731,14 @@
             <span class="n">judge_input</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prompt_template</span><span class="o">.</span><span class="n">embed_input</span><span class="p">(</span><span class="n">prompt_inputs</span><span class="p">)</span>
             <span class="n">input_chat_messages</span> <span class="o">=</span> <span class="p">[{</span><span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;user&quot;</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="n">judge_input</span><span class="p">}]</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_system_message</span><span class="p">:</span>
-                <span class="n">input_chat_messages</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;system&quot;</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_system_message</span><span class="p">})</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_system_message</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                    <span class="n">system_message</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_system_message</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">system_message</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_system_message</span><span class="o">.</span><span class="n">embed_input</span><span class="p">(</span><span class="n">prompt_inputs</span><span class="p">)</span>
+                <span class="n">input_chat_messages</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span>
+                    <span class="mi">0</span><span class="p">,</span>
+                    <span class="p">{</span><span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;system&quot;</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="n">system_message</span><span class="p">},</span>
+                <span class="p">)</span>
             <span class="n">input_chat_messages_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">input_chat_messages</span><span class="p">)</span>
         <span class="n">judge_outputs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_language_model</span><span class="o">.</span><span class="n">batch_generate_chat_response</span><span class="p">(</span><span class="n">input_chat_messages_list</span><span class="p">)</span>
         <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_parse_judge_output</span><span class="p">(</span><span class="n">output</span><span class="p">)</span> <span class="k">for</span> <span class="n">output</span> <span class="ow">in</span> <span class="n">judge_outputs</span><span class="p">]</span>
@@ -1840,54 +1765,30 @@
 
 
 <a href="#flexeval.core.pairwise_comparison.judge.llm_judge.ChatLLMPairwiseJudge.__init__" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="fm">__init__</span><span class="p">(</span><span class="nf">language_model</span><span class="p">:</span> <span class="n">LanguageModel</span><span class="p">,</span> <span class="n">prompt_template</span><span class="p">:</span> <span class="n">PromptTemplate</span><span class="p">,</span> <span class="n">system_message</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="fm">__init__</span><span class="p">(</span><span class="nf">language_model</span><span class="p">:</span> <span class="n">LanguageModel</span><span class="p">,</span> <span class="n">prompt_template</span><span class="p">:</span> <span class="n">PromptTemplate</span><span class="p">,</span> <span class="n">system_message</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">PromptTemplate</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
 
             <details class="quote">
               <summary>Source code in <code>flexeval/core/pairwise_comparison/judge/llm_judge.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">25</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">24</span>
+<span class="normal">25</span>
 <span class="normal">26</span>
 <span class="normal">27</span>
 <span class="normal">28</span>
 <span class="normal">29</span>
 <span class="normal">30</span>
 <span class="normal">31</span>
-<span class="normal">32</span>
-<span class="normal">33</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<span class="normal">32</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">language_model</span><span class="p">:</span> <span class="n">LanguageModel</span><span class="p">,</span>
     <span class="n">prompt_template</span><span class="p">:</span> <span class="n">PromptTemplate</span><span class="p">,</span>
-    <span class="n">system_message</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">system_message</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">PromptTemplate</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_language_model</span> <span class="o">=</span> <span class="n">language_model</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_prompt_template</span> <span class="o">=</span> <span class="n">prompt_template</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_system_message</span> <span class="o">=</span> <span class="n">system_message</span>
-</code></pre></div></td></tr></table></div>
-            </details>
-    </div>
-
-</div>
-
-<div class="doc doc-object doc-function">
-
-
-<h3 id="flexeval.core.pairwise_comparison.judge.llm_judge.ChatLLMPairwiseJudge.judge" class="doc doc-heading">
-            <span class="doc doc-object-name doc-function-name">judge</span>
-
-
-<a href="#flexeval.core.pairwise_comparison.judge.llm_judge.ChatLLMPairwiseJudge.judge" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">judge</span><span class="p">(</span><span class="n">model1_item</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">model2_item</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Winner</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span>
-</code></pre></div>
-
-    <div class="doc doc-contents ">
-
-            <details class="quote">
-              <summary>Source code in <code>flexeval/core/pairwise_comparison/judge/llm_judge.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">63</span>
-<span class="normal">64</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">judge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model1_item</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">model2_item</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Winner</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">batch_judge</span><span class="p">([(</span><span class="n">model1_item</span><span class="p">,</span> <span class="n">model2_item</span><span class="p">)])[</span><span class="mi">0</span><span class="p">]</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -1909,7 +1810,11 @@
 
             <details class="quote">
               <summary>Source code in <code>flexeval/core/pairwise_comparison/judge/llm_judge.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">66</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">62</span>
+<span class="normal">63</span>
+<span class="normal">64</span>
+<span class="normal">65</span>
+<span class="normal">66</span>
 <span class="normal">67</span>
 <span class="normal">68</span>
 <span class="normal">69</span>
@@ -1925,7 +1830,10 @@
 <span class="normal">79</span>
 <span class="normal">80</span>
 <span class="normal">81</span>
-<span class="normal">82</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">batch_judge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch_model_items</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="n">Winner</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]:</span>
+<span class="normal">82</span>
+<span class="normal">83</span>
+<span class="normal">84</span>
+<span class="normal">85</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">batch_judge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch_model_items</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="n">Winner</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]:</span>
     <span class="n">input_chat_messages_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">model1_item</span><span class="p">,</span> <span class="n">model2_item</span> <span class="ow">in</span> <span class="n">batch_model_items</span><span class="p">:</span>
         <span class="n">references</span> <span class="o">=</span> <span class="n">model1_item</span><span class="p">[</span><span class="s2">&quot;references&quot;</span><span class="p">]</span>
@@ -1938,7 +1846,14 @@
         <span class="n">judge_input</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prompt_template</span><span class="o">.</span><span class="n">embed_input</span><span class="p">(</span><span class="n">prompt_inputs</span><span class="p">)</span>
         <span class="n">input_chat_messages</span> <span class="o">=</span> <span class="p">[{</span><span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;user&quot;</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="n">judge_input</span><span class="p">}]</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_system_message</span><span class="p">:</span>
-            <span class="n">input_chat_messages</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;system&quot;</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_system_message</span><span class="p">})</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_system_message</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                <span class="n">system_message</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_system_message</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">system_message</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_system_message</span><span class="o">.</span><span class="n">embed_input</span><span class="p">(</span><span class="n">prompt_inputs</span><span class="p">)</span>
+            <span class="n">input_chat_messages</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span>
+                <span class="mi">0</span><span class="p">,</span>
+                <span class="p">{</span><span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;system&quot;</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="n">system_message</span><span class="p">},</span>
+            <span class="p">)</span>
         <span class="n">input_chat_messages_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">input_chat_messages</span><span class="p">)</span>
     <span class="n">judge_outputs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_language_model</span><span class="o">.</span><span class="n">batch_generate_chat_response</span><span class="p">(</span><span class="n">input_chat_messages_list</span><span class="p">)</span>
     <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_parse_judge_output</span><span class="p">(</span><span class="n">output</span><span class="p">)</span> <span class="k">for</span> <span class="n">output</span> <span class="ow">in</span> <span class="n">judge_outputs</span><span class="p">]</span>

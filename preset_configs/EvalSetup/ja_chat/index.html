@@ -9,7 +9,7 @@
       
       
       
-        <link rel="prev" href="../en_preplexity/">
+        <link rel="prev" href="../en_perplexity/">
       
       
         <link rel="next" href="../ja_generation/">
@@ -72,7 +72,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#elyze_tasks_100" class="md-skip">
+        <a href="#aio_chat" class="md-skip">
           Skip to content
         </a>
       
@@ -504,6 +504,27 @@
   
   
     <li class="md-nav__item">
+      <a href="../code_chat/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Code chat
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../code_generation/" class="md-nav__link">
         
   
@@ -588,11 +609,11 @@
   
   
     <li class="md-nav__item">
-      <a href="../en_preplexity/" class="md-nav__link">
+      <a href="../en_perplexity/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
-    En preplexity
+    En perplexity
   </span>
   
 
@@ -651,9 +672,27 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#aio_chat" class="md-nav__link">
+    <span class="md-ellipsis">
+      aio_chat
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#elyze_tasks_100" class="md-nav__link">
     <span class="md-ellipsis">
       elyze_tasks_100
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mgsm_ja_chat" class="md-nav__link">
+    <span class="md-ellipsis">
+      mgsm_ja_chat
     </span>
   </a>
   
@@ -749,6 +788,27 @@
   
   <span class="md-ellipsis">
     Translation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../translation_chat/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Translation chat
   </span>
   
 
@@ -1184,9 +1244,27 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#aio_chat" class="md-nav__link">
+    <span class="md-ellipsis">
+      aio_chat
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#elyze_tasks_100" class="md-nav__link">
     <span class="md-ellipsis">
       elyze_tasks_100
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mgsm_ja_chat" class="md-nav__link">
+    <span class="md-ellipsis">
+      mgsm_ja_chat
     </span>
   </a>
   
@@ -1236,6 +1314,44 @@
 
   <h1>Ja chat</h1>
 
+<h2 id="aio_chat">aio_chat<a class="headerlink" href="#aio_chat" title="Permanent link">&para;</a></h2>
+<p>AI王 (AI king) is a Japanese quiz dataset developed for research and competition purposes.
+This is a evaluation setup for chat LLMs.</p>
+<p>References:</p>
+<ul>
+<li><a href="https://huggingface.co/datasets/llm-book/aio">Hugging Face Dataset</a></li>
+<li><a href="https://sites.google.com/view/project-aio/home">AI王 〜クイズAI日本一決定戦〜</a></li>
+<li><a href="https://www.anlp.jp/proceedings/annual_meeting/2020/pdf_dir/P2-24.pdf">JAQKET: クイズを題材にした日本語 QA データセットの構築</a>
+<div class="highlight"><pre><span></span><code>local dataset_base_args = {
+  class_path: &#39;HfChatDataset&#39;,
+  init_args: {
+    dataset_name: &#39;llm-book/aio&#39;,
+    input_template: &#39;{{ question }}&#39;,
+    references_template: &#39;{{ answers }}&#39;,
+  },
+};
+
+{
+  class_path: &#39;ChatResponse&#39;,
+  init_args: {
+    eval_dataset: dataset_base_args { init_args+: { split: &#39;validation&#39; } },
+    few_shot_generator: {
+      class_path: &#39;RandomFewShotGenerator&#39;,
+      init_args: {
+        dataset: dataset_base_args { init_args+: { split: &#39;train&#39; } },
+        num_shots: 4,
+      },
+    },
+    metrics: [
+      { class_path: &#39;CharF1&#39;, init_args: { normalizer: { class_path: &#39;AIONormalizer&#39; } } },
+      { class_path: &#39;ExactMatch&#39;, init_args: { normalizer: { class_path: &#39;AIONormalizer&#39; } } },
+    ],
+    gen_kwargs: { max_new_tokens: 32 },
+    batch_size: 4,
+  },
+}
+</code></pre></div></li>
+</ul>
 <h2 id="elyze_tasks_100">elyze_tasks_100<a class="headerlink" href="#elyze_tasks_100" title="Permanent link">&para;</a></h2>
 <p>A dataset for evaluating instruction-tuned models developed by ELYZA Inc.</p>
 <p>References:</p>
@@ -1260,6 +1376,42 @@
     ],
     gen_kwargs: { max_new_tokens: 1024 },
     batch_size: 4,
+  },
+}
+</code></pre></div></li>
+</ul>
+<h2 id="mgsm_ja_chat">mgsm_ja_chat<a class="headerlink" href="#mgsm_ja_chat" title="Permanent link">&para;</a></h2>
+<p>Multilingual Grade School Math Benchmark (MGSM) is a benchmark of grade-school math problems.
+This is a Japanese subset of the benchmark.
+This is a evaluation setup for chat LLMs.</p>
+<p>References:</p>
+<ul>
+<li><a href="https://huggingface.co/datasets/juletxara/mgsm">Hugging Face Dataset</a></li>
+<li><a href="https://arxiv.org/abs/2210.03057">Language Models are Multilingual Chain-of-Thought Reasoners</a>
+<div class="highlight"><pre><span></span><code>local dataset_base_args = {
+  class_path: &#39;HfChatDataset&#39;,
+  init_args: {
+    dataset_name: &#39;juletxara/mgsm&#39;,
+    subset: &#39;ja&#39;,
+    references_template: &#39;{{ answer }}&#39;,
+  },
+};
+
+{
+  class_path: &#39;ChatResponse&#39;,
+  init_args: {
+    eval_dataset: dataset_base_args { init_args+: { split: &#39;test&#39;, input_template: &#39;問題: {{ question }}&#39; } },
+    few_shot_generator: {
+      class_path: &#39;RandomFewShotGenerator&#39;,
+      init_args: {
+        dataset: dataset_base_args { init_args+: { split: &#39;train&#39;, input_template: &#39;{{ question }}&#39; } },
+        num_shots: 4,
+      },
+    },
+    metrics: [
+      { class_path: &#39;ExactMatch&#39;, init_args: { normalizer: { class_path: &#39;RegexNormalizer&#39;, init_args: { pattern: &#39;-?[0-9.,]+&#39; } } } },
+    ],
+    gen_kwargs: { max_new_tokens: 256 },
   },
 }
 </code></pre></div></li>

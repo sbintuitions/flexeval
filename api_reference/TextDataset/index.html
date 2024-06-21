@@ -500,6 +500,27 @@
   
   
     <li class="md-nav__item">
+      <a href="../../preset_configs/EvalSetup/code_chat/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Code chat
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../preset_configs/EvalSetup/code_generation/" class="md-nav__link">
         
   
@@ -584,11 +605,11 @@
   
   
     <li class="md-nav__item">
-      <a href="../../preset_configs/EvalSetup/en_preplexity/" class="md-nav__link">
+      <a href="../../preset_configs/EvalSetup/en_perplexity/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
-    En preplexity
+    En perplexity
   </span>
   
 
@@ -673,6 +694,27 @@
   
   <span class="md-ellipsis">
     Translation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../preset_configs/EvalSetup/translation_chat/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Translation chat
   </span>
   
 
@@ -1241,13 +1283,21 @@
 <span class="normal">11</span>
 <span class="normal">12</span>
 <span class="normal">13</span>
-<span class="normal">14</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">TextDataset</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">TextDataset</span><span class="p">(</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">ABC</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This class represents a dataset of text examples.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="nd">@abstractmethod</span>
-    <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+    <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">pass</span>
+
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">pass</span>
 </code></pre></div></td></tr></table></div>
               </details>
@@ -1267,16 +1317,16 @@
 <div class="doc doc-object doc-function">
 
 
-<h3 id="flexeval.core.text_dataset.base.TextDataset.__iter__" class="doc doc-heading">
-            <span class="doc doc-object-name doc-function-name">__iter__</span>
+<h3 id="flexeval.core.text_dataset.base.TextDataset.__len__" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">__len__</span>
 
 
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-abstractmethod"><code>abstractmethod</code></small>
   </span>
 
-<a href="#flexeval.core.text_dataset.base.TextDataset.__iter__" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="fm">__iter__</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nf">Iterator</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+<a href="#flexeval.core.text_dataset.base.TextDataset.__len__" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="fm">__len__</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">int</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -1286,7 +1336,37 @@
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">12</span>
 <span class="normal">13</span>
 <span class="normal">14</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@abstractmethod</span>
-<span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">pass</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="flexeval.core.text_dataset.base.TextDataset.__getitem__" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">__getitem__</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-abstractmethod"><code>abstractmethod</code></small>
+  </span>
+
+<a href="#flexeval.core.text_dataset.base.TextDataset.__getitem__" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="fm">__getitem__</span><span class="p">(</span><span class="nf">item</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+            <details class="quote">
+              <summary>Source code in <code>flexeval/core/text_dataset/base.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@abstractmethod</span>
+<span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="k">pass</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -1359,7 +1439,9 @@
 
               <details class="quote">
                 <summary>Source code in <code>flexeval/core/text_dataset/hf.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">10</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
 <span class="normal">11</span>
 <span class="normal">12</span>
 <span class="normal">13</span>
@@ -1377,7 +1459,8 @@
 <span class="normal">25</span>
 <span class="normal">26</span>
 <span class="normal">27</span>
-<span class="normal">28</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">HfTextDataset</span><span class="p">(</span><span class="n">TextDataset</span><span class="p">):</span>
+<span class="normal">28</span>
+<span class="normal">29</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">HfTextDataset</span><span class="p">(</span><span class="n">TextDataset</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This class represents a dataset of text examples loaded from Hugging Face datasets.</span>
 
@@ -1389,13 +1472,16 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">split</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">field</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">subset</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_dataset</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">load_dataset</span><span class="p">(</span><span class="n">dataset_name</span><span class="p">,</span> <span class="n">split</span><span class="o">=</span><span class="n">split</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">subset</span><span class="p">)[</span><span class="n">field</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dataset</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">load_dataset</span><span class="p">(</span><span class="n">dataset_name</span><span class="p">,</span> <span class="n">split</span><span class="o">=</span><span class="n">split</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">subset</span><span class="p">)[</span><span class="n">field</span><span class="p">]</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_dataset</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">str</span><span class="p">):</span>
             <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;field &#39;</span><span class="si">{</span><span class="n">field</span><span class="si">}</span><span class="s2">&#39; is not string type&quot;</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-        <span class="k">yield from</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dataset</span>
+    <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_dataset</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dataset</span><span class="p">[</span><span class="n">item</span><span class="p">]</span>
 </code></pre></div></td></tr></table></div>
               </details>
 
@@ -1426,12 +1512,12 @@
 
             <details class="quote">
               <summary>Source code in <code>flexeval/core/text_dataset/hf.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">21</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
 <span class="normal">22</span>
-<span class="normal">23</span>
-<span class="normal">24</span>
-<span class="normal">25</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">split</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">field</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">subset</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">_dataset</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">load_dataset</span><span class="p">(</span><span class="n">dataset_name</span><span class="p">,</span> <span class="n">split</span><span class="o">=</span><span class="n">split</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">subset</span><span class="p">)[</span><span class="n">field</span><span class="p">]</span>
+<span class="normal">23</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">split</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">field</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">subset</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_dataset</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">load_dataset</span><span class="p">(</span><span class="n">dataset_name</span><span class="p">,</span> <span class="n">split</span><span class="o">=</span><span class="n">split</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">subset</span><span class="p">)[</span><span class="n">field</span><span class="p">]</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_dataset</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">str</span><span class="p">):</span>
         <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;field &#39;</span><span class="si">{</span><span class="n">field</span><span class="si">}</span><span class="s2">&#39; is not string type&quot;</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
@@ -1444,21 +1530,45 @@
 <div class="doc doc-object doc-function">
 
 
-<h3 id="flexeval.core.text_dataset.hf.HfTextDataset.__iter__" class="doc doc-heading">
-            <span class="doc doc-object-name doc-function-name">__iter__</span>
+<h3 id="flexeval.core.text_dataset.hf.HfTextDataset.__len__" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">__len__</span>
 
 
-<a href="#flexeval.core.text_dataset.hf.HfTextDataset.__iter__" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="fm">__iter__</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nf">Iterator</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+<a href="#flexeval.core.text_dataset.hf.HfTextDataset.__len__" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="fm">__len__</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">int</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
 
             <details class="quote">
               <summary>Source code in <code>flexeval/core/text_dataset/hf.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">27</span>
-<span class="normal">28</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-    <span class="k">yield from</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dataset</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">25</span>
+<span class="normal">26</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_dataset</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="flexeval.core.text_dataset.hf.HfTextDataset.__getitem__" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">__getitem__</span>
+
+
+<a href="#flexeval.core.text_dataset.hf.HfTextDataset.__getitem__" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="fm">__getitem__</span><span class="p">(</span><span class="nf">item</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+            <details class="quote">
+              <summary>Source code in <code>flexeval/core/text_dataset/hf.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">28</span>
+<span class="normal">29</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dataset</span><span class="p">[</span><span class="n">item</span><span class="p">]</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -1512,7 +1622,8 @@
 
               <details class="quote">
                 <summary>Source code in <code>flexeval/core/text_dataset/jsonl.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">10</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 9</span>
+<span class="normal">10</span>
 <span class="normal">11</span>
 <span class="normal">12</span>
 <span class="normal">13</span>
@@ -1529,7 +1640,9 @@
 <span class="normal">24</span>
 <span class="normal">25</span>
 <span class="normal">26</span>
-<span class="normal">27</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">JsonlTextDataset</span><span class="p">(</span><span class="n">TextDataset</span><span class="p">):</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">JsonlTextDataset</span><span class="p">(</span><span class="n">TextDataset</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This class represents a dataset of text examples loaded from a JSONL file.</span>
 
@@ -1539,14 +1652,17 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">PathLike</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">field</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_file_path</span> <span class="o">=</span> <span class="n">file_path</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_field</span> <span class="o">=</span> <span class="n">field</span>
-
-    <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_file_path</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_text_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">f</span><span class="p">:</span>
                 <span class="n">item</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
-                <span class="k">yield</span> <span class="n">item</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_field</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_text_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">item</span><span class="p">[</span><span class="n">field</span><span class="p">])</span>
+
+    <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_text_list</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_text_list</span><span class="p">[</span><span class="n">item</span><span class="p">]</span>
 </code></pre></div></td></tr></table></div>
               </details>
 
@@ -1577,11 +1693,17 @@
 
             <details class="quote">
               <summary>Source code in <code>flexeval/core/text_dataset/jsonl.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">19</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">18</span>
+<span class="normal">19</span>
 <span class="normal">20</span>
-<span class="normal">21</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">PathLike</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">field</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">_file_path</span> <span class="o">=</span> <span class="n">file_path</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">_field</span> <span class="o">=</span> <span class="n">field</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">PathLike</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">field</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_text_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">item</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_text_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">item</span><span class="p">[</span><span class="n">field</span><span class="p">])</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -1591,27 +1713,45 @@
 <div class="doc doc-object doc-function">
 
 
-<h3 id="flexeval.core.text_dataset.jsonl.JsonlTextDataset.__iter__" class="doc doc-heading">
-            <span class="doc doc-object-name doc-function-name">__iter__</span>
+<h3 id="flexeval.core.text_dataset.jsonl.JsonlTextDataset.__len__" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">__len__</span>
 
 
-<a href="#flexeval.core.text_dataset.jsonl.JsonlTextDataset.__iter__" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="fm">__iter__</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nf">Iterator</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+<a href="#flexeval.core.text_dataset.jsonl.JsonlTextDataset.__len__" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="fm">__len__</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">int</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
 
             <details class="quote">
               <summary>Source code in <code>flexeval/core/text_dataset/jsonl.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">23</span>
-<span class="normal">24</span>
-<span class="normal">25</span>
-<span class="normal">26</span>
-<span class="normal">27</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_file_path</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">f</span><span class="p">:</span>
-            <span class="n">item</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
-            <span class="k">yield</span> <span class="n">item</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_field</span><span class="p">]</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">25</span>
+<span class="normal">26</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_text_list</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="flexeval.core.text_dataset.jsonl.JsonlTextDataset.__getitem__" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">__getitem__</span>
+
+
+<a href="#flexeval.core.text_dataset.jsonl.JsonlTextDataset.__getitem__" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="fm">__getitem__</span><span class="p">(</span><span class="nf">item</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+            <details class="quote">
+              <summary>Source code in <code>flexeval/core/text_dataset/jsonl.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">28</span>
+<span class="normal">29</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_text_list</span><span class="p">[</span><span class="n">item</span><span class="p">]</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>

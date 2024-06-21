@@ -9,10 +9,10 @@
       
       
       
-        <link rel="prev" href="../en_multiple_choice/">
+        <link rel="prev" href="../translation/">
       
       
-        <link rel="next" href="../ja_chat/">
+        <link rel="next" href="../../Metric/">
       
       
       <link rel="icon" href="../../../assets/images/favicon.png">
@@ -20,7 +20,7 @@
     
     
       
-        <title>En preplexity - flexeval</title>
+        <title>Translation chat - flexeval</title>
       
     
     
@@ -72,7 +72,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#tiny_shakespeare" class="md-skip">
+        <a href="#wmt20_en_ja_chat" class="md-skip">
           Skip to content
         </a>
       
@@ -108,7 +108,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              En preplexity
+              Translation chat
             
           </span>
         </div>
@@ -504,6 +504,27 @@
   
   
     <li class="md-nav__item">
+      <a href="../code_chat/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Code chat
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../code_generation/" class="md-nav__link">
         
   
@@ -585,63 +606,18 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  <span class="md-ellipsis">
-    En preplexity
-  </span>
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../en_perplexity/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
-    En preplexity
+    En perplexity
   </span>
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#tiny_shakespeare" class="md-nav__link">
-    <span class="md-ellipsis">
-      tiny_shakespeare
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -726,6 +702,81 @@
   
 
       </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Translation chat
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    Translation chat
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#wmt20_en_ja_chat" class="md-nav__link">
+    <span class="md-ellipsis">
+      wmt20_en_ja_chat
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#wmt20_ja_en_chat" class="md-nav__link">
+    <span class="md-ellipsis">
+      wmt20_ja_en_chat
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -1157,9 +1208,18 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#tiny_shakespeare" class="md-nav__link">
+  <a href="#wmt20_en_ja_chat" class="md-nav__link">
     <span class="md-ellipsis">
-      tiny_shakespeare
+      wmt20_en_ja_chat
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#wmt20_ja_en_chat" class="md-nav__link">
+    <span class="md-ellipsis">
+      wmt20_ja_en_chat
     </span>
   </a>
   
@@ -1180,25 +1240,74 @@
                   
 
 
-  <h1>En preplexity</h1>
+  <h1>Translation chat</h1>
 
-<h2 id="tiny_shakespeare">tiny_shakespeare<a class="headerlink" href="#tiny_shakespeare" title="Permanent link">&para;</a></h2>
-<p>40,000 lines of Shakespeare from a variety of Shakespeare's plays.
-Featured in Andrej Karpathy's blog post <a href="http://karpathy.github.io/2015/05/21/rnn-effectiveness/">'The Unreasonable Effectiveness of Recurrent Neural Networks'</a>.</p>
+<h2 id="wmt20_en_ja_chat">wmt20_en_ja_chat<a class="headerlink" href="#wmt20_en_ja_chat" title="Permanent link">&para;</a></h2>
+<p>This dataset is created as a test set for the WMT20 shared task on news translation.
+This is English to Japanese translation.
+This is a evaluation setup for chat LLMs.</p>
 <p>References:</p>
 <ul>
-<li><a href="https://huggingface.co/datasets/karpathy/tiny_shakespeare">Hugging Face Dataset</a>
-<div class="highlight"><pre><span></span><code>{
-  class_path: &#39;Perplexity&#39;,
+<li><a href="https://github.com/mjpost/sacrebleu">Data Source</a></li>
+<li><a href="https://www.statmt.org/wmt20/">2020 Fifth Conference on Machine Translation (WMT20)</a>
+<div class="highlight"><pre><span></span><code>local dataset = {
+  class_path: &#39;SacreBleuChatDataset&#39;,
+  init_args: { dataset_name: &#39;wmt20&#39;, langpair: &#39;en-ja&#39; },
+};
+
+{
+  class_path: &#39;ChatResponse&#39;,
   init_args: {
-    eval_dataset: {
-      class_path: &#39;HfTextDataset&#39;,
+    eval_dataset: dataset,
+    few_shot_generator: {
+      class_path: &#39;RandomFewShotGenerator&#39;,
       init_args: {
-        dataset_name: &#39;karpathy/tiny_shakespeare&#39;,
-        split: &#39;test&#39;,
-        field: &#39;text&#39;,
+        // Use the eval dataset for few-shot data,
+        // but `RandomFewShotGenerator` will avoid using the same few-shot isntances as the input.
+        dataset: dataset,
+        num_shots: 4,
       },
     },
+    metrics: [
+      { class_path: &#39;BLEU&#39;, init_args: { tokenize_option: &#39;ja-mecab&#39; } },
+    ],
+    gen_kwargs: { max_new_tokens: 128, stop_sequences: [&#39;`&#39;] },
+    batch_size: 4,
+  },
+}
+</code></pre></div></li>
+</ul>
+<h2 id="wmt20_ja_en_chat">wmt20_ja_en_chat<a class="headerlink" href="#wmt20_ja_en_chat" title="Permanent link">&para;</a></h2>
+<p>This dataset is created as a test set for the WMT20 shared task on news translation.
+This is Japanese to English translation.
+This is a evaluation setup for chat LLMs.</p>
+<p>References:</p>
+<ul>
+<li><a href="https://github.com/mjpost/sacrebleu">Data Source</a></li>
+<li><a href="https://www.statmt.org/wmt20/">2020 Fifth Conference on Machine Translation (WMT20)</a>
+<div class="highlight"><pre><span></span><code>local dataset = {
+  class_path: &#39;SacreBleuChatDataset&#39;,
+  init_args: { dataset_name: &#39;wmt20&#39;, langpair: &#39;ja-en&#39; },
+};
+
+{
+  class_path: &#39;ChatResponse&#39;,
+  init_args: {
+    eval_dataset: dataset,
+    few_shot_generator: {
+      class_path: &#39;RandomFewShotGenerator&#39;,
+      init_args: {
+        // Use the eval dataset for few-shot data,
+        // but `RandomFewShotGenerator` will avoid using the same few-shot isntances as the input.
+        dataset: dataset,
+        num_shots: 4,
+      },
+    },
+    metrics: [
+      { class_path: &#39;BLEU&#39;, init_args: { tokenize_option: &#39;intl&#39; } },
+    ],
+    gen_kwargs: { max_new_tokens: 128, stop_sequences: [&#39;`&#39;] },
+    batch_size: 4,
   },
 }
 </code></pre></div></li>

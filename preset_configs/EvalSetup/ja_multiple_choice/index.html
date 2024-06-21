@@ -504,6 +504,27 @@
   
   
     <li class="md-nav__item">
+      <a href="../code_chat/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Code chat
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../code_generation/" class="md-nav__link">
         
   
@@ -588,11 +609,11 @@
   
   
     <li class="md-nav__item">
-      <a href="../en_preplexity/" class="md-nav__link">
+      <a href="../en_perplexity/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
-    En preplexity
+    En perplexity
   </span>
   
 
@@ -731,6 +752,27 @@
   
   <span class="md-ellipsis">
     Translation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../translation_chat/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Translation chat
   </span>
   
 
@@ -1237,7 +1279,6 @@ This is a setup for multiple choice where the model chooses the correct answer b
     prompt_template: {
       class_path: &#39;Jinja2PromptTemplate&#39;,
       init_args: {
-
         template: |||
           {% for item in few_shot_data %}
           問題：{{ item.question }}

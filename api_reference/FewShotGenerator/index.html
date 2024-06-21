@@ -500,6 +500,27 @@
   
   
     <li class="md-nav__item">
+      <a href="../../preset_configs/EvalSetup/code_chat/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Code chat
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../preset_configs/EvalSetup/code_generation/" class="md-nav__link">
         
   
@@ -584,11 +605,11 @@
   
   
     <li class="md-nav__item">
-      <a href="../../preset_configs/EvalSetup/en_preplexity/" class="md-nav__link">
+      <a href="../../preset_configs/EvalSetup/en_perplexity/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
-    En preplexity
+    En perplexity
   </span>
   
 
@@ -673,6 +694,27 @@
   
   <span class="md-ellipsis">
     Translation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../preset_configs/EvalSetup/translation_chat/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Translation chat
   </span>
   
 
@@ -1232,8 +1274,7 @@
 
               <details class="quote">
                 <summary>Source code in <code>flexeval/core/few_shot_generator/base.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">13</span>
-<span class="normal">14</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">14</span>
 <span class="normal">15</span>
 <span class="normal">16</span>
 <span class="normal">17</span>
@@ -1258,15 +1299,50 @@
 <span class="normal">36</span>
 <span class="normal">37</span>
 <span class="normal">38</span>
-<span class="normal">39</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">FewShotGenerator</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span>
+<span class="normal">55</span>
+<span class="normal">56</span>
+<span class="normal">57</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">FewShotGenerator</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num_trials_to_avoid_leak</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_num_trials_to_avoid_leak</span> <span class="o">=</span> <span class="n">num_trials_to_avoid_leak</span>
 
     <span class="nd">@abstractmethod</span>
-    <span class="k">def</span> <span class="nf">_sample_instances</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">eval_inputs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Instance</span><span class="p">]:</span>
+    <span class="k">def</span> <span class="nf">_sample_instances</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">eval_inputs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">|</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Instance</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sample instances for few-shot learning.</span>
+<span class="sd">        This method should be implemented in the derived class.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
-    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">eval_inputs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Instance</span><span class="p">]:</span>
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">eval_inputs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">|</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Instance</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sample instances for few-shot learning.</span>
+<span class="sd">        This method calls `_sample_instances` and</span>
+<span class="sd">        checks if the sampled instances have the same inputs as the evaluation instance.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            eval_inputs: The inputs of the evaluation instance.</span>
+<span class="sd">                This is used to avoid data leakage</span>
+<span class="sd">                by checking if the sampled instances have the same inputs as the evaluation instance.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A list of instances for few-shot learning.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">sampled_instances</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sample_instances</span><span class="p">(</span><span class="n">eval_inputs</span><span class="o">=</span><span class="n">eval_inputs</span><span class="p">)</span>
 
         <span class="c1"># check if the sampled instances are the same as the eval_instance</span>
@@ -1315,8 +1391,8 @@
 
             <details class="quote">
               <summary>Source code in <code>flexeval/core/few_shot_generator/base.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">14</span>
-<span class="normal">15</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num_trials_to_avoid_leak</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">15</span>
+<span class="normal">16</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num_trials_to_avoid_leak</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_num_trials_to_avoid_leak</span> <span class="o">=</span> <span class="n">num_trials_to_avoid_leak</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -1332,19 +1408,47 @@
 
 
 <a href="#flexeval.core.few_shot_generator.base.FewShotGenerator.__call__" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="fm">__call__</span><span class="p">(</span><span class="nf">eval_inputs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Instance</span><span class="p">]</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="fm">__call__</span><span class="p">(</span><span class="nf">eval_inputs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">|</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Instance</span><span class="p">]</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
 
+      <p>Sample instances for few-shot learning.
+This method calls <code>_sample_instances</code> and
+checks if the sampled instances have the same inputs as the evaluation instance.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+          <b><code>eval_inputs</code></b>
+              (<code>list[dict[str, <span title="typing.Any">Any</span>]] | dict[str, <span title="typing.Any">Any</span>] | None</code>, default:
+                  <code>None</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>The inputs of the evaluation instance.
+This is used to avoid data leakage
+by checking if the sampled instances have the same inputs as the evaluation instance.</p>
+          </div>
+        </li>
+    </ul>
+
+
+<p><span class="doc-section-title">Returns:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+              <code>list[<span title="flexeval.core.few_shot_generator.base.Instance">Instance</span>]</code>
+          –
+          <div class="doc-md-description">
+            <p>A list of instances for few-shot learning.</p>
+          </div>
+        </li>
+    </ul>
+
             <details class="quote">
               <summary>Source code in <code>flexeval/core/few_shot_generator/base.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">21</span>
-<span class="normal">22</span>
-<span class="normal">23</span>
-<span class="normal">24</span>
-<span class="normal">25</span>
-<span class="normal">26</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">26</span>
 <span class="normal">27</span>
 <span class="normal">28</span>
 <span class="normal">29</span>
@@ -1357,7 +1461,38 @@
 <span class="normal">36</span>
 <span class="normal">37</span>
 <span class="normal">38</span>
-<span class="normal">39</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">eval_inputs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Instance</span><span class="p">]:</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span>
+<span class="normal">55</span>
+<span class="normal">56</span>
+<span class="normal">57</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">eval_inputs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">|</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Instance</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Sample instances for few-shot learning.</span>
+<span class="sd">    This method calls `_sample_instances` and</span>
+<span class="sd">    checks if the sampled instances have the same inputs as the evaluation instance.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        eval_inputs: The inputs of the evaluation instance.</span>
+<span class="sd">            This is used to avoid data leakage</span>
+<span class="sd">            by checking if the sampled instances have the same inputs as the evaluation instance.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        A list of instances for few-shot learning.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">sampled_instances</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sample_instances</span><span class="p">(</span><span class="n">eval_inputs</span><span class="o">=</span><span class="n">eval_inputs</span><span class="p">)</span>
 
     <span class="c1"># check if the sampled instances are the same as the eval_instance</span>
@@ -1457,7 +1592,10 @@
 <span class="normal">58</span>
 <span class="normal">59</span>
 <span class="normal">60</span>
-<span class="normal">61</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">BalancedFewShotGenerator</span><span class="p">(</span><span class="n">FewShotGenerator</span><span class="p">):</span>
+<span class="normal">61</span>
+<span class="normal">62</span>
+<span class="normal">63</span>
+<span class="normal">64</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">BalancedFewShotGenerator</span><span class="p">(</span><span class="n">FewShotGenerator</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">dataset</span><span class="p">:</span> <span class="n">GenerationDataset</span><span class="p">,</span>
@@ -1488,7 +1626,10 @@
             <span class="n">label_to_ids</span><span class="p">[</span><span class="n">instance</span><span class="o">.</span><span class="n">references</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_label_to_ids</span> <span class="o">=</span> <span class="n">label_to_ids</span>
 
-    <span class="k">def</span> <span class="nf">_sample_instances</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">eval_inputs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">GenerationInstance</span><span class="p">]:</span>
+    <span class="k">def</span> <span class="nf">_sample_instances</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">eval_inputs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">|</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">GenerationInstance</span><span class="p">]:</span>
         <span class="c1"># Shuffle labels</span>
         <span class="n">labels</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_label_to_ids</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_rnd</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="n">labels</span><span class="p">)</span>
@@ -1670,7 +1811,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_num_shots</span> <span class="o">=</span> <span class="n">num_shots</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_rnd</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">Random</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_sample_instances</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">eval_inputs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Instance</span><span class="p">]:</span>
+    <span class="k">def</span> <span class="nf">_sample_instances</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">eval_inputs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">|</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Instance</span><span class="p">]:</span>
         <span class="n">sampled_indices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rnd</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_dataset</span><span class="p">)),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_num_shots</span><span class="p">)</span>
         <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_dataset</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">sampled_indices</span><span class="p">]</span>
 </code></pre></div></td></tr></table></div>

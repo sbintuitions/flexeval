@@ -504,6 +504,27 @@
   
   
     <li class="md-nav__item">
+      <a href="../code_chat/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Code chat
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../code_generation/" class="md-nav__link">
         
   
@@ -588,11 +609,11 @@
   
   
     <li class="md-nav__item">
-      <a href="../en_preplexity/" class="md-nav__link">
+      <a href="../en_perplexity/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
-    En preplexity
+    En perplexity
   </span>
   
 
@@ -776,6 +797,27 @@
   
   <span class="md-ellipsis">
     Translation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../translation_chat/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Translation chat
   </span>
   
 
@@ -1319,7 +1361,6 @@
     prompt_template: {
       class_path: &#39;Jinja2PromptTemplate&#39;,
       init_args: {
-
         template: |||
           {% for item in few_shot_data -%}
           {{ item.question }}答えは「{{ item.references[0] }}」
@@ -1371,7 +1412,6 @@ This is a setup for generating answers based on the choices provided.</p>
     prompt_template: {
       class_path: &#39;Jinja2PromptTemplate&#39;,
       init_args: {
-
         template: |||
           正しい答えは何でしょう？
           {% for item in few_shot_data %}
@@ -1433,7 +1473,6 @@ The sentence pairs are extracted from image captions and annotated by crowd work
     prompt_template: {
       class_path: &#39;Jinja2PromptTemplate&#39;,
       init_args: {
-
         template: |||
           前提と仮説の関係を「中立」、「含意」、「矛盾」の中から回答してください。
           {% for item in few_shot_data %}
@@ -1488,7 +1527,6 @@ The passages are extracted from Japanese Wikipedia, and the questions and answer
     prompt_template: {
       class_path: &#39;Jinja2PromptTemplate&#39;,
       init_args: {
-
         template: |||
           質問に対する回答を文章から一言で抜き出してください。
           {% for item in few_shot_data %}
@@ -1544,7 +1582,6 @@ This is a Japanese subset of the benchmark.</p>
     prompt_template: {
       class_path: &#39;Jinja2PromptTemplate&#39;,
       init_args: {
-
         template: |||
           {% for item in few_shot_data %}
           {{ item.question }}
@@ -1594,7 +1631,6 @@ This setup converts the original dataset into binary sentiment classification.</
     prompt_template: {
       class_path: &#39;Jinja2PromptTemplate&#39;,
       init_args: {
-
         template: |||
           文の極性について「ポジティブ」か「ネガティブ」かで答えてください。
           {% for item in few_shot_data %}
@@ -1646,7 +1682,6 @@ This is a Japanese subset of the dataset.</p>
     prompt_template: {
       class_path: &#39;Jinja2PromptTemplate&#39;,
       init_args: {
-
         template: |||
           文章を１〜３文で要約してください。
           {% for item in few_shot_data %}

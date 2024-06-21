@@ -9,25 +9,25 @@
       
       
       
-        <link rel="prev" href="../preset_configs/PairwiseJudge/">
+        <link rel="prev" href="../">
       
       
-        <link rel="next" href="ChatDataset/">
+        <link rel="next" href="../code_generation/">
       
       
-      <link rel="icon" href="../assets/images/favicon.png">
+      <link rel="icon" href="../../../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.25">
     
     
       
-        <title>API Reference - flexeval</title>
+        <title>Code chat - flexeval</title>
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.6543a935.min.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.6543a935.min.css">
       
         
-        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.06af60db.min.css">
       
       
 
@@ -46,9 +46,9 @@
       
     
     
-      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
+      <link rel="stylesheet" href="../../../assets/_mkdocstrings.css">
     
-    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -71,6 +71,11 @@
     <label class="md-overlay" for="__drawer"></label>
     <div data-md-component="skip">
       
+        
+        <a href="#mbpp_chat" class="md-skip">
+          Skip to content
+        </a>
+      
     </div>
     <div data-md-component="announce">
       
@@ -83,7 +88,7 @@
 
 <header class="md-header md-header--shadow" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href=".." title="flexeval" class="md-header__button md-logo" aria-label="flexeval" data-md-component="logo">
+    <a href="../../.." title="flexeval" class="md-header__button md-logo" aria-label="flexeval" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
@@ -103,7 +108,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              API Reference
+              Code chat
             
           </span>
         </div>
@@ -178,7 +183,7 @@
 
 <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href=".." title="flexeval" class="md-nav__button md-logo" aria-label="flexeval" data-md-component="logo">
+    <a href="../../.." title="flexeval" class="md-nav__button md-logo" aria-label="flexeval" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
@@ -196,7 +201,7 @@
   
   
     <li class="md-nav__item">
-      <a href=".." class="md-nav__link">
+      <a href="../../.." class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -216,7 +221,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../installation/" class="md-nav__link">
+      <a href="../../../installation/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -236,7 +241,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../getting_started/" class="md-nav__link">
+      <a href="../../../getting_started/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -256,7 +261,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../configuration_guide/" class="md-nav__link">
+      <a href="../../../configuration_guide/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -288,7 +293,7 @@
           
           
           <div class="md-nav__link md-nav__container">
-            <a href="../how_to/" class="md-nav__link ">
+            <a href="../../../how_to/" class="md-nav__link ">
               
   
   <span class="md-ellipsis">
@@ -319,7 +324,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../how_to/configure_few_shot_examples/" class="md-nav__link">
+      <a href="../../../how_to/configure_few_shot_examples/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -340,7 +345,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../how_to/evaluate_with_llm_judges/" class="md-nav__link">
+      <a href="../../../how_to/evaluate_with_llm_judges/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -361,7 +366,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../how_to/implement_your_own_module/" class="md-nav__link">
+      <a href="../../../how_to/implement_your_own_module/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -389,7 +394,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../design_principles/" class="md-nav__link">
+      <a href="../../../design_principles/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -406,22 +411,24 @@
       
   
   
+    
   
   
+  
     
     
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" checked>
         
           
           
           <div class="md-nav__link md-nav__container">
-            <a href="../preset_configs/" class="md-nav__link ">
+            <a href="../../" class="md-nav__link ">
               
   
   <span class="md-ellipsis">
@@ -438,7 +445,7 @@
             
           </div>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_7">
             <span class="md-nav__icon md-icon"></span>
             Preset Configs
@@ -449,22 +456,24 @@
                 
   
   
+    
   
   
+  
     
     
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_1" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_1" checked>
         
           
           
           <div class="md-nav__link md-nav__container">
-            <a href="../preset_configs/EvalSetup/" class="md-nav__link ">
+            <a href="../" class="md-nav__link ">
               
   
   <span class="md-ellipsis">
@@ -481,7 +490,7 @@
             
           </div>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_1_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_1_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_7_1">
             <span class="md-nav__icon md-icon"></span>
             EvalSetup
@@ -492,10 +501,28 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../preset_configs/EvalSetup/code_chat/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Code chat
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   <span class="md-ellipsis">
@@ -504,6 +531,33 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#mbpp_chat" class="md-nav__link">
+    <span class="md-ellipsis">
+      mbpp_chat
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -516,7 +570,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../preset_configs/EvalSetup/code_generation/" class="md-nav__link">
+      <a href="../code_generation/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -537,7 +591,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../preset_configs/EvalSetup/en_chat/" class="md-nav__link">
+      <a href="../en_chat/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -558,7 +612,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../preset_configs/EvalSetup/en_generation/" class="md-nav__link">
+      <a href="../en_generation/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -579,7 +633,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../preset_configs/EvalSetup/en_multiple_choice/" class="md-nav__link">
+      <a href="../en_multiple_choice/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -600,7 +654,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../preset_configs/EvalSetup/en_perplexity/" class="md-nav__link">
+      <a href="../en_perplexity/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -621,7 +675,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../preset_configs/EvalSetup/ja_chat/" class="md-nav__link">
+      <a href="../ja_chat/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -642,7 +696,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../preset_configs/EvalSetup/ja_generation/" class="md-nav__link">
+      <a href="../ja_generation/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -663,7 +717,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../preset_configs/EvalSetup/ja_multiple_choice/" class="md-nav__link">
+      <a href="../ja_multiple_choice/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -684,7 +738,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../preset_configs/EvalSetup/translation/" class="md-nav__link">
+      <a href="../translation/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -705,7 +759,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../preset_configs/EvalSetup/translation_chat/" class="md-nav__link">
+      <a href="../translation_chat/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -734,7 +788,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../preset_configs/Metric/" class="md-nav__link">
+      <a href="../../Metric/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -755,7 +809,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../preset_configs/PairwiseJudge/" class="md-nav__link">
+      <a href="../../PairwiseJudge/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -780,24 +834,22 @@
       
   
   
-    
   
   
-  
     
     
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
         
           
           
           <div class="md-nav__link md-nav__container">
-            <a href="./" class="md-nav__link md-nav__link--active">
+            <a href="../../../api_reference/" class="md-nav__link ">
               
   
   <span class="md-ellipsis">
@@ -808,13 +860,13 @@
             </a>
             
               
-              <label class="md-nav__link md-nav__link--active" for="__nav_8" id="__nav_8_label" tabindex="0">
+              <label class="md-nav__link " for="__nav_8" id="__nav_8_label" tabindex="0">
                 <span class="md-nav__icon md-icon"></span>
               </label>
             
           </div>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_8">
             <span class="md-nav__icon md-icon"></span>
             API Reference
@@ -828,7 +880,7 @@
   
   
     <li class="md-nav__item">
-      <a href="ChatDataset/" class="md-nav__link">
+      <a href="../../../api_reference/ChatDataset/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -849,7 +901,7 @@
   
   
     <li class="md-nav__item">
-      <a href="EvalSetup/" class="md-nav__link">
+      <a href="../../../api_reference/EvalSetup/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -870,7 +922,7 @@
   
   
     <li class="md-nav__item">
-      <a href="FewShotGenerator/" class="md-nav__link">
+      <a href="../../../api_reference/FewShotGenerator/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -891,7 +943,7 @@
   
   
     <li class="md-nav__item">
-      <a href="GenerationDataset/" class="md-nav__link">
+      <a href="../../../api_reference/GenerationDataset/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -912,7 +964,7 @@
   
   
     <li class="md-nav__item">
-      <a href="LanguageModel/" class="md-nav__link">
+      <a href="../../../api_reference/LanguageModel/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -933,7 +985,7 @@
   
   
     <li class="md-nav__item">
-      <a href="MatchMaker/" class="md-nav__link">
+      <a href="../../../api_reference/MatchMaker/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -954,7 +1006,7 @@
   
   
     <li class="md-nav__item">
-      <a href="Metric/" class="md-nav__link">
+      <a href="../../../api_reference/Metric/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -975,7 +1027,7 @@
   
   
     <li class="md-nav__item">
-      <a href="MultipleChoiceDataset/" class="md-nav__link">
+      <a href="../../../api_reference/MultipleChoiceDataset/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -996,7 +1048,7 @@
   
   
     <li class="md-nav__item">
-      <a href="Normalizer/" class="md-nav__link">
+      <a href="../../../api_reference/Normalizer/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1017,7 +1069,7 @@
   
   
     <li class="md-nav__item">
-      <a href="PairwiseJudge/" class="md-nav__link">
+      <a href="../../../api_reference/PairwiseJudge/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1038,7 +1090,7 @@
   
   
     <li class="md-nav__item">
-      <a href="PairwiseScorer/" class="md-nav__link">
+      <a href="../../../api_reference/PairwiseScorer/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1059,7 +1111,7 @@
   
   
     <li class="md-nav__item">
-      <a href="PromptTemplate/" class="md-nav__link">
+      <a href="../../../api_reference/PromptTemplate/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1080,7 +1132,7 @@
   
   
     <li class="md-nav__item">
-      <a href="TextDataset/" class="md-nav__link">
+      <a href="../../../api_reference/TextDataset/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1101,7 +1153,7 @@
   
   
     <li class="md-nav__item">
-      <a href="Tokenizer/" class="md-nav__link">
+      <a href="../../../api_reference/Tokenizer/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1140,6 +1192,23 @@
   
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#mbpp_chat" class="md-nav__link">
+    <span class="md-ellipsis">
+      mbpp_chat
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -1153,23 +1222,51 @@
                   
 
 
-  <h1>API Reference</h1>
+  <h1>Code chat</h1>
 
+<h2 id="mbpp_chat">mbpp_chat<a class="headerlink" href="#mbpp_chat" title="Permanent link">&para;</a></h2>
+<p>Mostly Basic Python Problems (MBPP) is a dataset of crowd-sourced programming problems.
+This is a evaluation setup for chat LLMs.</p>
+<p>References:</p>
 <ul>
-<li><a href="ChatDataset/">ChatDataset</a></li>
-<li><a href="EvalSetup/">EvalSetup</a></li>
-<li><a href="FewShotGenerator/">FewShotGenerator</a></li>
-<li><a href="GenerationDataset/">GenerationDataset</a></li>
-<li><a href="LanguageModel/">LanguageModel</a></li>
-<li><a href="MatchMaker/">MatchMaker</a></li>
-<li><a href="Metric/">Metric</a></li>
-<li><a href="MultipleChoiceDataset/">MultipleChoiceDataset</a></li>
-<li><a href="Normalizer/">Normalizer</a></li>
-<li><a href="PairwiseJudge/">PairwiseJudge</a></li>
-<li><a href="PairwiseScorer/">PairwiseScorer</a></li>
-<li><a href="PromptTemplate/">PromptTemplate</a></li>
-<li><a href="TextDataset/">TextDataset</a></li>
-<li><a href="Tokenizer/">Tokenizer</a></li>
+<li><a href="https://huggingface.co/datasets/mbpp">Hugging Face Dataset</a></li>
+<li><a href="https://arxiv.org/abs/2108.07732">Program Synthesis with Large Language Models</a>
+<div class="highlight"><pre><span></span><code>local dataset_base_args = {
+  class_path: &#39;HfChatDataset&#39;,
+  init_args: {
+    dataset_name: &#39;mbpp&#39;,
+    subset: &#39;sanitized&#39;,
+    input_template: |||
+      Generate a Python function that satisfies the following question and test cases.
+      ## Question
+      {{ prompt }}
+      ## Test cases
+      ```python
+      {{ test_list | join(&#39;\n&#39;) }}
+      ```
+    |||,
+  },
+};
+
+{
+  class_path: &#39;ChatResponse&#39;,
+  init_args: {
+    eval_dataset: dataset_base_args { init_args+: { split: &#39;test&#39;, references_template: &#39;{{ test_list | join(&quot;\n&quot;) }}&#39; } },
+    few_shot_generator: {
+      class_path: &#39;RandomFewShotGenerator&#39;,
+      init_args: {
+        dataset: dataset_base_args { init_args+: { split: &#39;prompt&#39;, references_template: &#39;```python\n{{ code }}\n```&#39; } },
+        num_shots: 3,
+      },
+    },
+    metrics: [
+      { class_path: &#39;CodeEval&#39;, init_args: { normalizer: { class_path: &#39;RegexNormalizer&#39;, init_args: { pattern: &#39;```python\n(.*?)\n```&#39; } } } },
+    ],
+    gen_kwargs: { max_new_tokens: 512 },
+    batch_size: 4,
+  },
+}
+</code></pre></div></li>
 </ul>
 
 
@@ -1217,10 +1314,10 @@
     </div>
     
     
-    <script id="__config" type="application/json">{"base": "..", "features": [], "search": "../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    <script id="__config" type="application/json">{"base": "../../..", "features": [], "search": "../../../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
     
     
-      <script src="../assets/javascripts/bundle.081f42fc.min.js"></script>
+      <script src="../../../assets/javascripts/bundle.081f42fc.min.js"></script>
       
     
   </body>
