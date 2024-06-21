@@ -248,7 +248,9 @@ class HuggingFaceLM(LanguageModel):
             # Ex. "」" -> "ãĢį"
             if stop_token_id == self._tokenizer.unk_token_id:
                 # In such a case, we try to get the ID by calling the encode method.
-                stop_token_id = self._tokenizer.encode(stop_seq, add_special_tokens=False)[-1]
+                stop_seq_tokens = self._tokenizer.encode(stop_seq, add_special_tokens=False)
+                if stop_seq_tokens:
+                    stop_token_id = stop_seq_tokens[-1]
             # If the token does not match the specified string itself, we do not include it as a stop token id
             if self._tokenizer.decode(stop_token_id) != stop_seq:
                 continue
