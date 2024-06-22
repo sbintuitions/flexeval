@@ -1187,6 +1187,27 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api_reference/utils/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Utils
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -1278,29 +1299,29 @@ flexeval_lm<span class="w"> </span><span class="se">\</span>
 </code></pre></div>
 <p>Now you have the model outputs in <code>results/mt-en-gpt3.5-turbo/outputs.jsonl</code>.</p>
 <p>Let's evaluate the responses with GPT4.
-The LLM evaluation is implemented as a <code>Metric</code> class and we will use a preset metric named <code>assistant_eval_gpt4_en_single_turn</code>.
+The LLM evaluation is implemented as a <code>Metric</code> class and we will use a preset metric named <code>assistant_eval_en_single_turn</code>.
 You can check its configuration with the following command:</p>
-<div class="highlight"><pre><span></span><code>flexeval_presets<span class="w"> </span>assistant_eval_gpt4_en_single_turn
+<div class="highlight"><pre><span></span><code>flexeval_presets<span class="w"> </span>assistant_eval_en_single_turn
 </code></pre></div>
 <p>In this metric, GPT4 is asked to rate the responses with the score from 1 to 10.
 The score is extracted as the last digit found in the evaluator's output.</p>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
 <p>To take a closer look at the prompt template, combine pipeline with <code>jsonnet</code> and <code>jq</code>:</p>
-<div class="highlight"><pre><span></span><code>flexeval_presets<span class="w"> </span>assistant_eval_gpt4_en_single_turn<span class="w"> </span><span class="p">|</span><span class="w"> </span>jsonnet<span class="w"> </span>-<span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span>-r<span class="w"> </span><span class="s2">&quot;.init_args.prompt_template.init_args.template&quot;</span>
+<div class="highlight"><pre><span></span><code>flexeval_presets<span class="w"> </span>assistant_eval_en_single_turn<span class="w"> </span><span class="p">|</span><span class="w"> </span>jsonnet<span class="w"> </span>-<span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span>-r<span class="w"> </span><span class="s2">&quot;.init_args.prompt_template.init_args.template&quot;</span>
 </code></pre></div>
 </div>
 <p>Perform automatic evaluation with GPT4 with the following command:</p>
 <div class="highlight"><pre><span></span><code>flexeval_file<span class="w"> </span><span class="se">\</span>
 <span class="w">   </span>--eval_file<span class="w"> </span><span class="s2">&quot;results/mt-en-gpt3.5-turbo/outputs.jsonl&quot;</span><span class="w"> </span><span class="se">\</span>
-<span class="w">   </span>--metrics<span class="w"> </span><span class="s2">&quot;assistant_eval_gpt4_en_single_turn&quot;</span><span class="w"> </span><span class="se">\</span>
-<span class="w">   </span>--save_dir<span class="w"> </span><span class="s2">&quot;results/mt-en_gpt3.5-turbo/eval_by_gpt4&quot;</span>
+<span class="w">   </span>--metrics<span class="w"> </span><span class="s2">&quot;assistant_eval_en_single_turn&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">   </span>--save_dir<span class="w"> </span><span class="s2">&quot;results/mt-en_gpt3.5-turbo/eval_by_gpt&quot;</span>
 </code></pre></div>
 <p>☕️ It may take a while to finish the evaluation...</p>
-<p>By hitting <code>cat results/mt-en-gpt3.5-turbo/eval_by_gpt4/metrics.json</code>, you can see the evaluation result like <code>{"llm_score": 7.795}</code>.
-The evaluation for each response is stored in <code>results/mt-en-gpt3.5-turbo/eval_by_gpt4/outputs.jsonl</code>.</p>
+<p>By hitting <code>cat results/mt-en-gpt3.5-turbo/eval_by_gpt/metrics.json</code>, you can see the evaluation result like <code>{"llm_score": 7.795}</code>.
+The evaluation for each response is stored in <code>results/mt-en-gpt3.5-turbo/eval_by_gpt/outputs.jsonl</code>.</p>
 <p>You can check the output of the evaluator LLM in the <code>llm_score_output</code> field.</p>
-<div class="highlight"><pre><span></span><code>head<span class="w"> </span>-n<span class="w"> </span><span class="m">1</span><span class="w"> </span>results/mt-en-gpt3.5-turbo/eval_by_gpt4/outputs.jsonl<span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span>-r<span class="w"> </span><span class="s2">&quot;.llm_output&quot;</span>
+<div class="highlight"><pre><span></span><code>head<span class="w"> </span>-n<span class="w"> </span><span class="m">1</span><span class="w"> </span>results/mt-en-gpt3.5-turbo/eval_by_gpt/outputs.jsonl<span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span>-r<span class="w"> </span><span class="s2">&quot;.llm_output&quot;</span>
 </code></pre></div>
 <div class="admonition info">
 <p class="admonition-title">Info</p>
@@ -1310,7 +1331,7 @@ So, theoretically, you can perform the same evaluation with <code>flexeval_lm</c
 <span class="w">  </span>--language_model<span class="w"> </span>OpenAIChatAPI<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--language_model.model_name<span class="w"> </span><span class="s2">&quot;gpt-3.5-turbo&quot;</span><span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--eval_setup<span class="w"> </span><span class="s2">&quot;mt-en&quot;</span><span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--metrics+<span class="o">=</span><span class="s2">&quot;assistant_eval_gpt4_en_single_turn&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--metrics+<span class="o">=</span><span class="s2">&quot;assistant_eval_en_single_turn&quot;</span><span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--save_dir<span class="w"> </span><span class="s2">&quot;results/mt-en_gpt3.5-turbo&quot;</span>
 </code></pre></div>
 <p>Yet, we recommend separate the response generation (<code>flexeval_lm</code>) and evaluation (<code>flexeval_file</code>) so that you don't lost the response by some errors in the evaluation process.</p>
@@ -1341,7 +1362,7 @@ flexeval_lm<span class="w"> </span><span class="se">\</span>
 <div class="highlight"><pre><span></span><code>flexeval_pairwise<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--lm_output_paths.gpt_3_5<span class="w"> </span><span class="s2">&quot;results/mt-en_gpt3.5-turbo/outputs.jsonl&quot;</span><span class="w">  </span><span class="se">\</span>
 <span class="w">  </span>--lm_output_paths.gpt_4o<span class="w"> </span><span class="s2">&quot;results/mt-en_gpt-4o/outputs.jsonl&quot;</span><span class="w">  </span><span class="se">\</span>
-<span class="w">  </span>--judge<span class="w"> </span><span class="s2">&quot;assistant_judge_gpt4_en_single_turn&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--judge<span class="w"> </span><span class="s2">&quot;assistant_judge_en_single_turn&quot;</span><span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--save_dir<span class="w"> </span><span class="s2">&quot;results/mt-en_gpt3.5_vs_gpt4o&quot;</span>
 </code></pre></div>
 <p>☕️ It may take a while to finish the evaluation...</p>

@@ -1194,6 +1194,27 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../api_reference/utils/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Utils
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -1296,14 +1317,14 @@ This is a setup for multiple choice where the model chooses the correct answer b
   class_path: &#39;MultipleChoice&#39;,
   init_args: {
     eval_dataset: {
-      class_path: &#39;HfMultipleChoiceDataset&#39;,
+      class_path: &#39;HFMultipleChoiceDataset&#39;,
       init_args: dataset_base_args { split: &#39;validation&#39; },
     },
     few_shot_generator: {
       class_path: &#39;RandomFewShotGenerator&#39;,
       init_args: {
         dataset: {
-          class_path: &#39;HfMultipleChoiceDataset&#39;,
+          class_path: &#39;HFMultipleChoiceDataset&#39;,
           init_args: dataset_base_args { split: &#39;train&#39; },
         },
         num_shots: 4,
@@ -1345,14 +1366,14 @@ The dataset is constructed through adversarial filtering to make it challenging 
   class_path: &#39;MultipleChoice&#39;,
   init_args: {
     eval_dataset: {
-      class_path: &#39;HfMultipleChoiceDataset&#39;,
+      class_path: &#39;HFMultipleChoiceDataset&#39;,
       init_args: dataset_base_args { split: &#39;validation&#39; },
     },
     few_shot_generator: {
       class_path: &#39;RandomFewShotGenerator&#39;,
       init_args: {
         dataset: {
-          class_path: &#39;HfMultipleChoiceDataset&#39;,
+          class_path: &#39;HFMultipleChoiceDataset&#39;,
           init_args: dataset_base_args { split: &#39;train&#39; },
         },
         num_shots: 4,
@@ -1392,14 +1413,14 @@ The dataset is constructed through adversarial filtering to make it challenging 
   class_path: &#39;MultipleChoice&#39;,
   init_args: {
     eval_dataset: {
-      class_path: &#39;HfMultipleChoiceDataset&#39;,
+      class_path: &#39;HFMultipleChoiceDataset&#39;,
       init_args: dataset_base_args { split: &#39;test&#39; },
     },
     few_shot_generator: {
       class_path: &#39;RandomFewShotGenerator&#39;,
       init_args: {
         dataset: {
-          class_path: &#39;HfMultipleChoiceDataset&#39;,
+          class_path: &#39;HFMultipleChoiceDataset&#39;,
           init_args: dataset_base_args { split: &#39;train&#39; },
         },
         num_shots: 4,
@@ -1434,7 +1455,7 @@ This is an English subset of the dataset.</p>
   class_path: &#39;MultipleChoice&#39;,
   init_args: {
     eval_dataset: {
-      class_path: &#39;HfMultipleChoiceDataset&#39;,
+      class_path: &#39;HFMultipleChoiceDataset&#39;,
       init_args: {
         dataset_name: &#39;Muennighoff/xwinograd&#39;,
         subset: &#39;en&#39;,

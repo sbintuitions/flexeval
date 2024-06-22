@@ -1212,6 +1212,27 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../api_reference/utils/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Utils
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -1323,7 +1344,7 @@ This is a evaluation setup for chat LLMs.</p>
 <li><a href="https://sites.google.com/view/project-aio/home">AI王 〜クイズAI日本一決定戦〜</a></li>
 <li><a href="https://www.anlp.jp/proceedings/annual_meeting/2020/pdf_dir/P2-24.pdf">JAQKET: クイズを題材にした日本語 QA データセットの構築</a>
 <div class="highlight"><pre><span></span><code>local dataset_base_args = {
-  class_path: &#39;HfChatDataset&#39;,
+  class_path: &#39;HFChatDataset&#39;,
   init_args: {
     dataset_name: &#39;llm-book/aio&#39;,
     input_template: &#39;{{ question }}&#39;,
@@ -1362,7 +1383,7 @@ This is a evaluation setup for chat LLMs.</p>
   class_path: &#39;ChatResponse&#39;,
   init_args: {
     eval_dataset: {
-      class_path: &#39;HfChatDataset&#39;,
+      class_path: &#39;HFChatDataset&#39;,
       init_args: {
         dataset_name: &#39;elyza/ELYZA-tasks-100&#39;,
         split: &#39;test&#39;,
@@ -1389,7 +1410,7 @@ This is a evaluation setup for chat LLMs.</p>
 <li><a href="https://huggingface.co/datasets/juletxara/mgsm">Hugging Face Dataset</a></li>
 <li><a href="https://arxiv.org/abs/2210.03057">Language Models are Multilingual Chain-of-Thought Reasoners</a>
 <div class="highlight"><pre><span></span><code>local dataset_base_args = {
-  class_path: &#39;HfChatDataset&#39;,
+  class_path: &#39;HFChatDataset&#39;,
   init_args: {
     dataset_name: &#39;juletxara/mgsm&#39;,
     subset: &#39;ja&#39;,

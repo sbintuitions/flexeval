@@ -1212,6 +1212,27 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../api_reference/utils/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Utils
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -1321,7 +1342,7 @@
 <li><a href="https://huggingface.co/datasets/muennighoff/babi">Hugging Face Dataset</a></li>
 <li><a href="https://arxiv.org/abs/1502.05698">Towards AI-Complete Question Answering: A Set of Prerequisite Toy Tasks</a>
 <div class="highlight"><pre><span></span><code>local dataset_base_args = {
-  class_path: &#39;HfGenerationDataset&#39;,
+  class_path: &#39;HFGenerationDataset&#39;,
   init_args: {
     dataset_name: &#39;Muennighoff/babi&#39;,
     references_template: &#39;[&quot;{{ answer }}&quot;]&#39;,
@@ -1371,7 +1392,7 @@ This is a setup for generating answers based on the choices provided.</p>
 <li><a href="https://huggingface.co/datasets/tau/commonsense_qa">Hugging Face Dataset</a></li>
 <li><a href="https://aclanthology.org/N19-1421/">CommonsenseQA: A Question Answering Challenge Targeting Commonsense Knowledge</a>
 <div class="highlight"><pre><span></span><code>local dataset_base_args = {
-  class_path: &#39;HfGenerationDataset&#39;,
+  class_path: &#39;HFGenerationDataset&#39;,
   init_args: {
     dataset_name: &#39;tau/commonsense_qa&#39;,
     references_template: &#39;{% set answer_index = choices.label.index(answerKey) %}[&quot;{{ choices.text[answer_index] }}&quot;]&#39;,
@@ -1431,7 +1452,7 @@ The dataset was created to support the task of question answering on basic mathe
 <li>[Hugging Face Dataset](https://huggingface.co/datasets/gsm8k]</li>
 <li><a href="https://arxiv.org/abs/2110.14168">Training Verifiers to Solve Math Word Problems</a>
 <div class="highlight"><pre><span></span><code>local dataset_base_args = {
-  class_path: &#39;HfGenerationDataset&#39;,
+  class_path: &#39;HFGenerationDataset&#39;,
   init_args: {
     dataset_name: &#39;gsm8k&#39;,
     subset: &#39;main&#39;,
@@ -1478,7 +1499,7 @@ The dataset was created to support the task of question answering on basic mathe
 <li><a href="https://huggingface.co/datasets/rajpurkar/squad">Hugging Face Dataset</a></li>
 <li><a href="https://aclanthology.org/D16-1264/">SQuAD: 100,000+ Questions for Machine Comprehension of Text</a>
 <div class="highlight"><pre><span></span><code>local dataset_base_args = {
-  class_path: &#39;HfGenerationDataset&#39;,
+  class_path: &#39;HFGenerationDataset&#39;,
   init_args: {
     dataset_name: &#39;rajpurkar/squad&#39;,
     references_template: &#39;{{ answers.text }}&#39;,
@@ -1529,7 +1550,7 @@ TriviaqQA includes 95K question-answer pairs authored by trivia enthusiasts and 
 <li><a href="https://huggingface.co/datasets/trivia_qa">Hugging Face Dataset</a></li>
 <li><a href="https://aclanthology.org/P17-1147/">TriviaQA: A Large Scale Distantly Supervised Challenge Dataset for Reading Comprehension</a>
 <div class="highlight"><pre><span></span><code>local dataset_base_args = {
-  class_path: &#39;HfGenerationDataset&#39;,
+  class_path: &#39;HFGenerationDataset&#39;,
   init_args: {
     dataset_name: &#39;trivia_qa&#39;,
     subset: &#39;rc.nocontext&#39;,
@@ -1581,7 +1602,7 @@ See the hugging face dataset page for more information.</p>
 <li><a href="https://huggingface.co/datasets/carblacac/twitter-sentiment-analysis">Hugging Face Dataset</a></li>
 <li><a href="http://thinknook.com/twitter-sentiment-analysis-training-corpus-dataset-2012-09-22/">Twitter Sentiment Analysis Training Corpus (Dataset)</a>
 <div class="highlight"><pre><span></span><code>local dataset_base_args = {
-  class_path: &#39;HfGenerationDataset&#39;,
+  class_path: &#39;HFGenerationDataset&#39;,
   init_args: {
     dataset_name: &#39;carblacac/twitter-sentiment-analysis&#39;,
     references_template: &quot;{{ [&#39;Positive&#39;, &#39;Negative&#39;][feeling] }}&quot;,

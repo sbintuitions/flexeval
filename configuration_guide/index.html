@@ -1194,6 +1194,27 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api_reference/utils/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Utils
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -1296,7 +1317,7 @@ The content is written in the <a href="https://jsonnet.org/">jsonnet</a> format,
 <div class="highlight"><pre><span></span><code><span class="p">{</span>
 <span class="w">  </span><span class="nt">&quot;class_path&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Generation&quot;</span><span class="p">,</span>
 <span class="w">  </span><span class="nt">&quot;init_args&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;eval_dataset&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;class_path&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;HfGenerationDataset&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;init_args&quot;</span><span class="p">:</span><span class="w"> </span><span class="err">...</span><span class="p">},</span>
+<span class="w">    </span><span class="nt">&quot;eval_dataset&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;class_path&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;HFGenerationDataset&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;init_args&quot;</span><span class="p">:</span><span class="w"> </span><span class="err">...</span><span class="p">},</span>
 <span class="w">    </span><span class="nt">&quot;prompt_template&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;class_path&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Jinja2PromptTemplate&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;init_args&quot;</span><span class="p">:</span><span class="w"> </span><span class="err">...</span><span class="p">},</span>
 <span class="w">    </span><span class="nt">&quot;gen_kwargs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;max_new_tokens&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">32</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;stop_sequences&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;」&quot;</span><span class="p">]},</span>
 <span class="w">    </span><span class="nt">&quot;metrics&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[{</span><span class="nt">&quot;class_path&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;CharF1&quot;</span><span class="p">},</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;class_path&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ExactMatch&quot;</span><span class="p">}],</span>
@@ -1309,7 +1330,7 @@ The content is written in the <a href="https://jsonnet.org/">jsonnet</a> format,
 Currently, there are four types of <code>EvalSetup</code>: <a href="../api_reference/EvalSetup/#flexeval.scripts.flexeval_lm.Generation"><code>Generation</code></a>, <a href="../api_reference/EvalSetup/#flexeval.scripts.flexeval_lm.ChatResponse"><code>ChatResponse</code></a>, <a href="../api_reference/EvalSetup/#flexeval.scripts.flexeval_lm.MultipleChoice"><code>MultipleChoice</code></a>, and <a href="../api_reference/EvalSetup/#flexeval.scripts.flexeval_lm.Perplexity"><code>Perplexity</code></a>.</p>
 <p>Then, <code>Generation</code> is composed of the following components:</p>
 <ul>
-<li><code>eval_dataset</code>: The dataset to evaluate. You can choose from concrete classes inheriting <a href="../api_reference/GenerationDataset/"><code>GenerationDataset</code></a>. Most presets use <a href="../api_reference/GenerationDataset/#flexeval.core.generation_dataset.hf_dataset.HfGenerationDataset"><code>HfGenerationDataset</code></a>, which load datasets from <a href="https://huggingface.co/docs/datasets/index">Hugging Face Hub</a>.</li>
+<li><code>eval_dataset</code>: The dataset to evaluate. You can choose from concrete classes inheriting <a href="../api_reference/GenerationDataset/"><code>GenerationDataset</code></a>. Most presets use <a href="../api_reference/GenerationDataset/#flexeval.core.generation_dataset.hf_dataset.HFGenerationDataset"><code>HFGenerationDataset</code></a>, which load datasets from <a href="https://huggingface.co/docs/datasets/index">Hugging Face Hub</a>.</li>
 <li><code>prompt_template</code>: The template to generate prompts fed to the language model. We have <a href="../api_reference/PromptTemplate/#flexeval.core.prompt_template.jinja2.Jinja2PromptTemplate"><code>Jinja2PromptTemplate</code></a>, which uses <a href="https://jinja.palletsprojects.com/en/3.1.x/">Jinja2</a> to embed the data from <a href="../api_reference/GenerationDataset/"><code>GenerationDataset</code></a> into the prompt.</li>
 <li><code>gen_kwargs</code>: The keyword arguments passed to <a href="../api_reference/LanguageModel/#flexeval.core.language_model.base.LanguageModel.batch_complete_text"><code>LanguageModel.batch_complete_text</code></a>. For example, <code>max_new_tokens</code> and <code>stop_sequences</code> are used to control the generation process. Acceptable arguments depend on the underlying implementation of the generation function (e.g., <code>generate()</code> in <code>transformers</code>).</li>
 <li><code>metrics</code>: The metrics to compute. You can choose from concrete classes inheriting <a href="../api_reference/Metric/"><code>Metric</code></a>. These modules take the outputs of the language model, the references, and dataset values, and compute the metrics.</li>

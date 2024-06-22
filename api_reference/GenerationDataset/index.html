@@ -956,9 +956,9 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#flexeval.core.generation_dataset.hf_dataset.HfGenerationDataset" class="md-nav__link">
+  <a href="#flexeval.core.generation_dataset.hf_dataset.HFGenerationDataset" class="md-nav__link">
     <span class="md-ellipsis">
-      HfGenerationDataset
+      HFGenerationDataset
     </span>
   </a>
   
@@ -1201,6 +1201,27 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../utils/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Utils
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -1251,9 +1272,9 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#flexeval.core.generation_dataset.hf_dataset.HfGenerationDataset" class="md-nav__link">
+  <a href="#flexeval.core.generation_dataset.hf_dataset.HFGenerationDataset" class="md-nav__link">
     <span class="md-ellipsis">
-      HfGenerationDataset
+      HFGenerationDataset
     </span>
   </a>
   
@@ -1587,11 +1608,11 @@ The model's output will be evaluated against these references in <code>Metric</c
 
 
 
-<h2 id="flexeval.core.generation_dataset.hf_dataset.HfGenerationDataset" class="doc doc-heading">
-            <span class="doc doc-object-name doc-class-name">HfGenerationDataset</span>
+<h2 id="flexeval.core.generation_dataset.hf_dataset.HFGenerationDataset" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">HFGenerationDataset</span>
 
 
-<a href="#flexeval.core.generation_dataset.hf_dataset.HfGenerationDataset" class="headerlink" title="Permanent link">&para;</a></h2>
+<a href="#flexeval.core.generation_dataset.hf_dataset.HFGenerationDataset" class="headerlink" title="Permanent link">&para;</a></h2>
 
 
     <div class="doc doc-contents first">
@@ -1705,7 +1726,7 @@ The model's output will be evaluated against these references in <code>Metric</c
 <span class="normal">55</span>
 <span class="normal">56</span>
 <span class="normal">57</span>
-<span class="normal">58</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">HfGenerationDataset</span><span class="p">(</span><span class="n">GenerationDataset</span><span class="p">):</span>
+<span class="normal">58</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">HFGenerationDataset</span><span class="p">(</span><span class="n">GenerationDataset</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A dataset for generation tasks using Hugging Face datasets.</span>
 
@@ -1769,11 +1790,11 @@ The model's output will be evaluated against these references in <code>Metric</c
 <div class="doc doc-object doc-function">
 
 
-<h3 id="flexeval.core.generation_dataset.hf_dataset.HfGenerationDataset.__init__" class="doc doc-heading">
+<h3 id="flexeval.core.generation_dataset.hf_dataset.HFGenerationDataset.__init__" class="doc doc-heading">
             <span class="doc doc-object-name doc-function-name">__init__</span>
 
 
-<a href="#flexeval.core.generation_dataset.hf_dataset.HfGenerationDataset.__init__" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#flexeval.core.generation_dataset.hf_dataset.HFGenerationDataset.__init__" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature highlight"><pre><span></span><code><span class="fm">__init__</span><span class="p">(</span><span class="nf">dataset_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">split</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">references_template</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">input_templates</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">subset</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">max_lengths</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
 </code></pre></div>
 
@@ -1825,11 +1846,11 @@ The model's output will be evaluated against these references in <code>Metric</c
 <div class="doc doc-object doc-function">
 
 
-<h3 id="flexeval.core.generation_dataset.hf_dataset.HfGenerationDataset.__len__" class="doc doc-heading">
+<h3 id="flexeval.core.generation_dataset.hf_dataset.HFGenerationDataset.__len__" class="doc doc-heading">
             <span class="doc doc-object-name doc-function-name">__len__</span>
 
 
-<a href="#flexeval.core.generation_dataset.hf_dataset.HfGenerationDataset.__len__" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#flexeval.core.generation_dataset.hf_dataset.HFGenerationDataset.__len__" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature highlight"><pre><span></span><code><span class="fm">__len__</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">int</span>
 </code></pre></div>
 
@@ -1849,11 +1870,11 @@ The model's output will be evaluated against these references in <code>Metric</c
 <div class="doc doc-object doc-function">
 
 
-<h3 id="flexeval.core.generation_dataset.hf_dataset.HfGenerationDataset.__getitem__" class="doc doc-heading">
+<h3 id="flexeval.core.generation_dataset.hf_dataset.HFGenerationDataset.__getitem__" class="doc doc-heading">
             <span class="doc doc-object-name doc-function-name">__getitem__</span>
 
 
-<a href="#flexeval.core.generation_dataset.hf_dataset.HfGenerationDataset.__getitem__" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#flexeval.core.generation_dataset.hf_dataset.HFGenerationDataset.__getitem__" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature highlight"><pre><span></span><code><span class="fm">__getitem__</span><span class="p">(</span><span class="nf">i</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GenerationInstance</span>
 </code></pre></div>
 

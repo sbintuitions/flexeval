@@ -72,7 +72,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#flexeval.scripts.flexeval_lm.ChatResponse" class="md-skip">
+        <a href="#flexeval.core.eval_setups.EvalSetup" class="md-skip">
           Skip to content
         </a>
       
@@ -896,16 +896,7 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#flexeval.scripts.flexeval_lm.ChatResponse" class="md-nav__link">
-    <span class="md-ellipsis">
-      ChatResponse
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#flexeval.scripts.flexeval_lm.EvalSetup" class="md-nav__link">
+  <a href="#flexeval.core.eval_setups.EvalSetup" class="md-nav__link">
     <span class="md-ellipsis">
       EvalSetup
     </span>
@@ -914,7 +905,16 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#flexeval.scripts.flexeval_lm.Generation" class="md-nav__link">
+  <a href="#flexeval.core.eval_setups.ChatResponse" class="md-nav__link">
+    <span class="md-ellipsis">
+      ChatResponse
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#flexeval.core.eval_setups.Generation" class="md-nav__link">
     <span class="md-ellipsis">
       Generation
     </span>
@@ -923,7 +923,7 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#flexeval.scripts.flexeval_lm.MultipleChoice" class="md-nav__link">
+  <a href="#flexeval.core.eval_setups.MultipleChoice" class="md-nav__link">
     <span class="md-ellipsis">
       MultipleChoice
     </span>
@@ -932,7 +932,7 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#flexeval.scripts.flexeval_lm.Perplexity" class="md-nav__link">
+  <a href="#flexeval.core.eval_setups.Perplexity" class="md-nav__link">
     <span class="md-ellipsis">
       Perplexity
     </span>
@@ -1201,6 +1201,27 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../utils/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Utils
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -1233,16 +1254,7 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#flexeval.scripts.flexeval_lm.ChatResponse" class="md-nav__link">
-    <span class="md-ellipsis">
-      ChatResponse
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#flexeval.scripts.flexeval_lm.EvalSetup" class="md-nav__link">
+  <a href="#flexeval.core.eval_setups.EvalSetup" class="md-nav__link">
     <span class="md-ellipsis">
       EvalSetup
     </span>
@@ -1251,7 +1263,16 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#flexeval.scripts.flexeval_lm.Generation" class="md-nav__link">
+  <a href="#flexeval.core.eval_setups.ChatResponse" class="md-nav__link">
+    <span class="md-ellipsis">
+      ChatResponse
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#flexeval.core.eval_setups.Generation" class="md-nav__link">
     <span class="md-ellipsis">
       Generation
     </span>
@@ -1260,7 +1281,7 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#flexeval.scripts.flexeval_lm.MultipleChoice" class="md-nav__link">
+  <a href="#flexeval.core.eval_setups.MultipleChoice" class="md-nav__link">
     <span class="md-ellipsis">
       MultipleChoice
     </span>
@@ -1269,7 +1290,7 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#flexeval.scripts.flexeval_lm.Perplexity" class="md-nav__link">
+  <a href="#flexeval.core.eval_setups.Perplexity" class="md-nav__link">
     <span class="md-ellipsis">
       Perplexity
     </span>
@@ -1298,7 +1319,101 @@
 
 
 
-<h2 id="flexeval.scripts.flexeval_lm.ChatResponse" class="doc doc-heading">
+<h2 id="flexeval.core.eval_setups.EvalSetup" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">EvalSetup</span>
+
+
+<a href="#flexeval.core.eval_setups.EvalSetup" class="headerlink" title="Permanent link">&para;</a></h2>
+
+
+    <div class="doc doc-contents first">
+
+
+      <p>Abstract class to give evaluation functions a common interface.</p>
+
+              <details class="quote">
+                <summary>Source code in <code>flexeval/core/eval_setups.py</code></summary>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">EvalSetup</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Abstract class to give evaluation functions a common interface.&quot;&quot;&quot;</span>
+
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">evaluate_lm</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">language_model</span><span class="p">:</span> <span class="n">LanguageModel</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]:</span>
+        <span class="k">pass</span>
+</code></pre></div></td></tr></table></div>
+              </details>
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="flexeval.core.eval_setups.EvalSetup.evaluate_lm" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">evaluate_lm</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-abstractmethod"><code>abstractmethod</code></small>
+  </span>
+
+<a href="#flexeval.core.eval_setups.EvalSetup.evaluate_lm" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">evaluate_lm</span><span class="p">(</span><span class="n">language_model</span><span class="p">:</span> <span class="n">LanguageModel</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+            <details class="quote">
+              <summary>Source code in <code>flexeval/core/eval_setups.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@abstractmethod</span>
+<span class="k">def</span> <span class="nf">evaluate_lm</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">language_model</span><span class="p">:</span> <span class="n">LanguageModel</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]:</span>
+    <span class="k">pass</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="flexeval.core.eval_setups.ChatResponse" class="doc doc-heading">
             <span class="doc doc-object-name doc-class-name">ChatResponse</span>
 
 
@@ -1306,40 +1421,40 @@
       <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small>
   </span>
 
-<a href="#flexeval.scripts.flexeval_lm.ChatResponse" class="headerlink" title="Permanent link">&para;</a></h2>
+<a href="#flexeval.core.eval_setups.ChatResponse" class="headerlink" title="Permanent link">&para;</a></h2>
 
 
     <div class="doc doc-contents first">
 
 
               <details class="quote">
-                <summary>Source code in <code>flexeval/scripts/flexeval_lm.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">60</span>
-<span class="normal">61</span>
-<span class="normal">62</span>
-<span class="normal">63</span>
-<span class="normal">64</span>
-<span class="normal">65</span>
-<span class="normal">66</span>
-<span class="normal">67</span>
-<span class="normal">68</span>
-<span class="normal">69</span>
-<span class="normal">70</span>
-<span class="normal">71</span>
-<span class="normal">72</span>
-<span class="normal">73</span>
-<span class="normal">74</span>
-<span class="normal">75</span>
-<span class="normal">76</span>
-<span class="normal">77</span>
-<span class="normal">78</span>
-<span class="normal">79</span>
-<span class="normal">80</span>
-<span class="normal">81</span>
-<span class="normal">82</span>
-<span class="normal">83</span>
-<span class="normal">84</span>
-<span class="normal">85</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span>
+                <summary>Source code in <code>flexeval/core/eval_setups.py</code></summary>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span>
+<span class="normal">55</span>
+<span class="normal">56</span>
+<span class="normal">57</span>
+<span class="normal">58</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">ChatResponse</span><span class="p">(</span><span class="n">EvalSetup</span><span class="p">):</span>
     <span class="n">eval_dataset</span><span class="p">:</span> <span class="n">ChatDataset</span>
     <span class="n">gen_kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span>
@@ -1382,7 +1497,7 @@
 
 
 
-<h3 id="flexeval.scripts.flexeval_lm.ChatResponse.eval_dataset" class="doc doc-heading">
+<h3 id="flexeval.core.eval_setups.ChatResponse.eval_dataset" class="doc doc-heading">
             <span class="doc doc-object-name doc-attribute-name">eval_dataset</span>
 
 
@@ -1390,7 +1505,7 @@
       <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
   </span>
 
-<a href="#flexeval.scripts.flexeval_lm.ChatResponse.eval_dataset" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#flexeval.core.eval_setups.ChatResponse.eval_dataset" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature highlight"><pre><span></span><code><span class="n">eval_dataset</span><span class="p">:</span> <span class="n">ChatDataset</span>
 </code></pre></div>
 
@@ -1403,7 +1518,7 @@
 
 
 
-<h3 id="flexeval.scripts.flexeval_lm.ChatResponse.gen_kwargs" class="doc doc-heading">
+<h3 id="flexeval.core.eval_setups.ChatResponse.gen_kwargs" class="doc doc-heading">
             <span class="doc doc-object-name doc-attribute-name">gen_kwargs</span>
 
 
@@ -1411,7 +1526,7 @@
       <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
   </span>
 
-<a href="#flexeval.scripts.flexeval_lm.ChatResponse.gen_kwargs" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#flexeval.core.eval_setups.ChatResponse.gen_kwargs" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature highlight"><pre><span></span><code><span class="n">gen_kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span>
 </code></pre></div>
 
@@ -1424,7 +1539,7 @@
 
 
 
-<h3 id="flexeval.scripts.flexeval_lm.ChatResponse.few_shot_generator" class="doc doc-heading">
+<h3 id="flexeval.core.eval_setups.ChatResponse.few_shot_generator" class="doc doc-heading">
             <span class="doc doc-object-name doc-attribute-name">few_shot_generator</span>
 
 
@@ -1433,7 +1548,7 @@
       <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
   </span>
 
-<a href="#flexeval.scripts.flexeval_lm.ChatResponse.few_shot_generator" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#flexeval.core.eval_setups.ChatResponse.few_shot_generator" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature highlight"><pre><span></span><code><span class="n">few_shot_generator</span><span class="p">:</span> <span class="n">FewShotGenerator</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
 </code></pre></div>
 
@@ -1446,7 +1561,7 @@
 
 
 
-<h3 id="flexeval.scripts.flexeval_lm.ChatResponse.metrics" class="doc doc-heading">
+<h3 id="flexeval.core.eval_setups.ChatResponse.metrics" class="doc doc-heading">
             <span class="doc doc-object-name doc-attribute-name">metrics</span>
 
 
@@ -1455,7 +1570,7 @@
       <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
   </span>
 
-<a href="#flexeval.scripts.flexeval_lm.ChatResponse.metrics" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#flexeval.core.eval_setups.ChatResponse.metrics" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature highlight"><pre><span></span><code><span class="n">metrics</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Metric</span><span class="p">]</span> <span class="o">|</span> <span class="n">Metric</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
 </code></pre></div>
 
@@ -1468,7 +1583,7 @@
 
 
 
-<h3 id="flexeval.scripts.flexeval_lm.ChatResponse.batch_size" class="doc doc-heading">
+<h3 id="flexeval.core.eval_setups.ChatResponse.batch_size" class="doc doc-heading">
             <span class="doc doc-object-name doc-attribute-name">batch_size</span>
 
 
@@ -1477,7 +1592,7 @@
       <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
   </span>
 
-<a href="#flexeval.scripts.flexeval_lm.ChatResponse.batch_size" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#flexeval.core.eval_setups.ChatResponse.batch_size" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature highlight"><pre><span></span><code><span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">4</span>
 </code></pre></div>
 
@@ -1490,7 +1605,7 @@
 
 
 
-<h3 id="flexeval.scripts.flexeval_lm.ChatResponse.max_instances" class="doc doc-heading">
+<h3 id="flexeval.core.eval_setups.ChatResponse.max_instances" class="doc doc-heading">
             <span class="doc doc-object-name doc-attribute-name">max_instances</span>
 
 
@@ -1499,7 +1614,7 @@
       <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
   </span>
 
-<a href="#flexeval.scripts.flexeval_lm.ChatResponse.max_instances" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#flexeval.core.eval_setups.ChatResponse.max_instances" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature highlight"><pre><span></span><code><span class="n">max_instances</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
 </code></pre></div>
 
@@ -1513,11 +1628,11 @@
 <div class="doc doc-object doc-function">
 
 
-<h3 id="flexeval.scripts.flexeval_lm.ChatResponse.__init__" class="doc doc-heading">
+<h3 id="flexeval.core.eval_setups.ChatResponse.__init__" class="doc doc-heading">
             <span class="doc doc-object-name doc-function-name">__init__</span>
 
 
-<a href="#flexeval.scripts.flexeval_lm.ChatResponse.__init__" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#flexeval.core.eval_setups.ChatResponse.__init__" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature highlight"><pre><span></span><code><span class="fm">__init__</span><span class="p">(</span><span class="nf">eval_dataset</span><span class="p">:</span> <span class="n">ChatDataset</span><span class="p">,</span> <span class="n">gen_kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">few_shot_generator</span><span class="p">:</span> <span class="n">FewShotGenerator</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">metrics</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Metric</span><span class="p">]</span> <span class="o">|</span> <span class="n">Metric</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">4</span><span class="p">,</span> <span class="n">max_instances</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
 </code></pre></div>
 
@@ -1530,35 +1645,35 @@
 <div class="doc doc-object doc-function">
 
 
-<h3 id="flexeval.scripts.flexeval_lm.ChatResponse.evaluate_lm" class="doc doc-heading">
+<h3 id="flexeval.core.eval_setups.ChatResponse.evaluate_lm" class="doc doc-heading">
             <span class="doc doc-object-name doc-function-name">evaluate_lm</span>
 
 
-<a href="#flexeval.scripts.flexeval_lm.ChatResponse.evaluate_lm" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#flexeval.core.eval_setups.ChatResponse.evaluate_lm" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">evaluate_lm</span><span class="p">(</span><span class="n">language_model</span><span class="p">:</span> <span class="n">LanguageModel</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
 
             <details class="quote">
-              <summary>Source code in <code>flexeval/scripts/flexeval_lm.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">69</span>
-<span class="normal">70</span>
-<span class="normal">71</span>
-<span class="normal">72</span>
-<span class="normal">73</span>
-<span class="normal">74</span>
-<span class="normal">75</span>
-<span class="normal">76</span>
-<span class="normal">77</span>
-<span class="normal">78</span>
-<span class="normal">79</span>
-<span class="normal">80</span>
-<span class="normal">81</span>
-<span class="normal">82</span>
-<span class="normal">83</span>
-<span class="normal">84</span>
-<span class="normal">85</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">evaluate_lm</span><span class="p">(</span>
+              <summary>Source code in <code>flexeval/core/eval_setups.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span>
+<span class="normal">55</span>
+<span class="normal">56</span>
+<span class="normal">57</span>
+<span class="normal">58</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">evaluate_lm</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">language_model</span><span class="p">:</span> <span class="n">LanguageModel</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]:</span>
@@ -1593,101 +1708,7 @@
 
 
 
-<h2 id="flexeval.scripts.flexeval_lm.EvalSetup" class="doc doc-heading">
-            <span class="doc doc-object-name doc-class-name">EvalSetup</span>
-
-
-<a href="#flexeval.scripts.flexeval_lm.EvalSetup" class="headerlink" title="Permanent link">&para;</a></h2>
-
-
-    <div class="doc doc-contents first">
-
-
-      <p>Abstract class to give evaluation functions a common interface.</p>
-
-              <details class="quote">
-                <summary>Source code in <code>flexeval/scripts/flexeval_lm.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">49</span>
-<span class="normal">50</span>
-<span class="normal">51</span>
-<span class="normal">52</span>
-<span class="normal">53</span>
-<span class="normal">54</span>
-<span class="normal">55</span>
-<span class="normal">56</span>
-<span class="normal">57</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">EvalSetup</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Abstract class to give evaluation functions a common interface.&quot;&quot;&quot;</span>
-
-    <span class="nd">@abstractmethod</span>
-    <span class="k">def</span> <span class="nf">evaluate_lm</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">language_model</span><span class="p">:</span> <span class="n">LanguageModel</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]:</span>
-        <span class="k">pass</span>
-</code></pre></div></td></tr></table></div>
-              </details>
-
-
-
-  <div class="doc doc-children">
-
-
-
-
-
-
-
-
-
-<div class="doc doc-object doc-function">
-
-
-<h3 id="flexeval.scripts.flexeval_lm.EvalSetup.evaluate_lm" class="doc doc-heading">
-            <span class="doc doc-object-name doc-function-name">evaluate_lm</span>
-
-
-  <span class="doc doc-labels">
-      <small class="doc doc-label doc-label-abstractmethod"><code>abstractmethod</code></small>
-  </span>
-
-<a href="#flexeval.scripts.flexeval_lm.EvalSetup.evaluate_lm" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">evaluate_lm</span><span class="p">(</span><span class="n">language_model</span><span class="p">:</span> <span class="n">LanguageModel</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span>
-</code></pre></div>
-
-    <div class="doc doc-contents ">
-
-            <details class="quote">
-              <summary>Source code in <code>flexeval/scripts/flexeval_lm.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">52</span>
-<span class="normal">53</span>
-<span class="normal">54</span>
-<span class="normal">55</span>
-<span class="normal">56</span>
-<span class="normal">57</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@abstractmethod</span>
-<span class="k">def</span> <span class="nf">evaluate_lm</span><span class="p">(</span>
-    <span class="bp">self</span><span class="p">,</span>
-    <span class="n">language_model</span><span class="p">:</span> <span class="n">LanguageModel</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]:</span>
-    <span class="k">pass</span>
-</code></pre></div></td></tr></table></div>
-            </details>
-    </div>
-
-</div>
-
-
-
-  </div>
-
-    </div>
-
-</div>
-
-<div class="doc doc-object doc-class">
-
-
-
-<h2 id="flexeval.scripts.flexeval_lm.Generation" class="doc doc-heading">
+<h2 id="flexeval.core.eval_setups.Generation" class="doc doc-heading">
             <span class="doc doc-object-name doc-class-name">Generation</span>
 
 
@@ -1695,42 +1716,42 @@
       <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small>
   </span>
 
-<a href="#flexeval.scripts.flexeval_lm.Generation" class="headerlink" title="Permanent link">&para;</a></h2>
+<a href="#flexeval.core.eval_setups.Generation" class="headerlink" title="Permanent link">&para;</a></h2>
 
 
     <div class="doc doc-contents first">
 
 
               <details class="quote">
-                <summary>Source code in <code>flexeval/scripts/flexeval_lm.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 88</span>
-<span class="normal"> 89</span>
-<span class="normal"> 90</span>
-<span class="normal"> 91</span>
-<span class="normal"> 92</span>
-<span class="normal"> 93</span>
-<span class="normal"> 94</span>
-<span class="normal"> 95</span>
-<span class="normal"> 96</span>
-<span class="normal"> 97</span>
-<span class="normal"> 98</span>
-<span class="normal"> 99</span>
-<span class="normal">100</span>
-<span class="normal">101</span>
-<span class="normal">102</span>
-<span class="normal">103</span>
-<span class="normal">104</span>
-<span class="normal">105</span>
-<span class="normal">106</span>
-<span class="normal">107</span>
-<span class="normal">108</span>
-<span class="normal">109</span>
-<span class="normal">110</span>
-<span class="normal">111</span>
-<span class="normal">112</span>
-<span class="normal">113</span>
-<span class="normal">114</span>
-<span class="normal">115</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span>
+                <summary>Source code in <code>flexeval/core/eval_setups.py</code></summary>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">61</span>
+<span class="normal">62</span>
+<span class="normal">63</span>
+<span class="normal">64</span>
+<span class="normal">65</span>
+<span class="normal">66</span>
+<span class="normal">67</span>
+<span class="normal">68</span>
+<span class="normal">69</span>
+<span class="normal">70</span>
+<span class="normal">71</span>
+<span class="normal">72</span>
+<span class="normal">73</span>
+<span class="normal">74</span>
+<span class="normal">75</span>
+<span class="normal">76</span>
+<span class="normal">77</span>
+<span class="normal">78</span>
+<span class="normal">79</span>
+<span class="normal">80</span>
+<span class="normal">81</span>
+<span class="normal">82</span>
+<span class="normal">83</span>
+<span class="normal">84</span>
+<span class="normal">85</span>
+<span class="normal">86</span>
+<span class="normal">87</span>
+<span class="normal">88</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">Generation</span><span class="p">(</span><span class="n">EvalSetup</span><span class="p">):</span>
     <span class="n">eval_dataset</span><span class="p">:</span> <span class="n">GenerationDataset</span>
     <span class="n">prompt_template</span><span class="p">:</span> <span class="n">PromptTemplate</span>
@@ -1775,7 +1796,7 @@
 
 
 
-<h3 id="flexeval.scripts.flexeval_lm.Generation.eval_dataset" class="doc doc-heading">
+<h3 id="flexeval.core.eval_setups.Generation.eval_dataset" class="doc doc-heading">
             <span class="doc doc-object-name doc-attribute-name">eval_dataset</span>
 
 
@@ -1783,7 +1804,7 @@
       <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
   </span>
 
-<a href="#flexeval.scripts.flexeval_lm.Generation.eval_dataset" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#flexeval.core.eval_setups.Generation.eval_dataset" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature highlight"><pre><span></span><code><span class="n">eval_dataset</span><span class="p">:</span> <span class="n">GenerationDataset</span>
 </code></pre></div>
 
@@ -1796,7 +1817,7 @@
 
 
 
-<h3 id="flexeval.scripts.flexeval_lm.Generation.prompt_template" class="doc doc-heading">
+<h3 id="flexeval.core.eval_setups.Generation.prompt_template" class="doc doc-heading">
             <span class="doc doc-object-name doc-attribute-name">prompt_template</span>
 
 
@@ -1804,7 +1825,7 @@
       <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
   </span>
 
-<a href="#flexeval.scripts.flexeval_lm.Generation.prompt_template" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#flexeval.core.eval_setups.Generation.prompt_template" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature highlight"><pre><span></span><code><span class="n">prompt_template</span><span class="p">:</span> <span class="n">PromptTemplate</span>
 </code></pre></div>
 
@@ -1817,7 +1838,7 @@
 
 
 
-<h3 id="flexeval.scripts.flexeval_lm.Generation.gen_kwargs" class="doc doc-heading">
+<h3 id="flexeval.core.eval_setups.Generation.gen_kwargs" class="doc doc-heading">
             <span class="doc doc-object-name doc-attribute-name">gen_kwargs</span>
 
 
@@ -1825,7 +1846,7 @@
       <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
   </span>
 
-<a href="#flexeval.scripts.flexeval_lm.Generation.gen_kwargs" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#flexeval.core.eval_setups.Generation.gen_kwargs" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature highlight"><pre><span></span><code><span class="n">gen_kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span>
 </code></pre></div>
 
@@ -1838,7 +1859,7 @@
 
 
 
-<h3 id="flexeval.scripts.flexeval_lm.Generation.few_shot_generator" class="doc doc-heading">
+<h3 id="flexeval.core.eval_setups.Generation.few_shot_generator" class="doc doc-heading">
             <span class="doc doc-object-name doc-attribute-name">few_shot_generator</span>
 
 
@@ -1847,7 +1868,7 @@
       <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
   </span>
 
-<a href="#flexeval.scripts.flexeval_lm.Generation.few_shot_generator" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#flexeval.core.eval_setups.Generation.few_shot_generator" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature highlight"><pre><span></span><code><span class="n">few_shot_generator</span><span class="p">:</span> <span class="n">FewShotGenerator</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
 </code></pre></div>
 
@@ -1860,7 +1881,7 @@
 
 
 
-<h3 id="flexeval.scripts.flexeval_lm.Generation.metrics" class="doc doc-heading">
+<h3 id="flexeval.core.eval_setups.Generation.metrics" class="doc doc-heading">
             <span class="doc doc-object-name doc-attribute-name">metrics</span>
 
 
@@ -1869,7 +1890,7 @@
       <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
   </span>
 
-<a href="#flexeval.scripts.flexeval_lm.Generation.metrics" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#flexeval.core.eval_setups.Generation.metrics" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature highlight"><pre><span></span><code><span class="n">metrics</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Metric</span><span class="p">]</span> <span class="o">|</span> <span class="n">Metric</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
 </code></pre></div>
 
@@ -1882,7 +1903,7 @@
 
 
 
-<h3 id="flexeval.scripts.flexeval_lm.Generation.batch_size" class="doc doc-heading">
+<h3 id="flexeval.core.eval_setups.Generation.batch_size" class="doc doc-heading">
             <span class="doc doc-object-name doc-attribute-name">batch_size</span>
 
 
@@ -1891,7 +1912,7 @@
       <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
   </span>
 
-<a href="#flexeval.scripts.flexeval_lm.Generation.batch_size" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#flexeval.core.eval_setups.Generation.batch_size" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature highlight"><pre><span></span><code><span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">4</span>
 </code></pre></div>
 
@@ -1904,7 +1925,7 @@
 
 
 
-<h3 id="flexeval.scripts.flexeval_lm.Generation.max_instances" class="doc doc-heading">
+<h3 id="flexeval.core.eval_setups.Generation.max_instances" class="doc doc-heading">
             <span class="doc doc-object-name doc-attribute-name">max_instances</span>
 
 
@@ -1913,7 +1934,7 @@
       <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
   </span>
 
-<a href="#flexeval.scripts.flexeval_lm.Generation.max_instances" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#flexeval.core.eval_setups.Generation.max_instances" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature highlight"><pre><span></span><code><span class="n">max_instances</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
 </code></pre></div>
 
@@ -1927,11 +1948,11 @@
 <div class="doc doc-object doc-function">
 
 
-<h3 id="flexeval.scripts.flexeval_lm.Generation.__init__" class="doc doc-heading">
+<h3 id="flexeval.core.eval_setups.Generation.__init__" class="doc doc-heading">
             <span class="doc doc-object-name doc-function-name">__init__</span>
 
 
-<a href="#flexeval.scripts.flexeval_lm.Generation.__init__" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#flexeval.core.eval_setups.Generation.__init__" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature highlight"><pre><span></span><code><span class="fm">__init__</span><span class="p">(</span><span class="nf">eval_dataset</span><span class="p">:</span> <span class="n">GenerationDataset</span><span class="p">,</span> <span class="n">prompt_template</span><span class="p">:</span> <span class="n">PromptTemplate</span><span class="p">,</span> <span class="n">gen_kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">few_shot_generator</span><span class="p">:</span> <span class="n">FewShotGenerator</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">metrics</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Metric</span><span class="p">]</span> <span class="o">|</span> <span class="n">Metric</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">4</span><span class="p">,</span> <span class="n">max_instances</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
 </code></pre></div>
 
@@ -1944,36 +1965,36 @@
 <div class="doc doc-object doc-function">
 
 
-<h3 id="flexeval.scripts.flexeval_lm.Generation.evaluate_lm" class="doc doc-heading">
+<h3 id="flexeval.core.eval_setups.Generation.evaluate_lm" class="doc doc-heading">
             <span class="doc doc-object-name doc-function-name">evaluate_lm</span>
 
 
-<a href="#flexeval.scripts.flexeval_lm.Generation.evaluate_lm" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#flexeval.core.eval_setups.Generation.evaluate_lm" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">evaluate_lm</span><span class="p">(</span><span class="n">language_model</span><span class="p">:</span> <span class="n">LanguageModel</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
 
             <details class="quote">
-              <summary>Source code in <code>flexeval/scripts/flexeval_lm.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 98</span>
-<span class="normal"> 99</span>
-<span class="normal">100</span>
-<span class="normal">101</span>
-<span class="normal">102</span>
-<span class="normal">103</span>
-<span class="normal">104</span>
-<span class="normal">105</span>
-<span class="normal">106</span>
-<span class="normal">107</span>
-<span class="normal">108</span>
-<span class="normal">109</span>
-<span class="normal">110</span>
-<span class="normal">111</span>
-<span class="normal">112</span>
-<span class="normal">113</span>
-<span class="normal">114</span>
-<span class="normal">115</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">evaluate_lm</span><span class="p">(</span>
+              <summary>Source code in <code>flexeval/core/eval_setups.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">71</span>
+<span class="normal">72</span>
+<span class="normal">73</span>
+<span class="normal">74</span>
+<span class="normal">75</span>
+<span class="normal">76</span>
+<span class="normal">77</span>
+<span class="normal">78</span>
+<span class="normal">79</span>
+<span class="normal">80</span>
+<span class="normal">81</span>
+<span class="normal">82</span>
+<span class="normal">83</span>
+<span class="normal">84</span>
+<span class="normal">85</span>
+<span class="normal">86</span>
+<span class="normal">87</span>
+<span class="normal">88</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">evaluate_lm</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">language_model</span><span class="p">:</span> <span class="n">LanguageModel</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]:</span>
@@ -2009,7 +2030,7 @@
 
 
 
-<h2 id="flexeval.scripts.flexeval_lm.MultipleChoice" class="doc doc-heading">
+<h2 id="flexeval.core.eval_setups.MultipleChoice" class="doc doc-heading">
             <span class="doc doc-object-name doc-class-name">MultipleChoice</span>
 
 
@@ -2017,34 +2038,34 @@
       <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small>
   </span>
 
-<a href="#flexeval.scripts.flexeval_lm.MultipleChoice" class="headerlink" title="Permanent link">&para;</a></h2>
+<a href="#flexeval.core.eval_setups.MultipleChoice" class="headerlink" title="Permanent link">&para;</a></h2>
 
 
     <div class="doc doc-contents first">
 
 
               <details class="quote">
-                <summary>Source code in <code>flexeval/scripts/flexeval_lm.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">118</span>
-<span class="normal">119</span>
-<span class="normal">120</span>
-<span class="normal">121</span>
-<span class="normal">122</span>
-<span class="normal">123</span>
-<span class="normal">124</span>
-<span class="normal">125</span>
-<span class="normal">126</span>
-<span class="normal">127</span>
-<span class="normal">128</span>
-<span class="normal">129</span>
-<span class="normal">130</span>
-<span class="normal">131</span>
-<span class="normal">132</span>
-<span class="normal">133</span>
-<span class="normal">134</span>
-<span class="normal">135</span>
-<span class="normal">136</span>
-<span class="normal">137</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span>
+                <summary>Source code in <code>flexeval/core/eval_setups.py</code></summary>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 91</span>
+<span class="normal"> 92</span>
+<span class="normal"> 93</span>
+<span class="normal"> 94</span>
+<span class="normal"> 95</span>
+<span class="normal"> 96</span>
+<span class="normal"> 97</span>
+<span class="normal"> 98</span>
+<span class="normal"> 99</span>
+<span class="normal">100</span>
+<span class="normal">101</span>
+<span class="normal">102</span>
+<span class="normal">103</span>
+<span class="normal">104</span>
+<span class="normal">105</span>
+<span class="normal">106</span>
+<span class="normal">107</span>
+<span class="normal">108</span>
+<span class="normal">109</span>
+<span class="normal">110</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">MultipleChoice</span><span class="p">(</span><span class="n">EvalSetup</span><span class="p">):</span>
     <span class="n">eval_dataset</span><span class="p">:</span> <span class="n">MultipleChoiceDataset</span>
     <span class="n">prompt_template</span><span class="p">:</span> <span class="n">PromptTemplate</span>
@@ -2081,7 +2102,7 @@
 
 
 
-<h3 id="flexeval.scripts.flexeval_lm.MultipleChoice.eval_dataset" class="doc doc-heading">
+<h3 id="flexeval.core.eval_setups.MultipleChoice.eval_dataset" class="doc doc-heading">
             <span class="doc doc-object-name doc-attribute-name">eval_dataset</span>
 
 
@@ -2089,7 +2110,7 @@
       <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
   </span>
 
-<a href="#flexeval.scripts.flexeval_lm.MultipleChoice.eval_dataset" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#flexeval.core.eval_setups.MultipleChoice.eval_dataset" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature highlight"><pre><span></span><code><span class="n">eval_dataset</span><span class="p">:</span> <span class="n">MultipleChoiceDataset</span>
 </code></pre></div>
 
@@ -2102,7 +2123,7 @@
 
 
 
-<h3 id="flexeval.scripts.flexeval_lm.MultipleChoice.prompt_template" class="doc doc-heading">
+<h3 id="flexeval.core.eval_setups.MultipleChoice.prompt_template" class="doc doc-heading">
             <span class="doc doc-object-name doc-attribute-name">prompt_template</span>
 
 
@@ -2110,7 +2131,7 @@
       <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
   </span>
 
-<a href="#flexeval.scripts.flexeval_lm.MultipleChoice.prompt_template" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#flexeval.core.eval_setups.MultipleChoice.prompt_template" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature highlight"><pre><span></span><code><span class="n">prompt_template</span><span class="p">:</span> <span class="n">PromptTemplate</span>
 </code></pre></div>
 
@@ -2123,7 +2144,7 @@
 
 
 
-<h3 id="flexeval.scripts.flexeval_lm.MultipleChoice.few_shot_generator" class="doc doc-heading">
+<h3 id="flexeval.core.eval_setups.MultipleChoice.few_shot_generator" class="doc doc-heading">
             <span class="doc doc-object-name doc-attribute-name">few_shot_generator</span>
 
 
@@ -2132,7 +2153,7 @@
       <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
   </span>
 
-<a href="#flexeval.scripts.flexeval_lm.MultipleChoice.few_shot_generator" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#flexeval.core.eval_setups.MultipleChoice.few_shot_generator" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature highlight"><pre><span></span><code><span class="n">few_shot_generator</span><span class="p">:</span> <span class="n">FewShotGenerator</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
 </code></pre></div>
 
@@ -2145,7 +2166,7 @@
 
 
 
-<h3 id="flexeval.scripts.flexeval_lm.MultipleChoice.batch_size" class="doc doc-heading">
+<h3 id="flexeval.core.eval_setups.MultipleChoice.batch_size" class="doc doc-heading">
             <span class="doc doc-object-name doc-attribute-name">batch_size</span>
 
 
@@ -2154,7 +2175,7 @@
       <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
   </span>
 
-<a href="#flexeval.scripts.flexeval_lm.MultipleChoice.batch_size" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#flexeval.core.eval_setups.MultipleChoice.batch_size" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature highlight"><pre><span></span><code><span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">4</span>
 </code></pre></div>
 
@@ -2167,7 +2188,7 @@
 
 
 
-<h3 id="flexeval.scripts.flexeval_lm.MultipleChoice.max_instances" class="doc doc-heading">
+<h3 id="flexeval.core.eval_setups.MultipleChoice.max_instances" class="doc doc-heading">
             <span class="doc doc-object-name doc-attribute-name">max_instances</span>
 
 
@@ -2176,7 +2197,7 @@
       <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
   </span>
 
-<a href="#flexeval.scripts.flexeval_lm.MultipleChoice.max_instances" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#flexeval.core.eval_setups.MultipleChoice.max_instances" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature highlight"><pre><span></span><code><span class="n">max_instances</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
 </code></pre></div>
 
@@ -2190,11 +2211,11 @@
 <div class="doc doc-object doc-function">
 
 
-<h3 id="flexeval.scripts.flexeval_lm.MultipleChoice.__init__" class="doc doc-heading">
+<h3 id="flexeval.core.eval_setups.MultipleChoice.__init__" class="doc doc-heading">
             <span class="doc doc-object-name doc-function-name">__init__</span>
 
 
-<a href="#flexeval.scripts.flexeval_lm.MultipleChoice.__init__" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#flexeval.core.eval_setups.MultipleChoice.__init__" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature highlight"><pre><span></span><code><span class="fm">__init__</span><span class="p">(</span><span class="nf">eval_dataset</span><span class="p">:</span> <span class="n">MultipleChoiceDataset</span><span class="p">,</span> <span class="n">prompt_template</span><span class="p">:</span> <span class="n">PromptTemplate</span><span class="p">,</span> <span class="n">few_shot_generator</span><span class="p">:</span> <span class="n">FewShotGenerator</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">4</span><span class="p">,</span> <span class="n">max_instances</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
 </code></pre></div>
 
@@ -2207,30 +2228,30 @@
 <div class="doc doc-object doc-function">
 
 
-<h3 id="flexeval.scripts.flexeval_lm.MultipleChoice.evaluate_lm" class="doc doc-heading">
+<h3 id="flexeval.core.eval_setups.MultipleChoice.evaluate_lm" class="doc doc-heading">
             <span class="doc doc-object-name doc-function-name">evaluate_lm</span>
 
 
-<a href="#flexeval.scripts.flexeval_lm.MultipleChoice.evaluate_lm" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#flexeval.core.eval_setups.MultipleChoice.evaluate_lm" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">evaluate_lm</span><span class="p">(</span><span class="n">language_model</span><span class="p">:</span> <span class="n">LanguageModel</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
 
             <details class="quote">
-              <summary>Source code in <code>flexeval/scripts/flexeval_lm.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">126</span>
-<span class="normal">127</span>
-<span class="normal">128</span>
-<span class="normal">129</span>
-<span class="normal">130</span>
-<span class="normal">131</span>
-<span class="normal">132</span>
-<span class="normal">133</span>
-<span class="normal">134</span>
-<span class="normal">135</span>
-<span class="normal">136</span>
-<span class="normal">137</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">evaluate_lm</span><span class="p">(</span>
+              <summary>Source code in <code>flexeval/core/eval_setups.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 99</span>
+<span class="normal">100</span>
+<span class="normal">101</span>
+<span class="normal">102</span>
+<span class="normal">103</span>
+<span class="normal">104</span>
+<span class="normal">105</span>
+<span class="normal">106</span>
+<span class="normal">107</span>
+<span class="normal">108</span>
+<span class="normal">109</span>
+<span class="normal">110</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">evaluate_lm</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">language_model</span><span class="p">:</span> <span class="n">LanguageModel</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]:</span>
@@ -2260,7 +2281,7 @@
 
 
 
-<h2 id="flexeval.scripts.flexeval_lm.Perplexity" class="doc doc-heading">
+<h2 id="flexeval.core.eval_setups.Perplexity" class="doc doc-heading">
             <span class="doc doc-object-name doc-class-name">Perplexity</span>
 
 
@@ -2268,33 +2289,33 @@
       <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small>
   </span>
 
-<a href="#flexeval.scripts.flexeval_lm.Perplexity" class="headerlink" title="Permanent link">&para;</a></h2>
+<a href="#flexeval.core.eval_setups.Perplexity" class="headerlink" title="Permanent link">&para;</a></h2>
 
 
     <div class="doc doc-contents first">
 
 
               <details class="quote">
-                <summary>Source code in <code>flexeval/scripts/flexeval_lm.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">140</span>
-<span class="normal">141</span>
-<span class="normal">142</span>
-<span class="normal">143</span>
-<span class="normal">144</span>
-<span class="normal">145</span>
-<span class="normal">146</span>
-<span class="normal">147</span>
-<span class="normal">148</span>
-<span class="normal">149</span>
-<span class="normal">150</span>
-<span class="normal">151</span>
-<span class="normal">152</span>
-<span class="normal">153</span>
-<span class="normal">154</span>
-<span class="normal">155</span>
-<span class="normal">156</span>
-<span class="normal">157</span>
-<span class="normal">158</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span>
+                <summary>Source code in <code>flexeval/core/eval_setups.py</code></summary>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">113</span>
+<span class="normal">114</span>
+<span class="normal">115</span>
+<span class="normal">116</span>
+<span class="normal">117</span>
+<span class="normal">118</span>
+<span class="normal">119</span>
+<span class="normal">120</span>
+<span class="normal">121</span>
+<span class="normal">122</span>
+<span class="normal">123</span>
+<span class="normal">124</span>
+<span class="normal">125</span>
+<span class="normal">126</span>
+<span class="normal">127</span>
+<span class="normal">128</span>
+<span class="normal">129</span>
+<span class="normal">130</span>
+<span class="normal">131</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">Perplexity</span><span class="p">(</span><span class="n">EvalSetup</span><span class="p">):</span>
     <span class="n">eval_dataset</span><span class="p">:</span> <span class="n">TextDataset</span>
     <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">4</span>
@@ -2330,7 +2351,7 @@
 
 
 
-<h3 id="flexeval.scripts.flexeval_lm.Perplexity.eval_dataset" class="doc doc-heading">
+<h3 id="flexeval.core.eval_setups.Perplexity.eval_dataset" class="doc doc-heading">
             <span class="doc doc-object-name doc-attribute-name">eval_dataset</span>
 
 
@@ -2338,7 +2359,7 @@
       <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
   </span>
 
-<a href="#flexeval.scripts.flexeval_lm.Perplexity.eval_dataset" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#flexeval.core.eval_setups.Perplexity.eval_dataset" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature highlight"><pre><span></span><code><span class="n">eval_dataset</span><span class="p">:</span> <span class="n">TextDataset</span>
 </code></pre></div>
 
@@ -2351,7 +2372,7 @@
 
 
 
-<h3 id="flexeval.scripts.flexeval_lm.Perplexity.batch_size" class="doc doc-heading">
+<h3 id="flexeval.core.eval_setups.Perplexity.batch_size" class="doc doc-heading">
             <span class="doc doc-object-name doc-attribute-name">batch_size</span>
 
 
@@ -2360,7 +2381,7 @@
       <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
   </span>
 
-<a href="#flexeval.scripts.flexeval_lm.Perplexity.batch_size" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#flexeval.core.eval_setups.Perplexity.batch_size" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature highlight"><pre><span></span><code><span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">4</span>
 </code></pre></div>
 
@@ -2373,7 +2394,7 @@
 
 
 
-<h3 id="flexeval.scripts.flexeval_lm.Perplexity.tokenizer" class="doc doc-heading">
+<h3 id="flexeval.core.eval_setups.Perplexity.tokenizer" class="doc doc-heading">
             <span class="doc doc-object-name doc-attribute-name">tokenizer</span>
 
 
@@ -2382,7 +2403,7 @@
       <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
   </span>
 
-<a href="#flexeval.scripts.flexeval_lm.Perplexity.tokenizer" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#flexeval.core.eval_setups.Perplexity.tokenizer" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature highlight"><pre><span></span><code><span class="n">tokenizer</span><span class="p">:</span> <span class="n">Tokenizer</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
 </code></pre></div>
 
@@ -2395,7 +2416,7 @@
 
 
 
-<h3 id="flexeval.scripts.flexeval_lm.Perplexity.max_instances" class="doc doc-heading">
+<h3 id="flexeval.core.eval_setups.Perplexity.max_instances" class="doc doc-heading">
             <span class="doc doc-object-name doc-attribute-name">max_instances</span>
 
 
@@ -2404,7 +2425,7 @@
       <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
   </span>
 
-<a href="#flexeval.scripts.flexeval_lm.Perplexity.max_instances" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#flexeval.core.eval_setups.Perplexity.max_instances" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature highlight"><pre><span></span><code><span class="n">max_instances</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
 </code></pre></div>
 
@@ -2418,11 +2439,11 @@
 <div class="doc doc-object doc-function">
 
 
-<h3 id="flexeval.scripts.flexeval_lm.Perplexity.__init__" class="doc doc-heading">
+<h3 id="flexeval.core.eval_setups.Perplexity.__init__" class="doc doc-heading">
             <span class="doc doc-object-name doc-function-name">__init__</span>
 
 
-<a href="#flexeval.scripts.flexeval_lm.Perplexity.__init__" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#flexeval.core.eval_setups.Perplexity.__init__" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature highlight"><pre><span></span><code><span class="fm">__init__</span><span class="p">(</span><span class="nf">eval_dataset</span><span class="p">:</span> <span class="n">TextDataset</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">4</span><span class="p">,</span> <span class="n">tokenizer</span><span class="p">:</span> <span class="n">Tokenizer</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">max_instances</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
 </code></pre></div>
 
@@ -2435,30 +2456,30 @@
 <div class="doc doc-object doc-function">
 
 
-<h3 id="flexeval.scripts.flexeval_lm.Perplexity.evaluate_lm" class="doc doc-heading">
+<h3 id="flexeval.core.eval_setups.Perplexity.evaluate_lm" class="doc doc-heading">
             <span class="doc doc-object-name doc-function-name">evaluate_lm</span>
 
 
-<a href="#flexeval.scripts.flexeval_lm.Perplexity.evaluate_lm" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#flexeval.core.eval_setups.Perplexity.evaluate_lm" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">evaluate_lm</span><span class="p">(</span><span class="n">language_model</span><span class="p">:</span> <span class="n">LanguageModel</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
 
             <details class="quote">
-              <summary>Source code in <code>flexeval/scripts/flexeval_lm.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">147</span>
-<span class="normal">148</span>
-<span class="normal">149</span>
-<span class="normal">150</span>
-<span class="normal">151</span>
-<span class="normal">152</span>
-<span class="normal">153</span>
-<span class="normal">154</span>
-<span class="normal">155</span>
-<span class="normal">156</span>
-<span class="normal">157</span>
-<span class="normal">158</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">evaluate_lm</span><span class="p">(</span>
+              <summary>Source code in <code>flexeval/core/eval_setups.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">120</span>
+<span class="normal">121</span>
+<span class="normal">122</span>
+<span class="normal">123</span>
+<span class="normal">124</span>
+<span class="normal">125</span>
+<span class="normal">126</span>
+<span class="normal">127</span>
+<span class="normal">128</span>
+<span class="normal">129</span>
+<span class="normal">130</span>
+<span class="normal">131</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">evaluate_lm</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">language_model</span><span class="p">:</span> <span class="n">LanguageModel</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]:</span>

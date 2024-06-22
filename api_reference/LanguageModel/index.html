@@ -986,9 +986,9 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#flexeval.core.language_model.vllm_model.VllmModel" class="md-nav__link">
+  <a href="#flexeval.core.language_model.vllm_model.VLLM" class="md-nav__link">
     <span class="md-ellipsis">
-      VllmModel
+      VLLM
     </span>
   </a>
   
@@ -1192,6 +1192,27 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../utils/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Utils
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -1251,9 +1272,9 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#flexeval.core.language_model.vllm_model.VllmModel" class="md-nav__link">
+  <a href="#flexeval.core.language_model.vllm_model.VLLM" class="md-nav__link">
     <span class="md-ellipsis">
-      VllmModel
+      VLLM
     </span>
   </a>
   
@@ -3338,11 +3359,11 @@ If specified, this overrides the default chat template of the tokenizer.</p>
 
 
 
-<h2 id="flexeval.core.language_model.vllm_model.VllmModel" class="doc doc-heading">
-            <span class="doc doc-object-name doc-class-name">VllmModel</span>
+<h2 id="flexeval.core.language_model.vllm_model.VLLM" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">VLLM</span>
 
 
-<a href="#flexeval.core.language_model.vllm_model.VllmModel" class="headerlink" title="Permanent link">&para;</a></h2>
+<a href="#flexeval.core.language_model.vllm_model.VLLM" class="headerlink" title="Permanent link">&para;</a></h2>
 
 
     <div class="doc doc-contents first">
@@ -3521,7 +3542,7 @@ If specified, this overrides the default chat template of the tokenizer.</p>
 <span class="normal">112</span>
 <span class="normal">113</span>
 <span class="normal">114</span>
-<span class="normal">115</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">VllmModel</span><span class="p">(</span><span class="n">LanguageModel</span><span class="p">):</span>
+<span class="normal">115</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">VLLM</span><span class="p">(</span><span class="n">LanguageModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    LanguageModel implementation using VLLM.</span>
 
@@ -3644,11 +3665,11 @@ If specified, this overrides the default chat template of the tokenizer.</p>
 <div class="doc doc-object doc-function">
 
 
-<h3 id="flexeval.core.language_model.vllm_model.VllmModel.__init__" class="doc doc-heading">
+<h3 id="flexeval.core.language_model.vllm_model.VLLM.__init__" class="doc doc-heading">
             <span class="doc doc-object-name doc-function-name">__init__</span>
 
 
-<a href="#flexeval.core.language_model.vllm_model.VllmModel.__init__" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#flexeval.core.language_model.vllm_model.VLLM.__init__" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature highlight"><pre><span></span><code><span class="fm">__init__</span><span class="p">(</span><span class="nf">model_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">model_kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">tokenizer_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">tokenizer_kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">add_special_tokens</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">custom_chat_template</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
 </code></pre></div>
 
@@ -3702,11 +3723,11 @@ If specified, this overrides the default chat template of the tokenizer.</p>
 <div class="doc doc-object doc-function">
 
 
-<h3 id="flexeval.core.language_model.vllm_model.VllmModel.batch_complete_text" class="doc doc-heading">
+<h3 id="flexeval.core.language_model.vllm_model.VLLM.batch_complete_text" class="doc doc-heading">
             <span class="doc doc-object-name doc-function-name">batch_complete_text</span>
 
 
-<a href="#flexeval.core.language_model.vllm_model.VllmModel.batch_complete_text" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#flexeval.core.language_model.vllm_model.VLLM.batch_complete_text" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">batch_complete_text</span><span class="p">(</span><span class="n">text_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">stop_sequences</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">max_new_tokens</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
 </code></pre></div>
 
@@ -3830,11 +3851,11 @@ If specified, this overrides the default chat template of the tokenizer.</p>
 <div class="doc doc-object doc-function">
 
 
-<h3 id="flexeval.core.language_model.vllm_model.VllmModel.batch_generate_chat_response" class="doc doc-heading">
+<h3 id="flexeval.core.language_model.vllm_model.VLLM.batch_generate_chat_response" class="doc doc-heading">
             <span class="doc doc-object-name doc-function-name">batch_generate_chat_response</span>
 
 
-<a href="#flexeval.core.language_model.vllm_model.VllmModel.batch_generate_chat_response" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#flexeval.core.language_model.vllm_model.VLLM.batch_generate_chat_response" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">batch_generate_chat_response</span><span class="p">(</span><span class="n">chat_messages_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
 </code></pre></div>
 
