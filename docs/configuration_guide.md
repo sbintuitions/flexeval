@@ -36,7 +36,7 @@ The skeleton of the configuration is as follows:
 The fields `class_path` and `init_args` directly mirror the initialization of the specified class.
 
 At the top level, `"class_path": "Generation"` specifies what kind of [`EvalSetup`](api_reference/EvalSetup.md) to use.
-Currently, there are four types of `EvalSetup`: [`Generation`](api_reference/EvalSetup.md#flexeval.scripts.flexeval_lm.Generation), [`ChatResponse`](api_reference/EvalSetup.md#flexeval.scripts.flexeval_lm.ChatResponse), [`MultipleChoice`](api_reference/EvalSetup.md#flexeval.scripts.flexeval_lm.MultipleChoice), and [`Perplexity`](api_reference/EvalSetup.md#flexeval.scripts.flexeval_lm.Perplexity).
+Currently, there are four types of `EvalSetup`: [`Generation`](api_reference/EvalSetup.md#flexeval.core.eval_setups.Generation), [`ChatResponse`](api_reference/EvalSetup.md#flexeval.core.eval_setups.ChatResponse), [`MultipleChoice`](api_reference/EvalSetup.md#flexeval.core.eval_setups.MultipleChoice), and [`Perplexity`](api_reference/EvalSetup.md#flexeval.core.eval_setups.Perplexity).
 
 Then, `Generation` is composed of the following components:
 
