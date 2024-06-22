@@ -17,4 +17,4 @@ The resulting `config.json` file contains everything needed to replicate the eva
 
 It is often a case that a small preprocessing in the data affects the evaluation results significantly.
 We would like to the config file tells us what preprocessing is done without we need to dig into the code.
-Thus we recommend loading datasets using a generic class such as `HfGenerationDataset` or `JsonlGenerationDataset` and specifying a preprocessing using their parameters or [Jinja2](https://jinja.palletsprojects.com/en/3.1.x/) templates in the configuration file.
+Thus we recommend loading datasets using a generic class such as `HFGenerationDataset` or `JsonlGenerationDataset` and specifying a preprocessing using their parameters or [Jinja2](https://jinja.palletsprojects.com/en/3.1.x/) templates in the configuration file.

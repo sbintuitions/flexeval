@@ -7,7 +7,7 @@ References:
 * [Program Synthesis with Large Language Models](https://arxiv.org/abs/2108.07732)
 */
 local dataset_base_args = {
-  class_path: 'HfGenerationDataset',
+  class_path: 'HFGenerationDataset',
   init_args: {
     dataset_name: 'mbpp',
     subset: 'sanitized',

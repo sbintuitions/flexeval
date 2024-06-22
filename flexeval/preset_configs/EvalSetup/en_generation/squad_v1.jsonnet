@@ -8,7 +8,7 @@ References:
 */
 
 local dataset_base_args = {
-  class_path: 'HfGenerationDataset',
+  class_path: 'HFGenerationDataset',
   init_args: {
     dataset_name: 'rajpurkar/squad',
     references_template: '{{ answers.text }}',

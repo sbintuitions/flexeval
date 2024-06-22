@@ -1,8 +1,8 @@
-from flexeval.core.multiple_choice_dataset.hf_dataset import HfMultipleChoiceDataset
+from flexeval.core.multiple_choice_dataset.hf_dataset import HFMultipleChoiceDataset
 
 
 def test_hf_multiple_choice_dataset() -> None:
-    dataset = HfMultipleChoiceDataset(
+    dataset = HFMultipleChoiceDataset(
         dataset_name="llm-book/JGLUE",
         subset="JCommonsenseQA",
         split="validation",

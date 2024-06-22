@@ -10,7 +10,7 @@ from flexeval.core.utils.jinja2_env import JINJA2_ENV
 from .base import ChatDataset, ChatInstance
 
 
-class HfChatDataset(ChatDataset):
+class HFChatDataset(ChatDataset):
     """
     A chat dataset using Hugging Face datasets.
     This class only supports single-turn chat.

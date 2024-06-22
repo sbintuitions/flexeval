@@ -8,7 +8,7 @@ References:
 * [TriviaQA: A Large Scale Distantly Supervised Challenge Dataset for Reading Comprehension](https://aclanthology.org/P17-1147/)
 */
 local dataset_base_args = {
-  class_path: 'HfGenerationDataset',
+  class_path: 'HFGenerationDataset',
   init_args: {
     dataset_name: 'trivia_qa',
     subset: 'rc.nocontext',

@@ -10,7 +10,7 @@ References:
   class_path: 'ChatResponse',
   init_args: {
     eval_dataset: {
-      class_path: 'HfChatDataset',
+      class_path: 'HFChatDataset',
       init_args: {
         dataset_name: 'elyza/ELYZA-tasks-100',
         split: 'test',

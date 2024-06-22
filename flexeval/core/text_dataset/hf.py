@@ -5,7 +5,7 @@ import datasets
 from .base import TextDataset
 
 
-class HfTextDataset(TextDataset):
+class HFTextDataset(TextDataset):
     """
     This class represents a dataset of text examples loaded from Hugging Face datasets.
 

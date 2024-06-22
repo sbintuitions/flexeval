@@ -8,7 +8,7 @@ References:
 * [Training Verifiers to Solve Math Word Problems](https://arxiv.org/abs/2110.14168)
 */
 local dataset_base_args = {
-  class_path: 'HfGenerationDataset',
+  class_path: 'HFGenerationDataset',
   init_args: {
     dataset_name: 'gsm8k',
     subset: 'main',

@@ -11,7 +11,7 @@ References:
   class_path: 'Perplexity',
   init_args: {
     eval_dataset: {
-      class_path: 'HfTextDataset',
+      class_path: 'HFTextDataset',
       init_args: {
         dataset_name: 'karpathy/tiny_shakespeare',
         split: 'test',

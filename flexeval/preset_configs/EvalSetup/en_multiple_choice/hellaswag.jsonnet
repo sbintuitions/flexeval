@@ -19,14 +19,14 @@ local dataset_base_args = {
   class_path: 'MultipleChoice',
   init_args: {
     eval_dataset: {
-      class_path: 'HfMultipleChoiceDataset',
+      class_path: 'HFMultipleChoiceDataset',
       init_args: dataset_base_args { split: 'validation' },
     },
     few_shot_generator: {
       class_path: 'RandomFewShotGenerator',
       init_args: {
         dataset: {
-          class_path: 'HfMultipleChoiceDataset',
+          class_path: 'HFMultipleChoiceDataset',
           init_args: dataset_base_args { split: 'train' },
         },
         num_shots: 4,

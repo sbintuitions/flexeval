@@ -8,7 +8,7 @@ References:
 * [CommonsenseQA: A Question Answering Challenge Targeting Commonsense Knowledge](https://aclanthology.org/N19-1421/)
 */
 local dataset_base_args = {
-  class_path: 'HfGenerationDataset',
+  class_path: 'HFGenerationDataset',
   init_args: {
     dataset_name: 'tau/commonsense_qa',
     references_template: '{% set answer_index = choices.label.index(answerKey) %}["{{ choices.text[answer_index] }}"]',

@@ -11,7 +11,7 @@ References:
   class_path: 'MultipleChoice',
   init_args: {
     eval_dataset: {
-      class_path: 'HfMultipleChoiceDataset',
+      class_path: 'HFMultipleChoiceDataset',
       init_args: {
         dataset_name: 'Muennighoff/xwinograd',
         subset: 'jp',

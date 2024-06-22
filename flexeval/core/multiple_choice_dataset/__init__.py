@@ -1,2 +1,2 @@
 from .base import MultipleChoiceDataset, MultipleChoiceInstance
-from .hf_dataset import HfMultipleChoiceDataset
+from .hf_dataset import HFMultipleChoiceDataset
