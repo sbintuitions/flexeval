@@ -10,7 +10,7 @@ from flexeval.core.utils.jinja2_env import JINJA2_ENV
 from .base import GenerationDataset, GenerationInstance
 
 
-class HfGenerationDataset(GenerationDataset):
+class HFGenerationDataset(GenerationDataset):
     """
     A dataset for generation tasks using Hugging Face datasets.
 

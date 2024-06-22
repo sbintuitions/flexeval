@@ -9,7 +9,7 @@ References:
 * [Twitter Sentiment Analysis Training Corpus (Dataset)](http://thinknook.com/twitter-sentiment-analysis-training-corpus-dataset-2012-09-22/)
 */
 local dataset_base_args = {
-  class_path: 'HfGenerationDataset',
+  class_path: 'HFGenerationDataset',
   init_args: {
     dataset_name: 'carblacac/twitter-sentiment-analysis',
     references_template: "{{ ['Positive', 'Negative'][feeling] }}",

@@ -9,7 +9,7 @@ References:
 * [Language Models are Multilingual Chain-of-Thought Reasoners](https://arxiv.org/abs/2210.03057)
 */
 local dataset_base_args = {
-  class_path: 'HfChatDataset',
+  class_path: 'HFChatDataset',
   init_args: {
     dataset_name: 'juletxara/mgsm',
     subset: 'ja',

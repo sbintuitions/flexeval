@@ -9,7 +9,7 @@ References:
 * [JAQKET: クイズを題材にした日本語 QA データセットの構築](https://www.anlp.jp/proceedings/annual_meeting/2020/pdf_dir/P2-24.pdf)
 */
 local dataset_base_args = {
-  class_path: 'HfChatDataset',
+  class_path: 'HFChatDataset',
   init_args: {
     dataset_name: 'llm-book/aio',
     input_template: '{{ question }}',

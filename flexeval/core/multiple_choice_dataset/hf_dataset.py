@@ -8,7 +8,7 @@ from flexeval.core.utils.jinja2_env import JINJA2_ENV
 from .base import MultipleChoiceDataset, MultipleChoiceInstance
 
 
-class HfMultipleChoiceDataset(MultipleChoiceDataset):
+class HFMultipleChoiceDataset(MultipleChoiceDataset):
     """
     A dataset for multiple-choice tasks using Hugging Face datasets.
 

@@ -1,3 +1,3 @@
 from .base import TextDataset
-from .hf import HfTextDataset
+from .hf import HFTextDataset
 from .jsonl import JsonlTextDataset

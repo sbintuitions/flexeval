@@ -133,8 +133,8 @@ To run automatic evaluation with LLMs, you can use `outputs.jsonl` from the prev
 ```bash
 flexeval_file \
   --eval_file "results/mt-en/gpt-3.5-turbo/outputs.jsonl" \
-  --metrics "assistant_eval_gpt4_en_single_turn" \
-  --save_dir "results/mt-en/gpt-3.5-turbo/eval_by_gpt4"
+  --metrics "assistant_eval_en_single_turn" \
+  --save_dir "results/mt-en/gpt-3.5-turbo/eval_by_gpt"
 ```
 
 In the results, you can see the evaluation result like `{"llm_score": 7.795}`.

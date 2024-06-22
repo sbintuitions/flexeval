@@ -10,7 +10,7 @@ References:
   class_path: 'Generation',
   init_args: {
     eval_dataset: {
-      class_path: 'HfGenerationDataset',
+      class_path: 'HFGenerationDataset',
       init_args: {
         dataset_name: 'kogi-jwu/jhumaneval',
         split: 'test',

@@ -21,11 +21,11 @@ flexeval_lm \
 Now you have the model outputs in `results/mt-en-gpt3.5-turbo/outputs.jsonl`.
 
 Let's evaluate the responses with GPT4.
-The LLM evaluation is implemented as a `Metric` class and we will use a preset metric named `assistant_eval_gpt4_en_single_turn`.
+The LLM evaluation is implemented as a `Metric` class and we will use a preset metric named `assistant_eval_en_single_turn`.
 You can check its configuration with the following command:
 
 ```bash
-flexeval_presets assistant_eval_gpt4_en_single_turn
+flexeval_presets assistant_eval_en_single_turn
 ```
 
 In this metric, GPT4 is asked to rate the responses with the score from 1 to 10.
@@ -35,7 +35,7 @@ The score is extracted as the last digit found in the evaluator's output.
     To take a closer look at the prompt template, combine pipeline with `jsonnet` and `jq`:
 
     ```bash
-    flexeval_presets assistant_eval_gpt4_en_single_turn | jsonnet - | jq -r ".init_args.prompt_template.init_args.template"
+    flexeval_presets assistant_eval_en_single_turn | jsonnet - | jq -r ".init_args.prompt_template.init_args.template"
     ```
 
 Perform automatic evaluation with GPT4 with the following command:
@@ -43,19 +43,19 @@ Perform automatic evaluation with GPT4 with the following command:
 ```bash
 flexeval_file \
    --eval_file "results/mt-en-gpt3.5-turbo/outputs.jsonl" \
-   --metrics "assistant_eval_gpt4_en_single_turn" \
-   --save_dir "results/mt-en_gpt3.5-turbo/eval_by_gpt4"
+   --metrics "assistant_eval_en_single_turn" \
+   --save_dir "results/mt-en_gpt3.5-turbo/eval_by_gpt"
 ```
 
 ☕️ It may take a while to finish the evaluation...
 
-By hitting `cat results/mt-en-gpt3.5-turbo/eval_by_gpt4/metrics.json`, you can see the evaluation result like `{"llm_score": 7.795}`.
-The evaluation for each response is stored in `results/mt-en-gpt3.5-turbo/eval_by_gpt4/outputs.jsonl`.
+By hitting `cat results/mt-en-gpt3.5-turbo/eval_by_gpt/metrics.json`, you can see the evaluation result like `{"llm_score": 7.795}`.
+The evaluation for each response is stored in `results/mt-en-gpt3.5-turbo/eval_by_gpt/outputs.jsonl`.
 
 You can check the output of the evaluator LLM in the `llm_score_output` field.
 
 ```bash
-head -n 1 results/mt-en-gpt3.5-turbo/eval_by_gpt4/outputs.jsonl | jq -r ".llm_output"
+head -n 1 results/mt-en-gpt3.5-turbo/eval_by_gpt/outputs.jsonl | jq -r ".llm_output"
 ```
 
 !!! info
@@ -67,7 +67,7 @@ head -n 1 results/mt-en-gpt3.5-turbo/eval_by_gpt4/outputs.jsonl | jq -r ".llm_ou
       --language_model OpenAIChatAPI \
       --language_model.model_name "gpt-3.5-turbo" \
       --eval_setup "mt-en" \
-      --metrics+="assistant_eval_gpt4_en_single_turn" \
+      --metrics+="assistant_eval_en_single_turn" \
       --save_dir "results/mt-en_gpt3.5-turbo"
     ```
 
@@ -111,7 +111,7 @@ Now, compare the responses with GPT-4.
 flexeval_pairwise \
   --lm_output_paths.gpt_3_5 "results/mt-en_gpt3.5-turbo/outputs.jsonl"  \
   --lm_output_paths.gpt_4o "results/mt-en_gpt-4o/outputs.jsonl"  \
-  --judge "assistant_judge_gpt4_en_single_turn" \
+  --judge "assistant_judge_en_single_turn" \
   --save_dir "results/mt-en_gpt3.5_vs_gpt4o"
 ```
 
