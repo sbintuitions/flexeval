@@ -32,6 +32,18 @@ class EvalSetup(ABC):
 
 @dataclass
 class ChatResponse(EvalSetup):
+    """
+    Evaluation setup for chat response generation.
+    In this setup, the model receives context in a chat format like:
+    ```json
+    [
+        {"role": "system", "content": "You are a helpful assistant."},
+        {"role": "user", "content": "What is the capital of France?"},
+        {"role": "assistant", "content": "The capital of France is Paris."}
+    ]
+    ```
+    """
+
     eval_dataset: ChatDataset
     gen_kwargs: dict[str, Any]
     few_shot_generator: FewShotGenerator | None = None
@@ -60,6 +72,11 @@ class ChatResponse(EvalSetup):
 
 @dataclass
 class Generation(EvalSetup):
+    """
+    Evaluation setup for text generation.
+    The model receives a prompt in a plain text format and generates its continuation.
+    """
+
     eval_dataset: GenerationDataset
     prompt_template: PromptTemplate
     gen_kwargs: dict[str, Any]
@@ -90,6 +107,11 @@ class Generation(EvalSetup):
 
 @dataclass
 class MultipleChoice(EvalSetup):
+    """
+    Evaluation setup for multiple choice questions.
+    The model receives a prompt and a list of choices and selects the answer with the highest probability.
+    """
+
     eval_dataset: MultipleChoiceDataset
     prompt_template: PromptTemplate
     few_shot_generator: FewShotGenerator | None = None
@@ -112,6 +134,11 @@ class MultipleChoice(EvalSetup):
 
 @dataclass
 class Perplexity(EvalSetup):
+    """
+    Evaluation setup for perplexity.
+    The model receives plain text and computes the perplexity of the text.
+    """
+
     eval_dataset: TextDataset
     batch_size: int = 4
     tokenizer: Tokenizer | None = None

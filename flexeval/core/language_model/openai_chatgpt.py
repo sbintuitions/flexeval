@@ -23,9 +23,9 @@ async def _retry_on_error(
         except openai.APIError as e:  # noqa: PERF203
             if i == max_num_trials - 1:
                 raise
-            logger.info(f"We got an error：{e}")
+            logger.warning(f"We got an error: {e}")
             wait_time_seconds = first_wait_time * (2**i)
-            logger.info(f"Wait for {wait_time_seconds} seconds...")
+            logger.warning(f"Wait for {wait_time_seconds} seconds...")
             await asyncio.sleep(wait_time_seconds)
     return None
 

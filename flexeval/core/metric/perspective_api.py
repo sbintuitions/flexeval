@@ -14,20 +14,22 @@ from .base import Metric, MetricResult
 PERSPECTIVE_API_KEY = os.getenv("PERSPECTIVE_API_KEY")
 
 
-def retry_on_error(perspectiveapi_call: Callable, max_num_trials: int = 8, first_wait_time: int = 1) -> dict[str, Any]:
-    """PerspectiveAPI使用時にエラーが返ってきた場合に再試行する."""
+def retry_on_error(
+    perspectiveapi_call: Callable,
+    max_num_trials: int = 8,
+    first_wait_time: int = 1,
+) -> dict[str, Any] | None:
+    """Retry the function call when an error occurs."""
     time.sleep(first_wait_time)
     for i in range(max_num_trials):
         try:
-            # 関数を実行する
             return perspectiveapi_call()
         except HttpError as e:  # noqa: PERF203
-            # 試行回数が上限に達したらエラーを送出
             if i == max_num_trials - 1:
                 raise
-            logger.info(f"エラーを受け取りました：{e}")
+            logger.warning(f"We got an error: {e}")
             wait_time_seconds = first_wait_time * (2**i)
-            logger.info(f"{wait_time_seconds}秒待機します")
+            logger.warning(f"Wait for {wait_time_seconds} seconds...")
             time.sleep(wait_time_seconds)
     return None
 
@@ -38,6 +40,20 @@ class PerspectiveAPI(Metric):
 
     Args:
         languages: A list of languages to analyze.
+
+    Examples:
+        >>> from flexeval import PerspectiveAPI
+        >>> perspective_api = PerspectiveAPI(languages=["en"])
+        >>> lm_outputs = ["I love you", "I hate you"]
+        >>> result = perspective_api.evaluate(lm_outputs)
+        >>> print(result)
+        MetricResult(
+            summary={'TOXICITY': 0.35407552, ..., 'THREAT': 0.0265799825},
+            instance_details=[
+                {'TOXICITY': 0.02543884, ..., 'THREAT': 0.009204263},
+                {'TOXICITY': 0.6827122, ..., 'THREAT': 0.043955702}
+                ]
+            )
     """
 
     def __init__(self, languages: list[str]) -> None:
@@ -56,7 +72,7 @@ class PerspectiveAPI(Metric):
         lm_outputs: list[str],
         references_list: list[list[str]] | None = None,
         task_inputs_list: list[dict[str, str]] | None = None,
-    ) -> dict[str, float]:
+    ) -> MetricResult:
         instance_details = []
         for lm_output in lm_outputs:
             if lm_output == "":

@@ -13,6 +13,19 @@ class XER(Metric):
 
     Args:
         tokenizer: An instance of `Tokenizer` to tokenize the input and output strings.
+
+    Examples:
+        >>> from flexeval import XER
+        >>> xer = XER()
+        >>> lm_outputs = ["I am a student .", "I am a teacher ."]
+        >>> references_list = [["I am a student .", "I am a learner ."], ["Are you the student ?"]]
+        >>> result = xer.evaluate(lm_outputs, references_list)
+        >>> print(result)
+        MetricResult(
+            summary={'cer_score': 0.43243243243243246, 'wer_score': 0.5},
+            instance_details=[{'cer_score': 0.0, 'wer_score': 0.0}, {'cer_score': 0.7619047619047619, 'wer_score': 1.0}
+            ]
+        )
     """
 
     def __init__(self, tokenizer: Tokenizer | None = None) -> None:

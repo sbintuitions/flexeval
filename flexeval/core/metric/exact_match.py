@@ -11,6 +11,18 @@ class ExactMatch(Metric):
 
     Args:
         normalizer: An instance of `Normalizer` to normalize the input and output strings.
+
+    Examples:
+        >>> from flexeval import ExactMatch
+        >>> exact_match = ExactMatch()
+        >>> lm_outputs = ["ABC", "DEF"]
+        >>> references_list = [["ABC"], ["DEFG"]]
+        >>> result = exact_match.evaluate(lm_outputs, references_list)
+        >>> print(result)
+        MetricResult(
+            summary={"exact_match": 0.5},
+            instance_details=[{"exact_match": True}, {"exact_match": False}],
+        )
     """
 
     def __init__(self, normalizer: Normalizer | None = None) -> None:

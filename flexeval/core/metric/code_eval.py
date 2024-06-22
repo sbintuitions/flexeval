@@ -23,6 +23,21 @@ class CodeEval(Metric):
             The template should contain variables that will be replaced with the values in `task_inputs_list`.
             If `None`, the code prompt will be the generated code itself.
         normalizer: A normalizer applied to model outputs before evaluation.
+
+    Examples:
+        >>> from flexeval import CodeEval
+        >>> code_eval = CodeEval()
+        >>> lm_outputs = ["def add(a, b):\\n    return a + b", "def is_equal(a, b):\\n    return a = b"]
+        >>> references_list = [["assert add(1, 2) == 3"], ["assert is_equal(1, 2) == False"]]
+        >>> result = code_eval.evaluate(lm_outputs, references_list)
+        >>> print(result)
+        MetricResult(
+            summary={'pass@1': 0.5},
+            instance_details=[
+                {'passed': True, 'result': 'passed'},
+                {'passed': False, 'result': 'failed: invalid syntax (<string>, line 2)'}
+            ]
+        )
     """
 
     def __init__(self, code_prompt_template: str | None = None, normalizer: Normalizer | None = None) -> None:

@@ -13,6 +13,23 @@ class ROUGE(Metric):
 
     Args:
         tokenizer: An instance of `Tokenizer` to tokenize the input and output strings.
+
+    Examples:
+        >>> from flexeval import ROUGE
+        >>> from flexeval import WhitespaceTokenizer
+        >>> tokenizer = WhitespaceTokenizer()
+        >>> rouge = ROUGE(tokenizer)
+        >>> lm_outputs = ["I am a student .", "I am a teacher ."]
+        >>> references_list = [["I am a student .", "I am a learner ."], ["I am a teacher ."]]
+        >>> result = rouge.evaluate(lm_outputs, references_list)
+        >>> print(result)
+        MetricResult(
+            summary={'rouge1': 0.999999995, 'rouge2': 0.999999995, 'rougeL': 0.999999995},
+            instance_details=[
+                {'rouge1': 0.999999995, 'rouge2': 0.999999995, 'rougeL': 0.999999995},
+                {'rouge1': 0.999999995, 'rouge2': 0.999999995, 'rougeL': 0.999999995}
+            ]
+        )
     """
 
     def __init__(self, tokenizer: Tokenizer) -> None:
