@@ -50,7 +50,7 @@ def evaluate_multiple_choice(
                             raise TypeError(msg)
                     template_inputs = {**template_inputs, "few_shot_data": few_shot_item_list}
 
-                prefix = prompt_template.embed_input(template_inputs)
+                prefix = prompt_template.embed_inputs(template_inputs)
                 batch_prefixes += [prefix] * len(eval_instance.choices)
                 batch_choices += eval_instance.choices
 

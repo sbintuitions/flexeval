@@ -140,7 +140,7 @@ flexeval_file \
 In the results, you can see the evaluation result like `{"llm_score": 7.795}`.
 You can also check the entire output of the judge LLM including the rationale of the evaluation in `llm_score_output` in `outputs.jsonl`.
 
-For further details and pairwise evaluation, see [Evaluate with LLM Judges](./how_to/eval_with_llm_judges.md).
+For further details and pairwise evaluation, see [Evaluate with LLM Judges](./how_to/evaluate_with_llm_judges.md).
 
 ## Perplexity
 

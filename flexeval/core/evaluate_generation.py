@@ -48,7 +48,7 @@ def evaluate_generation(  # noqa: C901
                             msg = f"Invalid instance type: {type(few_shot_instance)}"
                             raise TypeError(msg)
                     template_inputs = {**template_inputs, "few_shot_data": few_shot_item_list}
-                prompt = prompt_template.embed_input(template_inputs)
+                prompt = prompt_template.embed_inputs(template_inputs)
                 lm_prompts.append(prompt)
 
             lm_outputs = language_model.batch_complete_text(

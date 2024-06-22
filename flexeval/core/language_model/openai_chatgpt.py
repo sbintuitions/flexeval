@@ -44,7 +44,7 @@ class OpenAIChatAPI(LanguageModel):
         model_name: str = "gpt-3.5-turbo",
         api_headers: dict[str, str] | None = None,
     ) -> None:
-        self._model_name = model_name
+        self.model_name = model_name
         if api_headers is None:
             api_headers = {}
         self._client = AsyncOpenAI(**api_headers)
@@ -82,7 +82,7 @@ class OpenAIChatAPI(LanguageModel):
                 # Define an anonymous function with a lambda expression and pass it,
                 # and call it inside the _retry_on_error function
                 openai_call=lambda x=ms: self._client.chat.completions.create(
-                    model=self._model_name,
+                    model=self.model_name,
                     messages=x,
                     **kwargs,
                 ),
@@ -118,3 +118,6 @@ class OpenAIChatAPI(LanguageModel):
             self._async_batch_run_chatgpt(chat_messages_list, **kwargs),
         )
         return [res.choices[0].message.content for res in api_responses]
+
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}(model_name={self.model_name})"

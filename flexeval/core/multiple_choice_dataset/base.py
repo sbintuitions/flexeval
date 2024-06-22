@@ -41,3 +41,6 @@ class MultipleChoiceDataset(Sequence[MultipleChoiceInstance], ABC):
         Returns the i-th instance.
         """
         raise NotImplementedError
+
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}(num_instances={len(self)})"

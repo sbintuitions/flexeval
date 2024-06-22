@@ -32,16 +32,17 @@ class VLLM(LanguageModel):
         add_special_tokens: bool = False,
         custom_chat_template: str | None = None,
     ) -> None:
+        self.model_name = model_name
         tokenizer_name = tokenizer_name if tokenizer_name else model_name
         tokenizer_kwargs = tokenizer_kwargs or {}
-        self._tokenizer: PreTrainedTokenizer = AutoTokenizer.from_pretrained(tokenizer_name, **tokenizer_kwargs)
-        self._custom_chat_template = custom_chat_template
-        self._add_special_tokens = add_special_tokens
+        self.tokenizer: PreTrainedTokenizer = AutoTokenizer.from_pretrained(tokenizer_name, **tokenizer_kwargs)
+        self.custom_chat_template = custom_chat_template
+        self.add_special_tokens = add_special_tokens
 
         from vllm import LLM
 
         model_kwargs = model_kwargs or {}
-        self._llm = LLM(model_name, trust_remote_code=True, **model_kwargs)
+        self.llm = LLM(model_name, trust_remote_code=True, **model_kwargs)
 
     def batch_complete_text(
         self,
@@ -69,24 +70,24 @@ class VLLM(LanguageModel):
         stop_sequences = normalize_stop_sequences(
             stop_sequences=stop_sequences,
             stop_from_kwargs=kwargs.pop("stop", None),
-            eos_token=self._tokenizer.eos_token,
+            eos_token=self.tokenizer.eos_token,
             ignore_eos=kwargs.get("ignore_eos", False),
         )
 
-        model_inputs = self._tokenizer(
+        model_inputs = self.tokenizer(
             text_list,
-            add_special_tokens=self._add_special_tokens,
+            add_special_tokens=self.add_special_tokens,
             return_token_type_ids=False,
         )
 
         from vllm import SamplingParams
 
-        vllm_outputs = self._llm.generate(
+        vllm_outputs = self.llm.generate(
             prompt_token_ids=model_inputs.input_ids,
             sampling_params=SamplingParams(**kwargs, stop=stop_sequences),
             use_tqdm=False,
         )
-        generated_texts = [self._tokenizer.decode(outputs.outputs[0].token_ids) for outputs in vllm_outputs]
+        generated_texts = [self.tokenizer.decode(outputs.outputs[0].token_ids) for outputs in vllm_outputs]
 
         # The `include_stop_str_in_output` option does not work, because we let llm generate tokens, not strings.
         # We manually remove the stop sequences from the generated texts.
@@ -104,12 +105,15 @@ class VLLM(LanguageModel):
         **kwargs,
     ) -> list[str]:
         chat_messages_as_string = [
-            self._tokenizer.apply_chat_template(
+            self.tokenizer.apply_chat_template(
                 chat_messages,
                 tokenize=False,
                 add_generation_prompt=True,
-                chat_template=self._custom_chat_template,
+                chat_template=self.custom_chat_template,
             )
             for chat_messages in chat_messages_list
         ]
         return self.batch_complete_text(chat_messages_as_string, **kwargs)
+
+    def __repr__(self) -> str:
+        return f"VLLM(model_name={self.model_name})"

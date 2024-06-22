@@ -27,9 +27,9 @@ class ChatLLMPairwiseJudge(PairwiseJudge):
         prompt_template: PromptTemplate,
         system_message: str | PromptTemplate | None = None,
     ) -> None:
-        self._language_model = language_model
-        self._prompt_template = prompt_template
-        self._system_message = system_message
+        self.language_model = language_model
+        self.prompt_template = prompt_template
+        self.system_message = system_message
 
     @staticmethod
     def _parse_judge_output(judge_output: str) -> tuple[Winner, str]:
@@ -68,18 +68,18 @@ class ChatLLMPairwiseJudge(PairwiseJudge):
                 "model2_item": model2_item,
                 "references": references,
             }
-            self._prompt_template.embed_input(prompt_inputs)
-            judge_input = self._prompt_template.embed_input(prompt_inputs)
+            self.prompt_template.embed_inputs(prompt_inputs)
+            judge_input = self.prompt_template.embed_inputs(prompt_inputs)
             input_chat_messages = [{"role": "user", "content": judge_input}]
-            if self._system_message:
-                if isinstance(self._system_message, str):
-                    system_message = self._system_message
+            if self.system_message:
+                if isinstance(self.system_message, str):
+                    system_message = self.system_message
                 else:
-                    system_message = self._system_message.embed_input(prompt_inputs)
+                    system_message = self.system_message.embed_inputs(prompt_inputs)
                 input_chat_messages.insert(
                     0,
                     {"role": "system", "content": system_message},
                 )
             input_chat_messages_list.append(input_chat_messages)
-        judge_outputs = self._language_model.batch_generate_chat_response(input_chat_messages_list)
+        judge_outputs = self.language_model.batch_generate_chat_response(input_chat_messages_list)
         return [self._parse_judge_output(output) for output in judge_outputs]
