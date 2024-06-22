@@ -21,13 +21,9 @@ def main() -> None:
 
     all_configs: dict[str, list[str]] = {}
     all_config_paths: dict[str, Path] = {}
-    for config_class, dir_env_key in [
-        ("EvalSetup", "PRESET_CONFIG_EVAL_DIR"),
-        ("Metric", "PRESET_CONFIG_METRIC_DIR"),
-        ("PairwiseJudge", "PRESET_CONFIG_JUDGE_DIR"),
-    ]:
+    for config_class in ["EvalSetup", "Metric", "PairwiseJudge"]:
         config_directory = os.environ.get(
-            dir_env_key,
+            "PRESET_CONFIG_DIR",
             Path(__file__).parent.parent / "preset_configs" / config_class,
         )
 
