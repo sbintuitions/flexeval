@@ -36,9 +36,11 @@ class LLMScore(Metric):
             instance_details=[
                 {
                     'llm_score': 2,
+                    'llm_score_input': 'Evaluate the quality of this text...',
                     'llm_score_output': 'This text is very simple,... Therefore, its quality is average. [[2]]'},
                 {
                     'llm_score': 4,
+                    'llm_score_input': 'Evaluate the quality of this text...',
                     'llm_score_output': '... Overall, the quality of the text is good but basic. [[4]]'}
             ]
         )
@@ -118,9 +120,10 @@ class LLMScore(Metric):
         return MetricResult(
             {"llm_score": average_evaluator_score},
             instance_details=[
-                {"llm_score": eval_score, "llm_score_output": eval_out}
-                for eval_score, eval_out in zip(
+                {"llm_score": eval_score, "llm_score_input": eval_in, "llm_score_output": eval_out}
+                for eval_score, eval_in, eval_out in zip(
                     evaluator_score_list,
+                    evaluator_input_list,
                     evaluator_output_list,
                 )
             ],
@@ -157,9 +160,11 @@ class ChatLLMScore(Metric):
             instance_details=[
                 {
                     'llm_score': 2,
+                    'llm_score_input': [{'role': 'user', 'content': 'Evaluate the quality of this text...'}],
                     'llm_score_output': 'This text is very simple,... Therefore, its quality is average. [[2]]'},
                 {
                     'llm_score': 4,
+                    'llm_score_input': [{'role': 'user', 'content': 'Evaluate the quality of this text...'}],
                     'llm_score_output': '... Overall, the quality of the text is good but basic. [[4]]'}
             ]
         )
@@ -250,9 +255,10 @@ class ChatLLMScore(Metric):
         return MetricResult(
             {"llm_score": average_evaluator_score},
             instance_details=[
-                {"llm_score": eval_score, "llm_score_output": eval_out}
-                for eval_score, eval_out in zip(
+                {"llm_score": eval_score, "llm_score_input": eval_in, "llm_score_output": eval_out}
+                for eval_score, eval_in, eval_out in zip(
                     evaluator_score_list,
+                    evaluator_input_list,
                     evaluator_output_list,
                 )
             ],
