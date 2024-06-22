@@ -16,3 +16,6 @@ class TextDataset(Sequence[str], ABC):
     @abstractmethod
     def __getitem__(self, item: int) -> str:
         pass
+
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}(num_instances={len(self)})"

@@ -165,11 +165,12 @@ class HuggingFaceLM(LanguageModel):
         load_peft: bool = False,
         custom_chat_template: str | None = None,
     ) -> None:
+        self.model_name = model_name
         tokenizer_name = tokenizer_name if tokenizer_name else model_name
         tokenizer_kwargs = tokenizer_kwargs or {}
-        self._tokenizer: PreTrainedTokenizer = AutoTokenizer.from_pretrained(tokenizer_name, **tokenizer_kwargs)
-        self._custom_chat_template = custom_chat_template
-        self._add_special_tokens = add_special_tokens
+        self.tokenizer: PreTrainedTokenizer = AutoTokenizer.from_pretrained(tokenizer_name, **tokenizer_kwargs)
+        self.custom_chat_template = custom_chat_template
+        self.add_special_tokens = add_special_tokens
 
         model_kwargs = model_kwargs or {}
         model_kwargs = {**model_kwargs}  # copy kwargs to avoid modifying the original dict
@@ -191,47 +192,47 @@ class HuggingFaceLM(LanguageModel):
                 raise ValueError(msg)
 
         if not load_peft:
-            self._model: PreTrainedModel = AutoModelForCausalLM.from_pretrained(
+            self.model: PreTrainedModel = AutoModelForCausalLM.from_pretrained(
                 model_name,
                 **model_kwargs,
             )
         else:
             from peft import AutoPeftModelForCausalLM
 
-            self._model = AutoPeftModelForCausalLM.from_pretrained(
+            self.model = AutoPeftModelForCausalLM.from_pretrained(
                 model_name,
                 **model_kwargs,
             )
             # For models such as LoRA, we can merge the additional weights to run inference faster.
-            if hasattr(self._model, "merge_and_unload"):
-                self._model: PreTrainedModel = self._model.merge_and_unload()
+            if hasattr(self.model, "merge_and_unload"):
+                self.model: PreTrainedModel = self.model.merge_and_unload()
 
-        self._model.eval()
+        self.model.eval()
 
-        self._amp_dtype = amp_dtype
+        self.amp_dtype = amp_dtype
 
         transformers.set_seed(random_seed)
 
-        logger.info(f"model device: {self._model.device}")
-        logger.info(f"model dtype: {self._model.dtype}")
+        logger.info(f"model device: {self.model.device}")
+        logger.info(f"model dtype: {self.model.dtype}")
         logger.info(f"amp_dtype: {amp_dtype}")
         logger.info(f"random seed: {random_seed}")
 
     def _get_amp_context(self) -> contextlib.AbstractContextManager:
-        if self._amp_dtype is None:
+        if self.amp_dtype is None:
             return contextlib.nullcontext()
-        if self._amp_dtype == "float16":
+        if self.amp_dtype == "float16":
             return torch.amp.autocast(
-                device_type=self._model.device.type,
+                device_type=self.model.device.type,
                 dtype=torch.float16,
             )
-        if self._amp_dtype == "bfloat16":
+        if self.amp_dtype == "bfloat16":
             return torch.amp.autocast(
-                device_type=self._model.device.type,
+                device_type=self.model.device.type,
                 dtype=torch.bfloat16,
             )
 
-        msg = f"Invalid amp_dtype: {self._amp_dtype}"
+        msg = f"Invalid amp_dtype: {self.amp_dtype}"
         raise ValueError(msg)
 
     def _get_stop_token_ids(self, stop_sequences: list[str]) -> list[int]:
@@ -241,18 +242,18 @@ class HuggingFaceLM(LanguageModel):
             # We do not use the `encode` method
             # because in the case of sentencepiece-based tokenizers,
             # calling the encode method adds a redundant space at the beginning of the string,
-            stop_token_id = self._tokenizer.convert_tokens_to_ids(stop_seq)
+            stop_token_id = self.tokenizer.convert_tokens_to_ids(stop_seq)
 
             # NeoXTokenizer returns Unk when calling convert_tokens_ids
             # because each token is stored in a peculiar way
             # Ex. "」" -> "ãĢį"
-            if stop_token_id == self._tokenizer.unk_token_id:
+            if stop_token_id == self.tokenizer.unk_token_id:
                 # In such a case, we try to get the ID by calling the encode method.
-                stop_seq_tokens = self._tokenizer.encode(stop_seq, add_special_tokens=False)
+                stop_seq_tokens = self.tokenizer.encode(stop_seq, add_special_tokens=False)
                 if stop_seq_tokens:
                     stop_token_id = stop_seq_tokens[-1]
             # If the token does not match the specified string itself, we do not include it as a stop token id
-            if self._tokenizer.decode(stop_token_id) != stop_seq:
+            if self.tokenizer.decode(stop_token_id) != stop_seq:
                 continue
 
             stop_token_ids.append(stop_token_id)
@@ -272,15 +273,15 @@ class HuggingFaceLM(LanguageModel):
 
         model_inputs = tokenize_text_for_lm_prefix(
             text_list,
-            self._tokenizer,
-            add_special_tokens=self._add_special_tokens,
-        ).to(self._model.device)
+            self.tokenizer,
+            add_special_tokens=self.add_special_tokens,
+        ).to(self.model.device)
         input_token_length = model_inputs["input_ids"].shape[1]
 
         stop_sequences = normalize_stop_sequences(
             stop_sequences=stop_sequences,
             stop_from_kwargs=kwargs.pop("stop_strings", None),
-            eos_token=self._tokenizer.eos_token,
+            eos_token=self.tokenizer.eos_token,
             ignore_eos=ignore_eos,
         )
         stop_token_ids = self._get_stop_token_ids(stop_sequences)
@@ -288,20 +289,20 @@ class HuggingFaceLM(LanguageModel):
         kwargs.update(
             {
                 "eos_token_id": stop_token_ids,
-                "pad_token_id": self._tokenizer.pad_token_id,
+                "pad_token_id": self.tokenizer.pad_token_id,
                 "max_new_tokens": max_new_tokens,
             },
         )
 
         with self._get_amp_context():
-            lm_outputs = self._model.generate(**model_inputs, **kwargs)
+            lm_outputs = self.model.generate(**model_inputs, **kwargs)
 
         # `lm_outputs` contains full text including the input text.
         # We strip the input text and stop sequences from the output text.
         output_texts: list[str] = []
         for output_tensor in lm_outputs[:, input_token_length:]:
-            output_tokens = [t for t in output_tensor.tolist() if t != self._tokenizer.pad_token_id]
-            decoded_text = self._tokenizer.decode(output_tokens, skip_special_tokens=False)
+            output_tokens = [t for t in output_tensor.tolist() if t != self.tokenizer.pad_token_id]
+            decoded_text = self.tokenizer.decode(output_tokens, skip_special_tokens=False)
 
             if include_stop_str_in_output:
                 output_texts.append(decoded_text)
@@ -320,11 +321,11 @@ class HuggingFaceLM(LanguageModel):
         **kwargs,
     ) -> list[str]:
         chat_messages_as_string = [
-            self._tokenizer.apply_chat_template(
+            self.tokenizer.apply_chat_template(
                 chat_messages,
                 tokenize=False,
                 add_generation_prompt=True,
-                chat_template=self._custom_chat_template,
+                chat_template=self.custom_chat_template,
             )
             for chat_messages in chat_messages_list
         ]
@@ -345,21 +346,21 @@ class HuggingFaceLM(LanguageModel):
         # This is needed to correctly calculate the log probabilities of the first token.
         for i in range(batch_size):
             if prefix_list[i] == "":
-                prefix_list[i] = self._tokenizer.bos_token
+                prefix_list[i] = self.tokenizer.bos_token
 
         prefix_encoding = tokenize_text_for_lm_prefix(
             prefix_list,
-            self._tokenizer,
-            add_special_tokens=self._add_special_tokens,
+            self.tokenizer,
+            add_special_tokens=self.add_special_tokens,
         )
 
         # prepare continuation encoding
         # If the last token is a special token, it is treated as a beginning of a new sentence.
         continuation_encoding = tokenize_text_for_lm_continuation(
             text_list,
-            self._tokenizer,
+            self.tokenizer,
             as_continuation=[
-                prefix_ids[-1] not in self._tokenizer.all_special_ids for prefix_ids in prefix_encoding.input_ids
+                prefix_ids[-1] not in self.tokenizer.all_special_ids for prefix_ids in prefix_encoding.input_ids
             ],
         )
 
@@ -371,7 +372,7 @@ class HuggingFaceLM(LanguageModel):
             )
         input_encoding = BatchEncoding(input_data_dict)
 
-        max_length = self._model.config.max_position_embeddings
+        max_length = self.model.config.max_position_embeddings
         stride = stride or max_length // 2
         if not (0 < stride < max_length):
             msg = f"stride must be in (0, {max_length}), but got {stride}"
@@ -396,15 +397,15 @@ class HuggingFaceLM(LanguageModel):
                 input_start = chunk_start
                 input_end = chunk_end - 1
 
-                chunk_input_ids = input_encoding.input_ids[:, input_start:input_end].to(self._model.device)
-                chunk_input_mask = input_encoding.attention_mask[:, input_start:input_end].to(self._model.device)
-                chunk_target_ids = input_encoding.input_ids[:, chunk_start + 1 : chunk_end].to(self._model.device)
+                chunk_input_ids = input_encoding.input_ids[:, input_start:input_end].to(self.model.device)
+                chunk_input_mask = input_encoding.attention_mask[:, input_start:input_end].to(self.model.device)
+                chunk_target_ids = input_encoding.input_ids[:, chunk_start + 1 : chunk_end].to(self.model.device)
 
-                chunk_model_inputs = self._model.prepare_inputs_for_generation(
+                chunkmodel_inputs = self.model.prepare_inputs_for_generation(
                     chunk_input_ids,
                     attention_mask=chunk_input_mask,
                 )
-                lm_outputs = self._model.forward(**chunk_model_inputs)
+                lm_outputs = self.model.forward(**chunkmodel_inputs)
 
                 chunk_log_probs = F.log_softmax(lm_outputs.logits, dim=-1)
                 # shape of chunk_log_probs: (batch_size, sequence_length, vocab_size)
@@ -436,3 +437,6 @@ class HuggingFaceLM(LanguageModel):
                 log_prob_mask[:, : prefix_length - 1] = 0
             total_log_probs = (log_prob_of_next * log_prob_mask).sum(dim=-1)
         return total_log_probs.tolist()
+
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}(model_name={self.model_name!r})"

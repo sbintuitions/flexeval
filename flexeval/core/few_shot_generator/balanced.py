@@ -27,8 +27,8 @@ class BalancedFewShotGenerator(FewShotGenerator):
             )
             raise ValueError(msg)
 
-        self._dataset = dataset
-        self._num_shots = num_shots
+        self.dataset = dataset
+        self.num_shots = num_shots
         self._rnd = random.Random(seed)
 
         # Separate instances by label
@@ -47,8 +47,8 @@ class BalancedFewShotGenerator(FewShotGenerator):
         self._rnd.shuffle(labels)
 
         # Evenly distribute num_samples to each label
-        num_samples_list = [self._num_shots // len(labels)] * len(labels)
-        remaining_samples = self._num_shots % len(labels)
+        num_samples_list = [self.num_shots // len(labels)] * len(labels)
+        remaining_samples = self.num_shots % len(labels)
         for i in range(remaining_samples):
             num_samples_list[i] += 1
 
@@ -61,4 +61,7 @@ class BalancedFewShotGenerator(FewShotGenerator):
             )
         self._rnd.shuffle(sampled_indices)
 
-        return [self._dataset[i] for i in sampled_indices]
+        return [self.dataset[i] for i in sampled_indices]
+
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}(dataset={self.dataset}, num_shots={self.num_shots})"

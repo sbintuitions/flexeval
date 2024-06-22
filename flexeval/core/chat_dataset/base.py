@@ -78,3 +78,6 @@ class ChatDataset(Sequence[ChatInstance], ABC):
         Otherwise, the model just has to continue the conversation from the last user utterance.
         """
         raise NotImplementedError
+
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}(num_instances={len(self)})"

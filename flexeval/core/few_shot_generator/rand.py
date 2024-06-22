@@ -23,10 +23,13 @@ class RandomFewShotGenerator(FewShotGenerator):
             )
             raise ValueError(msg)
 
-        self._dataset = dataset
-        self._num_shots = num_shots
+        self.dataset = dataset
+        self.num_shots = num_shots
         self._rnd = random.Random(seed)
 
     def _sample_instances(self, eval_inputs: list[dict[str, Any]] | dict[str, Any] | None = None) -> list[Instance]:
-        sampled_indices = self._rnd.sample(range(len(self._dataset)), self._num_shots)
-        return [self._dataset[i] for i in sampled_indices]
+        sampled_indices = self._rnd.sample(range(len(self.dataset)), self.num_shots)
+        return [self.dataset[i] for i in sampled_indices]
+
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}(dataset={self.dataset}, num_shots={self.num_shots})"

@@ -30,10 +30,10 @@ class LLMScore(Metric):
         batch_size: int = 4,
         disable_tqdm: bool = False,
     ) -> None:
-        self._language_model = language_model
-        self._prompt_template = prompt_template
-        self._batch_size = batch_size
-        self._disable_tqdm = disable_tqdm
+        self.language_model = language_model
+        self.prompt_template = prompt_template
+        self.batch_size = batch_size
+        self.disable_tqdm = disable_tqdm
 
     @staticmethod
     def _parse_evaluator_output(evaluator_output: str) -> int:
@@ -69,20 +69,20 @@ class LLMScore(Metric):
                 "references": references,
                 **task_input,
             }
-            evaluator_input = self._prompt_template.embed_input(prompt_inputs)
+            evaluator_input = self.prompt_template.embed_input(prompt_inputs)
             evaluator_input_list.append(evaluator_input)
 
         with tqdm.tqdm(
             total=len(evaluator_input_list),
-            disable=self._disable_tqdm,
+            disable=self.disable_tqdm,
             desc="Calculating LLM score",
         ) as pbar:
             evaluator_output_list: list[str] = []
             for batch_evaluator_input in batch_iter(
                 evaluator_input_list,
-                batch_size=self._batch_size,
+                batch_size=self.batch_size,
             ):
-                evaluator_outputs = self._language_model.batch_complete_text(
+                evaluator_outputs = self.language_model.batch_complete_text(
                     batch_evaluator_input,
                 )
                 evaluator_output_list += evaluator_outputs
@@ -105,6 +105,11 @@ class LLMScore(Metric):
             ],
         )
 
+    def __repr__(self) -> str:
+        return (
+            f"{self.__class__.__name__}(language_model={self.language_model}, prompt_template={self.prompt_template})"
+        )
+
 
 class ChatLLMScore(Metric):
     """
@@ -125,11 +130,11 @@ class ChatLLMScore(Metric):
         batch_size: int = 4,
         disable_tqdm: bool = False,
     ) -> None:
-        self._language_model = language_model
-        self._prompt_template = prompt_template
-        self._system_message = system_message
-        self._batch_size = batch_size
-        self._disable_tqdm = disable_tqdm
+        self.language_model = language_model
+        self.prompt_template = prompt_template
+        self.system_message = system_message
+        self.batch_size = batch_size
+        self.disable_tqdm = disable_tqdm
 
     @staticmethod
     def _parse_evaluator_output(evaluator_output: str) -> int:
@@ -164,13 +169,13 @@ class ChatLLMScore(Metric):
                 "references": references,
                 **task_input,
             }
-            evaluator_input = self._prompt_template.embed_input(prompt_inputs)
+            evaluator_input = self.prompt_template.embed_input(prompt_inputs)
             input_chat_messages = [{"role": "user", "content": evaluator_input}]
-            if self._system_message:
-                if isinstance(self._system_message, str):
-                    system_message = self._system_message
+            if self.system_message:
+                if isinstance(self.system_message, str):
+                    system_message = self.system_message
                 else:
-                    system_message = self._system_message.embed_input(prompt_inputs)
+                    system_message = self.system_message.embed_input(prompt_inputs)
                 input_chat_messages.insert(
                     0,
                     {"role": "system", "content": system_message},
@@ -179,15 +184,15 @@ class ChatLLMScore(Metric):
 
         with tqdm.tqdm(
             total=len(evaluator_input_list),
-            disable=self._disable_tqdm,
+            disable=self.disable_tqdm,
             desc="Calculating ChatLLM score",
         ) as pbar:
             evaluator_output_list: list[str] = []
             for batch_inputs in batch_iter(
                 evaluator_input_list,
-                batch_size=self._batch_size,
+                batch_size=self.batch_size,
             ):
-                evaluator_outputs = self._language_model.batch_generate_chat_response(
+                evaluator_outputs = self.language_model.batch_generate_chat_response(
                     batch_inputs,
                 )
                 evaluator_output_list += evaluator_outputs
@@ -208,4 +213,9 @@ class ChatLLMScore(Metric):
                     evaluator_output_list,
                 )
             ],
+        )
+
+    def __repr__(self) -> str:
+        return (
+            f"{self.__class__.__name__}(language_model={self.language_model}, prompt_template={self.prompt_template})"
         )
