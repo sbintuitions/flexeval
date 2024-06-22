@@ -26,6 +26,10 @@ def instantiate_from_config(
 
     Returns:
         The instantiated module.
+
+    Examples:
+        >>> from flexeval import instantiate_from_config
+        >>> eval_setup = instantiate_from_config("aio")
     """
     resolved_config_path = ConfigNameResolver()(config_path)
 
