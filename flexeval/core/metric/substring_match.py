@@ -6,6 +6,18 @@ from .base import Metric, MetricResult
 class SubstringMatch(Metric):
     """
     A metric that calculates how many outputs contain any of the expected substrings.
+
+    Examples:
+        >>> from flexeval import SubstringMatch
+        >>> substring_match = SubstringMatch()
+        >>> lm_outputs = ["This is a cat .", "This is a dog ."]
+        >>> references_list = [["cat", "dog"], ["mouse"]]
+        >>> result = substring_match.evaluate(lm_outputs, references_list)
+        >>> print(result)
+        MetricResult(
+            summary={'substring_match': 0.5},
+            instance_details=[{'substring_match': True}, {'substring_match': False}]
+        )
     """
 
     def evaluate(

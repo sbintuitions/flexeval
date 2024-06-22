@@ -12,6 +12,24 @@ class BLEU(Metric):
     Args:
         tokenize_option: Tokenization option for sacrebleu.
             If `None`, sacrebleu will use the default tokenization.
+
+    Examples:
+        >>> from flexeval import BLEU
+        >>> bleu = BLEU()
+        >>> lm_outputs = ["I am a student .", "I am a teacher ."]
+        >>> references_list = [["I am a student .", "I am a learner ."], ["I am a teacher ."]]
+        >>> result = bleu.evaluate(lm_outputs, references_list)
+        >>> print(result)
+        MetricResult(
+            summary={
+                'bleu_score': 1.0,
+                'bleu_bp': 1.0,
+                'bleu_signature': nrefs:1|case:mixed|eff:no|tok:13a|smooth:exp|version:2.4.1},
+                instance_details=[
+                    {'bleu_score': 1.0, 'bleu_bp': 1.0},
+                    {'bleu_score': 1.0, 'bleu_bp': 1.0}
+                ]
+            )
     """
 
     def __init__(self, tokenize_option: str | None = None) -> None:

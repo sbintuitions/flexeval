@@ -4,7 +4,20 @@ from .base import Metric, MetricResult
 
 
 class OutputLengthStats(Metric):
-    """Compute statistics on the length of the outputs."""
+    """
+    Compute statistics on the length of the outputs.
+
+    Examples:
+        >>> from flexeval import OutputLengthStats
+        >>> output_length_stats = OutputLengthStats()
+        >>> lm_outputs = ["123456", "123456789"]
+        >>> result = output_length_stats.evaluate(lm_outputs)
+        >>> print(result)
+        MetricResult(
+            summary={'avg_output_length': 7.5, 'max_output_length': 9, 'min_output_length': 6},
+            instance_details=[{'output_length': 6}, {'output_length': 9}]
+        )
+    """
 
     def evaluate(
         self,

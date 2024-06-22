@@ -14,6 +14,15 @@ class CharF1(Metric):
 
     Args:
         normalizer: An instance of `Normalizer` to normalize the input and output strings.
+
+    Examples:
+        >>> from flexeval import CharF1
+        >>> char_f1 = CharF1()
+        >>> lm_outputs = ["abcd", "efgh"]
+        >>> references_list = [["abcd", "ABCD"], ["efGH"]]
+        >>> result = char_f1.evaluate(lm_outputs, references_list)
+        >>> print(result)
+        MetricResult(summary={'char_f1': 0.75}, instance_details=[{'char_f1': 1.0}, {'char_f1': 0.5}])
     """
 
     def __init__(self, normalizer: Normalizer | None = None) -> None:

@@ -21,6 +21,27 @@ class LLMScore(Metric):
         language_model: An instance of `LanguageModel` to evaluate the output of the model.
         prompt_template: An instance of `PromptTemplate` to embed the input for the evaluator.
         batch_size: The batch size for the evaluator.
+
+    Examples:
+        >>> from flexeval import LLMScore, OpenAIChatAPI, Jinja2PromptTemplate
+        >>> language_model = OpenAIChatAPI(model_name="gpt-3.5-turbo")
+        >>> template = "Evaluate the quality of this text.\\n`{{ lm_output }}`\\nPut the score at the end like [[5]]."
+        >>> prompt_template = Jinja2PromptTemplate(template)
+        >>> llm_score = LLMScore(language_model, prompt_template)
+        >>> lm_outputs = ["Hello, world!", "Good morning!"]
+        >>> result = llm_score.evaluate(lm_outputs)
+        >>> print(result)
+        MetricResult(
+            summary={'llm_score': 3.0},
+            instance_details=[
+                {
+                    'llm_score': 2,
+                    'llm_score_output': 'This text is very simple,... Therefore, its quality is average. [[2]]'},
+                {
+                    'llm_score': 4,
+                    'llm_score_output': '... Overall, the quality of the text is good but basic. [[4]]'}
+            ]
+        )
     """
 
     def __init__(
@@ -120,6 +141,28 @@ class ChatLLMScore(Metric):
         prompt_template: An instance of `PromptTemplate` to embed the input for the evaluator.
         system_message: A system message to be prepended to the input for the evaluator.
         batch_size: The batch size for the evaluator.
+
+    Examples:
+        >>> from flexeval import ChatLLMScore, OpenAIChatAPI, Jinja2PromptTemplate
+        >>> language_model = OpenAIChatAPI(model_name="gpt-3.5-turbo")
+        >>> template = "Evaluate the quality of this text.\\n`{{ lm_output }}`\\nPut the score at the end like [[5]]."
+        >>> prompt_template = Jinja2PromptTemplate(template)
+        >>> system_message = "This is the system message."
+        >>> llm_score = ChatLLMScore(language_model, prompt_template, system_message)
+        >>> lm_outputs = ["Hello, world!", "Good morning!"]
+        >>> result = llm_score.evaluate(lm_outputs)
+        >>> print(result)
+        MetricResult(
+            summary={'llm_score': 3.0},
+            instance_details=[
+                {
+                    'llm_score': 2,
+                    'llm_score_output': 'This text is very simple,... Therefore, its quality is average. [[2]]'},
+                {
+                    'llm_score': 4,
+                    'llm_score_output': '... Overall, the quality of the text is good but basic. [[4]]'}
+            ]
+        )
     """
 
     def __init__(

@@ -16,6 +16,18 @@ def get_longest_common_prefix(s1: str, s2: str) -> str:
 class CommonPrefixLength(Metric):
     """
     A metric that calculates the length of the longest common prefix between the model output and the reference.
+
+    Examples:
+        >>> from flexeval import CommonPrefixLength
+        >>> common_prefix_length = CommonPrefixLength()
+        >>> lm_outputs = ["ABCDEFG"]
+        >>> references_list = [["ABCdefg"]]
+        >>> result = common_prefix_length.evaluate(lm_outputs, references_list)
+        >>> print(result)
+        MetricResult(
+            summary={"average_common_prefix_length": 3.0, "longest_common_prefix_length": 3},
+            instance_details=[{"common_prefix_length": 3}],
+        )
     """
 
     def evaluate(

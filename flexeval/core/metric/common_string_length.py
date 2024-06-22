@@ -40,6 +40,18 @@ def get_longest_common_substring(s1: str, s2: str) -> str:
 class CommonStringLength(Metric):
     """
     A metric that calculates the length of the longest common substring between the model output and the reference.
+
+    Examples:
+        >>> from flexeval import CommonStringLength
+        >>> common_string_length = CommonStringLength()
+        >>> lm_outputs = ["aBCDEFG"]
+        >>> references_list = [["ABCDefg"]]
+        >>> result = common_string_length.evaluate(lm_outputs, references_list)
+        >>> print(result)
+        MetricResult(
+            summary={"average_common_string_length": 3.0, "longest_common_string_length": 3},
+            instance_details=[{"common_string_length": 3}],
+        )
     """
 
     def evaluate(
