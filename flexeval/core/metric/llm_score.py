@@ -69,7 +69,7 @@ class LLMScore(Metric):
                 "references": references,
                 **task_input,
             }
-            evaluator_input = self.prompt_template.embed_input(prompt_inputs)
+            evaluator_input = self.prompt_template.embed_inputs(prompt_inputs)
             evaluator_input_list.append(evaluator_input)
 
         with tqdm.tqdm(
@@ -169,13 +169,13 @@ class ChatLLMScore(Metric):
                 "references": references,
                 **task_input,
             }
-            evaluator_input = self.prompt_template.embed_input(prompt_inputs)
+            evaluator_input = self.prompt_template.embed_inputs(prompt_inputs)
             input_chat_messages = [{"role": "user", "content": evaluator_input}]
             if self.system_message:
                 if isinstance(self.system_message, str):
                     system_message = self.system_message
                 else:
-                    system_message = self.system_message.embed_input(prompt_inputs)
+                    system_message = self.system_message.embed_inputs(prompt_inputs)
                 input_chat_messages.insert(
                     0,
                     {"role": "system", "content": system_message},

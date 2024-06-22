@@ -11,7 +11,7 @@ class PromptTemplate(ABC):
     """
 
     @abstractmethod
-    def embed_input(self, input_dict: dict[str, Any]) -> str:
+    def embed_inputs(self, input_dict: dict[str, Any]) -> str:
         """
         Embeds the input into a prompt template.
         """

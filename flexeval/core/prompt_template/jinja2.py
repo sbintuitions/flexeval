@@ -18,7 +18,7 @@ class Jinja2PromptTemplate(PromptTemplate):
     def __init__(self, template: str) -> None:
         self.template = template
 
-    def embed_input(self, input_dict: dict[str, Any]) -> str:
+    def embed_inputs(self, input_dict: dict[str, Any]) -> str:
         return JINJA2_ENV.from_string(self.template).render(input_dict)
 
     def __repr__(self) -> str:

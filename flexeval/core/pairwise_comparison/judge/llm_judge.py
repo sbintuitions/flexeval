@@ -68,14 +68,14 @@ class ChatLLMPairwiseJudge(PairwiseJudge):
                 "model2_item": model2_item,
                 "references": references,
             }
-            self.prompt_template.embed_input(prompt_inputs)
-            judge_input = self.prompt_template.embed_input(prompt_inputs)
+            self.prompt_template.embed_inputs(prompt_inputs)
+            judge_input = self.prompt_template.embed_inputs(prompt_inputs)
             input_chat_messages = [{"role": "user", "content": judge_input}]
             if self.system_message:
                 if isinstance(self.system_message, str):
                     system_message = self.system_message
                 else:
-                    system_message = self.system_message.embed_input(prompt_inputs)
+                    system_message = self.system_message.embed_inputs(prompt_inputs)
                 input_chat_messages.insert(
                     0,
                     {"role": "system", "content": system_message},

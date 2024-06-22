@@ -6,4 +6,4 @@ def test_jinja2_template() -> None:
     dummy_dataset = DummyGenerationDataset()
 
     inputs = dummy_dataset[0].inputs
-    assert Jinja2PromptTemplate(template="{{ text }}").embed_input(inputs) == inputs["text"]
+    assert Jinja2PromptTemplate(template="{{ text }}").embed_inputs(inputs) == inputs["text"]
