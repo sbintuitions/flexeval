@@ -134,7 +134,7 @@ def test_evaluate_suite_cli() -> None:
 )
 def test_flexeval_lm_with_preset_config(eval_setup_args: list[str]) -> None:
     with tempfile.TemporaryDirectory() as f:
-        os.environ["PRESET_CONFIG_EVAL_DIR"] = str(Path(__file__).parent.parent / "dummy_modules" / "configs")
+        os.environ["PRESET_CONFIG_DIR"] = str(Path(__file__).parent.parent / "dummy_modules" / "configs")
 
         # fmt: off
         command = [
@@ -160,7 +160,7 @@ def test_if_flexeval_lm_with_preset_correctly_overridden(
     do_sample: bool,
     is_eval_setups: bool,
 ) -> None:
-    os.environ["PRESET_CONFIG_EVAL_DIR"] = str(Path(__file__).parent.parent / "dummy_modules" / "configs")
+    os.environ["PRESET_CONFIG_DIR"] = str(Path(__file__).parent.parent / "dummy_modules" / "configs")
 
     if is_eval_setups:
         eval_setup_arg = "eval_setups.gen"

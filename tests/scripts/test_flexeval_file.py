@@ -32,7 +32,7 @@ def test_if_outputs_from_flexval_lm_can_be_passed_to_flexeval_file(
     metrics_args: list[str],
     override_args: list[str],
 ) -> None:
-    os.environ["PRESET_CONFIG_METRIC_DIR"] = str(Path(__file__).parent.parent / "dummy_modules" / "configs")
+    os.environ["PRESET_CONFIG_DIR"] = str(Path(__file__).parent.parent / "dummy_modules" / "configs")
 
     with tempfile.TemporaryDirectory() as f:
         # prepare the output file from flexeval_lm

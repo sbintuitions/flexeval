@@ -6,9 +6,9 @@ from pathlib import Path
 
 
 def test_flexeval_presets_cli() -> None:
-    os.environ["PRESET_CONFIG_EVAL_DIR"] = str(Path(__file__).parent.parent / "dummy_modules" / "configs")
-    os.environ["PRESET_CONFIG_METRIC_DIR"] = str(Path(__file__).parent.parent / "dummy_modules" / "configs")
-    os.environ["PRESET_CONFIG_JUDGE_DIR"] = str(Path(__file__).parent.parent / "dummy_modules" / "configs")
+    os.environ["PRESET_CONFIG_DIR"] = str(Path(__file__).parent.parent / "dummy_modules" / "configs")
+    os.environ["PRESET_CONFIG_DIR"] = str(Path(__file__).parent.parent / "dummy_modules" / "configs")
+    os.environ["PRESET_CONFIG_DIR"] = str(Path(__file__).parent.parent / "dummy_modules" / "configs")
 
     for valid_command in [
         ["flexeval_presets"],

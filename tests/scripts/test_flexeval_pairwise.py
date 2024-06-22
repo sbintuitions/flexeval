@@ -30,7 +30,7 @@ def read_jsonl(path: str | PathLike[str]) -> list[dict[str, Any]]:
     ],
 )
 def test_flexeval_pairwise_cli(judge_args: list[str]) -> None:
-    os.environ["PRESET_CONFIG_JUDGE_DIR"] = str(Path(__file__).parent.parent / "dummy_modules" / "configs")
+    os.environ["PRESET_CONFIG_DIR"] = str(Path(__file__).parent.parent / "dummy_modules" / "configs")
 
     with tempfile.TemporaryDirectory() as f:
         dummy_model_data_path = str(Path(f) / "dummy_model_data.jsonl")

@@ -7,8 +7,8 @@ from pytest_mock import MockerFixture
 
 from flexeval.core.metric import Metric
 from flexeval.core.pairwise_comparison import PairwiseJudge
-from flexeval.scripts.common import instantiate_module_from_path
 from flexeval.scripts.flexeval_lm import EvalSetup
+from flexeval.utils import instantiate_from_config
 
 
 @pytest.mark.parametrize(
@@ -25,7 +25,7 @@ def test_if_eval_setup_config_is_valid(config_path: str, mocker: MockerFixture) 
     mocker.patch("datasets.load_dataset", return_value=mock_dataset)
     mocker.patch("datasets.Dataset.filter", return_value=mock_dataset)
 
-    eval_setup = instantiate_module_from_path(config_path, EvalSetup)
+    eval_setup = instantiate_from_config(config_path, EvalSetup)
     assert isinstance(eval_setup, EvalSetup)
 
 
@@ -37,7 +37,7 @@ def test_if_metric_config_is_valid(config_path: str) -> None:
     # we need to set OPENAI_API_KEY to instantiate classes that use OpenAI API
     os.environ["OPENAI_API_KEY"] = "this-is-a-dummy-key"
 
-    eval_setup = instantiate_module_from_path(config_path, Metric)
+    eval_setup = instantiate_from_config(config_path, Metric)
     assert isinstance(eval_setup, Metric)
 
 
@@ -49,7 +49,7 @@ def test_if_pairwise_judge_config_is_valid(config_path: str) -> None:
     # we need to set OPENAI_API_KEY to instantiate classes that use OpenAI API
     os.environ["OPENAI_API_KEY"] = "this-is-a-dummy-key"
 
-    eval_setup = instantiate_module_from_path(config_path, PairwiseJudge)
+    eval_setup = instantiate_from_config(config_path, PairwiseJudge)
     assert isinstance(eval_setup, PairwiseJudge)
 
 

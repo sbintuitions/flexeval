@@ -15,12 +15,12 @@ from jsonargparse import ActionConfigFile, ArgumentParser, Namespace
 from loguru import logger
 
 from flexeval import EvalSetup, LanguageModel
+from flexeval.utils.module_utils import ConfigNameResolver
 
 from .common import (
     CONFIG_FILE_NAME,
     METRIC_FILE_NAME,
     OUTPUTS_FILE_NAME,
-    ConfigNameResolver,
     Timer,
     get_env_metadata,
     override_jsonargparse_params,
@@ -99,12 +99,7 @@ def main() -> None:  # noqa: C901, PLR0912, PLR0915
         help="Metadata to save in config.json",
     )
 
-    config_preset_directory = os.environ.get(
-        "PRESET_CONFIG_EVAL_DIR",
-        Path(__file__).parent.parent / "preset_configs" / "EvalSetup",
-    )
-    config_name_resolver = ConfigNameResolver(config_preset_directory)
-
+    config_name_resolver = ConfigNameResolver()
     # Resolve the preset name to the path to the config file before parsing the arguments.
     for i, arg in enumerate(sys.argv[:-1]):
         if arg == "--eval_setup" or re.match(r"^--eval_setups\.[^.]+$", arg):
