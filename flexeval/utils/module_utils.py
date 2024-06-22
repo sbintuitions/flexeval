@@ -17,6 +17,16 @@ def instantiate_from_config(
     config_path: str,
     overrides: dict[str, Any] | None = None,
 ) -> Module:
+    """
+    Instantiates a module from a jsonnet config file.
+
+    Args:
+        config_path: The path to the jsonnet config file.
+        overrides: A dictionary of overrides to apply to the config.
+
+    Returns:
+        The instantiated module.
+    """
     resolved_config_path = ConfigNameResolver()(config_path)
 
     if resolved_config_path is None:
