@@ -305,11 +305,10 @@ def main() -> None:  # noqa: C901, PLR0912, PLR0915
             }
             try:
                 raise_error_if_results_already_exist(save_dir)
-
-                logger.info(f"Saving the config to {save_dir / CONFIG_FILE_NAME}")
                 save_dir.mkdir(parents=True, exist_ok=True)
 
                 save_json(task_config, save_dir / CONFIG_FILE_NAME)
+                logger.info(f"Saved the config to {save_dir / CONFIG_FILE_NAME}")
             except FileExistsError as e:
                 if not args.force:
                     logger.info(e)
@@ -331,12 +330,14 @@ def main() -> None:  # noqa: C901, PLR0912, PLR0915
 
             if save_dir is not None:
                 save_json(metrics, save_dir / METRIC_FILE_NAME)
+                logger.info(f"Saved the metrics to {save_dir / METRIC_FILE_NAME}")
                 if outputs is not None:
                     save_jsonl(outputs, save_dir / OUTPUTS_FILE_NAME)
+                    logger.info(f"Saved the outputs to {save_dir / OUTPUTS_FILE_NAME}")
 
         except Exception as e:  # noqa: BLE001
             stack_trace_str = "".join(traceback.format_exception(None, e, e.__traceback__))
-            logger.warning(
+            logger.error(
                 f"Error in evaluation:\n{e}\n{stack_trace_str}",
             )
 

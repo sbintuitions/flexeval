@@ -99,8 +99,8 @@ def main() -> None:
     args = parser.instantiate_classes(args)
 
     if args.save_dir is not None:
-        logger.info(f"Saving the config to {Path(args.save_dir) / CONFIG_FILE_NAME}")
         save_json(args_as_dict, Path(args.save_dir) / CONFIG_FILE_NAME)
+        logger.info(f"Saved the config to {Path(args.save_dir) / CONFIG_FILE_NAME}")
 
     model_items: dict[str, list[dict[str, Any]]] = {
         name: load_jsonl(path) for name, path in args.lm_output_paths.items()
@@ -124,11 +124,11 @@ def main() -> None:
 
     if args.save_dir is not None:
         Path(args.save_dir).mkdir(parents=True, exist_ok=True)
-        logger.info(f"Saving the model scores to {Path(args.save_dir) / METRIC_FILE_NAME}")
         save_json(model_scores_dict, Path(args.save_dir) / METRIC_FILE_NAME)
+        logger.info(f"Saved the metrics to {Path(args.save_dir) / METRIC_FILE_NAME}")
 
-        logger.info(f"Saving the outputs to {Path(args.save_dir) / OUTPUTS_FILE_NAME}")
         save_jsonl(match_info_list, Path(args.save_dir) / OUTPUTS_FILE_NAME)
+        logger.info(f"Saved the outputs to {Path(args.save_dir) / OUTPUTS_FILE_NAME}")
 
 
 if __name__ == "__main__":
