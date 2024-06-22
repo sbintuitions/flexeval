@@ -5,9 +5,7 @@ import os
 import re
 import sys
 import traceback
-from abc import ABC, abstractmethod
 from collections import defaultdict
-from dataclasses import dataclass
 from importlib.metadata import version
 from pathlib import Path
 from typing import Any, Dict
@@ -16,21 +14,7 @@ import _jsonnet
 from jsonargparse import ActionConfigFile, ArgumentParser, Namespace
 from loguru import logger
 
-from flexeval import (
-    ChatDataset,
-    FewShotGenerator,
-    GenerationDataset,
-    LanguageModel,
-    Metric,
-    MultipleChoiceDataset,
-    PromptTemplate,
-    TextDataset,
-    Tokenizer,
-    evaluate_chat_response,
-    evaluate_generation,
-    evaluate_multiple_choice,
-    evaluate_perplexity,
-)
+from flexeval import EvalSetup, LanguageModel
 
 from .common import (
     CONFIG_FILE_NAME,
@@ -44,118 +28,6 @@ from .common import (
     save_json,
     save_jsonl,
 )
-
-
-class EvalSetup(ABC):
-    """Abstract class to give evaluation functions a common interface."""
-
-    @abstractmethod
-    def evaluate_lm(
-        self,
-        language_model: LanguageModel,
-    ) -> tuple[dict[str, float], list[dict[str, Any]] | None]:
-        pass
-
-
-@dataclass
-class ChatResponse(EvalSetup):
-    eval_dataset: ChatDataset
-    gen_kwargs: dict[str, Any]
-    few_shot_generator: FewShotGenerator | None = None
-    metrics: list[Metric] | Metric | None = None
-    batch_size: int = 4
-    max_instances: int | None = None
-
-    def evaluate_lm(
-        self,
-        language_model: LanguageModel,
-    ) -> tuple[dict[str, float], list[dict[str, Any]] | None]:
-        metrics = self.metrics or []
-        if isinstance(metrics, Metric):
-            metrics = [metrics]
-
-        return evaluate_chat_response(
-            language_model=language_model,
-            gen_kwargs=self.gen_kwargs,
-            eval_dataset=self.eval_dataset,
-            metrics=metrics,
-            batch_size=self.batch_size,
-            max_instances=self.max_instances,
-            few_shot_generator=self.few_shot_generator,
-        )
-
-
-@dataclass
-class Generation(EvalSetup):
-    eval_dataset: GenerationDataset
-    prompt_template: PromptTemplate
-    gen_kwargs: dict[str, Any]
-    few_shot_generator: FewShotGenerator | None = None
-    metrics: list[Metric] | Metric | None = None
-    batch_size: int = 4
-    max_instances: int | None = None
-
-    def evaluate_lm(
-        self,
-        language_model: LanguageModel,
-    ) -> tuple[dict[str, float], list[dict[str, Any]] | None]:
-        metrics = self.metrics or []
-        if isinstance(metrics, Metric):
-            metrics = [metrics]
-
-        return evaluate_generation(
-            language_model=language_model,
-            gen_kwargs=self.gen_kwargs,
-            eval_dataset=self.eval_dataset,
-            prompt_template=self.prompt_template,
-            few_shot_generator=self.few_shot_generator,
-            metrics=metrics,
-            batch_size=self.batch_size,
-            max_instances=self.max_instances,
-        )
-
-
-@dataclass
-class MultipleChoice(EvalSetup):
-    eval_dataset: MultipleChoiceDataset
-    prompt_template: PromptTemplate
-    few_shot_generator: FewShotGenerator | None = None
-    batch_size: int = 4
-    max_instances: int | None = None
-
-    def evaluate_lm(
-        self,
-        language_model: LanguageModel,
-    ) -> tuple[dict[str, float], list[dict[str, Any]] | None]:
-        return evaluate_multiple_choice(
-            language_model=language_model,
-            eval_dataset=self.eval_dataset,
-            prompt_template=self.prompt_template,
-            few_shot_generator=self.few_shot_generator,
-            batch_size=self.batch_size,
-            max_instances=self.max_instances,
-        )
-
-
-@dataclass
-class Perplexity(EvalSetup):
-    eval_dataset: TextDataset
-    batch_size: int = 4
-    tokenizer: Tokenizer | None = None
-    max_instances: int | None = None
-
-    def evaluate_lm(
-        self,
-        language_model: LanguageModel,
-    ) -> tuple[dict[str, float], list[dict[str, Any]] | None]:
-        metrics = evaluate_perplexity(
-            language_model=language_model,
-            eval_dataset=self.eval_dataset,
-            batch_size=self.batch_size,
-            tokenizer=self.tokenizer,
-            max_instances=self.max_instances,
-        )
-        return metrics, None
 
 
 def as_dict(self: Namespace) -> dict[str, Any]:
