@@ -1,6 +1,6 @@
 import pytest
 
-from flexeval.core.language_model.vllm_model import LanguageModel, VllmModel
+from flexeval.core.language_model.vllm_model import VLLM, LanguageModel
 
 
 def is_vllm_enabled() -> bool:
@@ -14,8 +14,8 @@ def is_vllm_enabled() -> bool:
 
 
 @pytest.fixture(scope="module")
-def lm() -> VllmModel:
-    return VllmModel(
+def lm() -> VLLM:
+    return VLLM(
         model_name="sbintuitions/tiny-lm",
         model_kwargs={"seed": 42, "gpu_memory_utilization": 0.1, "enforce_eager": True},
         tokenizer_kwargs={"use_fast": False},
@@ -68,9 +68,9 @@ def test_batch_generate_chat_response(lm: LanguageModel) -> None:
 
 
 @pytest.fixture(scope="module")
-def chat_lm_with_custom_chat_template() -> VllmModel:
+def chat_lm_with_custom_chat_template() -> VLLM:
     """
-    We initialize a VllmModel in a fixture.
+    We initialize VLLM in a fixture.
     Otherwise, tests will fail with the following error:
     ```
     AssertionError: Error in memory profiling.
@@ -81,7 +81,7 @@ def chat_lm_with_custom_chat_template() -> VllmModel:
     # To verify that the template specified in `custom_chat_template` is passed to `tokenizer.apply_chat_template()`,
     # prepare a template where the model is expected to output "0 0..." for any input.
     custom_chat_template = "0 0 0 0 0 0 0 0 0 0 0"
-    return VllmModel(
+    return VLLM(
         model_name="sbintuitions/tiny-lm-chat",
         model_kwargs={"seed": 42, "gpu_memory_utilization": 0.1, "enforce_eager": True},
         tokenizer_kwargs={"use_fast": False},
@@ -90,7 +90,7 @@ def chat_lm_with_custom_chat_template() -> VllmModel:
 
 
 @pytest.mark.skipif(not is_vllm_enabled(), reason="vllm library is not installed")
-def test_if_custom_chat_template_is_given(chat_lm_with_custom_chat_template: VllmModel) -> None:
+def test_if_custom_chat_template_is_given(chat_lm_with_custom_chat_template: VLLM) -> None:
     responses = chat_lm_with_custom_chat_template.batch_generate_chat_response(
         [[{"role": "user", "content": "こんにちは。"}]],
         max_new_tokens=10,
@@ -100,8 +100,8 @@ def test_if_custom_chat_template_is_given(chat_lm_with_custom_chat_template: Vll
 
 
 @pytest.fixture(scope="module")
-def chat_lm() -> VllmModel:
-    return VllmModel(
+def chat_lm() -> VLLM:
+    return VLLM(
         model_name="sbintuitions/tiny-lm-chat",
         model_kwargs={"seed": 42, "gpu_memory_utilization": 0.1, "enforce_eager": True},
         tokenizer_kwargs={"use_fast": False},
@@ -109,7 +109,7 @@ def chat_lm() -> VllmModel:
 
 
 @pytest.mark.skipif(not is_vllm_enabled(), reason="vllm library is not installed")
-def test_if_stop_sequences_work_as_expected(chat_lm: VllmModel) -> None:
+def test_if_stop_sequences_work_as_expected(chat_lm: VLLM) -> None:
     test_inputs = [[{"role": "user", "content": "こんにちは"}]]
     eos_token = "</s>"  # noqa: S105
 

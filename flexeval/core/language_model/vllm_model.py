@@ -8,7 +8,7 @@ from .base import LanguageModel
 from .hf_lm import normalize_stop_sequences
 
 
-class VllmModel(LanguageModel):
+class VLLM(LanguageModel):
     """
     LanguageModel implementation using VLLM.
 
