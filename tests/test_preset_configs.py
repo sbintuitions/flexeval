@@ -61,3 +61,12 @@ def test_if_config_file_has_comment_at_the_top(config_path: str) -> None:
     with open(config_path) as f:
         first_line = f.readline()
         assert first_line.startswith("/*")
+
+
+def test_if_there_is_no_duplicates_in_preset_configs() -> None:
+    preset_config_files = list(Path("flexeval/preset_configs").rglob("*.jsonnet"))
+
+    seen_file_names = set()
+    for file in preset_config_files:
+        assert file.name not in seen_file_names, f"{file.name} is duplicated."
+        seen_file_names.add(file.name)
