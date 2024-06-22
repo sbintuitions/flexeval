@@ -50,11 +50,13 @@ class LLMScore(Metric):
     def evaluate(
         self,
         lm_outputs: list[str],
-        references_list: list[list[str]],
+        references_list: list[list[str]] | None = None,
         task_inputs_list: list[dict[str, str]] | None = None,
     ) -> MetricResult:
         if task_inputs_list is None:
             task_inputs_list = [{} for _ in lm_outputs]
+        if references_list is None:
+            references_list = [[] for _ in lm_outputs]
 
         evaluator_input_list: list[str] = []
         for lm_output, task_input, references in zip(
@@ -144,11 +146,13 @@ class ChatLLMScore(Metric):
     def evaluate(
         self,
         lm_outputs: list[str],
-        references_list: list[list[str]],
+        references_list: list[list[str]] | None = None,
         task_inputs_list: list[dict[str, str]] | None = None,
     ) -> MetricResult:
         if task_inputs_list is None:
             task_inputs_list = [{} for _ in lm_outputs]
+        if references_list is None:
+            references_list = [[] for _ in lm_outputs]
         evaluator_input_list: list[list[dict[str, str]]] = []
         for lm_output, task_input, references in zip(
             lm_outputs,

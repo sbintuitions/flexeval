@@ -9,7 +9,7 @@ class OutputLengthStats(Metric):
     def evaluate(
         self,
         lm_outputs: list[str],
-        references_list: list[list[str]],
+        references_list: list[list[str]] | None = None,
         task_inputs_list: list[dict[str, str]] | None = None,
     ) -> MetricResult:
         output_length_list = [len(output) for output in lm_outputs]
