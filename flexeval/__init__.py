@@ -1,4 +1,5 @@
 from .core.chat_dataset import *
+from .core.eval_setups import ChatResponse, EvalSetup, Generation, MultipleChoice, Perplexity
 from .core.evaluate_chat_response import evaluate_chat_response
 from .core.evaluate_from_file import evaluate_from_file
 from .core.evaluate_generation import evaluate_generation
@@ -15,3 +16,4 @@ from .core.multiple_choice_dataset import *
 from .core.pairwise_comparison import *
 from .core.prompt_template import *
 from .core.text_dataset import *
+from .utils import *
