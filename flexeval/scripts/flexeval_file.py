@@ -112,8 +112,8 @@ def main() -> None:  # noqa: C901
     args = parser.instantiate_classes(args)
 
     if args.save_dir is not None:
-        logger.info(f"Saving the config to {Path(args.save_dir) / CONFIG_FILE_NAME}")
         save_json(args_as_dict, Path(args.save_dir) / CONFIG_FILE_NAME)
+        logger.info(f"Saved the config to {Path(args.save_dir) / CONFIG_FILE_NAME}")
 
     with Timer() as timer:
         metrics_summary_dict, instance_metrics_list = evaluate_from_file(
@@ -125,10 +125,9 @@ def main() -> None:  # noqa: C901
     metrics_summary_dict["elapsed_time"] = timer.time
 
     if args.save_dir is not None:
-        logger.info(f"Saving the metrics to {Path(args.save_dir) / METRIC_FILE_NAME}")
         save_json(metrics_summary_dict, Path(args.save_dir) / METRIC_FILE_NAME)
+        logger.info(f"Saved the metrics to {Path(args.save_dir) / METRIC_FILE_NAME}")
 
-        logger.info(f"Saving the outputs to {Path(args.save_dir) / OUTPUTS_FILE_NAME}")
         with open(args.eval_file) as f:
             save_jsonl(
                 (
@@ -137,6 +136,7 @@ def main() -> None:  # noqa: C901
                 ),
                 Path(args.save_dir) / OUTPUTS_FILE_NAME,
             )
+        logger.info(f"Saved the outputs to {Path(args.save_dir) / OUTPUTS_FILE_NAME}")
 
 
 if __name__ == "__main__":
