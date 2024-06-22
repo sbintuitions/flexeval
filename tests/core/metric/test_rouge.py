@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from flexeval.core.metric import Rouge
+from flexeval.core.metric import ROUGE
 from flexeval.core.metric.tokenizer import WhitespaceTokenizer
 
 
@@ -15,7 +15,7 @@ from flexeval.core.metric.tokenizer import WhitespaceTokenizer
     ],
 )
 def test_rouge(lm_outputs: list[str], expected_outputs: list[list[str]], score: float) -> None:
-    rouge = Rouge(tokenizer=WhitespaceTokenizer())
+    rouge = ROUGE(tokenizer=WhitespaceTokenizer())
     metric_result = rouge.evaluate(lm_outputs=lm_outputs, references_list=expected_outputs)
 
     for key in ["rouge1", "rouge2", "rougeL"]:
