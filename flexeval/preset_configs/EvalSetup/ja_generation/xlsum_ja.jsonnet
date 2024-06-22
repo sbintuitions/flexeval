@@ -45,7 +45,7 @@ local dataset_base_args = {
     },
     metrics: [
       {
-        class_path: 'Rouge',
+        class_path: 'ROUGE',
         init_args: { tokenizer: { class_path: 'SacreBleuTokenizer', init_args: { name: 'ja-mecab' } } },
       },
     ],

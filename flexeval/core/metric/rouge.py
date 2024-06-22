@@ -6,7 +6,7 @@ from .base import Metric, MetricResult
 from .tokenizer import Tokenizer
 
 
-class Rouge(Metric):
+class ROUGE(Metric):
     """An implementation of [ROUGE](https://aclanthology.org/W04-1013/).
 
     The calculation is based on the [rouge](https://github.com/pltrdy/rouge) library.
