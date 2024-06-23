@@ -51,7 +51,8 @@ class LocalRecorder(ResultRecorder):
             self._check_output_dir_exists(self.output_dir, [METRIC_FILE_NAME, OUTPUTS_FILE_NAME, CONFIG_FILE_NAME])
 
     @staticmethod
-    def _check_output_dir_exists(output_dir: Path, checked_files: list[str]) -> None:
+    def _check_output_dir_exists(output_dir: str | PathLike[str], checked_files: list[str]) -> None:
+        output_dir = Path(output_dir)
         for file_name in checked_files:
             if (output_dir / file_name).exists():
                 msg = (
