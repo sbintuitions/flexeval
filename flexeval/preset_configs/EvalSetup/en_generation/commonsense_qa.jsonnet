@@ -10,7 +10,7 @@ References:
 local dataset_base_args = {
   class_path: 'HFGenerationDataset',
   init_args: {
-    dataset_name: 'tau/commonsense_qa',
+    path: 'tau/commonsense_qa',
     references_template: '{% set answer_index = choices.label.index(answerKey) %}["{{ choices.text[answer_index] }}"]',
   },
 };

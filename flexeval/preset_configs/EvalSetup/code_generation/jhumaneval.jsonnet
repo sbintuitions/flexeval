@@ -12,7 +12,7 @@ References:
     eval_dataset: {
       class_path: 'HFGenerationDataset',
       init_args: {
-        dataset_name: 'kogi-jwu/jhumaneval',
+        path: 'kogi-jwu/jhumaneval',
         split: 'test',
         references_template: '{{ test }}\n\ncheck({{ entry_point }})\n',
       },

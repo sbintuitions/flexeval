@@ -12,7 +12,7 @@ References:
     eval_dataset: {
       class_path: 'HFGenerationDataset',
       init_args: {
-        dataset_name: 'openai_humaneval',
+        path: 'openai_humaneval',
         split: 'test',
         references_template: '{{ test }}\n\ncheck({{ entry_point }})\n',
       },

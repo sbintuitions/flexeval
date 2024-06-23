@@ -10,7 +10,7 @@ References:
 local dataset_base_args = {
   class_path: 'HFGenerationDataset',
   init_args: {
-    dataset_name: 'gsm8k',
+    path: 'gsm8k',
     subset: 'main',
     references_template: '{{ answer | regex_replace("<<.*?>>", "") }}',
   },

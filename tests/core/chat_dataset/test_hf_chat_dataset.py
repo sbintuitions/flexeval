@@ -4,7 +4,7 @@ from flexeval.core.chat_dataset import HFChatDataset
 def test_hf_dataset() -> None:
     system_message = "You are a quiz player."
     chat_dataset = HFChatDataset(
-        dataset_name="llm-book/aio",
+        path="llm-book/aio",
         split="validation[:10]",
         input_template="{{question}}",
         references_template="{{ answers }}",

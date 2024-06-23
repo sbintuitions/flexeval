@@ -3,7 +3,7 @@ from flexeval.core.generation_dataset import HFGenerationDataset
 
 def test_hf_dataset() -> None:
     dataset = HFGenerationDataset(
-        dataset_name="llm-book/aio",
+        path="llm-book/aio",
         split="validation",
         input_templates={"additional_input": "追加の問題：{{question}}"},
         references_template="{{ answers }}",

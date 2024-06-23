@@ -10,7 +10,7 @@ References:
 */
 local dataset = {
   class_path: 'SacreBleuChatDataset',
-  init_args: { dataset_name: 'wmt20', langpair: 'en-ja' },
+  init_args: { name: 'wmt20', langpair: 'en-ja' },
 };
 
 {

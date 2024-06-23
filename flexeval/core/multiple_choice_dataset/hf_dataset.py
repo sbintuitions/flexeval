@@ -13,7 +13,7 @@ class HFMultipleChoiceDataset(MultipleChoiceDataset):
     A dataset for multiple-choice tasks using Hugging Face datasets.
 
     Args:
-        dataset_name: The name or path of the huggingface dataset.
+        path: The name or path of the huggingface dataset.
         split: The split of the dataset to use.
         choices_templates: A list of Jinja2 templates for the choices.
         answer_index_template: A Jinja2 template for the index of the correct answer.
@@ -26,7 +26,7 @@ class HFMultipleChoiceDataset(MultipleChoiceDataset):
 
     def __init__(
         self,
-        dataset_name: str,
+        path: str,
         split: str,
         choices_templates: list[str],
         answer_index_template: str,
@@ -36,7 +36,7 @@ class HFMultipleChoiceDataset(MultipleChoiceDataset):
         whitespace_before_choices: bool = False,
     ) -> None:
         self._dataset = datasets.load_dataset(
-            dataset_name,
+            path,
             split=split,
             name=subset,
             data_files=data_files,

@@ -11,7 +11,7 @@ References:
 local dataset_base_args = {
   class_path: 'HFChatDataset',
   init_args: {
-    dataset_name: 'llm-book/aio',
+    path: 'llm-book/aio',
     input_template: '{{ question }}',
     references_template: '{{ answers }}',
   },

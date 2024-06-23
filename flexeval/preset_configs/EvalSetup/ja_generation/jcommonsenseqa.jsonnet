@@ -13,7 +13,7 @@ References:
 local dataset_base_args = {
   class_path: 'HFGenerationDataset',
   init_args: {
-    dataset_name: 'llm-book/JGLUE',
+    path: 'llm-book/JGLUE',
     subset: 'JCommonsenseQA',
     references_template: '{% set choices = [choice0, choice1, choice2, choice3, choice4] %}{{ choices[label] }}',
   },

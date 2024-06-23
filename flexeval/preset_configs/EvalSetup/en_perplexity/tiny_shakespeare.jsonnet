@@ -13,7 +13,7 @@ References:
     eval_dataset: {
       class_path: 'HFTextDataset',
       init_args: {
-        dataset_name: 'karpathy/tiny_shakespeare',
+        path: 'karpathy/tiny_shakespeare',
         split: 'test',
         field: 'text',
       },

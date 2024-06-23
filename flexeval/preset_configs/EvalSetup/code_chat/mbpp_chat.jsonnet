@@ -10,7 +10,7 @@ References:
 local dataset_base_args = {
   class_path: 'HFChatDataset',
   init_args: {
-    dataset_name: 'mbpp',
+    path: 'mbpp',
     subset: 'sanitized',
     input_template: |||
       Generate a Python function that satisfies the following question and test cases.

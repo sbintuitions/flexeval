@@ -12,7 +12,7 @@ References:
 local dataset_base_args = {
   class_path: 'HFGenerationDataset',
   init_args: {
-    dataset_name: 'llm-book/JGLUE',
+    path: 'llm-book/JGLUE',
     subset: 'JNLI',
     references_template: "{{ ['\"含意\"', '\"矛盾\"', '\"中立\"'][label] }}",
   },
