@@ -7,7 +7,7 @@ References:
 * [Can a Suit of Armor Conduct Electricity? A New Dataset for Open Book Question Answering](https://aclanthology.org/D18-1260/)
 */
 local dataset_base_args = {
-  dataset_name: 'allenai/openbookqa',
+  path: 'allenai/openbookqa',
   subset: 'main',
   choices_templates: ['{{ choices.text[0] }}', '{{ choices.text[1] }}', '{{ choices.text[2] }}', '{{ choices.text[3] }}'],
   answer_index_template: '{% if answerKey == "A" %}0{% elif answerKey == "B" %}1{% elif answerKey == "C" %}2{% elif answerKey == "D" %}3{% endif %}',

@@ -5,7 +5,7 @@ from flexeval.core.generation_dataset import SacreBleuDataset
 
 def test_sacrebleu_dataset() -> None:
     dataset = SacreBleuDataset(
-        dataset_name="wmt20",
+        name="wmt20",
         langpair="en-ja",
     )
 

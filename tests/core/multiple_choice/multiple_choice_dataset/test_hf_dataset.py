@@ -3,7 +3,7 @@ from flexeval.core.multiple_choice_dataset.hf_dataset import HFMultipleChoiceDat
 
 def test_hf_multiple_choice_dataset() -> None:
     dataset = HFMultipleChoiceDataset(
-        dataset_name="llm-book/JGLUE",
+        path="llm-book/JGLUE",
         subset="JCommonsenseQA",
         split="validation",
         input_templates={"test_additional_input": "additional: {{ question }}"},

@@ -8,10 +8,10 @@ class SacreBleuChatDataset(ChatDataset):
     The available datasets are defined in sacrebleu.DATASETS.
     """
 
-    def __init__(self, dataset_name: str, langpair: str) -> None:
-        self._source_list: list[str] = list(sacrebleu.DATASETS[dataset_name].source(langpair))
+    def __init__(self, name: str, langpair: str) -> None:
+        self._source_list: list[str] = list(sacrebleu.DATASETS[name].source(langpair))
         self._references_list: list[list[str]] = [
-            [r.strip() for r in refs] for refs in sacrebleu.DATASETS[dataset_name].references(langpair)
+            [r.strip() for r in refs] for refs in sacrebleu.DATASETS[name].references(langpair)
         ]
 
         if len(self._source_list) != len(self._references_list):

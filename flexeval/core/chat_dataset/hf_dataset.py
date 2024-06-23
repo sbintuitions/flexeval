@@ -16,7 +16,7 @@ class HFChatDataset(ChatDataset):
     This class only supports single-turn chat.
 
     Args:
-        dataset_name: The name or path of the huggingface dataset.
+        path: The name or path of the huggingface dataset.
         split: The split of the dataset to use.
         input_template: A Jinja2 template for the user input.
         references_template: A Jinja2 template for the references.
@@ -26,7 +26,7 @@ class HFChatDataset(ChatDataset):
 
     def __init__(
         self,
-        dataset_name: str,
+        path: str,
         split: str,
         input_template: str,
         references_template: str | None = None,
@@ -35,7 +35,7 @@ class HFChatDataset(ChatDataset):
         extra_info_templates: dict[str, str] | None = None,
         system_message_template: str | None = None,
     ) -> None:
-        self._dataset = datasets.load_dataset(dataset_name, name=subset, split=split)
+        self._dataset = datasets.load_dataset(path, name=subset, split=split)
 
         self._input_template: Template = JINJA2_ENV.from_string(input_template)
 

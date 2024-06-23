@@ -12,7 +12,7 @@ References:
 local dataset_base_args = {
   class_path: 'HFGenerationDataset',
   init_args: {
-    dataset_name: 'llm-book/JGLUE',
+    path: 'llm-book/JGLUE',
     subset: 'JSQuAD',
     references_template: '{{ answers.text }}',
   },

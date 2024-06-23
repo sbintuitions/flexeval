@@ -6,7 +6,7 @@ from flexeval.core.chat_dataset import ChatbotBench, ChatInstance
 
 
 @pytest.mark.parametrize(
-    ("dataset_name", "ref_name"),
+    ("path", "ref_name"),
     [
         ("mt-en", "mt-en-ref-gpt4"),
         ("mt-ja", "mt-ja-ref-gpt4"),
@@ -15,10 +15,10 @@ from flexeval.core.chat_dataset import ChatbotBench, ChatInstance
         ("vicuna-ja", "vicuna-ja-ref-gpt4"),
     ],
 )
-def test_chatbot_bench(dataset_name: str, ref_name: str | None) -> None:
+def test_chatbot_bench(path: str, ref_name: str | None) -> None:
     dataset = ChatbotBench(
-        file_path_or_name=dataset_name,
-        ref_file_path_or_name=ref_name,
+        path_or_name=path,
+        ref_path_or_name=ref_name,
         need_ref_categories=None,
     )
 

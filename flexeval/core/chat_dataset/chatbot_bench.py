@@ -7,15 +7,15 @@ from pathlib import Path
 from .base import ChatDataset, ChatInstance
 
 
-def resolve_file_path_or_name(file_path_or_name: str | PathLike[str]) -> Path:
-    if not Path(file_path_or_name).exists():
-        curated_dataset_path = Path(__file__).parent / "chatbot_bench_datasets" / f"{file_path_or_name}.jsonl"
+def resolve_path_or_name(path_or_name: str | PathLike[str]) -> Path:
+    if not Path(path_or_name).exists():
+        curated_dataset_path = Path(__file__).parent / "chatbot_bench_datasets" / f"{path_or_name}.jsonl"
         if not curated_dataset_path.exists():
-            msg = f"Unknown dataset path or name: {file_path_or_name}"
+            msg = f"Unknown dataset path or name: {path_or_name}"
             raise ValueError(msg)
         file_path = curated_dataset_path
     else:
-        file_path = file_path_or_name
+        file_path = path_or_name
     return file_path
 
 
@@ -36,11 +36,11 @@ class ChatbotBench(ChatDataset):
 
     def __init__(
         self,
-        file_path_or_name: str,
-        ref_file_path_or_name: str | None = None,
+        path_or_name: str,
+        ref_path_or_name: str | None = None,
         need_ref_categories: list[str] | None = None,
     ) -> None:
-        file_path = resolve_file_path_or_name(file_path_or_name)
+        file_path = resolve_path_or_name(path_or_name)
 
         self._id_to_question_id: list[int | str] = []
         self._id_to_category: list[str] = []
@@ -53,8 +53,8 @@ class ChatbotBench(ChatDataset):
                 self._messages_dict[item["question_id"]] = [{"role": "user", "content": turn} for turn in item["turns"]]
 
         self._references_dict: dict[int | str, list[str]] = {}
-        if ref_file_path_or_name is not None:
-            ref_file_path = resolve_file_path_or_name(ref_file_path_or_name)
+        if ref_path_or_name is not None:
+            ref_file_path = resolve_path_or_name(ref_path_or_name)
             with open(ref_file_path) as f:
                 for line in f:
                     item = json.loads(line)

@@ -9,7 +9,7 @@ References:
 local dataset_base_args = {
   class_path: 'HFGenerationDataset',
   init_args: {
-    dataset_name: 'mbpp',
+    path: 'mbpp',
     subset: 'sanitized',
     references_template: '{{ test_list }}',
   },

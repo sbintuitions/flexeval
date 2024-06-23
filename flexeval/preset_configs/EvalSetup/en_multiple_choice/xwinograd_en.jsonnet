@@ -13,7 +13,7 @@ References:
     eval_dataset: {
       class_path: 'HFMultipleChoiceDataset',
       init_args: {
-        dataset_name: 'Muennighoff/xwinograd',
+        path: 'Muennighoff/xwinograd',
         subset: 'en',
         split: 'test',
         choices_templates: [

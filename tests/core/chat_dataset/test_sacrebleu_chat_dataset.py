@@ -5,7 +5,7 @@ from flexeval.core.chat_dataset import SacreBleuChatDataset
 
 def test_sacrebleu_dataset() -> None:
     dataset = SacreBleuChatDataset(
-        dataset_name="wmt20",
+        name="wmt20",
         langpair="en-ja",
     )
 

@@ -11,7 +11,7 @@ References:
 local dataset_base_args = {
   class_path: 'HFChatDataset',
   init_args: {
-    dataset_name: 'juletxara/mgsm',
+    path: 'juletxara/mgsm',
     subset: 'ja',
     references_template: '{{ answer }}',
   },

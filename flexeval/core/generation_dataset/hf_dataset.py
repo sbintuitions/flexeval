@@ -15,7 +15,7 @@ class HFGenerationDataset(GenerationDataset):
     A dataset for generation tasks using Hugging Face datasets.
 
     Args:
-        dataset_name: The name or path of the huggingface dataset.
+        path: The name or path of the huggingface dataset.
         split: The split of the dataset to use.
         references_template: A Jinja2 template for the references.
         input_templates: A dictionary of Jinja2 templates for the inputs.
@@ -25,14 +25,14 @@ class HFGenerationDataset(GenerationDataset):
 
     def __init__(
         self,
-        dataset_name: str,
+        path: str,
         split: str,
         references_template: str,
         input_templates: dict[str, str] | None = None,
         subset: str | None = None,
         max_lengths: dict[str, int] | None = None,
     ) -> None:
-        self._dataset = datasets.load_dataset(dataset_name, name=subset, split=split)
+        self._dataset = datasets.load_dataset(path, name=subset, split=split)
 
         max_lengths = max_lengths or {}
         for key, max_length in max_lengths.items():

@@ -8,7 +8,7 @@ References:
 * [CommonsenseQA: A Question Answering Challenge Targeting Commonsense Knowledge](https://aclanthology.org/N19-1421/)
 */
 local dataset_base_args = {
-  dataset_name: 'tau/commonsense_qa',
+  path: 'tau/commonsense_qa',
   choices_templates: ['{{ choices.text[0] }}', '{{ choices.text[1] }}', '{{ choices.text[2] }}', '{{ choices.text[3] }}', '{{ choices.text[4] }}'],
   answer_index_template: '{% if answerKey == "A" %}0{% elif answerKey == "B" %}1{% elif answerKey == "C" %}2{% elif answerKey == "D" %}3{% elif answerKey == "E" %}4{% endif %}',
   whitespace_before_choices: true,

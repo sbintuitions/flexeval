@@ -11,8 +11,8 @@ References:
     eval_dataset: {
       class_path: 'ChatbotBench',
       init_args: {
-        file_path_or_name: 'vicuna-ja',
-        ref_file_path_or_name: 'vicuna-ja-ref-gpt4',
+        path_or_name: 'vicuna-ja',
+        ref_path_or_name: 'vicuna-ja-ref-gpt4',
       },
     },
     metrics: [

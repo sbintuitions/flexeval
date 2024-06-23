@@ -9,7 +9,7 @@ References:
 local dataset_base_args = {
   class_path: 'HFGenerationDataset',
   init_args: {
-    dataset_name: 'Muennighoff/babi',
+    path: 'Muennighoff/babi',
     references_template: '["{{ answer }}"]',
   },
 };

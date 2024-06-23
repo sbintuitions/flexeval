@@ -11,7 +11,7 @@ References:
 * [JGLUE: 日本語言語理解ベンチマーク](https://www.anlp.jp/proceedings/annual_meeting/2022/pdf_dir/E8-4.pdf)
 */
 local dataset_base_args = {
-  dataset_name: 'llm-book/JGLUE',
+  path: 'llm-book/JGLUE',
   subset: 'JCommonsenseQA',
   choices_templates: ['{{ choice0 }}', '{{ choice1 }}', '{{ choice2 }}', '{{ choice3 }}', '{{ choice4 }}'],
   answer_index_template: '{{ label }}',

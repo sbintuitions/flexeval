@@ -12,7 +12,7 @@ References:
     eval_dataset: {
       class_path: 'ChatbotBench',
       init_args: {
-        file_path_or_name: 'rakuda-v2-ja',
+        path_or_name: 'rakuda-v2-ja',
       },
     },
     metrics: [

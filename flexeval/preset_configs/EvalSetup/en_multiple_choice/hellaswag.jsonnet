@@ -9,7 +9,7 @@ References:
 */
 
 local dataset_base_args = {
-  dataset_name: 'Rowan/hellaswag',
+  path: 'Rowan/hellaswag',
   choices_templates: ['{{ endings[0] }}', '{{ endings[1] }}', '{{ endings[2] }}', '{{ endings[3] }}'],
   answer_index_template: '{{ label }}',
   whitespace_before_choices: true,

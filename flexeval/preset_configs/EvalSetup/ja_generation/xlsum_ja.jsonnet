@@ -11,7 +11,7 @@ References:
 local dataset_base_args = {
   class_path: 'HFGenerationDataset',
   init_args: {
-    dataset_name: 'csebuetnlp/xlsum',
+    path: 'csebuetnlp/xlsum',
     subset: 'japanese',
     references_template: '{{ summary }}',
   },
