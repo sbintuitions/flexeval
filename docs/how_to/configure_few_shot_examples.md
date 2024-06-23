@@ -12,7 +12,7 @@ From command line, the number of shots can be changed using the `--eval_setup.fe
 ```bash
 flexeval_lm \
   --language_model HuggingFaceLM \
-  --language_model.model_name "sbintuitions/tiny-lm" \
+  --language_model.model "sbintuitions/tiny-lm" \
   --eval_setup "commonsense_qa" \
   --eval_setup.few_shot_generator.num_shots 3
 ```
@@ -32,7 +32,7 @@ Finally, run the evaluation with the custom configuration file.
 ```bash
 flexeval_lm \
   --language_model HuggingFaceLM \
-  --language_model.model_name "sbintuitions/tiny-lm" \
+  --language_model.model "sbintuitions/tiny-lm" \
   --eval_setup "commonsense_qa_custom.jsonnet" 
 ```
 

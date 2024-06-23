@@ -40,7 +40,7 @@ pip install flexeval
 ```bash
 flexeval_lm \
   --language_model HuggingFaceLM \
-  --language_model.model_name "sbintuitions/tiny-lm" \
+  --language_model.model "sbintuitions/tiny-lm" \
   --eval_setup "aio" \
   --save_dir "results/aio"
 ```

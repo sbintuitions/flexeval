@@ -16,7 +16,7 @@ def is_vllm_enabled() -> bool:
 @pytest.fixture(scope="module")
 def lm() -> VLLM:
     return VLLM(
-        model_name="sbintuitions/tiny-lm",
+        model="sbintuitions/tiny-lm",
         model_kwargs={"seed": 42, "gpu_memory_utilization": 0.1, "enforce_eager": True},
         tokenizer_kwargs={"use_fast": False},
     )
@@ -82,7 +82,7 @@ def chat_lm_with_custom_chat_template() -> VLLM:
     # prepare a template where the model is expected to output "0 0..." for any input.
     custom_chat_template = "0 0 0 0 0 0 0 0 0 0 0"
     return VLLM(
-        model_name="sbintuitions/tiny-lm-chat",
+        model="sbintuitions/tiny-lm-chat",
         model_kwargs={"seed": 42, "gpu_memory_utilization": 0.1, "enforce_eager": True},
         tokenizer_kwargs={"use_fast": False},
         custom_chat_template=custom_chat_template,
@@ -102,7 +102,7 @@ def test_if_custom_chat_template_is_given(chat_lm_with_custom_chat_template: VLL
 @pytest.fixture(scope="module")
 def chat_lm() -> VLLM:
     return VLLM(
-        model_name="sbintuitions/tiny-lm-chat",
+        model="sbintuitions/tiny-lm-chat",
         model_kwargs={"seed": 42, "gpu_memory_utilization": 0.1, "enforce_eager": True},
         tokenizer_kwargs={"use_fast": False},
     )

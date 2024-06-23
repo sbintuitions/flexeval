@@ -22,7 +22,7 @@ def mock_jsonl_data_path() -> None:
 
 def test_hf_dataset(mock_jsonl_data_path: str | PathLike[str]) -> None:
     dataset = JsonlGenerationDataset(
-        file_path=mock_jsonl_data_path,
+        path=mock_jsonl_data_path,
         references_template="{{ output }}",
     )
 
@@ -39,7 +39,7 @@ def test_hf_dataset(mock_jsonl_data_path: str | PathLike[str]) -> None:
 
 def test_data_range(mock_jsonl_data_path: str | PathLike[str]) -> None:
     dataset = JsonlGenerationDataset(
-        file_path=mock_jsonl_data_path,
+        path=mock_jsonl_data_path,
         references_template="{{ output }}",
         data_range=(2, 5),
     )

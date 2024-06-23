@@ -11,13 +11,13 @@ class JsonlTextDataset(TextDataset):
     This class represents a dataset of text examples loaded from a JSONL file.
 
     Args:
-        file_path: The path to the JSONL file.
+        path: The path to the JSONL file.
         field: The field to extract from the JSONL file.
     """
 
-    def __init__(self, file_path: str | PathLike[str], field: str) -> None:
+    def __init__(self, path: str | PathLike[str], field: str) -> None:
         self._text_list: list[str] = []
-        with open(file_path) as f:
+        with open(path) as f:
             for line in f:
                 item = json.loads(line)
                 self._text_list.append(item[field])

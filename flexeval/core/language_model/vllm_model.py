@@ -13,9 +13,9 @@ class VLLM(LanguageModel):
     LanguageModel implementation using VLLM.
 
     Args:
-        model_name: The name of the model to use.
+        model: The name of the model to use.
         model_kwargs: Additional keyword arguments to pass to the model.
-        tokenizer_name: The name of the tokenizer to use. Defaults to the model_name.
+        tokenizer: The name of the tokenizer to use. Defaults to the model_name.
         tokenizer_kwargs: Keyword arguments for the tokenizer instantiation by `from_pretrained().
         add_special_tokens: Whether to add special tokens to the input.
             Note that whether BOS or EOS tokens are added depends on the tokenizer.
@@ -25,24 +25,24 @@ class VLLM(LanguageModel):
 
     def __init__(
         self,
-        model_name: str,
+        model: str,
         model_kwargs: dict[str, Any] | None = None,
-        tokenizer_name: str | None = None,
+        tokenizer: str | None = None,
         tokenizer_kwargs: dict[str, Any] | None = None,
         add_special_tokens: bool = False,
         custom_chat_template: str | None = None,
     ) -> None:
-        self.model_name = model_name
-        tokenizer_name = tokenizer_name if tokenizer_name else model_name
+        self.model_name = model
+        tokenizer = tokenizer if tokenizer else model
         tokenizer_kwargs = tokenizer_kwargs or {}
-        self.tokenizer: PreTrainedTokenizer = AutoTokenizer.from_pretrained(tokenizer_name, **tokenizer_kwargs)
+        self.tokenizer: PreTrainedTokenizer = AutoTokenizer.from_pretrained(tokenizer, **tokenizer_kwargs)
         self.custom_chat_template = custom_chat_template
         self.add_special_tokens = add_special_tokens
 
         from vllm import LLM
 
         model_kwargs = model_kwargs or {}
-        self.llm = LLM(model_name, trust_remote_code=True, **model_kwargs)
+        self.llm = LLM(model, trust_remote_code=True, **model_kwargs)
 
     def batch_complete_text(
         self,

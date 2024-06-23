@@ -33,7 +33,7 @@ The following minimal example evaluates the hugging face model `sbintuitions/tin
 ```bash
 flexeval_lm \
   --language_model HuggingFaceLM \
-  --language_model.model_name "sbintuitions/tiny-lm" \
+  --language_model.model "sbintuitions/tiny-lm" \
   --eval_setup "commonsense_qa" \
   --save_dir "results/commonsense_qa"
 ```

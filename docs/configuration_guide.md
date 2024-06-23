@@ -60,7 +60,7 @@ Then, pass your config file to `--eval_setup` argument.
 ```bash
 flexeval_lm \
   --language_model HuggingFaceLM \
-  --language_model.model_name "sbintuitions/tiny-lm" \
+  --language_model.model "sbintuitions/tiny-lm" \
   --eval_setup "my_config.jsonnet"
 ```
 
@@ -76,7 +76,7 @@ You can override the argument values by specifying them in the CLI.
 ```bash
 flexeval_lm \
   --language_model HuggingFaceLM \
-  --language_model.model_name "sbintuitions/tiny-lm" \
+  --language_model.model "sbintuitions/tiny-lm" \
   --eval_setup "commonsense_qa" \
   --eval_setup.batch_size 8
 ```
