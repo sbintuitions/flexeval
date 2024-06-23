@@ -11,18 +11,12 @@ import _jsonnet
 from jsonargparse import ActionConfigFile, ArgumentParser
 from loguru import logger
 
-from flexeval import ChatDataset, GenerationDataset, Metric, evaluate_from_file
+from flexeval import ChatDataset, GenerationDataset, LocalRecorder, Metric, ResultRecorder, evaluate_from_file
 from flexeval.utils.module_utils import ConfigNameResolver
 
 from .common import (
-    CONFIG_FILE_NAME,
-    METRIC_FILE_NAME,
-    OUTPUTS_FILE_NAME,
     Timer,
     get_env_metadata,
-    raise_error_if_results_already_exist,
-    save_json,
-    save_jsonl,
 )
 
 
@@ -93,9 +87,9 @@ def main() -> None:  # noqa: C901
     args = parser.parse_args()
     logger.info(args)
 
-    # check if the save_dir already exists here early to avoid time-consuming instantiation
-    if args.save_dir is not None and not args.force:
-        raise_error_if_results_already_exist(args.save_dir)
+    result_recorders: list[ResultRecorder] = []
+    if args.save_dir is not None:
+        result_recorders.append(LocalRecorder(args.save_dir, force=args.force))
 
     # normalize args.metrics to a list
     if not isinstance(args.metrics, list):
@@ -107,9 +101,8 @@ def main() -> None:  # noqa: C901
 
     args = parser.instantiate_classes(args)
 
-    if args.save_dir is not None:
-        save_json(args_as_dict, Path(args.save_dir) / CONFIG_FILE_NAME)
-        logger.info(f"Saved the config to {Path(args.save_dir) / CONFIG_FILE_NAME}")
+    for result_recorder in result_recorders:
+        result_recorder.record_config(args_as_dict)
 
     with Timer() as timer:
         metrics_summary_dict, instance_metrics_list = evaluate_from_file(
@@ -120,19 +113,14 @@ def main() -> None:  # noqa: C901
     logger.info(f"Elapsed time: {timer.time}")
     metrics_summary_dict["elapsed_time"] = timer.time
 
-    if args.save_dir is not None:
-        save_json(metrics_summary_dict, Path(args.save_dir) / METRIC_FILE_NAME)
-        logger.info(f"Saved the metrics to {Path(args.save_dir) / METRIC_FILE_NAME}")
+    model_outputs: list[dict[str, str]] = []
+    with open(args.eval_file) as f:
+        for line, instance_metrics in zip(f, instance_metrics_list):
+            model_outputs.append({**json.loads(line.strip()), **instance_metrics})
 
-        with open(args.eval_file) as f:
-            save_jsonl(
-                (
-                    {**json.loads(line.strip()), **instance_metrics}
-                    for line, instance_metrics in zip(f, instance_metrics_list)
-                ),
-                Path(args.save_dir) / OUTPUTS_FILE_NAME,
-            )
-        logger.info(f"Saved the outputs to {Path(args.save_dir) / OUTPUTS_FILE_NAME}")
+    for result_recorder in result_recorders:
+        result_recorder.record_metrics(metrics_summary_dict)
+        result_recorder.record_model_outputs(model_outputs)
 
 
 if __name__ == "__main__":

@@ -8,7 +8,7 @@ from pathlib import Path
 
 import pytest
 
-from flexeval.scripts.common import OUTPUTS_FILE_NAME
+from flexeval.core.result_recorder.local_recorder import OUTPUTS_FILE_NAME
 
 from .test_flexeval_lm import CHAT_RESPONSE_CMD, GENERATION_CMD, check_if_eval_results_are_correctly_saved
 

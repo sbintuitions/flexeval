@@ -11,7 +11,7 @@ from typing import Any
 
 import pytest
 
-from flexeval.scripts.common import CONFIG_FILE_NAME, METRIC_FILE_NAME, OUTPUTS_FILE_NAME
+from flexeval.core.result_recorder.local_recorder import CONFIG_FILE_NAME, METRIC_FILE_NAME, OUTPUTS_FILE_NAME
 
 # fmt: off
 CHAT_RESPONSE_CMD = [

@@ -30,9 +30,12 @@ openai = "^1.16.1"
 google-api-python-client = "^2.131.0"
 vllm = {version = "^0.4.0", optional = true }
 loguru = "^0.7.2"
+wandb = {version = "^0.17.2", optional = true}
 
 [tool.poetry.extras]
 vllm = ["vllm"]
+wandb = ["wandb"]
+
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.4.3"

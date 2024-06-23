@@ -14,19 +14,13 @@ import _jsonnet
 from jsonargparse import ActionConfigFile, ArgumentParser, Namespace
 from loguru import logger
 
-from flexeval import EvalSetup, LanguageModel
+from flexeval import EvalSetup, LanguageModel, LocalRecorder, ResultRecorder
 from flexeval.utils.module_utils import ConfigNameResolver
 
 from .common import (
-    CONFIG_FILE_NAME,
-    METRIC_FILE_NAME,
-    OUTPUTS_FILE_NAME,
     Timer,
     get_env_metadata,
     override_jsonargparse_params,
-    raise_error_if_results_already_exist,
-    save_json,
-    save_jsonl,
 )
 
 
@@ -84,6 +78,12 @@ def main() -> None:  # noqa: C901, PLR0912, PLR0915
         type=bool,
         default=False,
         help="Overwrite the save_dir if it exists",
+    )
+    parser.add_argument(
+        "--result_recorder",
+        type=ResultRecorder,
+        default=None,
+        help="Result recorder to save the evaluation results",
     )
     # Argument parsing arguments
     parser.add_argument(
@@ -146,48 +146,38 @@ def main() -> None:  # noqa: C901, PLR0912, PLR0915
     config_dict = as_dict(args)  # this will be used to save the config
     args = parser.instantiate_classes(args)
 
-    # normalize args.eval_setup or args.eval_setups into a list of tuples
-    eval_setups_and_metadata: list[EvalSetup, dict[str, Any], Path] = []
+    result_recorders: list[ResultRecorder] = []
+    if args.save_dir:
+        result_recorders.append(LocalRecorder(args.save_dir, force=args.force))
+    if args.result_recorder:
+        result_recorders.append(args.result_recorder)
+
+    # normalize args.eval_setup or args.eval_setups into a list of tuples,
+    # which contain (eval_setup, eval_setup_config, group)
+    eval_setups_and_metadata: list[EvalSetup, dict[str, Any], str | None] = []
     if args.eval_setup:
-        save_dir = Path(args.save_dir) if args.save_dir else None
-        eval_setups_and_metadata.append((args.eval_setup, config_dict["eval_setup"], save_dir))
+        eval_setups_and_metadata.append((args.eval_setup, config_dict["eval_setup"], None))
     if args.eval_setups:
-        for save_folder_name, eval_setup in args.eval_setups.items():
-            save_dir = Path(args.save_dir) / save_folder_name if args.save_dir else None
-            eval_setups_and_metadata.append((eval_setup, config_dict["eval_setups"][save_folder_name], save_dir))
+        for group, eval_setup in args.eval_setups.items():
+            eval_setups_and_metadata.append((eval_setup, config_dict["eval_setups"][group], group))
 
     # run evaluation
-    for eval_setup, eval_setup_config, save_dir in eval_setups_and_metadata:
+    for eval_setup, eval_setup_config, group in eval_setups_and_metadata:
         logger.info(f"Evaluating with the setup: {eval_setup_config}")
 
-        if save_dir:
-            task_config = {
-                "eval_setup": eval_setup_config,
-                "language_model": config_dict["language_model"],
-                "save_dir": str(save_dir),
-                "metadata": {
-                    **get_env_metadata(),
-                    **config_dict["metadata"],
-                },
-            }
-            try:
-                raise_error_if_results_already_exist(save_dir)
-                save_dir.mkdir(parents=True, exist_ok=True)
-
-                save_json(task_config, save_dir / CONFIG_FILE_NAME)
-                logger.info(f"Saved the config to {save_dir / CONFIG_FILE_NAME}")
-            except FileExistsError as e:
-                if not args.force:
-                    logger.info(e)
-                    logger.info(f"Skip evaluation:\n{e}")
-                    continue
-                logger.info(
-                    f"Overwriting the existing file: {save_dir / CONFIG_FILE_NAME}",
-                )
-
-                save_json(task_config, save_dir / CONFIG_FILE_NAME)
+        task_config = {
+            "eval_setup": eval_setup_config,
+            "language_model": config_dict["language_model"],
+            "metadata": {
+                **get_env_metadata(),
+                **config_dict["metadata"],
+            },
+        }
 
         try:
+            for result_recorder in result_recorders:
+                result_recorder.record_config(task_config, group)
+
             with Timer() as timer:
                 metrics, outputs = eval_setup.evaluate_lm(
                     language_model=args.language_model,
@@ -195,12 +185,10 @@ def main() -> None:  # noqa: C901, PLR0912, PLR0915
             metrics["elapsed_time"] = timer.time
             logger.info(f"Elapsed time: {timer.time:.2f} sec")
 
-            if save_dir is not None:
-                save_json(metrics, save_dir / METRIC_FILE_NAME)
-                logger.info(f"Saved the metrics to {save_dir / METRIC_FILE_NAME}")
+            for result_recorder in result_recorders:
+                result_recorder.record_metrics(metrics, group)
                 if outputs is not None:
-                    save_jsonl(outputs, save_dir / OUTPUTS_FILE_NAME)
-                    logger.info(f"Saved the outputs to {save_dir / OUTPUTS_FILE_NAME}")
+                    result_recorder.record_model_outputs(outputs, group)
 
         except Exception as e:  # noqa: BLE001
             stack_trace_str = "".join(traceback.format_exception(None, e, e.__traceback__))
