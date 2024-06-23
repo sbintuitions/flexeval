@@ -82,7 +82,7 @@ Or add it from the command line:
 ```bash
 flexeval_lm \
   --language_model HuggingFaceLM \
-  --language_model.model_name "sbintuitions/tiny-lm" \
+  --language_model.model "sbintuitions/tiny-lm" \
   --eval_setup "commonsense_qa" \
   --eval_setup.metrics+="custom_modules.my_custom_metric.MyCustomMetric"
 ```

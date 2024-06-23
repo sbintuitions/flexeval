@@ -35,16 +35,16 @@ class OpenAIChatAPI(LanguageModel):
     LanguageModel implementation using OpenAI's ChatGPT API.
 
     Args:
-        model_name: The name of the model to use.
+        model: The name of the model to use.
         api_headers: A dictionary of headers to use when making requests to the OpenAI API.
     """
 
     def __init__(
         self,
-        model_name: str = "gpt-3.5-turbo",
+        model: str = "gpt-3.5-turbo",
         api_headers: dict[str, str] | None = None,
     ) -> None:
-        self.model_name = model_name
+        self.model = model
         if api_headers is None:
             api_headers = {}
         self._client = AsyncOpenAI(**api_headers)
@@ -82,7 +82,7 @@ class OpenAIChatAPI(LanguageModel):
                 # Define an anonymous function with a lambda expression and pass it,
                 # and call it inside the _retry_on_error function
                 openai_call=lambda x=ms: self._client.chat.completions.create(
-                    model=self.model_name,
+                    model=self.model,
                     messages=x,
                     **kwargs,
                 ),
@@ -120,4 +120,4 @@ class OpenAIChatAPI(LanguageModel):
         return [res.choices[0].message.content for res in api_responses]
 
     def __repr__(self) -> str:
-        return f"{self.__class__.__name__}(model_name={self.model_name})"
+        return f"{self.__class__.__name__}(model={self.model})"

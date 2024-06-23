@@ -10,7 +10,7 @@ The following minimal example evaluates the hugging face model `sbintuitions/tin
 ```bash
 flexeval_lm \
   --language_model HuggingFaceLM \
-  --language_model.model_name "sbintuitions/tiny-lm" \
+  --language_model.model "sbintuitions/tiny-lm" \
   --eval_setup "commonsense_qa" \
   --save_dir "results/commonsense_qa"
 ```
@@ -38,7 +38,7 @@ The `config.json` file contains the configuration of the evaluation, as well as 
     "language_model": {
       "class_path": "flexeval.core.language_model.HuggingFaceLM",
       "init_args": {
-        "model_name": "sbintuitions/tiny-lm",
+        "model": "sbintuitions/tiny-lm",
         ...
       }
     },
@@ -82,7 +82,7 @@ The following example evaluates the model with the `commonsense_qa_mc` setup, wh
 ```bash
 flexeval_lm \
   --language_model HuggingFaceLM \
-  --language_model.model_name "sbintuitions/tiny-lm" \
+  --language_model.model "sbintuitions/tiny-lm" \
   --eval_setup "commonsense_qa_mc" \
   --save_dir "results/commonsense_qa_mc"
 ```
@@ -109,7 +109,7 @@ export OPENAI_API_KEY="YOUR_API_KEY"
 
 flexeval_lm \
   --language_model OpenAIChatAPI \
-  --language_model.model_name "gpt-3.5-turbo" \
+  --language_model.model "gpt-3.5-turbo" \
   --eval_setup "mt-en" \
   --save_dir "results/mt-en/gpt-3.5-turbo"
 ```
@@ -149,7 +149,7 @@ You can also compute perplexity of text with the following command:
 ```bash
 flexeval_lm \
   --language_model HuggingFaceLM \
-  --language_model.model_name "sbintuitions/tiny-lm" \
+  --language_model.model "sbintuitions/tiny-lm" \
   --eval_setup "tiny_shakespeare" \
   --save_dir "results/tiny_shakespeare"
 ```

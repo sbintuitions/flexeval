@@ -13,7 +13,7 @@ export OPENAI_API_KEY="YOUR_API_KEY"
 
 flexeval_lm \
   --language_model OpenAIChatAPI \
-  --language_model.model_name "gpt-3.5-turbo" \
+  --language_model.model "gpt-3.5-turbo" \
   --eval_setup "mt-en" \
   --save_dir "results/mt-en_gpt3.5-turbo"
 ```
@@ -65,7 +65,7 @@ head -n 1 results/mt-en-gpt3.5-turbo/eval_by_gpt/outputs.jsonl | jq -r ".llm_out
     ```bash
     flexeval_lm \
       --language_model OpenAIChatAPI \
-      --language_model.model_name "gpt-3.5-turbo" \
+      --language_model.model "gpt-3.5-turbo" \
       --eval_setup "mt-en" \
       --metrics+="assistant_eval_en_single_turn" \
       --save_dir "results/mt-en_gpt3.5-turbo"
@@ -90,7 +90,7 @@ export OPENAI_API_KEY="YOUR_API_KEY"
 
 flexeval_lm \
   --language_model OpenAIChatAPI \
-  --language_model.model_name "gpt-3.5-turbo" \
+  --language_model.model "gpt-3.5-turbo" \
   --eval_setup "mt-en" \
   --save_dir "results/mt-en_gpt3.5-turbo"
 ```
@@ -100,7 +100,7 @@ Generate the responses with GPT-4o.
 ```bash
 flexeval_lm \
   --language_model OpenAIChatAPI \
-  --language_model.model_name "gpt-4o" \
+  --language_model.model "gpt-4o" \
   --eval_setup "mt-en" \
   --save_dir "results/mt-en_gpt-4o"
 ```

@@ -85,11 +85,11 @@ def test_tokenize_text_for_lm_continuation(tokenizer_name: str) -> None:
 
 
 @pytest.fixture(scope="module")
-def lm_init_func(model_name: str = "sbintuitions/tiny-lm") -> Callable[..., HuggingFaceLM]:
+def lm_init_func(model: str = "sbintuitions/tiny-lm") -> Callable[..., HuggingFaceLM]:
     # use float32 because half precision is not supported in some hardware
     return functools.partial(
         HuggingFaceLM,
-        model_name=model_name,
+        model=model,
         model_kwargs={"torch_dtype": "float32"},
         tokenizer_kwargs={"use_fast": False},
     )
@@ -99,7 +99,7 @@ def lm_init_func(model_name: str = "sbintuitions/tiny-lm") -> Callable[..., Hugg
 def lm() -> HuggingFaceLM:
     # use float32 because half precision is not supported in some hardware
     return HuggingFaceLM(
-        model_name="sbintuitions/tiny-lm",
+        model="sbintuitions/tiny-lm",
         model_kwargs={"torch_dtype": "float32"},
         tokenizer_kwargs={"use_fast": False},
     )
@@ -213,7 +213,7 @@ def test_if_custom_chat_template_is_given(lm_init_func: Callable[..., HuggingFac
 
 @pytest.fixture(scope="module")
 def chat_lm(model_name: str = "sbintuitions/tiny-lm-chat") -> HuggingFaceLM:
-    return HuggingFaceLM(model_name=model_name, model_kwargs={"torch_dtype": "float32"})
+    return HuggingFaceLM(model=model_name, model_kwargs={"torch_dtype": "float32"})
 
 
 def test_if_stop_sequences_work_as_expected(chat_lm: HuggingFaceLM) -> None:

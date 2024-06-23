@@ -140,9 +140,9 @@ class HuggingFaceLM(LanguageModel):
     LanguageModel implementation using Hugging Face Transformers.
 
     Args:
-        model_name: The model name or path of the Hugging Face model.
+        model: The model name or path of the Hugging Face model.
         model_kwargs: Keyword arguments for the model instantiation by `from_pretrained()`.
-        tokenizer_name: The tokenizer name or path of the Hugging Face tokenizer.
+        tokenizer: The tokenizer name or path of the Hugging Face tokenizer.
         tokenizer_kwargs: Keyword arguments for the tokenizer instantiation by `from_pretrained().
         add_special_tokens: Whether to add special tokens to the input.
             Note that whether BOS or EOS tokens are added depends on the tokenizer.
@@ -155,9 +155,9 @@ class HuggingFaceLM(LanguageModel):
 
     def __init__(
         self,
-        model_name: str,
+        model: str,
         model_kwargs: dict[str, Any] | None = None,
-        tokenizer_name: str | None = None,
+        tokenizer: str | None = None,
         tokenizer_kwargs: dict[str, Any] | None = None,
         add_special_tokens: bool = False,
         amp_dtype: Literal["float16", "bfloat16"] | None = None,
@@ -165,10 +165,10 @@ class HuggingFaceLM(LanguageModel):
         load_peft: bool = False,
         custom_chat_template: str | None = None,
     ) -> None:
-        self.model_name = model_name
-        tokenizer_name = tokenizer_name if tokenizer_name else model_name
+        self._model_name_or_path = model
+        tokenizer = tokenizer if tokenizer else model
         tokenizer_kwargs = tokenizer_kwargs or {}
-        self.tokenizer: PreTrainedTokenizer = AutoTokenizer.from_pretrained(tokenizer_name, **tokenizer_kwargs)
+        self.tokenizer: PreTrainedTokenizer = AutoTokenizer.from_pretrained(tokenizer, **tokenizer_kwargs)
         self.custom_chat_template = custom_chat_template
         self.add_special_tokens = add_special_tokens
 
@@ -193,14 +193,14 @@ class HuggingFaceLM(LanguageModel):
 
         if not load_peft:
             self.model: PreTrainedModel = AutoModelForCausalLM.from_pretrained(
-                model_name,
+                model,
                 **model_kwargs,
             )
         else:
             from peft import AutoPeftModelForCausalLM
 
             self.model = AutoPeftModelForCausalLM.from_pretrained(
-                model_name,
+                model,
                 **model_kwargs,
             )
             # For models such as LoRA, we can merge the additional weights to run inference faster.
@@ -439,4 +439,4 @@ class HuggingFaceLM(LanguageModel):
         return total_log_probs.tolist()
 
     def __repr__(self) -> str:
-        return f"{self.__class__.__name__}(model_name={self.model_name!r})"
+        return f"{self.__class__.__name__}(model={self._model_name_or_path!r})"
