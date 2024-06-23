@@ -77,6 +77,10 @@ class HFChatDataset(ChatDataset):
             else:
                 references = [reference_string]
 
-        extra_info = {key: template.render(**item) for key, template in self._extra_info_templates.items()}
+        extra_info = dict(item.items())
+        extra_info_from_templates = {
+            key: template.render(**item) for key, template in self._extra_info_templates.items()
+        }
+        extra_info.update(extra_info_from_templates)
 
         return ChatInstance(messages=messages, references=references, extra_info=extra_info)

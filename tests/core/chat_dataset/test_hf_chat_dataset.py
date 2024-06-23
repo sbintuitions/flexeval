@@ -8,7 +8,7 @@ def test_hf_dataset() -> None:
         split="validation[:10]",
         input_template="{{question}}",
         references_template="{{ answers }}",
-        extra_info_templates={"section": "{{ section }}"},
+        extra_info_templates={"section_from_template": "{{ section }}"},
         system_message_template=system_message,
     )
 
@@ -22,4 +22,5 @@ def test_hf_dataset() -> None:
         },
     ]
     assert chat_dataset[0].references == ["ジェット団"]
-    assert chat_dataset[0].extra_info == {"section": "開発データ問題"}
+    assert chat_dataset[0].extra_info["section"] == "開発データ問題"
+    assert chat_dataset[0].extra_info["section_from_template"] == "開発データ問題"
