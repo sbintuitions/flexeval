@@ -1,0 +1,2 @@
+from .chunkllama_attn_replace  import replace_with_chunkllama, replace_with_chunkmistral, replace_with_chunkmixtral
+from .chunkqwen_attn_replace import replace_with_chunkqwen
