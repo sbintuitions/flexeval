@@ -6,15 +6,23 @@ from .base import Normalizer
 class RegexNormalizer(Normalizer):
     """
     Normalizer that extracts the last match of a regex pattern.
+    Useful to extract an answer after a step-by-step derivation.
 
     Args:
         pattern: The regex pattern to extract.
+
+    Examples:
+        >>> from flexeval import RegexNormalizer
+        >>> normalizer = RegexNormalizer(r"Answer: (.*)")
+        >>> text = "Step 1: 3 + 2 = 5\\nStep 2: 5 × 4 = 20\\nAnswer: 20"
+        >>> print(normalizer(text))
+        20
     """
 
     def __init__(self, pattern: str) -> None:
         self._pattern = re.compile(pattern, flags=re.DOTALL)
 
-    def normalize(self, text: str) -> str:
+    def __call__(self, text: str) -> str:
         found = self._pattern.findall(text)
         if not found:
             return ""

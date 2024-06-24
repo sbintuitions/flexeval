@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import functools
+
 from .base import Metric, MetricResult
 from .normalizer import Normalizer
 
@@ -10,7 +12,9 @@ class ExactMatch(Metric):
     If there are multiple references, the output is considered correct if it matches any of the references.
 
     Args:
-        normalizer: An instance of `Normalizer` to normalize the input and output strings.
+        normalizer: Normalizer or list of Normalizers to apply to the model outputs before comparison.
+            Unless reference_normalizer is specified, this normalizer will be applied to the references as well.
+        reference_normalizer: Normalizer or list of Normalizers to apply to the references before comparison.
 
     Examples:
         >>> from flexeval import ExactMatch
@@ -25,8 +29,18 @@ class ExactMatch(Metric):
         )
     """
 
-    def __init__(self, normalizer: Normalizer | None = None) -> None:
-        self.normalizer = normalizer
+    def __init__(
+        self,
+        normalizer: Normalizer | list[Normalizer] | None = None,
+        reference_normalizer: Normalizer | list[Normalizer] | None = None,
+    ) -> None:
+        if isinstance(normalizer, Normalizer):
+            normalizer = [normalizer]
+        if isinstance(reference_normalizer, Normalizer):
+            reference_normalizer = [reference_normalizer]
+
+        self.normalizers = normalizer
+        self.reference_normalizers = reference_normalizer or normalizer
 
     def evaluate(
         self,
@@ -41,10 +55,13 @@ class ExactMatch(Metric):
             )
             raise ValueError(msg)
 
-        if self.normalizer:
-            lm_outputs = [self.normalizer.normalize(output) for output in lm_outputs]
+        if self.normalizers:
+            lm_outputs = [functools.reduce(lambda x, norm: norm(x), self.normalizers, output) for output in lm_outputs]
+
+        if self.reference_normalizers:
             references_list = [
-                [self.normalizer.normalize(reference) for reference in references] for references in references_list
+                [functools.reduce(lambda x, norm: norm(x), self.reference_normalizers, ref) for ref in references]
+                for references in references_list
             ]
 
         exact_match_list = [

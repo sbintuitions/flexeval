@@ -13,12 +13,12 @@ class AIONormalizer(Normalizer):
         >>> from flexeval import AIONormalizer
         >>> normalizer = AIONormalizer()
         >>> text = "「蛹化(ようか)」"
-        >>> normalized_text = normalizer.normalize(text)
+        >>> normalized_text = normalizer(text)
         >>> print(normalized_text)
         蛹化
     """
 
-    def normalize(self, text: str) -> str:
+    def __call__(self, text: str) -> str:
         # substitute some symbols that will not be replaced by unicode normalization
         text = text.replace("～", "〜")
 

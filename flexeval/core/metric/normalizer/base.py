@@ -8,7 +8,7 @@ class Normalizer(ABC):
     """
 
     @abstractmethod
-    def normalize(self, text: str) -> str:
+    def __call__(self, text: str) -> str:
         """
         Normalize the input text.
 

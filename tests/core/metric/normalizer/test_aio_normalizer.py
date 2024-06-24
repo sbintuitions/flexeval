@@ -21,4 +21,4 @@ from flexeval.core.metric.normalizer import AIONormalizer
 )
 def test_aio_normalizer(before: str, after: str) -> None:
     normalizer = AIONormalizer()
-    assert normalizer.normalize(before) == after
+    assert normalizer(before) == after
