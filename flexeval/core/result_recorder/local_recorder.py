@@ -47,9 +47,6 @@ class LocalRecorder(ResultRecorder):
         self.output_dir = Path(output_dir)
         self.force = force
 
-        if not force:
-            self._check_output_dir_exists(self.output_dir, [METRIC_FILE_NAME, OUTPUTS_FILE_NAME, CONFIG_FILE_NAME])
-
     @staticmethod
     def _check_output_dir_exists(output_dir: str | PathLike[str], checked_files: list[str]) -> None:
         output_dir = Path(output_dir)

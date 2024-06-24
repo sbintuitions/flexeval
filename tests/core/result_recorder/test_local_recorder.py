@@ -94,9 +94,6 @@ def test_raise_error_with_file_exists(temp_dir: str) -> None:
     recorder.record_model_outputs([{"initial": "output"}])
 
     with pytest.raises(FileExistsError):
-        LocalRecorder(temp_dir)
-
-    with pytest.raises(FileExistsError):
         recorder_with_error.record_config({"new": "config"})
 
     with pytest.raises(FileExistsError):
