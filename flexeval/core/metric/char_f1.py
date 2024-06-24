@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import functools
+
 from fuzzywuzzy import fuzz
 
 from .base import Metric, MetricResult
@@ -13,7 +15,10 @@ class CharF1(Metric):
     If there are multiple expected outputs, the highest score is adopted.
 
     Args:
-        normalizer: An instance of `Normalizer` to normalize the input and output strings.
+        normalizer: Normalizer or list of Normalizers to apply to the model outputs before comparison.
+            Unless reference_normalizer is specified, this normalizer will be applied to the references as well.
+        reference_normalizer: Normalizer or list of Normalizers to apply to the references before comparison.
+
 
     Examples:
         >>> from flexeval import CharF1
@@ -25,8 +30,18 @@ class CharF1(Metric):
         MetricResult(summary={'char_f1': 0.75}, instance_details=[{'char_f1': 1.0}, {'char_f1': 0.5}])
     """
 
-    def __init__(self, normalizer: Normalizer | None = None) -> None:
-        self.normalizer = normalizer
+    def __init__(
+        self,
+        normalizer: Normalizer | list[Normalizer] | None = None,
+        reference_normalizer: Normalizer | list[Normalizer] | None = None,
+    ) -> None:
+        if isinstance(normalizer, Normalizer):
+            normalizer = [normalizer]
+        if isinstance(reference_normalizer, Normalizer):
+            reference_normalizer = [reference_normalizer]
+
+        self.normalizers = normalizer
+        self.reference_normalizers = reference_normalizer or normalizer
 
     def evaluate(
         self,
@@ -34,10 +49,13 @@ class CharF1(Metric):
         references_list: list[list[str]],
         task_inputs_list: list[dict[str, str]] | None = None,
     ) -> MetricResult:
-        if self.normalizer:
-            lm_outputs = [self.normalizer.normalize(output) for output in lm_outputs]
+        if self.normalizers:
+            lm_outputs = [functools.reduce(lambda x, norm: norm(x), self.normalizers, output) for output in lm_outputs]
+
+        if self.reference_normalizers:
             references_list = [
-                [self.normalizer.normalize(reference) for reference in references] for references in references_list
+                [functools.reduce(lambda x, norm: norm(x), self.reference_normalizers, ref) for ref in references]
+                for references in references_list
             ]
 
         char_f1_scores: list[float] = []

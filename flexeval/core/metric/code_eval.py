@@ -67,7 +67,7 @@ class CodeEval(Metric):
             references_list,
         ):
             if self._normalizer is not None:
-                lm_output = self._normalizer.normalize(lm_output)  # noqa: PLW2901
+                lm_output = self._normalizer(lm_output)  # noqa: PLW2901
 
             generated_function = lm_output
             if self._code_prompt_template is not None:
