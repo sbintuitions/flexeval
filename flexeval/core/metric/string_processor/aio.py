@@ -11,9 +11,9 @@ class AIONormalizer(StringProcessor):
 
     Examples:
         >>> from flexeval import AIONormalizer
-        >>> normalizer = AIONormalizer()
+        >>> processor = AIONormalizer()
         >>> text = "「蛹化(ようか)」"
-        >>> normalized_text = normalizer(text)
+        >>> normalized_text = processor(text)
         >>> print(normalized_text)
         蛹化
     """

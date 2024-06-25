@@ -1,7 +1,7 @@
 import pytest
 
 from flexeval.core.metric import CodeEval
-from flexeval.core.metric.string_extractor import Normalizer, RegexExtractor
+from flexeval.core.metric.string_processor import RegexExtractor, StringProcessor
 
 
 @pytest.mark.parametrize(
@@ -19,7 +19,7 @@ def test_correct_code(code: str, test_case: str) -> None:
 
 
 @pytest.mark.parametrize(
-    ("code", "test_case", "normalizer"),
+    ("code", "test_case", "processor"),
     [
         (
             "```python\ndef add(a, b):\n    return a + b\n```",
@@ -28,8 +28,8 @@ def test_correct_code(code: str, test_case: str) -> None:
         ),
     ],
 )
-def test_correct_code_with_normalizer(code: str, test_case: str, normalizer: Normalizer) -> None:
-    code_eval = CodeEval(normalizer=normalizer)
+def test_correct_code_with_processor(code: str, test_case: str, processor: StringProcessor) -> None:
+    code_eval = CodeEval(processor=processor)
     metric_result = code_eval.evaluate([code], references_list=[[test_case]])
     assert metric_result.summary == {"pass@1": 1.0}
 

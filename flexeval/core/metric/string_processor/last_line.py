@@ -6,9 +6,9 @@ class LastLineExtractor(StringProcessor):
 
     Examples:
         >>> from flexeval import LastLineExtractor
-        >>> normalizer = LastLineExtractor()
+        >>> processor = LastLineExtractor()
         >>> text = "Answer\\nFUJI-YAMA"
-        >>> print(normalizer(text))
+        >>> print(processor(text))
         FUJI-YAMA
     """
 

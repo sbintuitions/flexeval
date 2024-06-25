@@ -13,9 +13,9 @@ class RegexExtractor(StringProcessor):
 
     Examples:
         >>> from flexeval import RegexExtractor
-        >>> normalizer = RegexExtractor(r"Answer: (.*)")
+        >>> processor = RegexExtractor(r"Answer: (.*)")
         >>> text = "Step 1: 3 + 2 = 5\\nStep 2: 5 × 4 = 20\\nAnswer: 20"
-        >>> print(normalizer(text))
+        >>> print(processor(text))
         20
     """
 

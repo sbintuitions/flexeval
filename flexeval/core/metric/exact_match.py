@@ -12,9 +12,9 @@ class ExactMatch(Metric):
     If there are multiple references, the output is considered correct if it matches any of the references.
 
     Args:
-        normalizer: StringProcessor or list of Normalizers to apply to the model outputs before comparison.
-            Unless reference_normalizer is specified, this normalizer will be applied to the references as well.
-        reference_normalizer: StringProcessor or list of Normalizers to apply to the references before comparison.
+        processor: StringProcessor or a list of StringProcessor to be applied to the model outputs before comparison.
+            Unless reference_processor is specified, this processor will be applied to the references as well.
+        reference_processor: StringProcessor or list of Normalizers to apply to the references before comparison.
 
     Examples:
         >>> from flexeval import ExactMatch
@@ -31,16 +31,16 @@ class ExactMatch(Metric):
 
     def __init__(
         self,
-        normalizer: StringProcessor | list[StringProcessor] | None = None,
-        reference_normalizer: StringProcessor | list[StringProcessor] | None = None,
+        processor: StringProcessor | list[StringProcessor] | None = None,
+        reference_processor: StringProcessor | list[StringProcessor] | None = None,
     ) -> None:
-        if isinstance(normalizer, StringProcessor):
-            normalizer = [normalizer]
-        if isinstance(reference_normalizer, StringProcessor):
-            reference_normalizer = [reference_normalizer]
+        if isinstance(processor, StringProcessor):
+            processor = [processor]
+        if isinstance(reference_processor, StringProcessor):
+            reference_processor = [reference_processor]
 
-        self.normalizers = normalizer
-        self.reference_normalizers = reference_normalizer or normalizer
+        self.processors = processor
+        self.reference_processors = reference_processor or processor
 
     def evaluate(
         self,
@@ -55,12 +55,12 @@ class ExactMatch(Metric):
             )
             raise ValueError(msg)
 
-        if self.normalizers:
-            lm_outputs = [functools.reduce(lambda x, norm: norm(x), self.normalizers, output) for output in lm_outputs]
+        if self.processors:
+            lm_outputs = [functools.reduce(lambda x, norm: norm(x), self.processors, output) for output in lm_outputs]
 
-        if self.reference_normalizers:
+        if self.reference_processors:
             references_list = [
-                [functools.reduce(lambda x, norm: norm(x), self.reference_normalizers, ref) for ref in references]
+                [functools.reduce(lambda x, norm: norm(x), self.reference_processors, ref) for ref in references]
                 for references in references_list
             ]
 
