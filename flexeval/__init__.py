@@ -10,7 +10,7 @@ from .core.few_shot_generator import *
 from .core.generation_dataset import *
 from .core.language_model import *
 from .core.metric import *
-from .core.metric.normalizer import *
+from .core.metric.string_processor import *
 from .core.metric.tokenizer import *
 from .core.multiple_choice_dataset import *
 from .core.pairwise_comparison import *

@@ -5,7 +5,7 @@ import functools
 from fuzzywuzzy import fuzz
 
 from .base import Metric, MetricResult
-from .normalizer import Normalizer
+from .string_processor import StringProcessor
 
 
 class CharF1(Metric):
@@ -15,9 +15,9 @@ class CharF1(Metric):
     If there are multiple expected outputs, the highest score is adopted.
 
     Args:
-        normalizer: Normalizer or list of Normalizers to apply to the model outputs before comparison.
+        normalizer: StringProcessor or list of Normalizers to apply to the model outputs before comparison.
             Unless reference_normalizer is specified, this normalizer will be applied to the references as well.
-        reference_normalizer: Normalizer or list of Normalizers to apply to the references before comparison.
+        reference_normalizer: StringProcessor or list of Normalizers to apply to the references before comparison.
 
 
     Examples:
@@ -32,12 +32,12 @@ class CharF1(Metric):
 
     def __init__(
         self,
-        normalizer: Normalizer | list[Normalizer] | None = None,
-        reference_normalizer: Normalizer | list[Normalizer] | None = None,
+        normalizer: StringProcessor | list[StringProcessor] | None = None,
+        reference_normalizer: StringProcessor | list[StringProcessor] | None = None,
     ) -> None:
-        if isinstance(normalizer, Normalizer):
+        if isinstance(normalizer, StringProcessor):
             normalizer = [normalizer]
-        if isinstance(reference_normalizer, Normalizer):
+        if isinstance(reference_normalizer, StringProcessor):
             reference_normalizer = [reference_normalizer]
 
         self.normalizers = normalizer

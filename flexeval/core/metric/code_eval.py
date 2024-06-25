@@ -8,7 +8,7 @@ import evaluate
 from flexeval.core.utils.jinja2_env import JINJA2_ENV
 
 from .base import Metric, MetricResult
-from .normalizer import Normalizer
+from .string_processor import StringProcessor
 
 # by default, the program is not allowed to execute code and we need to set this environment variable
 os.environ["HF_ALLOW_CODE_EVAL"] = "1"
@@ -40,7 +40,7 @@ class CodeEval(Metric):
         )
     """
 
-    def __init__(self, code_prompt_template: str | None = None, normalizer: Normalizer | None = None) -> None:
+    def __init__(self, code_prompt_template: str | None = None, normalizer: StringProcessor | None = None) -> None:
         self._code_prompt_template = None
         if code_prompt_template is not None:
             self._code_prompt_template = JINJA2_ENV.from_string(

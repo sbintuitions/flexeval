@@ -3,7 +3,7 @@ from __future__ import annotations
 import functools
 
 from .base import Metric, MetricResult
-from .normalizer import Normalizer
+from .string_processor import StringProcessor
 
 
 class ExactMatch(Metric):
@@ -12,9 +12,9 @@ class ExactMatch(Metric):
     If there are multiple references, the output is considered correct if it matches any of the references.
 
     Args:
-        normalizer: Normalizer or list of Normalizers to apply to the model outputs before comparison.
+        normalizer: StringProcessor or list of Normalizers to apply to the model outputs before comparison.
             Unless reference_normalizer is specified, this normalizer will be applied to the references as well.
-        reference_normalizer: Normalizer or list of Normalizers to apply to the references before comparison.
+        reference_normalizer: StringProcessor or list of Normalizers to apply to the references before comparison.
 
     Examples:
         >>> from flexeval import ExactMatch
@@ -31,12 +31,12 @@ class ExactMatch(Metric):
 
     def __init__(
         self,
-        normalizer: Normalizer | list[Normalizer] | None = None,
-        reference_normalizer: Normalizer | list[Normalizer] | None = None,
+        normalizer: StringProcessor | list[StringProcessor] | None = None,
+        reference_normalizer: StringProcessor | list[StringProcessor] | None = None,
     ) -> None:
-        if isinstance(normalizer, Normalizer):
+        if isinstance(normalizer, StringProcessor):
             normalizer = [normalizer]
-        if isinstance(reference_normalizer, Normalizer):
+        if isinstance(reference_normalizer, StringProcessor):
             reference_normalizer = [reference_normalizer]
 
         self.normalizers = normalizer

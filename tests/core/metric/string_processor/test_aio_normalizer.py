@@ -1,6 +1,6 @@
 import pytest
 
-from flexeval.core.metric.normalizer import AIONormalizer
+from flexeval.core.metric.string_processor import AIONormalizer
 
 
 @pytest.mark.parametrize(

@@ -1,7 +1,7 @@
-from .base import Normalizer
+from .base import StringProcessor
 
 
-class NoopNormalizer(Normalizer):
+class NoopNormalizer(StringProcessor):
     r"""
     A normalizer that does nothing.
     Some metrics apply normalization to both the LM outputs and references by default.

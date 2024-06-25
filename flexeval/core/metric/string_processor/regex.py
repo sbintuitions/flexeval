@@ -1,11 +1,11 @@
 import re
 
-from .base import Normalizer
+from .base import StringProcessor
 
 
-class RegexNormalizer(Normalizer):
+class RegexNormalizer(StringProcessor):
     """
-    Normalizer that extracts the last match of a regex pattern.
+    StringProcessor that extracts the last match of a regex pattern.
     Useful to extract an answer after a step-by-step derivation.
 
     Args:
