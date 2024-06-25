@@ -4,22 +4,13 @@ import json
 import os
 import subprocess
 import tempfile
-from os import PathLike
 from pathlib import Path
-from typing import Any
 
 import pytest
 
-from flexeval.scripts.flexeval_pairwise import (
-    CONFIG_FILE_NAME,
-)
+from flexeval.core.result_recorder.local_recorder import CONFIG_FILE_NAME
 
 from .test_flexeval_lm import check_if_eval_results_are_correctly_saved
-
-
-def read_jsonl(path: str | PathLike[str]) -> list[dict[str, Any]]:
-    with open(path) as f:
-        return [json.loads(line) for line in f]
 
 
 @pytest.mark.parametrize(

@@ -7,46 +7,9 @@ import sys
 import time
 from importlib import metadata as importlib_metadata
 from os import PathLike
-from pathlib import Path
-from typing import Any, Iterable
+from typing import Any
 
-from loguru import logger
 from typing_extensions import Self
-
-METRIC_FILE_NAME = "metrics.json"
-OUTPUTS_FILE_NAME = "outputs.jsonl"
-CONFIG_FILE_NAME = "config.json"
-
-
-def raise_error_if_results_already_exist(save_dir: str | PathLike[str]) -> None:
-    for file_name in [METRIC_FILE_NAME, OUTPUTS_FILE_NAME, CONFIG_FILE_NAME]:
-        if (Path(save_dir) / file_name).exists():
-            msg = (
-                f"`{Path(save_dir) / file_name}` already exists. If you want to overwrite it, "
-                f"please specify `--force true`."
-            )
-            raise FileExistsError(msg)
-
-
-def save_json(json_dict: dict[str, Any], save_path: str | PathLike[str]) -> None:
-    Path(save_path).parent.mkdir(parents=True, exist_ok=True)
-    with open(save_path, "w") as f:
-        json.dump(json_dict, f, indent=4, ensure_ascii=False, default=str)
-
-
-def save_jsonl(
-    data: Iterable[dict[str, Any] | list[Any]],
-    save_path: str | PathLike[str],
-) -> None:
-    Path(save_path).parent.mkdir(parents=True, exist_ok=True)
-    with open(save_path, "w") as f:
-        for d in data:
-            dump_line = json.dumps(d, ensure_ascii=False, default=str)
-            try:
-                f.write(f"{dump_line}\n")
-            except UnicodeEncodeError:
-                logger.warning("Failed to write the following line")
-                logger.warning(dump_line)
 
 
 def load_jsonl(path: str | PathLike[str]) -> list[dict[str, Any]]:

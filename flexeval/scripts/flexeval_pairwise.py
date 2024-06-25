@@ -10,19 +10,13 @@ import _jsonnet
 from jsonargparse import ActionConfigFile, ArgumentParser
 from loguru import logger
 
-from flexeval import Match, MatchMaker, PairwiseJudge, PairwiseScorer, evaluate_pairwise
+from flexeval import LocalRecorder, Match, MatchMaker, PairwiseJudge, PairwiseScorer, ResultRecorder, evaluate_pairwise
 from flexeval.utils.module_utils import ConfigNameResolver
 
 from .common import (
-    CONFIG_FILE_NAME,
-    METRIC_FILE_NAME,
-    OUTPUTS_FILE_NAME,
     Timer,
     get_env_metadata,
     load_jsonl,
-    raise_error_if_results_already_exist,
-    save_json,
-    save_jsonl,
 )
 
 
@@ -83,9 +77,9 @@ def main() -> None:
     args = parser.parse_args()
     logger.info(args)
 
-    # check if the save_dir already exists here early to avoid time-consuming instantiation
-    if args.save_dir is not None and not args.force:
-        raise_error_if_results_already_exist(args.save_dir)
+    result_recorders: list[ResultRecorder] = []
+    if args.save_dir is not None:
+        result_recorders.append(LocalRecorder(args.save_dir, force=args.force))
 
     args_as_dict = args.as_dict()
     args_as_dict["metadata"].update(get_env_metadata())
@@ -93,9 +87,8 @@ def main() -> None:
 
     args = parser.instantiate_classes(args)
 
-    if args.save_dir is not None:
-        save_json(args_as_dict, Path(args.save_dir) / CONFIG_FILE_NAME)
-        logger.info(f"Saved the config to {Path(args.save_dir) / CONFIG_FILE_NAME}")
+    for result_recorder in result_recorders:
+        result_recorder.record_config(args_as_dict)
 
     model_items: dict[str, list[dict[str, Any]]] = {
         name: load_jsonl(path) for name, path in args.lm_output_paths.items()
@@ -117,13 +110,9 @@ def main() -> None:
     logger.info(f"Elapsed time: {timer.time}")
     model_scores_dict["elapsed_time"] = timer.time
 
-    if args.save_dir is not None:
-        Path(args.save_dir).mkdir(parents=True, exist_ok=True)
-        save_json(model_scores_dict, Path(args.save_dir) / METRIC_FILE_NAME)
-        logger.info(f"Saved the metrics to {Path(args.save_dir) / METRIC_FILE_NAME}")
-
-        save_jsonl(match_info_list, Path(args.save_dir) / OUTPUTS_FILE_NAME)
-        logger.info(f"Saved the outputs to {Path(args.save_dir) / OUTPUTS_FILE_NAME}")
+    for result_recorder in result_recorders:
+        result_recorder.record_metrics(model_scores_dict)
+        result_recorder.record_model_outputs(match_info_list)
 
 
 if __name__ == "__main__":

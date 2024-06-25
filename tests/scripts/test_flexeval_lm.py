@@ -11,7 +11,7 @@ from typing import Any
 
 import pytest
 
-from flexeval.scripts.common import CONFIG_FILE_NAME, METRIC_FILE_NAME, OUTPUTS_FILE_NAME
+from flexeval.core.result_recorder.local_recorder import CONFIG_FILE_NAME, METRIC_FILE_NAME, OUTPUTS_FILE_NAME
 
 # fmt: off
 CHAT_RESPONSE_CMD = [
@@ -80,7 +80,7 @@ def check_if_eval_results_are_correctly_saved(save_dir: str | PathLike[str], no_
 def test_cli(command: list[str]) -> None:
     with tempfile.TemporaryDirectory() as f:
         result = subprocess.run([*command, "--save_dir", f], check=False)
-        assert result.returncode == 0
+        assert result.returncode == os.EX_OK
 
         check_if_eval_results_are_correctly_saved(f, no_outputs="Perplexity" in command)
 
@@ -96,7 +96,7 @@ def test_evaluate_suite_cli() -> None:
         ]
         # fmt: on
         result = subprocess.run(command, check=False)
-        assert result.returncode == 0
+        assert result.returncode == os.EX_OK
 
         for task_name in ["generation", "multiple_choice", "perplexity"]:
             check_if_eval_results_are_correctly_saved(Path(f) / task_name, no_outputs=task_name == "perplexity")
@@ -104,7 +104,7 @@ def test_evaluate_suite_cli() -> None:
             # check if the saved config is reusable
             command = ["flexeval_lm", "--config", str(Path(f) / task_name / CONFIG_FILE_NAME)]
             result = subprocess.run(command, check=False)
-            assert result.returncode == 0
+            assert result.returncode == os.EX_OK
 
 
 @pytest.mark.parametrize(
@@ -146,7 +146,7 @@ def test_flexeval_lm_with_preset_config(eval_setup_args: list[str]) -> None:
         # fmt: on
 
         result = subprocess.run(command, check=False)
-        assert result.returncode == 0
+        assert result.returncode == os.EX_OK
 
         check_if_eval_results_are_correctly_saved(f)
 
@@ -181,7 +181,7 @@ def test_if_flexeval_lm_with_preset_correctly_overridden(
         ]
         # fmt: on
         result = subprocess.run(command, check=False)
-        assert result.returncode == 0
+        assert result.returncode == os.EX_OK
 
         save_dir = Path(f)
         if save_folder_name:
@@ -205,7 +205,7 @@ def test_if_flexeval_lm_with_preset_correctly_overridden(
         # fmt: on
 
         result = subprocess.run(command, check=False)
-        assert result.returncode == 0
+        assert result.returncode == os.EX_OK
 
         save_dir = Path(f)
         if save_folder_name:
@@ -231,7 +231,7 @@ def test_if_cli_raises_error_when_save_data_exists(command: list[str]) -> None:
         config_file = Path(f) / CONFIG_FILE_NAME
         config_file.touch()
         result = subprocess.run([*command, "--save_dir", f], check=False)
-        assert result.returncode == 0
+        assert result.returncode == os.EX_OK
         # check if config_file is not modified and empty
         assert config_file.read_text() == ""
 
@@ -243,7 +243,7 @@ def test_if_cli_raises_error_when_save_data_exists(command: list[str]) -> None:
 def test_if_saved_config_can_be_reused_to_run_eval(command: list[str]) -> None:
     with tempfile.TemporaryDirectory() as f:
         result = subprocess.run([*command, "--save_dir", f], check=False)
-        assert result.returncode == 0
+        assert result.returncode == os.EX_OK
         check_if_eval_results_are_correctly_saved(f, no_outputs="Perplexity" in command)
 
         saved_config_file_path = str(Path(f) / CONFIG_FILE_NAME)
@@ -259,7 +259,7 @@ def test_if_saved_config_can_be_reused_to_run_eval(command: list[str]) -> None:
         ]
         # fmt: on
         result = subprocess.run(new_command, check=False)
-        assert result.returncode == 0
+        assert result.returncode == os.EX_OK
         check_if_eval_results_are_correctly_saved(new_save_path, no_outputs="Perplexity" in command)
 
         new_saved_config_file_path = str(Path(new_save_path) / CONFIG_FILE_NAME)
@@ -317,6 +317,6 @@ class MyCustomMetric(Metric):
         ]
 
         result = subprocess.run(command, check=False)
-        assert result.returncode == 0
+        assert result.returncode == os.EX_OK
 
         check_if_eval_results_are_correctly_saved(f)
