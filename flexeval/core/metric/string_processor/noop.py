@@ -8,8 +8,8 @@ class NoopNormalizer(StringProcessor):
     If you want to explicitly disable normalization for the references, you can use this normalizer.
 
     Examples:
-        >>> from flexeval import ExactMatch, NoopNormalizer, RegexNormalizer
-        >>> metric = ExactMatch(normalizer=RegexNormalizer(r"\d+"), reference_normalizer=NoopNormalizer())
+        >>> from flexeval import ExactMatch, NoopNormalizer, RegexExtractor
+        >>> metric = ExactMatch(normalizer=RegexExtractor(r"\d+"), reference_normalizer=NoopNormalizer())
         >>> lm_output = "The answer is 10."
         >>> reference = "10"
         >>> print(metric.evaluate([lm_output], [[reference]]))

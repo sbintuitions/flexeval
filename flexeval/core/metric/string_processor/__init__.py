@@ -2,4 +2,4 @@ from .aio import AIONormalizer
 from .base import StringProcessor
 from .last_line import LastLineExtractor
 from .noop import NoopNormalizer
-from .regex import RegexNormalizer
+from .regex import RegexExtractor

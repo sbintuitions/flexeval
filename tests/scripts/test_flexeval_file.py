@@ -23,7 +23,7 @@ from .test_flexeval_lm import CHAT_RESPONSE_CMD, GENERATION_CMD, check_if_eval_r
                 ["--metrics", "exact_match"],
                 ["--metrics", "ExactMatch", "--metrics+=CharF1"],
             ],
-            [[], ["--metrics.normalizer", "AIONormalizer"]],
+            [[], ["--metrics.string_extractor", "AIONormalizer"]],
         ),
     ),
 )

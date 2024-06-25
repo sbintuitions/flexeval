@@ -3,7 +3,7 @@ import re
 from .base import StringProcessor
 
 
-class RegexNormalizer(StringProcessor):
+class RegexExtractor(StringProcessor):
     """
     StringProcessor that extracts the last match of a regex pattern.
     Useful to extract an answer after a step-by-step derivation.
@@ -12,8 +12,8 @@ class RegexNormalizer(StringProcessor):
         pattern: The regex pattern to extract.
 
     Examples:
-        >>> from flexeval import RegexNormalizer
-        >>> normalizer = RegexNormalizer(r"Answer: (.*)")
+        >>> from flexeval import RegexExtractor
+        >>> normalizer = RegexExtractor(r"Answer: (.*)")
         >>> text = "Step 1: 3 + 2 = 5\\nStep 2: 5 × 4 = 20\\nAnswer: 20"
         >>> print(normalizer(text))
         20

@@ -1,7 +1,7 @@
 import pytest
 
 from flexeval.core.metric import CodeEval
-from flexeval.core.metric.normalizer import Normalizer, RegexNormalizer
+from flexeval.core.metric.string_extractor import Normalizer, RegexExtractor
 
 
 @pytest.mark.parametrize(
@@ -24,7 +24,7 @@ def test_correct_code(code: str, test_case: str) -> None:
         (
             "```python\ndef add(a, b):\n    return a + b\n```",
             "assert add(1, 2) == 3",
-            RegexNormalizer("```python(.*?)```"),
+            RegexExtractor("```python(.*?)```"),
         ),
     ],
 )
