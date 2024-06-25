@@ -36,7 +36,7 @@ local dataset_base_args = {
       },
     },
     metrics: [
-      { class_path: 'CodeEval', init_args: { normalizer: { class_path: 'RegexExtractor', init_args: { pattern: '```python\n(.*?)\n```' } } } },
+      { class_path: 'CodeEval', init_args: { processor: { class_path: 'RegexExtractor', init_args: { pattern: '```python\n(.*?)\n```' } } } },
     ],
     gen_kwargs: { max_new_tokens: 512 },
     batch_size: 4,
