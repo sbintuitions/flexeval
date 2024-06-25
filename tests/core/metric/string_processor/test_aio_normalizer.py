@@ -1,6 +1,6 @@
 import pytest
 
-from flexeval.core.metric.normalizer import AIONormalizer
+from flexeval.core.metric.string_processor import AIONormalizer
 
 
 @pytest.mark.parametrize(
@@ -19,6 +19,6 @@ from flexeval.core.metric.normalizer import AIONormalizer
         ("搦手(からめて)門", "搦手門"),  # 括弧の削除
     ],
 )
-def test_aio_normalizer(before: str, after: str) -> None:
-    normalizer = AIONormalizer()
-    assert normalizer(before) == after
+def test_aio_processor(before: str, after: str) -> None:
+    processor = AIONormalizer()
+    assert processor(before) == after

@@ -1,19 +1,19 @@
 import re
 import unicodedata
 
-from .base import Normalizer
+from .base import StringProcessor
 
 
-class AIONormalizer(Normalizer):
-    """Normalizer used for AI王 (AI king) question answering task.
+class AIONormalizer(StringProcessor):
+    """StringProcessor used for AI王 (AI king) question answering task.
     This is adapted from
     [the official script](https://github.com/cl-tohoku/aio4-bpr-baseline/blob/c5a226296b5e1c403268016dc7136147bbb515fe/compute_score.py).
 
     Examples:
         >>> from flexeval import AIONormalizer
-        >>> normalizer = AIONormalizer()
+        >>> processor = AIONormalizer()
         >>> text = "「蛹化(ようか)」"
-        >>> normalized_text = normalizer(text)
+        >>> normalized_text = processor(text)
         >>> print(normalized_text)
         蛹化
     """
