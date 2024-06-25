@@ -1102,27 +1102,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../api_reference/Normalizer/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Normalizer
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../../../api_reference/PairwiseJudge/" class="md-nav__link">
         
   
@@ -1170,6 +1149,48 @@
   
   <span class="md-ellipsis">
     PromptTemplate
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../api_reference/ResultRecorder/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ResultRecorder
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../api_reference/StringProcessor/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    StringProcessor
   </span>
   
 
@@ -1363,7 +1384,7 @@
 <div class="highlight"><pre><span></span><code>local dataset_base_args = {
   class_path: &#39;HFGenerationDataset&#39;,
   init_args: {
-    dataset_name: &#39;llm-book/aio&#39;,
+    path: &#39;llm-book/aio&#39;,
     references_template: &#39;{{ answers }}&#39;,
   },
 };
@@ -1391,8 +1412,8 @@
       },
     },
     metrics: [
-      { class_path: &#39;CharF1&#39;, init_args: { normalizer: { class_path: &#39;AIONormalizer&#39; } } },
-      { class_path: &#39;ExactMatch&#39;, init_args: { normalizer: { class_path: &#39;AIONormalizer&#39; } } },
+      { class_path: &#39;CharF1&#39;, init_args: { processor: { class_path: &#39;AIONormalizer&#39; } } },
+      { class_path: &#39;ExactMatch&#39;, init_args: { processor: { class_path: &#39;AIONormalizer&#39; } } },
     ],
     gen_kwargs: { max_new_tokens: 32, stop_sequences: [&#39;」&#39;] },
     batch_size: 4,
@@ -1413,7 +1434,7 @@ This is a setup for generating answers based on the choices provided.</p>
 <div class="highlight"><pre><span></span><code>local dataset_base_args = {
   class_path: &#39;HFGenerationDataset&#39;,
   init_args: {
-    dataset_name: &#39;llm-book/JGLUE&#39;,
+    path: &#39;llm-book/JGLUE&#39;,
     subset: &#39;JCommonsenseQA&#39;,
     references_template: &#39;{% set choices = [choice0, choice1, choice2, choice3, choice4] %}{{ choices[label] }}&#39;,
   },
@@ -1474,7 +1495,7 @@ The sentence pairs are extracted from image captions and annotated by crowd work
 <div class="highlight"><pre><span></span><code>local dataset_base_args = {
   class_path: &#39;HFGenerationDataset&#39;,
   init_args: {
-    dataset_name: &#39;llm-book/JGLUE&#39;,
+    path: &#39;llm-book/JGLUE&#39;,
     subset: &#39;JNLI&#39;,
     references_template: &quot;{{ [&#39;\&quot;含意\&quot;&#39;, &#39;\&quot;矛盾\&quot;&#39;, &#39;\&quot;中立\&quot;&#39;][label] }}&quot;,
   },
@@ -1527,7 +1548,7 @@ The passages are extracted from Japanese Wikipedia, and the questions and answer
 <div class="highlight"><pre><span></span><code>local dataset_base_args = {
   class_path: &#39;HFGenerationDataset&#39;,
   init_args: {
-    dataset_name: &#39;llm-book/JGLUE&#39;,
+    path: &#39;llm-book/JGLUE&#39;,
     subset: &#39;JSQuAD&#39;,
     references_template: &#39;{{ answers.text }}&#39;,
   },
@@ -1583,7 +1604,7 @@ This is a Japanese subset of the benchmark.</p>
 <div class="highlight"><pre><span></span><code>local dataset_base_args = {
   class_path: &#39;HFGenerationDataset&#39;,
   init_args: {
-    dataset_name: &#39;juletxara/mgsm&#39;,
+    path: &#39;juletxara/mgsm&#39;,
     subset: &#39;ja&#39;,
     references_template: &#39;[&quot;{{ answer_number }}&quot;]&#39;,
   },
@@ -1614,7 +1635,7 @@ This is a Japanese subset of the benchmark.</p>
       },
     },
     metrics: [
-      { class_path: &#39;ExactMatch&#39;, init_args: { normalizer: { class_path: &#39;RegexNormalizer&#39;, init_args: { pattern: &#39;-?[0-9.,]+&#39; } } } },
+      { class_path: &#39;ExactMatch&#39;, init_args: { processor: { class_path: &#39;RegexExtractor&#39;, init_args: { pattern: &#39;-?[0-9.,]+&#39; } } } },
     ],
     gen_kwargs: { max_new_tokens: 256, stop_sequences: [&#39;問題:&#39;] },
   },
@@ -1633,7 +1654,7 @@ This setup converts the original dataset into binary sentiment classification.</
 <div class="highlight"><pre><span></span><code>local dataset_base_args = {
   class_path: &#39;HFGenerationDataset&#39;,
   init_args: {
-    dataset_name: &#39;llm-book/wrime-sentiment&#39;,
+    path: &#39;llm-book/wrime-sentiment&#39;,
     references_template: &quot;{{ [&#39;\&quot;ポジティブ\&quot;&#39;, &#39;\&quot;ネガティブ\&quot;&#39;][label] }}&quot;,
   },
 };
@@ -1682,7 +1703,7 @@ This is a Japanese subset of the dataset.</p>
 <div class="highlight"><pre><span></span><code>local dataset_base_args = {
   class_path: &#39;HFGenerationDataset&#39;,
   init_args: {
-    dataset_name: &#39;csebuetnlp/xlsum&#39;,
+    path: &#39;csebuetnlp/xlsum&#39;,
     subset: &#39;japanese&#39;,
     references_template: &#39;{{ summary }}&#39;,
   },

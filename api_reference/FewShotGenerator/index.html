@@ -1064,27 +1064,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../Normalizer/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Normalizer
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../PairwiseJudge/" class="md-nav__link">
         
   
@@ -1132,6 +1111,48 @@
   
   <span class="md-ellipsis">
     PromptTemplate
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ResultRecorder/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ResultRecorder
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../StringProcessor/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    StringProcessor
   </span>
   
 
@@ -1616,7 +1637,10 @@ by checking if the sampled instances have the same inputs as the evaluation inst
 <span class="normal">61</span>
 <span class="normal">62</span>
 <span class="normal">63</span>
-<span class="normal">64</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">BalancedFewShotGenerator</span><span class="p">(</span><span class="n">FewShotGenerator</span><span class="p">):</span>
+<span class="normal">64</span>
+<span class="normal">65</span>
+<span class="normal">66</span>
+<span class="normal">67</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">BalancedFewShotGenerator</span><span class="p">(</span><span class="n">FewShotGenerator</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">dataset</span><span class="p">:</span> <span class="n">GenerationDataset</span><span class="p">,</span>
@@ -1636,8 +1660,8 @@ by checking if the sampled instances have the same inputs as the evaluation inst
             <span class="p">)</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_dataset</span> <span class="o">=</span> <span class="n">dataset</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_num_shots</span> <span class="o">=</span> <span class="n">num_shots</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span> <span class="o">=</span> <span class="n">dataset</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_shots</span> <span class="o">=</span> <span class="n">num_shots</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_rnd</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">Random</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
 
         <span class="c1"># Separate instances by label</span>
@@ -1656,8 +1680,8 @@ by checking if the sampled instances have the same inputs as the evaluation inst
         <span class="bp">self</span><span class="o">.</span><span class="n">_rnd</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="n">labels</span><span class="p">)</span>
 
         <span class="c1"># Evenly distribute num_samples to each label</span>
-        <span class="n">num_samples_list</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_num_shots</span> <span class="o">//</span> <span class="nb">len</span><span class="p">(</span><span class="n">labels</span><span class="p">)]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">labels</span><span class="p">)</span>
-        <span class="n">remaining_samples</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_num_shots</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">labels</span><span class="p">)</span>
+        <span class="n">num_samples_list</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">num_shots</span> <span class="o">//</span> <span class="nb">len</span><span class="p">(</span><span class="n">labels</span><span class="p">)]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">labels</span><span class="p">)</span>
+        <span class="n">remaining_samples</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_shots</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">labels</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">remaining_samples</span><span class="p">):</span>
             <span class="n">num_samples_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
 
@@ -1670,7 +1694,10 @@ by checking if the sampled instances have the same inputs as the evaluation inst
             <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_rnd</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="n">sampled_indices</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_dataset</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">sampled_indices</span><span class="p">]</span>
+        <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">sampled_indices</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">(dataset=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="si">}</span><span class="s2">, num_shots=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">num_shots</span><span class="si">}</span><span class="s2">)&quot;</span>
 </code></pre></div></td></tr></table></div>
               </details>
 
@@ -1683,6 +1710,48 @@ by checking if the sampled instances have the same inputs as the evaluation inst
 
 
 
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h3 id="flexeval.core.few_shot_generator.balanced.BalancedFewShotGenerator.dataset" class="doc doc-heading">
+            <span class="doc doc-object-name doc-attribute-name">dataset</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+<a href="#flexeval.core.few_shot_generator.balanced.BalancedFewShotGenerator.dataset" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">dataset</span> <span class="o">=</span> <span class="n">dataset</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h3 id="flexeval.core.few_shot_generator.balanced.BalancedFewShotGenerator.num_shots" class="doc doc-heading">
+            <span class="doc doc-object-name doc-attribute-name">num_shots</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+<a href="#flexeval.core.few_shot_generator.balanced.BalancedFewShotGenerator.num_shots" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">num_shots</span> <span class="o">=</span> <span class="n">num_shots</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+    </div>
+
+</div>
 
 
 
@@ -1748,8 +1817,8 @@ by checking if the sampled instances have the same inputs as the evaluation inst
         <span class="p">)</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
-    <span class="bp">self</span><span class="o">.</span><span class="n">_dataset</span> <span class="o">=</span> <span class="n">dataset</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">_num_shots</span> <span class="o">=</span> <span class="n">num_shots</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span> <span class="o">=</span> <span class="n">dataset</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">num_shots</span> <span class="o">=</span> <span class="n">num_shots</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_rnd</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">Random</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
 
     <span class="c1"># Separate instances by label</span>
@@ -1758,6 +1827,30 @@ by checking if the sampled instances have the same inputs as the evaluation inst
     <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">instance</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">dataset</span><span class="p">):</span>
         <span class="n">label_to_ids</span><span class="p">[</span><span class="n">instance</span><span class="o">.</span><span class="n">references</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_label_to_ids</span> <span class="o">=</span> <span class="n">label_to_ids</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="flexeval.core.few_shot_generator.balanced.BalancedFewShotGenerator.__repr__" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">__repr__</span>
+
+
+<a href="#flexeval.core.few_shot_generator.balanced.BalancedFewShotGenerator.__repr__" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="fm">__repr__</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+            <details class="quote">
+              <summary>Source code in <code>flexeval/core/few_shot_generator/balanced.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">66</span>
+<span class="normal">67</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">(dataset=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="si">}</span><span class="s2">, num_shots=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">num_shots</span><span class="si">}</span><span class="s2">)&quot;</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -1811,7 +1904,10 @@ by checking if the sampled instances have the same inputs as the evaluation inst
 <span class="normal">29</span>
 <span class="normal">30</span>
 <span class="normal">31</span>
-<span class="normal">32</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">RandomFewShotGenerator</span><span class="p">(</span><span class="n">FewShotGenerator</span><span class="p">):</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">RandomFewShotGenerator</span><span class="p">(</span><span class="n">FewShotGenerator</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">dataset</span><span class="p">:</span> <span class="n">Dataset</span><span class="p">,</span>
@@ -1828,13 +1924,16 @@ by checking if the sampled instances have the same inputs as the evaluation inst
             <span class="p">)</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_dataset</span> <span class="o">=</span> <span class="n">dataset</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_num_shots</span> <span class="o">=</span> <span class="n">num_shots</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span> <span class="o">=</span> <span class="n">dataset</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_shots</span> <span class="o">=</span> <span class="n">num_shots</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_rnd</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">Random</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_sample_instances</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">eval_inputs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">|</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Instance</span><span class="p">]:</span>
-        <span class="n">sampled_indices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rnd</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_dataset</span><span class="p">)),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_num_shots</span><span class="p">)</span>
-        <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_dataset</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">sampled_indices</span><span class="p">]</span>
+        <span class="n">sampled_indices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rnd</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="p">)),</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_shots</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">sampled_indices</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">(dataset=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="si">}</span><span class="s2">, num_shots=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">num_shots</span><span class="si">}</span><span class="s2">)&quot;</span>
 </code></pre></div></td></tr></table></div>
               </details>
 
@@ -1847,6 +1946,48 @@ by checking if the sampled instances have the same inputs as the evaluation inst
 
 
 
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h3 id="flexeval.core.few_shot_generator.rand.RandomFewShotGenerator.dataset" class="doc doc-heading">
+            <span class="doc doc-object-name doc-attribute-name">dataset</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+<a href="#flexeval.core.few_shot_generator.rand.RandomFewShotGenerator.dataset" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">dataset</span> <span class="o">=</span> <span class="n">dataset</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h3 id="flexeval.core.few_shot_generator.rand.RandomFewShotGenerator.num_shots" class="doc doc-heading">
+            <span class="doc doc-object-name doc-attribute-name">num_shots</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+<a href="#flexeval.core.few_shot_generator.rand.RandomFewShotGenerator.num_shots" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">num_shots</span> <span class="o">=</span> <span class="n">num_shots</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+    </div>
+
+</div>
 
 
 
@@ -1899,9 +2040,33 @@ by checking if the sampled instances have the same inputs as the evaluation inst
         <span class="p">)</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
-    <span class="bp">self</span><span class="o">.</span><span class="n">_dataset</span> <span class="o">=</span> <span class="n">dataset</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">_num_shots</span> <span class="o">=</span> <span class="n">num_shots</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span> <span class="o">=</span> <span class="n">dataset</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">num_shots</span> <span class="o">=</span> <span class="n">num_shots</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_rnd</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">Random</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="flexeval.core.few_shot_generator.rand.RandomFewShotGenerator.__repr__" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">__repr__</span>
+
+
+<a href="#flexeval.core.few_shot_generator.rand.RandomFewShotGenerator.__repr__" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="fm">__repr__</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+            <details class="quote">
+              <summary>Source code in <code>flexeval/core/few_shot_generator/rand.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">34</span>
+<span class="normal">35</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">(dataset=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="si">}</span><span class="s2">, num_shots=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">num_shots</span><span class="si">}</span><span class="s2">)&quot;</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>

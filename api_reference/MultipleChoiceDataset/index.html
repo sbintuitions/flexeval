@@ -12,7 +12,7 @@
         <link rel="prev" href="../Metric/">
       
       
-        <link rel="next" href="../Normalizer/">
+        <link rel="next" href="../PairwiseJudge/">
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
@@ -1064,27 +1064,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../Normalizer/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Normalizer
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../PairwiseJudge/" class="md-nav__link">
         
   
@@ -1132,6 +1111,48 @@
   
   <span class="md-ellipsis">
     PromptTemplate
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ResultRecorder/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ResultRecorder
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../StringProcessor/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    StringProcessor
   </span>
   
 
@@ -1308,7 +1329,10 @@
 <span class="normal">40</span>
 <span class="normal">41</span>
 <span class="normal">42</span>
-<span class="normal">43</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">MultipleChoiceDataset</span><span class="p">(</span><span class="n">Sequence</span><span class="p">[</span><span class="n">MultipleChoiceInstance</span><span class="p">],</span> <span class="n">ABC</span><span class="p">):</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">MultipleChoiceDataset</span><span class="p">(</span><span class="n">Sequence</span><span class="p">[</span><span class="n">MultipleChoiceInstance</span><span class="p">],</span> <span class="n">ABC</span><span class="p">):</span>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1322,6 +1346,9 @@
 <span class="sd">        Returns the i-th instance.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">(num_instances=</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="si">}</span><span class="s2">)&quot;</span>
 </code></pre></div></td></tr></table></div>
               </details>
 
@@ -1407,6 +1434,30 @@
 <span class="sd">    Returns the i-th instance.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="flexeval.core.multiple_choice_dataset.base.MultipleChoiceDataset.__repr__" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">__repr__</span>
+
+
+<a href="#flexeval.core.multiple_choice_dataset.base.MultipleChoiceDataset.__repr__" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="fm">__repr__</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+            <details class="quote">
+              <summary>Source code in <code>flexeval/core/multiple_choice_dataset/base.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">45</span>
+<span class="normal">46</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">(num_instances=</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="si">}</span><span class="s2">)&quot;</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -1613,7 +1664,7 @@ This will be embedded into the prompt for the language model in <code>PromptTemp
 <p><span class="doc-section-title">Parameters:</span></p>
     <ul>
         <li class="doc-section-item field-body">
-          <b><code>dataset_name</code></b>
+          <b><code>path</code></b>
               (<code>str</code>)
           –
           <div class="doc-md-description">
@@ -1770,7 +1821,7 @@ Maybe necessary for language with whitespaces.</p>
 <span class="sd">    A dataset for multiple-choice tasks using Hugging Face datasets.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        dataset_name: The name or path of the huggingface dataset.</span>
+<span class="sd">        path: The name or path of the huggingface dataset.</span>
 <span class="sd">        split: The split of the dataset to use.</span>
 <span class="sd">        choices_templates: A list of Jinja2 templates for the choices.</span>
 <span class="sd">        answer_index_template: A Jinja2 template for the index of the correct answer.</span>
@@ -1783,7 +1834,7 @@ Maybe necessary for language with whitespaces.</p>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">dataset_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">split</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">choices_templates</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
         <span class="n">answer_index_template</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -1793,7 +1844,7 @@ Maybe necessary for language with whitespaces.</p>
         <span class="n">whitespace_before_choices</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_dataset</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">load_dataset</span><span class="p">(</span>
-            <span class="n">dataset_name</span><span class="p">,</span>
+            <span class="n">path</span><span class="p">,</span>
             <span class="n">split</span><span class="o">=</span><span class="n">split</span><span class="p">,</span>
             <span class="n">name</span><span class="o">=</span><span class="n">subset</span><span class="p">,</span>
             <span class="n">data_files</span><span class="o">=</span><span class="n">data_files</span><span class="p">,</span>
@@ -1865,7 +1916,7 @@ Maybe necessary for language with whitespaces.</p>
 
 
 <a href="#flexeval.core.multiple_choice_dataset.hf_dataset.HFMultipleChoiceDataset.__init__" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="fm">__init__</span><span class="p">(</span><span class="nf">dataset_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">split</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">choices_templates</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">answer_index_template</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">input_templates</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">subset</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">data_files</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">whitespace_before_choices</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="fm">__init__</span><span class="p">(</span><span class="nf">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">split</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">choices_templates</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">answer_index_template</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">input_templates</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">subset</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">data_files</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">whitespace_before_choices</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -1908,7 +1959,7 @@ Maybe necessary for language with whitespaces.</p>
 <span class="normal">60</span>
 <span class="normal">61</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
-    <span class="n">dataset_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">split</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">choices_templates</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
     <span class="n">answer_index_template</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -1918,7 +1969,7 @@ Maybe necessary for language with whitespaces.</p>
     <span class="n">whitespace_before_choices</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_dataset</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">load_dataset</span><span class="p">(</span>
-        <span class="n">dataset_name</span><span class="p">,</span>
+        <span class="n">path</span><span class="p">,</span>
         <span class="n">split</span><span class="o">=</span><span class="n">split</span><span class="p">,</span>
         <span class="n">name</span><span class="o">=</span><span class="n">subset</span><span class="p">,</span>
         <span class="n">data_files</span><span class="o">=</span><span class="n">data_files</span><span class="p">,</span>

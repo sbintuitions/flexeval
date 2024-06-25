@@ -1093,27 +1093,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../api_reference/Normalizer/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Normalizer
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../../../api_reference/PairwiseJudge/" class="md-nav__link">
         
   
@@ -1161,6 +1140,48 @@
   
   <span class="md-ellipsis">
     PromptTemplate
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../api_reference/ResultRecorder/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ResultRecorder
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../api_reference/StringProcessor/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    StringProcessor
   </span>
   
 
@@ -1344,7 +1365,7 @@
 <div class="highlight"><pre><span></span><code>local dataset_base_args = {
   class_path: &#39;HFGenerationDataset&#39;,
   init_args: {
-    dataset_name: &#39;Muennighoff/babi&#39;,
+    path: &#39;Muennighoff/babi&#39;,
     references_template: &#39;[&quot;{{ answer }}&quot;]&#39;,
   },
 };
@@ -1394,7 +1415,7 @@ This is a setup for generating answers based on the choices provided.</p>
 <div class="highlight"><pre><span></span><code>local dataset_base_args = {
   class_path: &#39;HFGenerationDataset&#39;,
   init_args: {
-    dataset_name: &#39;tau/commonsense_qa&#39;,
+    path: &#39;tau/commonsense_qa&#39;,
     references_template: &#39;{% set answer_index = choices.label.index(answerKey) %}[&quot;{{ choices.text[answer_index] }}&quot;]&#39;,
   },
 };
@@ -1454,7 +1475,7 @@ The dataset was created to support the task of question answering on basic mathe
 <div class="highlight"><pre><span></span><code>local dataset_base_args = {
   class_path: &#39;HFGenerationDataset&#39;,
   init_args: {
-    dataset_name: &#39;gsm8k&#39;,
+    path: &#39;gsm8k&#39;,
     subset: &#39;main&#39;,
     references_template: &#39;{{ answer | regex_replace(&quot;&lt;&lt;.*?&gt;&gt;&quot;, &quot;&quot;) }}&#39;,
   },
@@ -1485,7 +1506,7 @@ The dataset was created to support the task of question answering on basic mathe
       },
     },
     metrics: [
-      { class_path: &#39;ExactMatch&#39;, init_args: { normalizer: { class_path: &#39;RegexNormalizer&#39;, init_args: { pattern: &#39;-?[0-9.,]+&#39; } } } },
+      { class_path: &#39;ExactMatch&#39;, init_args: { processor: { class_path: &#39;RegexExtractor&#39;, init_args: { pattern: &#39;-?[0-9.,]+&#39; } } } },
     ],
     gen_kwargs: { max_new_tokens: 256, stop_sequences: [&#39;Q:&#39;] },
   },
@@ -1501,7 +1522,7 @@ The dataset was created to support the task of question answering on basic mathe
 <div class="highlight"><pre><span></span><code>local dataset_base_args = {
   class_path: &#39;HFGenerationDataset&#39;,
   init_args: {
-    dataset_name: &#39;rajpurkar/squad&#39;,
+    path: &#39;rajpurkar/squad&#39;,
     references_template: &#39;{{ answers.text }}&#39;,
   },
 };
@@ -1552,7 +1573,7 @@ TriviaqQA includes 95K question-answer pairs authored by trivia enthusiasts and 
 <div class="highlight"><pre><span></span><code>local dataset_base_args = {
   class_path: &#39;HFGenerationDataset&#39;,
   init_args: {
-    dataset_name: &#39;trivia_qa&#39;,
+    path: &#39;trivia_qa&#39;,
     subset: &#39;rc.nocontext&#39;,
     references_template: &#39;{{ answer.aliases }}&#39;,
   },
@@ -1604,7 +1625,7 @@ See the hugging face dataset page for more information.</p>
 <div class="highlight"><pre><span></span><code>local dataset_base_args = {
   class_path: &#39;HFGenerationDataset&#39;,
   init_args: {
-    dataset_name: &#39;carblacac/twitter-sentiment-analysis&#39;,
+    path: &#39;carblacac/twitter-sentiment-analysis&#39;,
     references_template: &quot;{{ [&#39;Positive&#39;, &#39;Negative&#39;][feeling] }}&quot;,
   },
 };

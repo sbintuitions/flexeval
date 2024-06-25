@@ -1093,27 +1093,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../api_reference/Normalizer/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Normalizer
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../../../api_reference/PairwiseJudge/" class="md-nav__link">
         
   
@@ -1161,6 +1140,48 @@
   
   <span class="md-ellipsis">
     PromptTemplate
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../api_reference/ResultRecorder/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ResultRecorder
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../api_reference/StringProcessor/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    StringProcessor
   </span>
   
 
@@ -1347,7 +1368,7 @@
     eval_dataset: {
       class_path: &#39;HFGenerationDataset&#39;,
       init_args: {
-        dataset_name: &#39;kogi-jwu/jhumaneval&#39;,
+        path: &#39;kogi-jwu/jhumaneval&#39;,
         split: &#39;test&#39;,
         references_template: &#39;{{ test }}\n\ncheck({{ entry_point }})\n&#39;,
       },
@@ -1404,7 +1425,7 @@ original_config {
 <div class="highlight"><pre><span></span><code>local dataset_base_args = {
   class_path: &#39;HFGenerationDataset&#39;,
   init_args: {
-    dataset_name: &#39;mbpp&#39;,
+    path: &#39;mbpp&#39;,
     subset: &#39;sanitized&#39;,
     references_template: &#39;{{ test_list }}&#39;,
   },
@@ -1508,7 +1529,7 @@ original_config {
     eval_dataset: {
       class_path: &#39;HFGenerationDataset&#39;,
       init_args: {
-        dataset_name: &#39;openai_humaneval&#39;,
+        path: &#39;openai_humaneval&#39;,
         split: &#39;test&#39;,
         references_template: &#39;{{ test }}\n\ncheck({{ entry_point }})\n&#39;,
       },

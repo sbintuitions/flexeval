@@ -1084,27 +1084,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../api_reference/Normalizer/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Normalizer
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../api_reference/PairwiseJudge/" class="md-nav__link">
         
   
@@ -1152,6 +1131,48 @@
   
   <span class="md-ellipsis">
     PromptTemplate
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api_reference/ResultRecorder/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ResultRecorder
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api_reference/StringProcessor/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    StringProcessor
   </span>
   
 
@@ -1324,7 +1345,7 @@ With <code>--eval_setup</code> option, you can specify the task to evaluate.</p>
 <p>The following minimal example evaluates the hugging face model <code>sbintuitions/tiny-lm</code> with the <code>commonsense_qa</code> task.</p>
 <div class="highlight"><pre><span></span><code>flexeval_lm<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--language_model<span class="w"> </span>HuggingFaceLM<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--language_model.model_name<span class="w"> </span><span class="s2">&quot;sbintuitions/tiny-lm&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--language_model.model<span class="w"> </span><span class="s2">&quot;sbintuitions/tiny-lm&quot;</span><span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--eval_setup<span class="w"> </span><span class="s2">&quot;commonsense_qa&quot;</span><span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--save_dir<span class="w"> </span><span class="s2">&quot;results/commonsense_qa&quot;</span>
 </code></pre></div>
@@ -1346,7 +1367,7 @@ With <code>--eval_setup</code> option, you can specify the task to evaluate.</p>
 <span class="w">    </span><span class="nt">&quot;language_model&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">      </span><span class="nt">&quot;class_path&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;flexeval.core.language_model.HuggingFaceLM&quot;</span><span class="p">,</span>
 <span class="w">      </span><span class="nt">&quot;init_args&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="nt">&quot;model_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;sbintuitions/tiny-lm&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;model&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;sbintuitions/tiny-lm&quot;</span><span class="p">,</span>
 <span class="w">        </span><span class="err">...</span>
 <span class="w">      </span><span class="p">}</span>
 <span class="w">    </span><span class="p">},</span>
@@ -1380,7 +1401,7 @@ With <code>--eval_setup</code> option, you can specify the task to evaluate.</p>
 The following example evaluates the model with the <code>commonsense_qa_mc</code> setup, which solves CommonsenseQA by choosing the answer with the highest probability.</p>
 <div class="highlight"><pre><span></span><code>flexeval_lm<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--language_model<span class="w"> </span>HuggingFaceLM<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--language_model.model_name<span class="w"> </span><span class="s2">&quot;sbintuitions/tiny-lm&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--language_model.model<span class="w"> </span><span class="s2">&quot;sbintuitions/tiny-lm&quot;</span><span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--eval_setup<span class="w"> </span><span class="s2">&quot;commonsense_qa_mc&quot;</span><span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--save_dir<span class="w"> </span><span class="s2">&quot;results/commonsense_qa_mc&quot;</span>
 </code></pre></div>
@@ -1402,7 +1423,7 @@ Evaluating chat models may require a different setup.</p>
 
 flexeval_lm<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--language_model<span class="w"> </span>OpenAIChatAPI<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--language_model.model_name<span class="w"> </span><span class="s2">&quot;gpt-3.5-turbo&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--language_model.model<span class="w"> </span><span class="s2">&quot;gpt-3.5-turbo&quot;</span><span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--eval_setup<span class="w"> </span><span class="s2">&quot;mt-en&quot;</span><span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--save_dir<span class="w"> </span><span class="s2">&quot;results/mt-en/gpt-3.5-turbo&quot;</span>
 </code></pre></div>
@@ -1428,12 +1449,12 @@ The preset config only defines simple metrics such as length statistics.</p>
 </code></pre></div>
 <p>In the results, you can see the evaluation result like <code>{"llm_score": 7.795}</code>.
 You can also check the entire output of the judge LLM including the rationale of the evaluation in <code>llm_score_output</code> in <code>outputs.jsonl</code>.</p>
-<p>For further details and pairwise evaluation, see <a href="./how_to/eval_with_llm_judges.md">Evaluate with LLM Judges</a>.</p>
+<p>For further details and pairwise evaluation, see <a href="../how_to/evaluate_with_llm_judges/">Evaluate with LLM Judges</a>.</p>
 <h2 id="perplexity">Perplexity<a class="headerlink" href="#perplexity" title="Permanent link">&para;</a></h2>
 <p>You can also compute perplexity of text with the following command:</p>
 <div class="highlight"><pre><span></span><code>flexeval_lm<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--language_model<span class="w"> </span>HuggingFaceLM<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--language_model.model_name<span class="w"> </span><span class="s2">&quot;sbintuitions/tiny-lm&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--language_model.model<span class="w"> </span><span class="s2">&quot;sbintuitions/tiny-lm&quot;</span><span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--eval_setup<span class="w"> </span><span class="s2">&quot;tiny_shakespeare&quot;</span><span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--save_dir<span class="w"> </span><span class="s2">&quot;results/tiny_shakespeare&quot;</span>
 </code></pre></div>
