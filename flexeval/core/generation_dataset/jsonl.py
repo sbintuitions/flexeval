@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 from ast import literal_eval
 
-from flexeval.core.utils.jinja2_env import JINJA2_ENV
+from flexeval.core.utils.jinja2_utils import JINJA2_ENV
 
 from .base import GenerationDataset, GenerationInstance
 

@@ -15,7 +15,7 @@ References:
       init_args: {
         path: 'karpathy/tiny_shakespeare',
         split: 'test',
-        field: 'text',
+        text_template: '{{ text }}',
       },
     },
   },

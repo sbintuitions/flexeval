@@ -5,7 +5,7 @@ from ast import literal_eval
 import datasets
 from jinja2 import Template
 
-from flexeval.core.utils.jinja2_env import JINJA2_ENV
+from flexeval.core.utils.jinja2_utils import JINJA2_ENV, get_template_filter_function
 
 from .base import GenerationDataset, GenerationInstance
 
@@ -20,7 +20,8 @@ class HFGenerationDataset(GenerationDataset):
         references_template: A Jinja2 template for the references.
         input_templates: A dictionary of Jinja2 templates for the inputs.
         subset: The subset of the dataset to use.
-        max_lengths: If provided, filter out instances with lengths exceeding the specified values.
+        template_filters: A dictionary to indicate the condition to filter certain items.
+            The key is a Jinja2 template string to embed the item into a string, and the value is the value to keep.
     """
 
     def __init__(
@@ -30,13 +31,13 @@ class HFGenerationDataset(GenerationDataset):
         references_template: str,
         input_templates: dict[str, str] | None = None,
         subset: str | None = None,
-        max_lengths: dict[str, int] | None = None,
+        template_filters: dict[str, str] | None = None,
     ) -> None:
         self._dataset = datasets.load_dataset(path, name=subset, split=split)
 
-        max_lengths = max_lengths or {}
-        for key, max_length in max_lengths.items():
-            self._dataset = self._dataset.filter(lambda item, k=key, max_l=max_length: len(item[k]) <= max_l)
+        template_filters = template_filters or {}
+        for template_str, value_to_keep in template_filters.items():
+            self._dataset = self._dataset.filter(get_template_filter_function(template_str, value_to_keep))
 
         input_templates = input_templates or {}
         self._input_templates: dict[str, Template] = {k: JINJA2_ENV.from_string(v) for k, v in input_templates.items()}

@@ -20,7 +20,7 @@ def mock_jsonl_data_path() -> None:
         yield f.name
 
 
-def test_hf_dataset(mock_jsonl_data_path: str | PathLike[str]) -> None:
+def test_jsonl_generation_dataset(mock_jsonl_data_path: str | PathLike[str]) -> None:
     dataset = JsonlGenerationDataset(
         path=mock_jsonl_data_path,
         references_template="{{ output }}",
