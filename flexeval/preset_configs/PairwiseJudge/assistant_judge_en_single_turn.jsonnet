@@ -13,8 +13,8 @@ Adapted from [lm-sys/FastChat](https://github.com/lm-sys/FastChat/blob/main/fast
       init_args: {
         template: |||
           {% set question = model1_item["task_inputs"]["messages"][0]["content"] -%}
-          {% set model1_chat = model1_item["task_inputs"]["messages"] -%}
-          {% set model2_chat = model2_item["task_inputs"]["messages"] -%}
+          {% set model1_messages = model1_item["task_inputs"]["messages"] -%}
+          {% set model2_messages = model2_item["task_inputs"]["messages"] -%}
           [Instruction]
           {% if references|length > 0 -%}
           Please act as an impartial judge and evaluate the quality of the responses provided by two AI assistants to the user question displayed below. Your evaluation should consider correctness and helpfulness. You will be given a reference answer, assistant A's answer, and assistant B's answer. Your job is to evaluate which assistant's answer is better. Begin your evaluation by comparing both assistants' answers with the reference answer. Identify and correct any mistakes. Avoid any position biases and ensure that the order in which the responses were presented does not influence your decision. Do not allow the length of the responses to influence your evaluation. Do not favor certain names of the assistants. Be as objective as possible. After providing your explanation, output your final verdict by strictly following this format: "[[1]]" if assistant 1 is better, "[[2]]" if assistant 2 is better, and "[[3]]" for a tie.
@@ -31,10 +31,10 @@ Adapted from [lm-sys/FastChat](https://github.com/lm-sys/FastChat/blob/main/fast
           [The End of Reference Answer]
           {% endif -%}
           [The Start of Assistant 1's Answer]
-          {% if model1_chat|length == 1 %}{{ model1_item["lm_output"] }}{% else %}{{ model1_chat[1]["content"] }}{% endif %}
+          {% if model1_messages|length == 1 %}{{ model1_item["lm_output"] }}{% else %}{{ model1_messages[1]["content"] }}{% endif %}
           [The End of Assistant's Answer]
           [The Start of Assistant 2's Answer]
-          {% if model2_chat|length == 1 %}{{ model2_item["lm_output"] }}{% else %}{{ model2_chat[1]["content"] }}{% endif %}
+          {% if model2_messages|length == 1 %}{{ model2_item["lm_output"] }}{% else %}{{ model2_messages[1]["content"] }}{% endif %}
           [The End of Assistant's Answer]
         |||,
       },

@@ -13,11 +13,11 @@ Translated and adapted from [lm-sys/FastChat](https://github.com/lm-sys/FastChat
       init_args: {
         template: |||
           {% set question = model1_item["task_inputs"]["messages"][0]["content"] -%}
-          {% set model1_chat = model1_item["task_inputs"]["messages"] -%}
-          {% set model2_chat = model2_item["task_inputs"]["messages"] -%}
+          {% set model1_messages = model1_item["task_inputs"]["messages"] -%}
+          {% set model2_messages = model2_item["task_inputs"]["messages"] -%}
 
           [ユーザの質問]
-          {{ model1_item["task_inputs"]["chat"][0]["content"] }}
+          {{ question }}
 
           {% if references|length > 0 -%}
           [参考回答の開始]
@@ -25,10 +25,10 @@ Translated and adapted from [lm-sys/FastChat](https://github.com/lm-sys/FastChat
           [参考回答の終了]
           {% endif -%}
           [アシスタント1の回答開始]
-          {% if model1_chat|length == 1 %}{{ model1_item["lm_output"] }}{% else %}{{ model1_chat[1]["content"] }}{% endif %}
+          {% if model1_messages|length == 1 %}{{ model1_item["lm_output"] }}{% else %}{{ model1_messages[1]["content"] }}{% endif %}
           [アシスタント1の回答終了]
           [アシスタント2の回答開始]
-          {% if model2_chat|length == 1 %}{{ model2_item["lm_output"] }}{% else %}{{ model2_chat[1]["content"] }}{% endif %}
+          {% if model2_messages|length == 1 %}{{ model2_item["lm_output"] }}{% else %}{{ model2_messages[1]["content"] }}{% endif %}
           [アシスタント2の回答終了]
         |||,
       },
