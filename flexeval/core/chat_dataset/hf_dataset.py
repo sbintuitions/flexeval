@@ -5,7 +5,7 @@ from ast import literal_eval
 import datasets
 from jinja2 import Template
 
-from flexeval.core.utils.jinja2_env import JINJA2_ENV
+from flexeval.core.utils.jinja2_utils import JINJA2_ENV, get_template_filter_function
 
 from .base import ChatDataset, ChatInstance
 
@@ -34,8 +34,13 @@ class HFChatDataset(ChatDataset):
         require_incremental_response: bool = False,
         extra_info_templates: dict[str, str] | None = None,
         system_message_template: str | None = None,
+        template_filters: dict[str, str] | None = None,
     ) -> None:
         self._dataset = datasets.load_dataset(path, name=subset, split=split)
+
+        template_filters = template_filters or {}
+        for template_str, value_to_keep in template_filters.items():
+            self._dataset = self._dataset.filter(get_template_filter_function(template_str, value_to_keep))
 
         self._input_template: Template = JINJA2_ENV.from_string(input_template)
 

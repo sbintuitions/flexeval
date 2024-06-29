@@ -5,7 +5,7 @@ from typing import Any
 
 import evaluate
 
-from flexeval.core.utils.jinja2_env import JINJA2_ENV
+from flexeval.core.utils.jinja2_utils import JINJA2_ENV
 
 from .base import Metric, MetricResult
 from .string_processor import StringProcessor

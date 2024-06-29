@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from flexeval.core.utils.jinja2_env import JINJA2_ENV
+from flexeval.core.utils.jinja2_utils import JINJA2_ENV
 
 from .base import PromptTemplate
 

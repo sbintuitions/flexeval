@@ -3,7 +3,7 @@ from __future__ import annotations
 import datasets
 from jinja2 import Template
 
-from flexeval.core.utils.jinja2_env import JINJA2_ENV
+from flexeval.core.utils.jinja2_utils import JINJA2_ENV, get_template_filter_function
 
 from .base import MultipleChoiceDataset, MultipleChoiceInstance
 
@@ -34,6 +34,7 @@ class HFMultipleChoiceDataset(MultipleChoiceDataset):
         subset: str | None = None,
         data_files: str | None = None,
         whitespace_before_choices: bool = False,
+        template_filters: dict[str, str] | None = None,
     ) -> None:
         self._dataset = datasets.load_dataset(
             path,
@@ -51,6 +52,10 @@ class HFMultipleChoiceDataset(MultipleChoiceDataset):
                     column_name,
                     fixed_column_name,
                 )
+
+        template_filters = template_filters or {}
+        for template_str, value_to_keep in template_filters.items():
+            self._dataset = self._dataset.filter(get_template_filter_function(template_str, value_to_keep))
 
         input_templates = input_templates or {}
         self._input_templates: dict[str, Template] = {k: JINJA2_ENV.from_string(v) for k, v in input_templates.items()}
