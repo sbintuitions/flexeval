@@ -3694,6 +3694,27 @@ Unless reference_processor is specified, this processor will be applied to the r
             <p>The batch size for the evaluator.</p>
           </div>
         </li>
+        <li class="doc-section-item field-body">
+          <b><code>disable_tqdm</code></b>
+              (<code>bool</code>, default:
+                  <code>False</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>Whether to disable the progress bar.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+          <b><code>valid_score_range</code></b>
+              (<code>tuple[int, int] | None</code>, default:
+                  <code>None</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>A tuple of two integers representing the valid score range.
+If the parsed score is out of the range, it will be ignored.</p>
+          </div>
+        </li>
     </ul>
 
 
@@ -3708,7 +3729,7 @@ Unless reference_processor is specified, this processor will be applied to the r
 <span class="gp">&gt;&gt;&gt; </span><span class="n">result</span> <span class="o">=</span> <span class="n">llm_score</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">lm_outputs</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
 <span class="go">MetricResult(</span>
-<span class="go">    summary={&#39;llm_score&#39;: 3.0},</span>
+<span class="go">    summary={&#39;llm_score&#39;: 3.0, &#39;num_failed_score_parses&#39;: 0},</span>
 <span class="go">    instance_details=[</span>
 <span class="go">        {</span>
 <span class="go">            &#39;llm_score&#39;: 2,</span>
@@ -3724,24 +3745,7 @@ Unless reference_processor is specified, this processor will be applied to the r
 
               <details class="quote">
                 <summary>Source code in <code>flexeval/core/metric/llm_score.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">138</span>
-<span class="normal">139</span>
-<span class="normal">140</span>
-<span class="normal">141</span>
-<span class="normal">142</span>
-<span class="normal">143</span>
-<span class="normal">144</span>
-<span class="normal">145</span>
-<span class="normal">146</span>
-<span class="normal">147</span>
-<span class="normal">148</span>
-<span class="normal">149</span>
-<span class="normal">150</span>
-<span class="normal">151</span>
-<span class="normal">152</span>
-<span class="normal">153</span>
-<span class="normal">154</span>
-<span class="normal">155</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">155</span>
 <span class="normal">156</span>
 <span class="normal">157</span>
 <span class="normal">158</span>
@@ -3856,7 +3860,25 @@ Unless reference_processor is specified, this processor will be applied to the r
 <span class="normal">267</span>
 <span class="normal">268</span>
 <span class="normal">269</span>
-<span class="normal">270</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">ChatLLMScore</span><span class="p">(</span><span class="n">Metric</span><span class="p">):</span>
+<span class="normal">270</span>
+<span class="normal">271</span>
+<span class="normal">272</span>
+<span class="normal">273</span>
+<span class="normal">274</span>
+<span class="normal">275</span>
+<span class="normal">276</span>
+<span class="normal">277</span>
+<span class="normal">278</span>
+<span class="normal">279</span>
+<span class="normal">280</span>
+<span class="normal">281</span>
+<span class="normal">282</span>
+<span class="normal">283</span>
+<span class="normal">284</span>
+<span class="normal">285</span>
+<span class="normal">286</span>
+<span class="normal">287</span>
+<span class="normal">288</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">ChatLLMScore</span><span class="p">(</span><span class="n">Metric</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A metric that evaluates the output of `LanguageModel.batch_generate_chat_response`.</span>
 
@@ -3865,6 +3887,9 @@ Unless reference_processor is specified, this processor will be applied to the r
 <span class="sd">        prompt_template: An instance of `PromptTemplate` to embed the input for the evaluator.</span>
 <span class="sd">        system_message: A system message to be prepended to the input for the evaluator.</span>
 <span class="sd">        batch_size: The batch size for the evaluator.</span>
+<span class="sd">        disable_tqdm: Whether to disable the progress bar.</span>
+<span class="sd">        valid_score_range: A tuple of two integers representing the valid score range.</span>
+<span class="sd">            If the parsed score is out of the range, it will be ignored.</span>
 
 <span class="sd">    Examples:</span>
 <span class="sd">        &gt;&gt;&gt; from flexeval import ChatLLMScore, OpenAIChatAPI, Jinja2PromptTemplate</span>
@@ -3877,7 +3902,7 @@ Unless reference_processor is specified, this processor will be applied to the r
 <span class="sd">        &gt;&gt;&gt; result = llm_score.evaluate(lm_outputs)</span>
 <span class="sd">        &gt;&gt;&gt; print(result)</span>
 <span class="sd">        MetricResult(</span>
-<span class="sd">            summary={&#39;llm_score&#39;: 3.0},</span>
+<span class="sd">            summary={&#39;llm_score&#39;: 3.0, &#39;num_failed_score_parses&#39;: 0},</span>
 <span class="sd">            instance_details=[</span>
 <span class="sd">                {</span>
 <span class="sd">                    &#39;llm_score&#39;: 2,</span>
@@ -3898,24 +3923,14 @@ Unless reference_processor is specified, this processor will be applied to the r
         <span class="n">system_message</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">PromptTemplate</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">4</span><span class="p">,</span>
         <span class="n">disable_tqdm</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">valid_score_range</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">language_model</span> <span class="o">=</span> <span class="n">language_model</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">prompt_template</span> <span class="o">=</span> <span class="n">prompt_template</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">system_message</span> <span class="o">=</span> <span class="n">system_message</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span> <span class="o">=</span> <span class="n">batch_size</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">disable_tqdm</span> <span class="o">=</span> <span class="n">disable_tqdm</span>
-
-    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">_parse_evaluator_output</span><span class="p">(</span><span class="n">evaluator_output</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Extract the last integer value from the evaluator output.</span>
-
-<span class="sd">        Return 0 if parsing fails.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">matched</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;(\d+)&quot;</span><span class="p">,</span> <span class="n">evaluator_output</span><span class="p">)</span>
-            <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">matched</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
-        <span class="k">except</span> <span class="p">(</span><span class="ne">IndexError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
-            <span class="k">return</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">valid_score_range</span> <span class="o">=</span> <span class="n">valid_score_range</span>
 
     <span class="k">def</span> <span class="nf">evaluate</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -3969,12 +3984,20 @@ Unless reference_processor is specified, this processor will be applied to the r
 
         <span class="n">evaluator_score_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">evaluator_output</span> <span class="ow">in</span> <span class="n">evaluator_output_list</span><span class="p">:</span>
-            <span class="n">evaluator_score</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_evaluator_output</span><span class="p">(</span><span class="n">evaluator_output</span><span class="p">)</span>
+            <span class="n">evaluator_score</span> <span class="o">=</span> <span class="n">parse_score_from_evaluator_output</span><span class="p">(</span>
+                <span class="n">evaluator_output</span><span class="p">,</span>
+                <span class="n">valid_score_range</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">valid_score_range</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">evaluator_score</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to parse score from evaluator output: </span><span class="si">{</span><span class="n">evaluator_output</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="n">evaluator_score_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">evaluator_score</span><span class="p">)</span>
 
-        <span class="n">average_evaluator_score</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">evaluator_score_list</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">evaluator_score_list</span><span class="p">)</span>
+        <span class="n">valid_scores</span> <span class="o">=</span> <span class="p">[</span><span class="n">score</span> <span class="k">for</span> <span class="n">score</span> <span class="ow">in</span> <span class="n">evaluator_score_list</span> <span class="k">if</span> <span class="n">score</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">]</span>
+        <span class="n">average_evaluator_score</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">valid_scores</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">valid_scores</span><span class="p">)</span> <span class="k">if</span> <span class="n">valid_scores</span> <span class="k">else</span> <span class="mi">0</span>
+        <span class="n">num_failed_score_parses</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">evaluator_score_list</span><span class="p">)</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">valid_scores</span><span class="p">)</span>
+
         <span class="k">return</span> <span class="n">MetricResult</span><span class="p">(</span>
-            <span class="p">{</span><span class="s2">&quot;llm_score&quot;</span><span class="p">:</span> <span class="n">average_evaluator_score</span><span class="p">},</span>
+            <span class="p">{</span><span class="s2">&quot;llm_score&quot;</span><span class="p">:</span> <span class="n">average_evaluator_score</span><span class="p">,</span> <span class="s2">&quot;num_failed_score_parses&quot;</span><span class="p">:</span> <span class="n">num_failed_score_parses</span><span class="p">},</span>
             <span class="n">instance_details</span><span class="o">=</span><span class="p">[</span>
                 <span class="p">{</span><span class="s2">&quot;llm_score&quot;</span><span class="p">:</span> <span class="n">eval_score</span><span class="p">,</span> <span class="s2">&quot;llm_score_input&quot;</span><span class="p">:</span> <span class="n">eval_in</span><span class="p">,</span> <span class="s2">&quot;llm_score_output&quot;</span><span class="p">:</span> <span class="n">eval_out</span><span class="p">}</span>
                 <span class="k">for</span> <span class="n">eval_score</span><span class="p">,</span> <span class="n">eval_in</span><span class="p">,</span> <span class="n">eval_out</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span>
@@ -4107,6 +4130,27 @@ Unless reference_processor is specified, this processor will be applied to the r
 
 </div>
 
+<div class="doc doc-object doc-attribute">
+
+
+
+<h3 id="flexeval.core.metric.llm_score.ChatLLMScore.valid_score_range" class="doc doc-heading">
+            <span class="doc doc-object-name doc-attribute-name">valid_score_range</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+<a href="#flexeval.core.metric.llm_score.ChatLLMScore.valid_score_range" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">valid_score_range</span> <span class="o">=</span> <span class="n">valid_score_range</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+    </div>
+
+</div>
+
 
 
 <div class="doc doc-object doc-function">
@@ -4117,38 +4161,42 @@ Unless reference_processor is specified, this processor will be applied to the r
 
 
 <a href="#flexeval.core.metric.llm_score.ChatLLMScore.__init__" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="fm">__init__</span><span class="p">(</span><span class="nf">language_model</span><span class="p">:</span> <span class="n">LanguageModel</span><span class="p">,</span> <span class="n">prompt_template</span><span class="p">:</span> <span class="n">PromptTemplate</span><span class="p">,</span> <span class="n">system_message</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">PromptTemplate</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">4</span><span class="p">,</span> <span class="n">disable_tqdm</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="fm">__init__</span><span class="p">(</span><span class="nf">language_model</span><span class="p">:</span> <span class="n">LanguageModel</span><span class="p">,</span> <span class="n">prompt_template</span><span class="p">:</span> <span class="n">PromptTemplate</span><span class="p">,</span> <span class="n">system_message</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">PromptTemplate</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">4</span><span class="p">,</span> <span class="n">disable_tqdm</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">valid_score_range</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
 
             <details class="quote">
               <summary>Source code in <code>flexeval/core/metric/llm_score.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">173</span>
-<span class="normal">174</span>
-<span class="normal">175</span>
-<span class="normal">176</span>
-<span class="normal">177</span>
-<span class="normal">178</span>
-<span class="normal">179</span>
-<span class="normal">180</span>
-<span class="normal">181</span>
-<span class="normal">182</span>
-<span class="normal">183</span>
-<span class="normal">184</span>
-<span class="normal">185</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">193</span>
+<span class="normal">194</span>
+<span class="normal">195</span>
+<span class="normal">196</span>
+<span class="normal">197</span>
+<span class="normal">198</span>
+<span class="normal">199</span>
+<span class="normal">200</span>
+<span class="normal">201</span>
+<span class="normal">202</span>
+<span class="normal">203</span>
+<span class="normal">204</span>
+<span class="normal">205</span>
+<span class="normal">206</span>
+<span class="normal">207</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">language_model</span><span class="p">:</span> <span class="n">LanguageModel</span><span class="p">,</span>
     <span class="n">prompt_template</span><span class="p">:</span> <span class="n">PromptTemplate</span><span class="p">,</span>
     <span class="n">system_message</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">PromptTemplate</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">4</span><span class="p">,</span>
     <span class="n">disable_tqdm</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">valid_score_range</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">language_model</span> <span class="o">=</span> <span class="n">language_model</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">prompt_template</span> <span class="o">=</span> <span class="n">prompt_template</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">system_message</span> <span class="o">=</span> <span class="n">system_message</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span> <span class="o">=</span> <span class="n">batch_size</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">disable_tqdm</span> <span class="o">=</span> <span class="n">disable_tqdm</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">valid_score_range</span> <span class="o">=</span> <span class="n">valid_score_range</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -4170,17 +4218,7 @@ Unless reference_processor is specified, this processor will be applied to the r
 
             <details class="quote">
               <summary>Source code in <code>flexeval/core/metric/llm_score.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">199</span>
-<span class="normal">200</span>
-<span class="normal">201</span>
-<span class="normal">202</span>
-<span class="normal">203</span>
-<span class="normal">204</span>
-<span class="normal">205</span>
-<span class="normal">206</span>
-<span class="normal">207</span>
-<span class="normal">208</span>
-<span class="normal">209</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">209</span>
 <span class="normal">210</span>
 <span class="normal">211</span>
 <span class="normal">212</span>
@@ -4236,7 +4274,25 @@ Unless reference_processor is specified, this processor will be applied to the r
 <span class="normal">262</span>
 <span class="normal">263</span>
 <span class="normal">264</span>
-<span class="normal">265</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">evaluate</span><span class="p">(</span>
+<span class="normal">265</span>
+<span class="normal">266</span>
+<span class="normal">267</span>
+<span class="normal">268</span>
+<span class="normal">269</span>
+<span class="normal">270</span>
+<span class="normal">271</span>
+<span class="normal">272</span>
+<span class="normal">273</span>
+<span class="normal">274</span>
+<span class="normal">275</span>
+<span class="normal">276</span>
+<span class="normal">277</span>
+<span class="normal">278</span>
+<span class="normal">279</span>
+<span class="normal">280</span>
+<span class="normal">281</span>
+<span class="normal">282</span>
+<span class="normal">283</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">evaluate</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">lm_outputs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
     <span class="n">references_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -4288,12 +4344,20 @@ Unless reference_processor is specified, this processor will be applied to the r
 
     <span class="n">evaluator_score_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">evaluator_output</span> <span class="ow">in</span> <span class="n">evaluator_output_list</span><span class="p">:</span>
-        <span class="n">evaluator_score</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_evaluator_output</span><span class="p">(</span><span class="n">evaluator_output</span><span class="p">)</span>
+        <span class="n">evaluator_score</span> <span class="o">=</span> <span class="n">parse_score_from_evaluator_output</span><span class="p">(</span>
+            <span class="n">evaluator_output</span><span class="p">,</span>
+            <span class="n">valid_score_range</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">valid_score_range</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">evaluator_score</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to parse score from evaluator output: </span><span class="si">{</span><span class="n">evaluator_output</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="n">evaluator_score_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">evaluator_score</span><span class="p">)</span>
 
-    <span class="n">average_evaluator_score</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">evaluator_score_list</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">evaluator_score_list</span><span class="p">)</span>
+    <span class="n">valid_scores</span> <span class="o">=</span> <span class="p">[</span><span class="n">score</span> <span class="k">for</span> <span class="n">score</span> <span class="ow">in</span> <span class="n">evaluator_score_list</span> <span class="k">if</span> <span class="n">score</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">]</span>
+    <span class="n">average_evaluator_score</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">valid_scores</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">valid_scores</span><span class="p">)</span> <span class="k">if</span> <span class="n">valid_scores</span> <span class="k">else</span> <span class="mi">0</span>
+    <span class="n">num_failed_score_parses</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">evaluator_score_list</span><span class="p">)</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">valid_scores</span><span class="p">)</span>
+
     <span class="k">return</span> <span class="n">MetricResult</span><span class="p">(</span>
-        <span class="p">{</span><span class="s2">&quot;llm_score&quot;</span><span class="p">:</span> <span class="n">average_evaluator_score</span><span class="p">},</span>
+        <span class="p">{</span><span class="s2">&quot;llm_score&quot;</span><span class="p">:</span> <span class="n">average_evaluator_score</span><span class="p">,</span> <span class="s2">&quot;num_failed_score_parses&quot;</span><span class="p">:</span> <span class="n">num_failed_score_parses</span><span class="p">},</span>
         <span class="n">instance_details</span><span class="o">=</span><span class="p">[</span>
             <span class="p">{</span><span class="s2">&quot;llm_score&quot;</span><span class="p">:</span> <span class="n">eval_score</span><span class="p">,</span> <span class="s2">&quot;llm_score_input&quot;</span><span class="p">:</span> <span class="n">eval_in</span><span class="p">,</span> <span class="s2">&quot;llm_score_output&quot;</span><span class="p">:</span> <span class="n">eval_out</span><span class="p">}</span>
             <span class="k">for</span> <span class="n">eval_score</span><span class="p">,</span> <span class="n">eval_in</span><span class="p">,</span> <span class="n">eval_out</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span>
@@ -4324,10 +4388,10 @@ Unless reference_processor is specified, this processor will be applied to the r
 
             <details class="quote">
               <summary>Source code in <code>flexeval/core/metric/llm_score.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">267</span>
-<span class="normal">268</span>
-<span class="normal">269</span>
-<span class="normal">270</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">285</span>
+<span class="normal">286</span>
+<span class="normal">287</span>
+<span class="normal">288</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="k">return</span> <span class="p">(</span>
         <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">(language_model=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">language_model</span><span class="si">}</span><span class="s2">, prompt_template=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">prompt_template</span><span class="si">}</span><span class="s2">)&quot;</span>
     <span class="p">)</span>
@@ -4392,6 +4456,27 @@ The last integer value in the output of the evaluator is used as the evaluation 
             <p>The batch size for the evaluator.</p>
           </div>
         </li>
+        <li class="doc-section-item field-body">
+          <b><code>disable_tqdm</code></b>
+              (<code>bool</code>, default:
+                  <code>False</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>Whether to disable the progress bar.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+          <b><code>valid_score_range</code></b>
+              (<code>tuple[int, int] | None</code>, default:
+                  <code>None</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>A tuple of two integers representing the valid score range.
+If the parsed score is out of the range, it will be ignored.</p>
+          </div>
+        </li>
     </ul>
 
 
@@ -4405,7 +4490,7 @@ The last integer value in the output of the evaluator is used as the evaluation 
 <span class="gp">&gt;&gt;&gt; </span><span class="n">result</span> <span class="o">=</span> <span class="n">llm_score</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">lm_outputs</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
 <span class="go">MetricResult(</span>
-<span class="go">    summary={&#39;llm_score&#39;: 3.0},</span>
+<span class="go">    summary={&#39;llm_score&#39;: 3.0, &#39;num_failed_score_parses&#39;: 0},</span>
 <span class="go">    instance_details=[</span>
 <span class="go">        {</span>
 <span class="go">            &#39;llm_score&#39;: 2,</span>
@@ -4421,23 +4506,7 @@ The last integer value in the output of the evaluator is used as the evaluation 
 
               <details class="quote">
                 <summary>Source code in <code>flexeval/core/metric/llm_score.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 14</span>
-<span class="normal"> 15</span>
-<span class="normal"> 16</span>
-<span class="normal"> 17</span>
-<span class="normal"> 18</span>
-<span class="normal"> 19</span>
-<span class="normal"> 20</span>
-<span class="normal"> 21</span>
-<span class="normal"> 22</span>
-<span class="normal"> 23</span>
-<span class="normal"> 24</span>
-<span class="normal"> 25</span>
-<span class="normal"> 26</span>
-<span class="normal"> 27</span>
-<span class="normal"> 28</span>
-<span class="normal"> 29</span>
-<span class="normal"> 30</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 30</span>
 <span class="normal"> 31</span>
 <span class="normal"> 32</span>
 <span class="normal"> 33</span>
@@ -4542,7 +4611,24 @@ The last integer value in the output of the evaluator is used as the evaluation 
 <span class="normal">132</span>
 <span class="normal">133</span>
 <span class="normal">134</span>
-<span class="normal">135</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">LLMScore</span><span class="p">(</span><span class="n">Metric</span><span class="p">):</span>
+<span class="normal">135</span>
+<span class="normal">136</span>
+<span class="normal">137</span>
+<span class="normal">138</span>
+<span class="normal">139</span>
+<span class="normal">140</span>
+<span class="normal">141</span>
+<span class="normal">142</span>
+<span class="normal">143</span>
+<span class="normal">144</span>
+<span class="normal">145</span>
+<span class="normal">146</span>
+<span class="normal">147</span>
+<span class="normal">148</span>
+<span class="normal">149</span>
+<span class="normal">150</span>
+<span class="normal">151</span>
+<span class="normal">152</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">LLMScore</span><span class="p">(</span><span class="n">Metric</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Let LanguageModel to evaluate the output of another LanguageModel.</span>
 
 <span class="sd">    You can specify the evaluation criteria in `PromptTemplate`.</span>
@@ -4552,6 +4638,9 @@ The last integer value in the output of the evaluator is used as the evaluation 
 <span class="sd">        language_model: An instance of `LanguageModel` to evaluate the output of the model.</span>
 <span class="sd">        prompt_template: An instance of `PromptTemplate` to embed the input for the evaluator.</span>
 <span class="sd">        batch_size: The batch size for the evaluator.</span>
+<span class="sd">        disable_tqdm: Whether to disable the progress bar.</span>
+<span class="sd">        valid_score_range: A tuple of two integers representing the valid score range.</span>
+<span class="sd">            If the parsed score is out of the range, it will be ignored.</span>
 
 <span class="sd">    Examples:</span>
 <span class="sd">        &gt;&gt;&gt; from flexeval import LLMScore, OpenAIChatAPI, Jinja2PromptTemplate</span>
@@ -4563,7 +4652,7 @@ The last integer value in the output of the evaluator is used as the evaluation 
 <span class="sd">        &gt;&gt;&gt; result = llm_score.evaluate(lm_outputs)</span>
 <span class="sd">        &gt;&gt;&gt; print(result)</span>
 <span class="sd">        MetricResult(</span>
-<span class="sd">            summary={&#39;llm_score&#39;: 3.0},</span>
+<span class="sd">            summary={&#39;llm_score&#39;: 3.0, &#39;num_failed_score_parses&#39;: 0},</span>
 <span class="sd">            instance_details=[</span>
 <span class="sd">                {</span>
 <span class="sd">                    &#39;llm_score&#39;: 2,</span>
@@ -4583,23 +4672,13 @@ The last integer value in the output of the evaluator is used as the evaluation 
         <span class="n">prompt_template</span><span class="p">:</span> <span class="n">PromptTemplate</span><span class="p">,</span>
         <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">4</span><span class="p">,</span>
         <span class="n">disable_tqdm</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">valid_score_range</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">language_model</span> <span class="o">=</span> <span class="n">language_model</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">prompt_template</span> <span class="o">=</span> <span class="n">prompt_template</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span> <span class="o">=</span> <span class="n">batch_size</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">disable_tqdm</span> <span class="o">=</span> <span class="n">disable_tqdm</span>
-
-    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">_parse_evaluator_output</span><span class="p">(</span><span class="n">evaluator_output</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Extract the last integer value from the evaluator output.</span>
-
-<span class="sd">        Return 0 if parsing fails.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">matched</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;(\d+)&quot;</span><span class="p">,</span> <span class="n">evaluator_output</span><span class="p">)</span>
-            <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">matched</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
-        <span class="k">except</span> <span class="p">(</span><span class="ne">IndexError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
-            <span class="k">return</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">valid_score_range</span> <span class="o">=</span> <span class="n">valid_score_range</span>
 
     <span class="k">def</span> <span class="nf">evaluate</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -4642,14 +4721,22 @@ The last integer value in the output of the evaluator is used as the evaluation 
                 <span class="n">evaluator_output_list</span> <span class="o">+=</span> <span class="n">evaluator_outputs</span>
                 <span class="n">pbar</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">batch_evaluator_input</span><span class="p">))</span>
 
-        <span class="n">evaluator_score_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">evaluator_score_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">evaluator_output</span> <span class="ow">in</span> <span class="n">evaluator_output_list</span><span class="p">:</span>
-            <span class="n">evaluator_score</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_evaluator_output</span><span class="p">(</span><span class="n">evaluator_output</span><span class="p">)</span>
+            <span class="n">evaluator_score</span> <span class="o">=</span> <span class="n">parse_score_from_evaluator_output</span><span class="p">(</span>
+                <span class="n">evaluator_output</span><span class="p">,</span>
+                <span class="n">valid_score_range</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">valid_score_range</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">evaluator_score</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to parse score from evaluator output: </span><span class="si">{</span><span class="n">evaluator_output</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="n">evaluator_score_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">evaluator_score</span><span class="p">)</span>
 
-        <span class="n">average_evaluator_score</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">evaluator_score_list</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">evaluator_score_list</span><span class="p">)</span>
+        <span class="n">valid_scores</span> <span class="o">=</span> <span class="p">[</span><span class="n">score</span> <span class="k">for</span> <span class="n">score</span> <span class="ow">in</span> <span class="n">evaluator_score_list</span> <span class="k">if</span> <span class="n">score</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">]</span>
+        <span class="n">average_evaluator_score</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">valid_scores</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">valid_scores</span><span class="p">)</span> <span class="k">if</span> <span class="n">valid_scores</span> <span class="k">else</span> <span class="mi">0</span>
+        <span class="n">num_failed_score_parses</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">evaluator_score_list</span><span class="p">)</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">valid_scores</span><span class="p">)</span>
+
         <span class="k">return</span> <span class="n">MetricResult</span><span class="p">(</span>
-            <span class="p">{</span><span class="s2">&quot;llm_score&quot;</span><span class="p">:</span> <span class="n">average_evaluator_score</span><span class="p">},</span>
+            <span class="p">{</span><span class="s2">&quot;llm_score&quot;</span><span class="p">:</span> <span class="n">average_evaluator_score</span><span class="p">,</span> <span class="s2">&quot;num_failed_score_parses&quot;</span><span class="p">:</span> <span class="n">num_failed_score_parses</span><span class="p">},</span>
             <span class="n">instance_details</span><span class="o">=</span><span class="p">[</span>
                 <span class="p">{</span><span class="s2">&quot;llm_score&quot;</span><span class="p">:</span> <span class="n">eval_score</span><span class="p">,</span> <span class="s2">&quot;llm_score_input&quot;</span><span class="p">:</span> <span class="n">eval_in</span><span class="p">,</span> <span class="s2">&quot;llm_score_output&quot;</span><span class="p">:</span> <span class="n">eval_out</span><span class="p">}</span>
                 <span class="k">for</span> <span class="n">eval_score</span><span class="p">,</span> <span class="n">eval_in</span><span class="p">,</span> <span class="n">eval_out</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span>
@@ -4761,6 +4848,27 @@ The last integer value in the output of the evaluator is used as the evaluation 
 
 </div>
 
+<div class="doc doc-object doc-attribute">
+
+
+
+<h3 id="flexeval.core.metric.llm_score.LLMScore.valid_score_range" class="doc doc-heading">
+            <span class="doc doc-object-name doc-attribute-name">valid_score_range</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+<a href="#flexeval.core.metric.llm_score.LLMScore.valid_score_range" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">valid_score_range</span> <span class="o">=</span> <span class="n">valid_score_range</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+    </div>
+
+</div>
+
 
 
 <div class="doc doc-object doc-function">
@@ -4771,34 +4879,38 @@ The last integer value in the output of the evaluator is used as the evaluation 
 
 
 <a href="#flexeval.core.metric.llm_score.LLMScore.__init__" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="fm">__init__</span><span class="p">(</span><span class="nf">language_model</span><span class="p">:</span> <span class="n">LanguageModel</span><span class="p">,</span> <span class="n">prompt_template</span><span class="p">:</span> <span class="n">PromptTemplate</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">4</span><span class="p">,</span> <span class="n">disable_tqdm</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="fm">__init__</span><span class="p">(</span><span class="nf">language_model</span><span class="p">:</span> <span class="n">LanguageModel</span><span class="p">,</span> <span class="n">prompt_template</span><span class="p">:</span> <span class="n">PromptTemplate</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">4</span><span class="p">,</span> <span class="n">disable_tqdm</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">valid_score_range</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
 
             <details class="quote">
               <summary>Source code in <code>flexeval/core/metric/llm_score.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">49</span>
-<span class="normal">50</span>
-<span class="normal">51</span>
-<span class="normal">52</span>
-<span class="normal">53</span>
-<span class="normal">54</span>
-<span class="normal">55</span>
-<span class="normal">56</span>
-<span class="normal">57</span>
-<span class="normal">58</span>
-<span class="normal">59</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">68</span>
+<span class="normal">69</span>
+<span class="normal">70</span>
+<span class="normal">71</span>
+<span class="normal">72</span>
+<span class="normal">73</span>
+<span class="normal">74</span>
+<span class="normal">75</span>
+<span class="normal">76</span>
+<span class="normal">77</span>
+<span class="normal">78</span>
+<span class="normal">79</span>
+<span class="normal">80</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">language_model</span><span class="p">:</span> <span class="n">LanguageModel</span><span class="p">,</span>
     <span class="n">prompt_template</span><span class="p">:</span> <span class="n">PromptTemplate</span><span class="p">,</span>
     <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">4</span><span class="p">,</span>
     <span class="n">disable_tqdm</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">valid_score_range</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">language_model</span> <span class="o">=</span> <span class="n">language_model</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">prompt_template</span> <span class="o">=</span> <span class="n">prompt_template</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span> <span class="o">=</span> <span class="n">batch_size</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">disable_tqdm</span> <span class="o">=</span> <span class="n">disable_tqdm</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">valid_score_range</span> <span class="o">=</span> <span class="n">valid_score_range</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -4820,16 +4932,7 @@ The last integer value in the output of the evaluator is used as the evaluation 
 
             <details class="quote">
               <summary>Source code in <code>flexeval/core/metric/llm_score.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 73</span>
-<span class="normal"> 74</span>
-<span class="normal"> 75</span>
-<span class="normal"> 76</span>
-<span class="normal"> 77</span>
-<span class="normal"> 78</span>
-<span class="normal"> 79</span>
-<span class="normal"> 80</span>
-<span class="normal"> 81</span>
-<span class="normal"> 82</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 82</span>
 <span class="normal"> 83</span>
 <span class="normal"> 84</span>
 <span class="normal"> 85</span>
@@ -4877,7 +4980,24 @@ The last integer value in the output of the evaluator is used as the evaluation 
 <span class="normal">127</span>
 <span class="normal">128</span>
 <span class="normal">129</span>
-<span class="normal">130</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">evaluate</span><span class="p">(</span>
+<span class="normal">130</span>
+<span class="normal">131</span>
+<span class="normal">132</span>
+<span class="normal">133</span>
+<span class="normal">134</span>
+<span class="normal">135</span>
+<span class="normal">136</span>
+<span class="normal">137</span>
+<span class="normal">138</span>
+<span class="normal">139</span>
+<span class="normal">140</span>
+<span class="normal">141</span>
+<span class="normal">142</span>
+<span class="normal">143</span>
+<span class="normal">144</span>
+<span class="normal">145</span>
+<span class="normal">146</span>
+<span class="normal">147</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">evaluate</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">lm_outputs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
     <span class="n">references_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -4918,14 +5038,22 @@ The last integer value in the output of the evaluator is used as the evaluation 
             <span class="n">evaluator_output_list</span> <span class="o">+=</span> <span class="n">evaluator_outputs</span>
             <span class="n">pbar</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">batch_evaluator_input</span><span class="p">))</span>
 
-    <span class="n">evaluator_score_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">evaluator_score_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">evaluator_output</span> <span class="ow">in</span> <span class="n">evaluator_output_list</span><span class="p">:</span>
-        <span class="n">evaluator_score</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_evaluator_output</span><span class="p">(</span><span class="n">evaluator_output</span><span class="p">)</span>
+        <span class="n">evaluator_score</span> <span class="o">=</span> <span class="n">parse_score_from_evaluator_output</span><span class="p">(</span>
+            <span class="n">evaluator_output</span><span class="p">,</span>
+            <span class="n">valid_score_range</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">valid_score_range</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">evaluator_score</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to parse score from evaluator output: </span><span class="si">{</span><span class="n">evaluator_output</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="n">evaluator_score_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">evaluator_score</span><span class="p">)</span>
 
-    <span class="n">average_evaluator_score</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">evaluator_score_list</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">evaluator_score_list</span><span class="p">)</span>
+    <span class="n">valid_scores</span> <span class="o">=</span> <span class="p">[</span><span class="n">score</span> <span class="k">for</span> <span class="n">score</span> <span class="ow">in</span> <span class="n">evaluator_score_list</span> <span class="k">if</span> <span class="n">score</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">]</span>
+    <span class="n">average_evaluator_score</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">valid_scores</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">valid_scores</span><span class="p">)</span> <span class="k">if</span> <span class="n">valid_scores</span> <span class="k">else</span> <span class="mi">0</span>
+    <span class="n">num_failed_score_parses</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">evaluator_score_list</span><span class="p">)</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">valid_scores</span><span class="p">)</span>
+
     <span class="k">return</span> <span class="n">MetricResult</span><span class="p">(</span>
-        <span class="p">{</span><span class="s2">&quot;llm_score&quot;</span><span class="p">:</span> <span class="n">average_evaluator_score</span><span class="p">},</span>
+        <span class="p">{</span><span class="s2">&quot;llm_score&quot;</span><span class="p">:</span> <span class="n">average_evaluator_score</span><span class="p">,</span> <span class="s2">&quot;num_failed_score_parses&quot;</span><span class="p">:</span> <span class="n">num_failed_score_parses</span><span class="p">},</span>
         <span class="n">instance_details</span><span class="o">=</span><span class="p">[</span>
             <span class="p">{</span><span class="s2">&quot;llm_score&quot;</span><span class="p">:</span> <span class="n">eval_score</span><span class="p">,</span> <span class="s2">&quot;llm_score_input&quot;</span><span class="p">:</span> <span class="n">eval_in</span><span class="p">,</span> <span class="s2">&quot;llm_score_output&quot;</span><span class="p">:</span> <span class="n">eval_out</span><span class="p">}</span>
             <span class="k">for</span> <span class="n">eval_score</span><span class="p">,</span> <span class="n">eval_in</span><span class="p">,</span> <span class="n">eval_out</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span>
@@ -4956,10 +5084,10 @@ The last integer value in the output of the evaluator is used as the evaluation 
 
             <details class="quote">
               <summary>Source code in <code>flexeval/core/metric/llm_score.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">132</span>
-<span class="normal">133</span>
-<span class="normal">134</span>
-<span class="normal">135</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">149</span>
+<span class="normal">150</span>
+<span class="normal">151</span>
+<span class="normal">152</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="k">return</span> <span class="p">(</span>
         <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">(language_model=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">language_model</span><span class="si">}</span><span class="s2">, prompt_template=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">prompt_template</span><span class="si">}</span><span class="s2">)&quot;</span>
     <span class="p">)</span>
