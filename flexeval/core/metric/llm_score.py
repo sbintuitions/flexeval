@@ -3,12 +3,28 @@ from __future__ import annotations
 import re
 
 import tqdm
+from loguru import logger
 
 from flexeval.core.language_model import LanguageModel
 from flexeval.core.prompt_template import PromptTemplate
 from flexeval.core.utils.data_util import batch_iter
 
 from .base import Metric, MetricResult
+
+
+def parse_score_from_evaluator_output(evaluator_output: str, valid_score_range: tuple[int, int] | None) -> int | None:
+    """Extract the last integer value from the evaluator output.
+
+    Return None if parsing fails.
+    """
+    matched = re.findall(r"(\d+)", evaluator_output)
+    if not matched:
+        return None
+
+    parsed_score = int(matched[-1])
+    if valid_score_range and not valid_score_range[0] <= parsed_score <= valid_score_range[1]:
+        return None
+    return parsed_score
 
 
 class LLMScore(Metric):
@@ -21,6 +37,9 @@ class LLMScore(Metric):
         language_model: An instance of `LanguageModel` to evaluate the output of the model.
         prompt_template: An instance of `PromptTemplate` to embed the input for the evaluator.
         batch_size: The batch size for the evaluator.
+        disable_tqdm: Whether to disable the progress bar.
+        valid_score_range: A tuple of two integers representing the valid score range.
+            If the parsed score is out of the range, it will be ignored.
 
     Examples:
         >>> from flexeval import LLMScore, OpenAIChatAPI, Jinja2PromptTemplate
@@ -32,7 +51,7 @@ class LLMScore(Metric):
         >>> result = llm_score.evaluate(lm_outputs)
         >>> print(result)
         MetricResult(
-            summary={'llm_score': 3.0},
+            summary={'llm_score': 3.0, 'num_failed_score_parses': 0},
             instance_details=[
                 {
                     'llm_score': 2,
@@ -52,23 +71,13 @@ class LLMScore(Metric):
         prompt_template: PromptTemplate,
         batch_size: int = 4,
         disable_tqdm: bool = False,
+        valid_score_range: tuple[int, int] | None = None,
     ) -> None:
         self.language_model = language_model
         self.prompt_template = prompt_template
         self.batch_size = batch_size
         self.disable_tqdm = disable_tqdm
-
-    @staticmethod
-    def _parse_evaluator_output(evaluator_output: str) -> int:
-        """Extract the last integer value from the evaluator output.
-
-        Return 0 if parsing fails.
-        """
-        try:
-            matched = re.findall(r"(\d+)", evaluator_output)
-            return int(matched[-1])
-        except (IndexError, ValueError):
-            return 0
+        self.valid_score_range = valid_score_range
 
     def evaluate(
         self,
@@ -111,14 +120,22 @@ class LLMScore(Metric):
                 evaluator_output_list += evaluator_outputs
                 pbar.update(len(batch_evaluator_input))
 
-        evaluator_score_list: list[int] = []
+        evaluator_score_list: list[int | None] = []
         for evaluator_output in evaluator_output_list:
-            evaluator_score = self._parse_evaluator_output(evaluator_output)
+            evaluator_score = parse_score_from_evaluator_output(
+                evaluator_output,
+                valid_score_range=self.valid_score_range,
+            )
+            if evaluator_score is None:
+                logger.warning(f"Failed to parse score from evaluator output: {evaluator_output}")
             evaluator_score_list.append(evaluator_score)
 
-        average_evaluator_score = sum(evaluator_score_list) / len(evaluator_score_list)
+        valid_scores = [score for score in evaluator_score_list if score is not None]
+        average_evaluator_score = sum(valid_scores) / len(valid_scores) if valid_scores else 0
+        num_failed_score_parses = len(evaluator_score_list) - len(valid_scores)
+
         return MetricResult(
-            {"llm_score": average_evaluator_score},
+            {"llm_score": average_evaluator_score, "num_failed_score_parses": num_failed_score_parses},
             instance_details=[
                 {"llm_score": eval_score, "llm_score_input": eval_in, "llm_score_output": eval_out}
                 for eval_score, eval_in, eval_out in zip(
@@ -144,6 +161,9 @@ class ChatLLMScore(Metric):
         prompt_template: An instance of `PromptTemplate` to embed the input for the evaluator.
         system_message: A system message to be prepended to the input for the evaluator.
         batch_size: The batch size for the evaluator.
+        disable_tqdm: Whether to disable the progress bar.
+        valid_score_range: A tuple of two integers representing the valid score range.
+            If the parsed score is out of the range, it will be ignored.
 
     Examples:
         >>> from flexeval import ChatLLMScore, OpenAIChatAPI, Jinja2PromptTemplate
@@ -156,7 +176,7 @@ class ChatLLMScore(Metric):
         >>> result = llm_score.evaluate(lm_outputs)
         >>> print(result)
         MetricResult(
-            summary={'llm_score': 3.0},
+            summary={'llm_score': 3.0, 'num_failed_score_parses': 0},
             instance_details=[
                 {
                     'llm_score': 2,
@@ -177,24 +197,14 @@ class ChatLLMScore(Metric):
         system_message: str | PromptTemplate | None = None,
         batch_size: int = 4,
         disable_tqdm: bool = False,
+        valid_score_range: tuple[int, int] | None = None,
     ) -> None:
         self.language_model = language_model
         self.prompt_template = prompt_template
         self.system_message = system_message
         self.batch_size = batch_size
         self.disable_tqdm = disable_tqdm
-
-    @staticmethod
-    def _parse_evaluator_output(evaluator_output: str) -> int:
-        """Extract the last integer value from the evaluator output.
-
-        Return 0 if parsing fails.
-        """
-        try:
-            matched = re.findall(r"(\d+)", evaluator_output)
-            return int(matched[-1])
-        except (IndexError, ValueError):
-            return 0
+        self.valid_score_range = valid_score_range
 
     def evaluate(
         self,
@@ -248,12 +258,20 @@ class ChatLLMScore(Metric):
 
         evaluator_score_list: list[int] = []
         for evaluator_output in evaluator_output_list:
-            evaluator_score = self._parse_evaluator_output(evaluator_output)
+            evaluator_score = parse_score_from_evaluator_output(
+                evaluator_output,
+                valid_score_range=self.valid_score_range,
+            )
+            if evaluator_score is None:
+                logger.warning(f"Failed to parse score from evaluator output: {evaluator_output}")
             evaluator_score_list.append(evaluator_score)
 
-        average_evaluator_score = sum(evaluator_score_list) / len(evaluator_score_list)
+        valid_scores = [score for score in evaluator_score_list if score is not None]
+        average_evaluator_score = sum(valid_scores) / len(valid_scores) if valid_scores else 0
+        num_failed_score_parses = len(evaluator_score_list) - len(valid_scores)
+
         return MetricResult(
-            {"llm_score": average_evaluator_score},
+            {"llm_score": average_evaluator_score, "num_failed_score_parses": num_failed_score_parses},
             instance_details=[
                 {"llm_score": eval_score, "llm_score_input": eval_in, "llm_score_output": eval_out}
                 for eval_score, eval_in, eval_out in zip(
