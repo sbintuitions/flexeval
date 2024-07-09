@@ -5,10 +5,9 @@ from typing import Any
 
 import evaluate
 
+from flexeval.core.metric.base import Metric, MetricResult
+from flexeval.core.metric.string_processor import StringProcessor
 from flexeval.core.utils.jinja2_utils import JINJA2_ENV
-
-from .base import Metric, MetricResult
-from .string_processor import StringProcessor
 
 # by default, the program is not allowed to execute code and we need to set this environment variable
 os.environ["HF_ALLOW_CODE_EVAL"] = "1"
@@ -19,9 +18,9 @@ class CodeEval(Metric):
     A metric that evaluates generated code with test cases.
 
     Args:
-        code_prompt_template: A Jinja2 template string that will prepend the generated code.
-            The template should contain variables that will be replaced with the values in `task_inputs_list`.
-            If `None`, the code prompt will be the generated code itself.
+        code_template: A Jinja2 template string to make the generated code.
+            The template can contain variables from task inputs.
+            If `None`, the code prompt will be the generated text itself.
         processor: A processor applied to model outputs before evaluation.
 
     Examples:
@@ -40,14 +39,13 @@ class CodeEval(Metric):
         )
     """
 
-    def __init__(self, code_prompt_template: str | None = None, processor: StringProcessor | None = None) -> None:
-        self._code_prompt_template = None
-        if code_prompt_template is not None:
-            self._code_prompt_template = JINJA2_ENV.from_string(
-                code_prompt_template,
-            )
-        self._code_eval = evaluate.load("code_eval")
-        self._processor = processor
+    def __init__(self, code_template: str | None = None, processor: StringProcessor | None = None) -> None:
+        if code_template is None:
+            code_template = "{{ lm_output }}"
+
+        self.code_template = JINJA2_ENV.from_string(code_template)
+        self.code_eval = evaluate.load("code_eval")
+        self.processor = processor
 
     def evaluate(
         self,
@@ -58,7 +56,7 @@ class CodeEval(Metric):
         if task_inputs_list is None:
             task_inputs_list = [{} for _ in lm_outputs]
 
-        generated_functions: list[str] = []
+        generated_code_list: list[str] = []
         test_case_list: list[str] = []
         # in code generation tasks, references_list contains the test cases
         for lm_output, task_inputs, test_cases in zip(
@@ -66,18 +64,16 @@ class CodeEval(Metric):
             task_inputs_list,
             references_list,
         ):
-            if self._processor is not None:
-                lm_output = self._processor(lm_output)  # noqa: PLW2901
+            if self.processor is not None:
+                lm_output = self.processor(lm_output)  # noqa: PLW2901
 
-            generated_function = lm_output
-            if self._code_prompt_template is not None:
-                generated_function = self._code_prompt_template.render(**task_inputs) + lm_output
+            generated_code = self.code_template.render(lm_output=lm_output, **task_inputs)
 
-            generated_functions.append(generated_function)
+            generated_code_list.append(generated_code)
             test_case_list.append("\n".join(test_cases))
-        pass_at_k, results = self._code_eval.compute(
+        pass_at_k, results = self.code_eval.compute(
             references=test_case_list,
-            predictions=[[f] for f in generated_functions],
+            predictions=[[c] for c in generated_code_list],
             k=[1],
         )
 
