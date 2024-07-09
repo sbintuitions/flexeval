@@ -21,7 +21,7 @@ original_config {
       },
     },
     metrics: [
-      { class_path: 'CodeEval', init_args: { code_prompt_template: '{{ prompt | replace("    ", "\t") }}' } },
+      { class_path: 'CodeEval', init_args: { code_template: '{{ prompt | replace("    ", "\t") }}{{ lm_output }}' } },
     ],
   },
 }
