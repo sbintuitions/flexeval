@@ -82,7 +82,7 @@ def main() -> None:  # noqa: C901
 
     # Add the current directory to sys.path
     # to enable importing modules from the directory where this script is executed.
-    sys.path.append(os.environ.get("ADDITIONAL_MODULES_PATH", Path.cwd()))
+    sys.path.append(os.environ.get("ADDITIONAL_MODULES_PATH", str(Path.cwd())))
 
     args = parser.parse_args()
     logger.info(args)
