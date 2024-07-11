@@ -144,7 +144,12 @@ def main() -> None:  # noqa: C901, PLR0912, PLR0915
     logger.info(f"flexeval version: {version('flexeval')}")
 
     config_dict = as_dict(args)  # this will be used to save the config
+
+    # We instantiate the result_recorder first
+    # to allow it to initialize global logging modules (e.g., wandb) that other classes might use.
+    result_recorder = parser.instantiate_classes({"result_recorder": args.pop("result_recorder")}).result_recorder
     args = parser.instantiate_classes(args)
+    args.result_recorder = result_recorder
 
     result_recorders: list[ResultRecorder] = []
     if args.save_dir:

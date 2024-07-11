@@ -35,6 +35,13 @@ def main() -> None:  # noqa: C901
         help="You can specify the parameters, the path to the config file, or the name of the preset config.",
     )
     parser.add_argument(
+        "--eval_dataset",
+        type=Union[GenerationDataset, ChatDataset],
+        default=None,
+        help="If specified, override the references with the ones from the generation_dataset.",
+    )
+    # Saving arguments
+    parser.add_argument(
         "--save_dir",
         type=str,
         default=None,
@@ -47,21 +54,24 @@ def main() -> None:  # noqa: C901
         help="Overwrite the save_dir if it exists",
     )
     parser.add_argument(
-        "--eval_dataset",
-        type=Union[GenerationDataset, ChatDataset],
+        "--result_recorder",
+        type=ResultRecorder,
         default=None,
-        help="If specified, override the references with the ones from the generation_dataset.",
+        help="Result recorder to save the evaluation results",
     )
+    # Argument parsing arguments
+    parser.add_argument(
+        "--config",
+        action=ActionConfigFile,
+        help="Path to the config file",
+    )
+
+    # Metadata
     parser.add_argument(
         "--metadata",
         type=Dict[str, Any],
         default={},
         help="Metadata to save in config.json",
-    )
-    parser.add_argument(
-        "--config",
-        action=ActionConfigFile,
-        help="Path to the config file",
     )
 
     config_name_resolver = ConfigNameResolver()
@@ -87,10 +97,6 @@ def main() -> None:  # noqa: C901
     args = parser.parse_args()
     logger.info(args)
 
-    result_recorders: list[ResultRecorder] = []
-    if args.save_dir is not None:
-        result_recorders.append(LocalRecorder(args.save_dir, force=args.force))
-
     # normalize args.metrics to a list
     if not isinstance(args.metrics, list):
         args.metrics = [args.metrics]
@@ -99,7 +105,17 @@ def main() -> None:  # noqa: C901
     args_as_dict["metadata"].update(get_env_metadata())
     logger.info(f"flexeval version: {version('flexeval')}")
 
+    # We instantiate the result_recorder first
+    # to allow it to initialize global logging modules (e.g., wandb) that other classes might use.
+    result_recorder = parser.instantiate_classes({"result_recorder": args.pop("result_recorder")}).result_recorder
     args = parser.instantiate_classes(args)
+    args.result_recorder = result_recorder
+
+    result_recorders: list[ResultRecorder] = []
+    if args.save_dir is not None:
+        result_recorders.append(LocalRecorder(args.save_dir, force=args.force))
+    if args.result_recorder:
+        result_recorders.append(args.result_recorder)
 
     for result_recorder in result_recorders:
         result_recorder.record_config(args_as_dict)
