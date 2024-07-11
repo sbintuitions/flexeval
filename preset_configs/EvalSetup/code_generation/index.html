@@ -1382,7 +1382,7 @@
       },
     },
     metrics: [
-      { class_path: &#39;CodeEval&#39;, init_args: { code_prompt_template: &#39;{{ prompt }}&#39; } },
+      { class_path: &#39;CodeEval&#39;, init_args: { code_template: &#39;{{ prompt }}{{ lm_output }}&#39; } },
     ],
     gen_kwargs: { max_new_tokens: 512, stop_sequences: [&#39;\nclass&#39;, &#39;\ndef&#39;, &#39;\n#&#39;, &#39;\n@&#39;, &#39;\nprint&#39;, &#39;\nif&#39;, &#39;\n```&#39;] },
     batch_size: 4,
@@ -1411,7 +1411,7 @@ original_config {
       },
     },
     metrics: [
-      { class_path: &#39;CodeEval&#39;, init_args: { code_prompt_template: &#39;{{ prompt | replace(&quot;    &quot;, &quot;\t&quot;) }}&#39; } },
+      { class_path: &#39;CodeEval&#39;, init_args: { code_template: &#39;{{ prompt | replace(&quot;    &quot;, &quot;\t&quot;) }}{{ lm_output }}&#39; } },
     ],
   },
 }
@@ -1543,7 +1543,7 @@ original_config {
       },
     },
     metrics: [
-      { class_path: &#39;CodeEval&#39;, init_args: { code_prompt_template: &#39;{{ prompt }}&#39; } },
+      { class_path: &#39;CodeEval&#39;, init_args: { code_template: &#39;{{ prompt }}{{ lm_output }}&#39; } },
     ],
     gen_kwargs: { max_new_tokens: 512, stop_sequences: [&#39;\nclass&#39;, &#39;\ndef&#39;, &#39;\n#&#39;, &#39;\n@&#39;, &#39;\nprint&#39;, &#39;\nif&#39;, &#39;\n```&#39;] },
     batch_size: 4,
@@ -1572,7 +1572,7 @@ original_config {
       },
     },
     metrics: [
-      { class_path: &#39;CodeEval&#39;, init_args: { code_prompt_template: &#39;{{ prompt | replace(&quot;    &quot;, &quot;\t&quot;) }}&#39; } },
+      { class_path: &#39;CodeEval&#39;, init_args: { code_template: &#39;{{ prompt | replace(&quot;    &quot;, &quot;\t&quot;) }}{{ lm_output }}&#39; } },
     ],
   },
 }

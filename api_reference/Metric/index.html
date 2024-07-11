@@ -2526,15 +2526,15 @@ Unless reference_processor is specified, this processor will be applied to the r
 <p><span class="doc-section-title">Parameters:</span></p>
     <ul>
         <li class="doc-section-item field-body">
-          <b><code>code_prompt_template</code></b>
+          <b><code>code_template</code></b>
               (<code>str | None</code>, default:
                   <code>None</code>
 )
           –
           <div class="doc-md-description">
-            <p>A Jinja2 template string that will prepend the generated code.
-The template should contain variables that will be replaced with the values in <code>task_inputs_list</code>.
-If <code>None</code>, the code prompt will be the generated code itself.</p>
+            <p>A Jinja2 template string to make the generated code.
+The template can contain variables from task inputs.
+If <code>None</code>, the code prompt will be the generated text itself.</p>
           </div>
         </li>
         <li class="doc-section-item field-body">
@@ -2568,7 +2568,8 @@ If <code>None</code>, the code prompt will be the generated code itself.</p>
 
               <details class="quote">
                 <summary>Source code in <code>flexeval/core/metric/code_eval.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">17</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">16</span>
+<span class="normal">17</span>
 <span class="normal">18</span>
 <span class="normal">19</span>
 <span class="normal">20</span>
@@ -2644,18 +2645,14 @@ If <code>None</code>, the code prompt will be the generated code itself.</p>
 <span class="normal">90</span>
 <span class="normal">91</span>
 <span class="normal">92</span>
-<span class="normal">93</span>
-<span class="normal">94</span>
-<span class="normal">95</span>
-<span class="normal">96</span>
-<span class="normal">97</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">CodeEval</span><span class="p">(</span><span class="n">Metric</span><span class="p">):</span>
+<span class="normal">93</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">CodeEval</span><span class="p">(</span><span class="n">Metric</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A metric that evaluates generated code with test cases.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        code_prompt_template: A Jinja2 template string that will prepend the generated code.</span>
-<span class="sd">            The template should contain variables that will be replaced with the values in `task_inputs_list`.</span>
-<span class="sd">            If `None`, the code prompt will be the generated code itself.</span>
+<span class="sd">        code_template: A Jinja2 template string to make the generated code.</span>
+<span class="sd">            The template can contain variables from task inputs.</span>
+<span class="sd">            If `None`, the code prompt will be the generated text itself.</span>
 <span class="sd">        processor: A processor applied to model outputs before evaluation.</span>
 
 <span class="sd">    Examples:</span>
@@ -2674,14 +2671,13 @@ If <code>None</code>, the code prompt will be the generated code itself.</p>
 <span class="sd">        )</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">code_prompt_template</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">processor</span><span class="p">:</span> <span class="n">StringProcessor</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_code_prompt_template</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="k">if</span> <span class="n">code_prompt_template</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_code_prompt_template</span> <span class="o">=</span> <span class="n">JINJA2_ENV</span><span class="o">.</span><span class="n">from_string</span><span class="p">(</span>
-                <span class="n">code_prompt_template</span><span class="p">,</span>
-            <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_code_eval</span> <span class="o">=</span> <span class="n">evaluate</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s2">&quot;code_eval&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_processor</span> <span class="o">=</span> <span class="n">processor</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">code_template</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">processor</span><span class="p">:</span> <span class="n">StringProcessor</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">code_template</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">code_template</span> <span class="o">=</span> <span class="s2">&quot;{{ lm_output }}&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">code_template</span> <span class="o">=</span> <span class="n">JINJA2_ENV</span><span class="o">.</span><span class="n">from_string</span><span class="p">(</span><span class="n">code_template</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">code_eval</span> <span class="o">=</span> <span class="n">evaluate</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s2">&quot;code_eval&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">processor</span> <span class="o">=</span> <span class="n">processor</span>
 
     <span class="k">def</span> <span class="nf">evaluate</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -2692,7 +2688,7 @@ If <code>None</code>, the code prompt will be the generated code itself.</p>
         <span class="k">if</span> <span class="n">task_inputs_list</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">task_inputs_list</span> <span class="o">=</span> <span class="p">[{}</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">lm_outputs</span><span class="p">]</span>
 
-        <span class="n">generated_functions</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">generated_code_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">test_case_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="c1"># in code generation tasks, references_list contains the test cases</span>
         <span class="k">for</span> <span class="n">lm_output</span><span class="p">,</span> <span class="n">task_inputs</span><span class="p">,</span> <span class="n">test_cases</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span>
@@ -2700,18 +2696,16 @@ If <code>None</code>, the code prompt will be the generated code itself.</p>
             <span class="n">task_inputs_list</span><span class="p">,</span>
             <span class="n">references_list</span><span class="p">,</span>
         <span class="p">):</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_processor</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">lm_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_processor</span><span class="p">(</span><span class="n">lm_output</span><span class="p">)</span>  <span class="c1"># noqa: PLW2901</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">processor</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">lm_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">processor</span><span class="p">(</span><span class="n">lm_output</span><span class="p">)</span>  <span class="c1"># noqa: PLW2901</span>
 
-            <span class="n">generated_function</span> <span class="o">=</span> <span class="n">lm_output</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_code_prompt_template</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">generated_function</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_code_prompt_template</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="o">**</span><span class="n">task_inputs</span><span class="p">)</span> <span class="o">+</span> <span class="n">lm_output</span>
+            <span class="n">generated_code</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">code_template</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">lm_output</span><span class="o">=</span><span class="n">lm_output</span><span class="p">,</span> <span class="o">**</span><span class="n">task_inputs</span><span class="p">)</span>
 
-            <span class="n">generated_functions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">generated_function</span><span class="p">)</span>
+            <span class="n">generated_code_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">generated_code</span><span class="p">)</span>
             <span class="n">test_case_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">test_cases</span><span class="p">))</span>
-        <span class="n">pass_at_k</span><span class="p">,</span> <span class="n">results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_code_eval</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span>
+        <span class="n">pass_at_k</span><span class="p">,</span> <span class="n">results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">code_eval</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span>
             <span class="n">references</span><span class="o">=</span><span class="n">test_case_list</span><span class="p">,</span>
-            <span class="n">predictions</span><span class="o">=</span><span class="p">[[</span><span class="n">f</span><span class="p">]</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">generated_functions</span><span class="p">],</span>
+            <span class="n">predictions</span><span class="o">=</span><span class="p">[[</span><span class="n">c</span><span class="p">]</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">generated_code_list</span><span class="p">],</span>
             <span class="n">k</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
         <span class="p">)</span>
 
@@ -2742,6 +2736,69 @@ If <code>None</code>, the code prompt will be the generated code itself.</p>
 
 
 
+<div class="doc doc-object doc-attribute">
+
+
+
+<h3 id="flexeval.core.metric.code_eval.CodeEval.code_template" class="doc doc-heading">
+            <span class="doc doc-object-name doc-attribute-name">code_template</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+<a href="#flexeval.core.metric.code_eval.CodeEval.code_template" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">code_template</span> <span class="o">=</span> <span class="n">from_string</span><span class="p">(</span><span class="n">code_template</span><span class="p">)</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h3 id="flexeval.core.metric.code_eval.CodeEval.code_eval" class="doc doc-heading">
+            <span class="doc doc-object-name doc-attribute-name">code_eval</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+<a href="#flexeval.core.metric.code_eval.CodeEval.code_eval" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">code_eval</span> <span class="o">=</span> <span class="n">load</span><span class="p">(</span><span class="s1">&#39;code_eval&#39;</span><span class="p">)</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h3 id="flexeval.core.metric.code_eval.CodeEval.processor" class="doc doc-heading">
+            <span class="doc doc-object-name doc-attribute-name">processor</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+<a href="#flexeval.core.metric.code_eval.CodeEval.processor" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">processor</span> <span class="o">=</span> <span class="n">processor</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+    </div>
+
+</div>
+
 
 
 <div class="doc doc-object doc-function">
@@ -2752,28 +2809,26 @@ If <code>None</code>, the code prompt will be the generated code itself.</p>
 
 
 <a href="#flexeval.core.metric.code_eval.CodeEval.__init__" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="fm">__init__</span><span class="p">(</span><span class="nf">code_prompt_template</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">processor</span><span class="p">:</span> <span class="n">StringProcessor</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="fm">__init__</span><span class="p">(</span><span class="nf">code_template</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">processor</span><span class="p">:</span> <span class="n">StringProcessor</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
 
             <details class="quote">
               <summary>Source code in <code>flexeval/core/metric/code_eval.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">43</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">42</span>
+<span class="normal">43</span>
 <span class="normal">44</span>
 <span class="normal">45</span>
 <span class="normal">46</span>
 <span class="normal">47</span>
-<span class="normal">48</span>
-<span class="normal">49</span>
-<span class="normal">50</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">code_prompt_template</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">processor</span><span class="p">:</span> <span class="n">StringProcessor</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">_code_prompt_template</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="k">if</span> <span class="n">code_prompt_template</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_code_prompt_template</span> <span class="o">=</span> <span class="n">JINJA2_ENV</span><span class="o">.</span><span class="n">from_string</span><span class="p">(</span>
-            <span class="n">code_prompt_template</span><span class="p">,</span>
-        <span class="p">)</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">_code_eval</span> <span class="o">=</span> <span class="n">evaluate</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s2">&quot;code_eval&quot;</span><span class="p">)</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">_processor</span> <span class="o">=</span> <span class="n">processor</span>
+<span class="normal">48</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">code_template</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">processor</span><span class="p">:</span> <span class="n">StringProcessor</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">code_template</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">code_template</span> <span class="o">=</span> <span class="s2">&quot;{{ lm_output }}&quot;</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">code_template</span> <span class="o">=</span> <span class="n">JINJA2_ENV</span><span class="o">.</span><span class="n">from_string</span><span class="p">(</span><span class="n">code_template</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">code_eval</span> <span class="o">=</span> <span class="n">evaluate</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s2">&quot;code_eval&quot;</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">processor</span> <span class="o">=</span> <span class="n">processor</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -2795,7 +2850,9 @@ If <code>None</code>, the code prompt will be the generated code itself.</p>
 
             <details class="quote">
               <summary>Source code in <code>flexeval/core/metric/code_eval.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">52</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
 <span class="normal">53</span>
 <span class="normal">54</span>
 <span class="normal">55</span>
@@ -2836,11 +2893,7 @@ If <code>None</code>, the code prompt will be the generated code itself.</p>
 <span class="normal">90</span>
 <span class="normal">91</span>
 <span class="normal">92</span>
-<span class="normal">93</span>
-<span class="normal">94</span>
-<span class="normal">95</span>
-<span class="normal">96</span>
-<span class="normal">97</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">evaluate</span><span class="p">(</span>
+<span class="normal">93</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">evaluate</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">lm_outputs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
     <span class="n">references_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span>
@@ -2849,7 +2902,7 @@ If <code>None</code>, the code prompt will be the generated code itself.</p>
     <span class="k">if</span> <span class="n">task_inputs_list</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">task_inputs_list</span> <span class="o">=</span> <span class="p">[{}</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">lm_outputs</span><span class="p">]</span>
 
-    <span class="n">generated_functions</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">generated_code_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">test_case_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="c1"># in code generation tasks, references_list contains the test cases</span>
     <span class="k">for</span> <span class="n">lm_output</span><span class="p">,</span> <span class="n">task_inputs</span><span class="p">,</span> <span class="n">test_cases</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span>
@@ -2857,18 +2910,16 @@ If <code>None</code>, the code prompt will be the generated code itself.</p>
         <span class="n">task_inputs_list</span><span class="p">,</span>
         <span class="n">references_list</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_processor</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">lm_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_processor</span><span class="p">(</span><span class="n">lm_output</span><span class="p">)</span>  <span class="c1"># noqa: PLW2901</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">processor</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">lm_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">processor</span><span class="p">(</span><span class="n">lm_output</span><span class="p">)</span>  <span class="c1"># noqa: PLW2901</span>
 
-        <span class="n">generated_function</span> <span class="o">=</span> <span class="n">lm_output</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_code_prompt_template</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">generated_function</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_code_prompt_template</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="o">**</span><span class="n">task_inputs</span><span class="p">)</span> <span class="o">+</span> <span class="n">lm_output</span>
+        <span class="n">generated_code</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">code_template</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">lm_output</span><span class="o">=</span><span class="n">lm_output</span><span class="p">,</span> <span class="o">**</span><span class="n">task_inputs</span><span class="p">)</span>
 
-        <span class="n">generated_functions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">generated_function</span><span class="p">)</span>
+        <span class="n">generated_code_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">generated_code</span><span class="p">)</span>
         <span class="n">test_case_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">test_cases</span><span class="p">))</span>
-    <span class="n">pass_at_k</span><span class="p">,</span> <span class="n">results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_code_eval</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span>
+    <span class="n">pass_at_k</span><span class="p">,</span> <span class="n">results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">code_eval</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span>
         <span class="n">references</span><span class="o">=</span><span class="n">test_case_list</span><span class="p">,</span>
-        <span class="n">predictions</span><span class="o">=</span><span class="p">[[</span><span class="n">f</span><span class="p">]</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">generated_functions</span><span class="p">],</span>
+        <span class="n">predictions</span><span class="o">=</span><span class="p">[[</span><span class="n">c</span><span class="p">]</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">generated_code_list</span><span class="p">],</span>
         <span class="n">k</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
     <span class="p">)</span>
 
