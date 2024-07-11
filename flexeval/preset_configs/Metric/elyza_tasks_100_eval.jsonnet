@@ -6,6 +6,7 @@ The template is adapted from the blog post [ELYZAが公開した日本語LLM「E
   class_path: 'ChatLLMScore',
   init_args: {
     language_model: { class_path: 'OpenAIChatAPI', init_args: { model: 'gpt-4-turbo-2024-04-09' } },
+    valid_score_range: [1, 5],
     prompt_template: {
       class_path: 'Jinja2PromptTemplate',
       init_args: {
