@@ -203,9 +203,6 @@ class HuggingFaceLM(LanguageModel):
                 model,
                 **model_kwargs,
             )
-            # For models such as LoRA, we can merge the additional weights to run inference faster.
-            if hasattr(self.model, "merge_and_unload"):
-                self.model: PreTrainedModel = self.model.merge_and_unload()
 
         self.model.eval()
 
