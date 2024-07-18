@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import itertools
 import os
 import subprocess
 import tempfile
@@ -14,18 +13,20 @@ from .test_flexeval_lm import CHAT_RESPONSE_CMD, GENERATION_CMD, check_if_eval_r
 
 
 @pytest.mark.parametrize(
-    ("flexeval_lm_command", "metrics_args", "override_args"),
-    list(
-        itertools.product(
-            [CHAT_RESPONSE_CMD, GENERATION_CMD],
-            [
-                ["--metrics", "ExactMatch"],
-                ["--metrics", "exact_match"],
-                ["--metrics", "ExactMatch", "--metrics+=CharF1"],
-            ],
-            [[], ["--metrics.processor", "AIONormalizer"]],
-        ),
-    ),
+    "flexeval_lm_command",
+    [CHAT_RESPONSE_CMD, GENERATION_CMD],
+)
+@pytest.mark.parametrize(
+    "metrics_args",
+    [
+        ["--metrics", "ExactMatch"],
+        ["--metrics", "exact_match"],
+        ["--metrics", "ExactMatch", "--metrics+=CharF1"],
+    ],
+)
+@pytest.mark.parametrize(
+    "override_args",
+    [[], ["--metrics.processor", "AIONormalizer"]],
 )
 def test_if_outputs_from_flexval_lm_can_be_passed_to_flexeval_file(
     flexeval_lm_command: list[str],
