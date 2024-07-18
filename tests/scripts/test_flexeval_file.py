@@ -60,6 +60,27 @@ def test_if_outputs_from_flexval_lm_can_be_passed_to_flexeval_file(
         check_if_eval_results_are_correctly_saved(save_path_flexeval_file)
 
 
+def test_with_eval_data_loader() -> None:
+    os.environ["PRESET_CONFIG_DIR"] = str(Path(__file__).parent.parent / "dummy_modules" / "configs")
+
+    with tempfile.TemporaryDirectory() as f:
+        save_path_flexeval_file = Path(f) / "flexeval_file"
+        # fmt: off
+        result_from_flexeval_file = subprocess.run(
+            [  # noqa: S607
+                "flexeval_file",
+                "--eval_data_loader", "tests.dummy_modules.eval_data_loader.DummyEvalDataLoader",
+                "--metrics", "ExactMatch",
+                "--save_dir", str(save_path_flexeval_file),
+            ],
+            check=False,
+        )
+        # fmt: on
+        assert result_from_flexeval_file.returncode == os.EX_OK
+
+        check_if_eval_results_are_correctly_saved(save_path_flexeval_file)
+
+
 def test_if_flexeval_file_loads_custom_module() -> None:
     custom_metric_code = """\
 from flexeval import Metric, MetricResult

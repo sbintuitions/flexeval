@@ -133,11 +133,7 @@ def main() -> None:  # noqa: C901, PLR0912, PLR0915
     if args.eval_file and args.eval_data_loader:
         msg = "You cannot specify both eval_file and eval_data_loader."
         raise ValueError(msg)
-    if args.eval_data_loader:
-        eval_data = args.eval_data_loader.load()
-    elif args.eval_file:
-        eval_data = JsonlEvalDataLoader(args.eval_file).load()
-    else:
+    if not args.eval_file and not args.eval_data_loader:
         msg = "You must specify either eval_file or eval_data_loader."
         raise ValueError(msg)
 
@@ -154,6 +150,14 @@ def main() -> None:  # noqa: C901, PLR0912, PLR0915
     result_recorder = parser.instantiate_classes({"result_recorder": args.pop("result_recorder")}).result_recorder
     args = parser.instantiate_classes(args)
     args.result_recorder = result_recorder
+
+    if args.eval_file:
+        eval_data = JsonlEvalDataLoader(args.eval_file).load()
+    elif args.eval_data_loader:
+        eval_data = args.eval_data_loader.load()
+    else:
+        msg = "You must specify either eval_file or eval_data_loader."
+        raise ValueError(msg)
 
     result_recorders: list[ResultRecorder] = []
     if args.save_dir is not None:
@@ -174,9 +178,8 @@ def main() -> None:  # noqa: C901, PLR0912, PLR0915
     metrics_summary_dict["elapsed_time"] = timer.time
 
     model_outputs: list[dict[str, str]] = []
-    with open(args.eval_file) as f:
-        for line, instance_metrics in zip(f, instance_metrics_list):
-            model_outputs.append({**json.loads(line.strip()), **instance_metrics})
+    for item, instance_metrics in zip(eval_data, instance_metrics_list):
+        model_outputs.append({**item, **instance_metrics})
 
     for result_recorder in result_recorders:
         result_recorder.record_metrics(metrics_summary_dict)
