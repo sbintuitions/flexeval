@@ -5,7 +5,7 @@ import itertools
 import pytest
 
 from flexeval.core.evaluate_chat_response import evaluate_chat_response
-from flexeval.core.evaluate_from_file import evaluate_from_file
+from flexeval.core.evaluate_from_data import evaluate_from_data
 from flexeval.core.evaluate_generation import evaluate_generation
 from flexeval.core.evaluate_multiple_choice import evaluate_multiple_choice
 from flexeval.core.evaluate_pairwise import Match, evaluate_pairwise
@@ -112,12 +112,12 @@ def test_evaluate_perplexity(max_instances: int) -> None:
     assert isinstance(metrics, dict)
 
 
-def test_evaluate_from_file() -> None:
+def test_evaluate_from_data() -> None:
     items = [
         {"lm_output": "This is test", "references": "This is test"},
         {"lm_output": "This is test", "references": "This is not test"},
     ]
-    metrics_summary_dict, instance_metrics_list = evaluate_from_file(
+    metrics_summary_dict, instance_metrics_list = evaluate_from_data(
         eval_data=items,
         metrics=[ExactMatch()],
     )

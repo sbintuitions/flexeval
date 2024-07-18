@@ -12,7 +12,7 @@ import _jsonnet
 from jsonargparse import ActionConfigFile, ArgumentParser
 from loguru import logger
 
-from flexeval import ChatDataset, GenerationDataset, LocalRecorder, Metric, ResultRecorder, evaluate_from_file
+from flexeval import ChatDataset, GenerationDataset, LocalRecorder, Metric, ResultRecorder, evaluate_from_data
 from flexeval.utils.module_utils import ConfigNameResolver
 
 from .common import (
@@ -150,7 +150,7 @@ def main() -> None:  # noqa: C901
         result_recorder.record_config(args_as_dict)
 
     with Timer() as timer:
-        metrics_summary_dict, instance_metrics_list = evaluate_from_file(
+        metrics_summary_dict, instance_metrics_list = evaluate_from_data(
             eval_data=JsonlEvalDataLoader(args.eval_file).load(),
             metrics=args.metrics,
             eval_dataset=args.eval_dataset,

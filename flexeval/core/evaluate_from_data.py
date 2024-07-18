@@ -9,7 +9,7 @@ from .generation_dataset import GenerationDataset
 from .metric import Metric
 
 
-def evaluate_from_file(
+def evaluate_from_data(
     eval_data: Iterable[dict[str, Any]],
     metrics: list[Metric],
     eval_dataset: GenerationDataset | ChatDataset | None = None,
