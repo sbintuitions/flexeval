@@ -1,8 +1,6 @@
 from __future__ import annotations
 
 import itertools
-import json
-import tempfile
 
 import pytest
 
@@ -119,18 +117,13 @@ def test_evaluate_from_file() -> None:
         {"lm_output": "This is test", "references": "This is test"},
         {"lm_output": "This is test", "references": "This is not test"},
     ]
-    with tempfile.NamedTemporaryFile(mode="w", delete=False) as f:
-        for output_item in items:
-            f.write(json.dumps(output_item) + "\n")
-        f.flush()
+    metrics_summary_dict, instance_metrics_list = evaluate_from_file(
+        eval_data=items,
+        metrics=[ExactMatch()],
+    )
 
-        metrics_summary_dict, instance_metrics_list = evaluate_from_file(
-            eval_file=f.name,
-            metrics=[ExactMatch()],
-        )
-
-        assert metrics_summary_dict == {"exact_match": 0.5}
-        assert instance_metrics_list == [{"exact_match": 1.0}, {"exact_match": 0.0}]
+    assert metrics_summary_dict == {"exact_match": 0.5}
+    assert instance_metrics_list == [{"exact_match": 1.0}, {"exact_match": 0.0}]
 
 
 @pytest.mark.parametrize(

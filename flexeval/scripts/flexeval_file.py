@@ -3,9 +3,10 @@ from __future__ import annotations
 import json
 import os
 import sys
+from abc import ABC, abstractmethod
 from importlib.metadata import version
 from pathlib import Path
-from typing import Any, Dict, List, Union
+from typing import Any, Dict, Iterable, List, Union
 
 import _jsonnet
 from jsonargparse import ActionConfigFile, ArgumentParser
@@ -18,6 +19,34 @@ from .common import (
     Timer,
     get_env_metadata,
 )
+
+
+class EvalDataLoader(ABC):
+    """
+    A class to load evaluation data.
+    The evaluation data should be a list of dictionaries with the following keys:
+    - task_inputs (dict[str, Any]): A dictionary containing the input data for the task.
+    - lm_output (str): The output of the language model.
+    - references (list[str]): A list of reference outputs.
+    """
+
+    @abstractmethod
+    def load(self) -> Iterable[dict[str, Any]]:
+        pass
+
+
+class JsonlEvalDataLoader(EvalDataLoader):
+    """
+    A class to load evaluation data from a jsonl file.
+    """
+
+    def __init__(self, eval_file: str) -> None:
+        self.eval_file = eval_file
+
+    def load(self) -> Iterable[dict[str, Any]]:
+        with open(self.eval_file) as f:
+            for line in f:
+                yield json.loads(line)
 
 
 def main() -> None:  # noqa: C901
@@ -122,7 +151,7 @@ def main() -> None:  # noqa: C901
 
     with Timer() as timer:
         metrics_summary_dict, instance_metrics_list = evaluate_from_file(
-            eval_file=args.eval_file,
+            eval_data=JsonlEvalDataLoader(args.eval_file).load(),
             metrics=args.metrics,
             eval_dataset=args.eval_dataset,
         )
