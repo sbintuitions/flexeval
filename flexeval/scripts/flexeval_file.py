@@ -49,13 +49,17 @@ class JsonlEvalDataLoader(EvalDataLoader):
                 yield json.loads(line)
 
 
-def main() -> None:  # noqa: C901
+def main() -> None:  # noqa: C901, PLR0912, PLR0915
     parser = ArgumentParser(parser_mode="jsonnet")
     parser.add_argument(
         "--eval_file",
         type=str,
-        required=True,
         help="Jsonl file containing task inputs and model outputs.",
+    )
+    parser.add_argument(
+        "--eval_data_loader",
+        type=EvalDataLoader,
+        help="A class to load evaluation data.",
     )
     parser.add_argument(
         "--metrics",
@@ -126,6 +130,17 @@ def main() -> None:  # noqa: C901
     args = parser.parse_args()
     logger.info(args)
 
+    if args.eval_file and args.eval_data_loader:
+        msg = "You cannot specify both eval_file and eval_data_loader."
+        raise ValueError(msg)
+    if args.eval_data_loader:
+        eval_data = args.eval_data_loader.load()
+    elif args.eval_file:
+        eval_data = JsonlEvalDataLoader(args.eval_file).load()
+    else:
+        msg = "You must specify either eval_file or eval_data_loader."
+        raise ValueError(msg)
+
     # normalize args.metrics to a list
     if not isinstance(args.metrics, list):
         args.metrics = [args.metrics]
@@ -151,7 +166,7 @@ def main() -> None:  # noqa: C901
 
     with Timer() as timer:
         metrics_summary_dict, instance_metrics_list = evaluate_from_data(
-            eval_data=JsonlEvalDataLoader(args.eval_file).load(),
+            eval_data=eval_data,
             metrics=args.metrics,
             eval_dataset=args.eval_dataset,
         )
