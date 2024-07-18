@@ -6,7 +6,7 @@ import sys
 from abc import ABC, abstractmethod
 from importlib.metadata import version
 from pathlib import Path
-from typing import Any, Dict, Iterable, List, Union
+from typing import Any, Dict, List, Union
 
 import _jsonnet
 from jsonargparse import ActionConfigFile, ArgumentParser
@@ -31,7 +31,7 @@ class EvalDataLoader(ABC):
     """
 
     @abstractmethod
-    def load(self) -> Iterable[dict[str, Any]]:
+    def load(self) -> list[dict[str, Any]]:
         pass
 
 
@@ -43,10 +43,13 @@ class JsonlEvalDataLoader(EvalDataLoader):
     def __init__(self, eval_file: str) -> None:
         self.eval_file = eval_file
 
-    def load(self) -> Iterable[dict[str, Any]]:
+    def load(self) -> list[dict[str, Any]]:
+        items: list[dict[str, Any]] = []
         with open(self.eval_file) as f:
             for line in f:
-                yield json.loads(line)
+                item = json.loads(line)
+                items.append(item)
+        return items
 
 
 def main() -> None:  # noqa: C901, PLR0912, PLR0915
