@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import os
 import sys
+from abc import ABC, abstractmethod
 from importlib.metadata import version
 from pathlib import Path
 from typing import Any, Dict, List, Union
@@ -11,7 +12,7 @@ import _jsonnet
 from jsonargparse import ActionConfigFile, ArgumentParser
 from loguru import logger
 
-from flexeval import ChatDataset, GenerationDataset, LocalRecorder, Metric, ResultRecorder, evaluate_from_file
+from flexeval import ChatDataset, GenerationDataset, LocalRecorder, Metric, ResultRecorder, evaluate_from_data
 from flexeval.utils.module_utils import ConfigNameResolver
 
 from .common import (
@@ -20,13 +21,48 @@ from .common import (
 )
 
 
-def main() -> None:  # noqa: C901
+class EvalDataLoader(ABC):
+    """
+    A class to load evaluation data.
+    The evaluation data should be a list of dictionaries with the following keys:
+    - task_inputs (dict[str, Any]): A dictionary containing the input data for the task.
+    - lm_output (str): The output of the language model.
+    - references (list[str]): A list of reference outputs.
+    """
+
+    @abstractmethod
+    def load(self) -> list[dict[str, Any]]:
+        pass
+
+
+class JsonlEvalDataLoader(EvalDataLoader):
+    """
+    A class to load evaluation data from a jsonl file.
+    """
+
+    def __init__(self, eval_file: str) -> None:
+        self.eval_file = eval_file
+
+    def load(self) -> list[dict[str, Any]]:
+        items: list[dict[str, Any]] = []
+        with open(self.eval_file) as f:
+            for line in f:
+                item = json.loads(line)
+                items.append(item)
+        return items
+
+
+def main() -> None:  # noqa: C901, PLR0912, PLR0915
     parser = ArgumentParser(parser_mode="jsonnet")
     parser.add_argument(
         "--eval_file",
         type=str,
-        required=True,
         help="Jsonl file containing task inputs and model outputs.",
+    )
+    parser.add_argument(
+        "--eval_data_loader",
+        type=EvalDataLoader,
+        help="A class to load evaluation data.",
     )
     parser.add_argument(
         "--metrics",
@@ -97,6 +133,13 @@ def main() -> None:  # noqa: C901
     args = parser.parse_args()
     logger.info(args)
 
+    if args.eval_file and args.eval_data_loader:
+        msg = "You cannot specify both eval_file and eval_data_loader."
+        raise ValueError(msg)
+    if not args.eval_file and not args.eval_data_loader:
+        msg = "You must specify either eval_file or eval_data_loader."
+        raise ValueError(msg)
+
     # normalize args.metrics to a list
     if not isinstance(args.metrics, list):
         args.metrics = [args.metrics]
@@ -111,6 +154,14 @@ def main() -> None:  # noqa: C901
     args = parser.instantiate_classes(args)
     args.result_recorder = result_recorder
 
+    if args.eval_file:
+        eval_data = JsonlEvalDataLoader(args.eval_file).load()
+    elif args.eval_data_loader:
+        eval_data = args.eval_data_loader.load()
+    else:
+        msg = "You must specify either eval_file or eval_data_loader."
+        raise ValueError(msg)
+
     result_recorders: list[ResultRecorder] = []
     if args.save_dir is not None:
         result_recorders.append(LocalRecorder(args.save_dir, force=args.force))
@@ -121,8 +172,8 @@ def main() -> None:  # noqa: C901
         result_recorder.record_config(args_as_dict)
 
     with Timer() as timer:
-        metrics_summary_dict, instance_metrics_list = evaluate_from_file(
-            eval_file=args.eval_file,
+        metrics_summary_dict, instance_metrics_list = evaluate_from_data(
+            eval_data=eval_data,
             metrics=args.metrics,
             eval_dataset=args.eval_dataset,
         )
@@ -130,9 +181,8 @@ def main() -> None:  # noqa: C901
     metrics_summary_dict["elapsed_time"] = timer.time
 
     model_outputs: list[dict[str, str]] = []
-    with open(args.eval_file) as f:
-        for line, instance_metrics in zip(f, instance_metrics_list):
-            model_outputs.append({**json.loads(line.strip()), **instance_metrics})
+    for item, instance_metrics in zip(eval_data, instance_metrics_list):
+        model_outputs.append({**item, **instance_metrics})
 
     for result_recorder in result_recorders:
         result_recorder.record_metrics(metrics_summary_dict)

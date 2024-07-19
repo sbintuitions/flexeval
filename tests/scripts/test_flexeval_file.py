@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import itertools
 import os
 import subprocess
 import tempfile
@@ -14,18 +13,20 @@ from .test_flexeval_lm import CHAT_RESPONSE_CMD, GENERATION_CMD, check_if_eval_r
 
 
 @pytest.mark.parametrize(
-    ("flexeval_lm_command", "metrics_args", "override_args"),
-    list(
-        itertools.product(
-            [CHAT_RESPONSE_CMD, GENERATION_CMD],
-            [
-                ["--metrics", "ExactMatch"],
-                ["--metrics", "exact_match"],
-                ["--metrics", "ExactMatch", "--metrics+=CharF1"],
-            ],
-            [[], ["--metrics.processor", "AIONormalizer"]],
-        ),
-    ),
+    "flexeval_lm_command",
+    [CHAT_RESPONSE_CMD, GENERATION_CMD],
+)
+@pytest.mark.parametrize(
+    "metrics_args",
+    [
+        ["--metrics", "ExactMatch"],
+        ["--metrics", "exact_match"],
+        ["--metrics", "ExactMatch", "--metrics+=CharF1"],
+    ],
+)
+@pytest.mark.parametrize(
+    "override_args",
+    [[], ["--metrics.processor", "AIONormalizer"]],
 )
 def test_if_outputs_from_flexval_lm_can_be_passed_to_flexeval_file(
     flexeval_lm_command: list[str],
@@ -49,6 +50,27 @@ def test_if_outputs_from_flexval_lm_can_be_passed_to_flexeval_file(
                 "--eval_file", str(output_file_path),
                 *metrics_args,
                 *override_args,
+                "--save_dir", str(save_path_flexeval_file),
+            ],
+            check=False,
+        )
+        # fmt: on
+        assert result_from_flexeval_file.returncode == os.EX_OK
+
+        check_if_eval_results_are_correctly_saved(save_path_flexeval_file)
+
+
+def test_with_eval_data_loader() -> None:
+    os.environ["PRESET_CONFIG_DIR"] = str(Path(__file__).parent.parent / "dummy_modules" / "configs")
+
+    with tempfile.TemporaryDirectory() as f:
+        save_path_flexeval_file = Path(f) / "flexeval_file"
+        # fmt: off
+        result_from_flexeval_file = subprocess.run(
+            [  # noqa: S607
+                "flexeval_file",
+                "--eval_data_loader", "tests.dummy_modules.eval_data_loader.DummyEvalDataLoader",
+                "--metrics", "ExactMatch",
                 "--save_dir", str(save_path_flexeval_file),
             ],
             check=False,
