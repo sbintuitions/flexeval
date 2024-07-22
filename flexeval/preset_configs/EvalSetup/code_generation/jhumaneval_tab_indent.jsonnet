@@ -10,7 +10,7 @@ original_config {
   init_args+: {
     eval_dataset+: {
       init_args+: {
-        references_template: '{{ test | replace("    ", "\t") }}\n\ncheck({{ entry_point }})\n',
+        reference_template: '{{ test | replace("    ", "\t") }}\n\ncheck({{ entry_point }})\n',
       },
     },
     prompt_template+: {

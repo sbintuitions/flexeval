@@ -14,7 +14,7 @@ local dataset_base_args = {
   init_args: {
     path: 'llm-book/JGLUE',
     subset: 'JSQuAD',
-    references_template: '{{ answers.text }}',
+    reference_list_template: '{{ answers.text }}',
   },
 };
 

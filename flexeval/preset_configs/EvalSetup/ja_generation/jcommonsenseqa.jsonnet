@@ -15,7 +15,7 @@ local dataset_base_args = {
   init_args: {
     path: 'llm-book/JGLUE',
     subset: 'JCommonsenseQA',
-    references_template: '{% set choices = [choice0, choice1, choice2, choice3, choice4] %}{{ choices[label] }}',
+    reference_template: '{% set choices = [choice0, choice1, choice2, choice3, choice4] %}{{ choices[label] }}',
   },
 };
 

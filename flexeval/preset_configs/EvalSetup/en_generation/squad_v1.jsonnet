@@ -11,7 +11,7 @@ local dataset_base_args = {
   class_path: 'HFGenerationDataset',
   init_args: {
     path: 'rajpurkar/squad',
-    references_template: '{{ answers.text }}',
+    reference_list_template: '{{ answers.text }}',
   },
 };
 

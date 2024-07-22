@@ -19,7 +19,10 @@ class HFChatDataset(ChatDataset):
         path: The name or path of the huggingface dataset.
         split: The split of the dataset to use.
         input_template: A Jinja2 template for the user input.
-        references_template: A Jinja2 template for the references.
+        reference_template: Specify the Jinja2 template to render the reference string
+            if the dataset has a single reference.
+        reference_list_template: Specify the Jinja2 template to render a list of reference strings
+            if the dataset has multiple references.
         subset: The subset of the dataset to use.
         require_incremental_response: Whether the dataset requires incremental response.
     """
@@ -29,23 +32,29 @@ class HFChatDataset(ChatDataset):
         path: str,
         split: str,
         input_template: str,
-        references_template: str | None = None,
+        reference_template: str | None = None,
+        reference_list_template: str | None = None,
         subset: str | None = None,
         require_incremental_response: bool = False,
         extra_info_templates: dict[str, str] | None = None,
         system_message_template: str | None = None,
         template_filters: dict[str, str] | None = None,
     ) -> None:
+        if reference_template and reference_list_template:
+            msg = "Only one of reference_template and reference_list_template can be set."
+            raise ValueError(msg)
+
         self._dataset = datasets.load_dataset(path, name=subset, split=split)
 
         template_filters = template_filters or {}
         for template_str, value_to_keep in template_filters.items():
             self._dataset = self._dataset.filter(get_template_filter_function(template_str, value_to_keep))
 
-        self._input_template: Template = JINJA2_ENV.from_string(input_template)
+        self._input_template = JINJA2_ENV.from_string(input_template)
 
-        self._references_template: Template | None = (
-            JINJA2_ENV.from_string(references_template) if references_template else None
+        self.reference_template = JINJA2_ENV.from_string(reference_template) if reference_template else None
+        self.reference_list_template = (
+            JINJA2_ENV.from_string(reference_list_template) if reference_list_template else None
         )
 
         extra_info_templates = extra_info_templates or {}
@@ -74,13 +83,19 @@ class HFChatDataset(ChatDataset):
             system_message = self._system_message_template.render(**item)
             messages.insert(0, {"role": "system", "content": system_message})
 
-        references = []
-        if self._references_template:
-            reference_string = self._references_template.render(**item)
-            if reference_string.startswith("[") and reference_string.endswith("]"):
-                references = literal_eval(reference_string)
-            else:
-                references = [reference_string]
+        reference_list: list[str] = []
+        if self.reference_template:
+            reference_string = self.reference_template.render(**item)
+            reference_list.append(reference_string)
+        if self.reference_list_template:
+            reference_list_string = self.reference_list_template.render(**item)
+            if not (reference_list_string.startswith("[") and reference_list_string.endswith("]")):
+                msg = (
+                    f"The reference_list_template should render a list of strings "
+                    f"but we got `{reference_list_string}`."
+                )
+                raise ValueError(msg)
+            reference_list.extend([str(ref) for ref in literal_eval(reference_list_string)])
 
         extra_info = dict(item.items())
         extra_info_from_templates = {
@@ -88,4 +103,4 @@ class HFChatDataset(ChatDataset):
         }
         extra_info.update(extra_info_from_templates)
 
-        return ChatInstance(messages=messages, references=references, extra_info=extra_info)
+        return ChatInstance(messages=messages, references=reference_list, extra_info=extra_info)

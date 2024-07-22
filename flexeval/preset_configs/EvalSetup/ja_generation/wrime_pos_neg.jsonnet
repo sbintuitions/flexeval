@@ -13,7 +13,7 @@ local dataset_base_args = {
   class_path: 'HFGenerationDataset',
   init_args: {
     path: 'llm-book/wrime-sentiment',
-    references_template: "{{ ['\"ポジティブ\"', '\"ネガティブ\"'][label] }}",
+    reference_template: "{{ ['\"ポジティブ\"', '\"ネガティブ\"'][label] }}",
   },
 };
 

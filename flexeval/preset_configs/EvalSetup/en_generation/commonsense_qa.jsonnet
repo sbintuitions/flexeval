@@ -11,7 +11,7 @@ local dataset_base_args = {
   class_path: 'HFGenerationDataset',
   init_args: {
     path: 'tau/commonsense_qa',
-    references_template: '{% set answer_index = choices.label.index(answerKey) %}["{{ choices.text[answer_index] }}"]',
+    reference_template: '{% set answer_index = choices.label.index(answerKey) %}{{ choices.text[answer_index] }}',
   },
 };
 

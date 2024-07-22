@@ -15,7 +15,7 @@ References:
         path: 'elyza/ELYZA-tasks-100',
         split: 'test',
         input_template: '{{ input }}',
-        references_template: '{{ output }}',
+        reference_template: '{{ output }}',
         extra_info_templates: { eval_aspect: '{{ eval_aspect }}' },
       },
     },

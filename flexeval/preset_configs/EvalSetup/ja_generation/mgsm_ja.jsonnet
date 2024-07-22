@@ -12,7 +12,7 @@ local dataset_base_args = {
   init_args: {
     path: 'juletxara/mgsm',
     subset: 'ja',
-    references_template: '["{{ answer_number }}"]',
+    reference_template: '{{ answer_number }}',
   },
 };
 

@@ -74,9 +74,6 @@ class HFMultipleChoiceDataset(MultipleChoiceDataset):
         inputs.update({k: v.render(**item) for k, v in self._input_templates.items()})
 
         choices = [t.render(**item) for t in self._choices_templates]
-        if not isinstance(choices, list):
-            msg = f"choices must be list, but got {type(choices)}"
-            raise TypeError(msg)
         if any(len(c) == 0 for c in choices):
             msg = f"choices must be non-empty, but got {choices}"
             raise ValueError(msg)
