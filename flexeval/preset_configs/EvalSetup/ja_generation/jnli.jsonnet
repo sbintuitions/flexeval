@@ -14,7 +14,7 @@ local dataset_base_args = {
   init_args: {
     path: 'llm-book/JGLUE',
     subset: 'JNLI',
-    references_template: "{{ ['\"含意\"', '\"矛盾\"', '\"中立\"'][label] }}",
+    reference_template: "{{ ['\"含意\"', '\"矛盾\"', '\"中立\"'][label] }}",
   },
 };
 

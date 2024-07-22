@@ -27,11 +27,11 @@ local dataset_base_args = {
 {
   class_path: 'ChatResponse',
   init_args: {
-    eval_dataset: dataset_base_args { init_args+: { split: 'test', references_template: '{{ test_list | join("\n") }}' } },
+    eval_dataset: dataset_base_args { init_args+: { split: 'test', reference_list_template: '{{ test_list | join("\n") }}' } },
     few_shot_generator: {
       class_path: 'RandomFewShotGenerator',
       init_args: {
-        dataset: dataset_base_args { init_args+: { split: 'prompt', references_template: '```python\n{{ code }}\n```' } },
+        dataset: dataset_base_args { init_args+: { split: 'prompt', reference_template: '```python\n{{ code }}\n```' } },
         num_shots: 3,
       },
     },

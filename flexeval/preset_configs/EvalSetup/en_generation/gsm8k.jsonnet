@@ -12,7 +12,7 @@ local dataset_base_args = {
   init_args: {
     path: 'gsm8k',
     subset: 'main',
-    references_template: '{{ answer | regex_replace("<<.*?>>", "") }}',
+    reference_template: '{{ answer | regex_replace("<<.*?>>", "") }}',
   },
 };
 

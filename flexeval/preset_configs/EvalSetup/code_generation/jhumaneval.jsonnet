@@ -14,7 +14,7 @@ References:
       init_args: {
         path: 'kogi-jwu/jhumaneval',
         split: 'test',
-        references_template: '{{ test }}\n\ncheck({{ entry_point }})\n',
+        reference_template: '{{ test }}\n\ncheck({{ entry_point }})\n',
       },
     },
     prompt_template: {

@@ -13,7 +13,7 @@ local dataset_base_args = {
   init_args: {
     path: 'llm-book/aio',
     input_template: '{{ question }}',
-    references_template: '{{ answers }}',
+    reference_list_template: '{{ answers }}',
   },
 };
 

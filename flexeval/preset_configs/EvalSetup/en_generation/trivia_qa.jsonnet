@@ -12,7 +12,7 @@ local dataset_base_args = {
   init_args: {
     path: 'trivia_qa',
     subset: 'rc.nocontext',
-    references_template: '{{ answer.aliases }}',
+    reference_list_template: '{{ answer.aliases }}',
   },
 };
 

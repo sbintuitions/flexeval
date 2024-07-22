@@ -11,7 +11,7 @@ local dataset_base_args = {
   class_path: 'HFGenerationDataset',
   init_args: {
     path: 'llm-book/aio',
-    references_template: '{{ answers }}',
+    reference_list_template: '{{ answers }}',
   },
 };
 

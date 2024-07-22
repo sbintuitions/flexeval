@@ -13,7 +13,7 @@ local dataset_base_args = {
   init_args: {
     path: 'csebuetnlp/xlsum',
     subset: 'japanese',
-    references_template: '{{ summary }}',
+    reference_template: '{{ summary }}',
   },
 };
 

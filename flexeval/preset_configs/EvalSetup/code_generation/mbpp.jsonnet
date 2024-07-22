@@ -11,7 +11,7 @@ local dataset_base_args = {
   init_args: {
     path: 'mbpp',
     subset: 'sanitized',
-    references_template: '{{ test_list }}',
+    reference_list_template: '{{ test_list }}',
   },
 };
 

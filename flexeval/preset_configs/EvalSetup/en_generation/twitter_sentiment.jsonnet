@@ -12,7 +12,7 @@ local dataset_base_args = {
   class_path: 'HFGenerationDataset',
   init_args: {
     path: 'carblacac/twitter-sentiment-analysis',
-    references_template: "{{ ['Positive', 'Negative'][feeling] }}",
+    reference_template: "{{ ['Positive', 'Negative'][feeling] }}",
   },
 };
 
