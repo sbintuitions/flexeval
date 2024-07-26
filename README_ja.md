@@ -61,3 +61,4 @@ flexeval_lm \
 * `flexeval_presets` のコマンドで、`aio` 以外の利用可能な評価設定のプリセットを確認できます。一覧は [Preset Configs](https://sbintuitions.github.io/flexeval/preset_configs/) で確認できます。
 * その他のタイプの評価設定に関しては [Getting Started](https://sbintuitions.github.io/flexeval/getting_started/) をご覧ください。
 * 評価設定の詳細な指定方法については [Configuration Guide](https://sbintuitions.github.io/flexeval/configuration_guide/) を参照してください。
+* [Sarashina の評価](./examples/sarashina_evaluation)で、実際の設定ファイルの例を確認できます。
