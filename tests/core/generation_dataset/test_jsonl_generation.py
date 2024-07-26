@@ -23,7 +23,7 @@ def mock_jsonl_data_path() -> None:
 def test_jsonl_generation_dataset(mock_jsonl_data_path: str | PathLike[str]) -> None:
     dataset = JsonlGenerationDataset(
         path=mock_jsonl_data_path,
-        references_template="{{ output }}",
+        reference_template="{{ output }}",
     )
 
     assert len(dataset) > 0
@@ -40,7 +40,7 @@ def test_jsonl_generation_dataset(mock_jsonl_data_path: str | PathLike[str]) -> 
 def test_data_range(mock_jsonl_data_path: str | PathLike[str]) -> None:
     dataset = JsonlGenerationDataset(
         path=mock_jsonl_data_path,
-        references_template="{{ output }}",
+        reference_list_template="['{{ output }}']",
         data_range=(2, 5),
     )
     assert len(dataset) == 3
