@@ -13,7 +13,8 @@ from flexeval.utils import instantiate_from_config
 
 @pytest.mark.parametrize(
     "config_path",
-    [str(path) for path in Path("flexeval/preset_configs/EvalSetup").rglob("*.jsonnet")],
+    [str(path) for path in Path("flexeval/preset_configs/EvalSetup").rglob("*.jsonnet")]
+    + [str(path) for path in Path("examples/sarashina_evaluation/eval_setups").rglob("*.jsonnet")],
 )
 def test_if_eval_setup_config_is_valid(config_path: str, mocker: MockerFixture) -> None:
     # datasets.load_dataset takes a long time to load the dataset, so we mock it
