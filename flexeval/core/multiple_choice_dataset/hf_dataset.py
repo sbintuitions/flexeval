@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import Any
+
 import datasets
 from jinja2 import Template
 
@@ -35,23 +37,10 @@ class HFMultipleChoiceDataset(MultipleChoiceDataset):
         data_files: str | None = None,
         whitespace_before_choices: bool = False,
         template_filters: dict[str, str] | None = None,
+        dataset_kwargs: dict[str, Any] | None = None,
     ) -> None:
-        self._dataset = datasets.load_dataset(
-            path,
-            split=split,
-            name=subset,
-            data_files=data_files,
-        )
-
-        # workaround for the column names with whitespaces
-        # cf. https://huggingface.co/datasets/nlp-waseda/JMMLU/discussions/3
-        for column_name in self._dataset.column_names:
-            fixed_column_name = column_name.strip()
-            if fixed_column_name != column_name:
-                self._dataset = self._dataset.rename_column(
-                    column_name,
-                    fixed_column_name,
-                )
+        dataset_kwargs = dataset_kwargs or {}
+        self._dataset = datasets.load_dataset(path, split=split, name=subset, data_files=data_files, **dataset_kwargs)
 
         template_filters = template_filters or {}
         for template_str, value_to_keep in template_filters.items():
