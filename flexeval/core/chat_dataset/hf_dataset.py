@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from ast import literal_eval
+from typing import Any
 
 import datasets
 from jinja2 import Template
@@ -39,18 +40,20 @@ class HFChatDataset(ChatDataset):
         extra_info_templates: dict[str, str] | None = None,
         system_message_template: str | None = None,
         template_filters: dict[str, str] | None = None,
+        dataset_kwargs: dict[str, Any] | None = None,
     ) -> None:
         if reference_template and reference_list_template:
             msg = "Only one of reference_template and reference_list_template can be set."
             raise ValueError(msg)
 
-        self._dataset = datasets.load_dataset(path, name=subset, split=split)
+        dataset_kwargs = dataset_kwargs or {}
+        self.dataset = datasets.load_dataset(path, name=subset, split=split, **dataset_kwargs)
 
         template_filters = template_filters or {}
         for template_str, value_to_keep in template_filters.items():
-            self._dataset = self._dataset.filter(get_template_filter_function(template_str, value_to_keep))
+            self.dataset = self.dataset.filter(get_template_filter_function(template_str, value_to_keep))
 
-        self._input_template = JINJA2_ENV.from_string(input_template)
+        self.input_template = JINJA2_ENV.from_string(input_template)
 
         self.reference_template = JINJA2_ENV.from_string(reference_template) if reference_template else None
         self.reference_list_template = (
@@ -72,11 +75,11 @@ class HFChatDataset(ChatDataset):
         return self._require_incremental_response
 
     def __len__(self) -> int:
-        return len(self._dataset)
+        return len(self.dataset)
 
     def __getitem__(self, i: int) -> ChatInstance:
-        item = self._dataset[i]
-        input_utterance = self._input_template.render(**item)
+        item = self.dataset[i]
+        input_utterance = self.input_template.render(**item)
         messages = [{"role": "user", "content": input_utterance}]
 
         if self._system_message_template:

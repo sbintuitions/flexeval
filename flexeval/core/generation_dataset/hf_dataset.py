@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from ast import literal_eval
+from typing import Any
 
 import datasets
 from jinja2 import Template
@@ -36,12 +37,14 @@ class HFGenerationDataset(GenerationDataset):
         input_templates: dict[str, str] | None = None,
         subset: str | None = None,
         template_filters: dict[str, str] | None = None,
+        dataset_kwargs: dict[str, Any] | None = None,
     ) -> None:
         if reference_template and reference_list_template:
             msg = "Only one of reference_template and reference_list_template can be set."
             raise ValueError(msg)
 
-        self.dataset = datasets.load_dataset(path, name=subset, split=split)
+        dataset_kwargs = dataset_kwargs or {}
+        self.dataset = datasets.load_dataset(path, name=subset, split=split, **dataset_kwargs)
 
         template_filters = template_filters or {}
         for template_str, value_to_keep in template_filters.items():
