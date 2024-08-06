@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from collections import defaultdict
 import re
 
 import tqdm
@@ -72,12 +73,14 @@ class LLMScore(Metric):
         batch_size: int = 4,
         disable_tqdm: bool = False,
         valid_score_range: tuple[int, int] | None = None,
+        category_key: str | None = None,
     ) -> None:
         self.language_model = language_model
         self.prompt_template = prompt_template
         self.batch_size = batch_size
         self.disable_tqdm = disable_tqdm
         self.valid_score_range = valid_score_range
+        self.category_key = category_key
 
     def evaluate(
         self,
@@ -198,6 +201,7 @@ class ChatLLMScore(Metric):
         batch_size: int = 4,
         disable_tqdm: bool = False,
         valid_score_range: tuple[int, int] | None = None,
+        category_key: str | None = None
     ) -> None:
         self.language_model = language_model
         self.prompt_template = prompt_template
@@ -205,6 +209,7 @@ class ChatLLMScore(Metric):
         self.batch_size = batch_size
         self.disable_tqdm = disable_tqdm
         self.valid_score_range = valid_score_range
+        self.category_key = category_key
 
     def evaluate(
         self,
@@ -266,12 +271,19 @@ class ChatLLMScore(Metric):
                 logger.warning(f"Failed to parse score from evaluator output: {evaluator_output}")
             evaluator_score_list.append(evaluator_score)
 
-        valid_scores = [score for score in evaluator_score_list if score is not None]
-        average_evaluator_score = sum(valid_scores) / len(valid_scores) if valid_scores else 0
-        num_failed_score_parses = len(evaluator_score_list) - len(valid_scores)
+        category2valid_scores = defaultdict(list)
+        category2average_score = {
+            category: sum(scores) / len(scores)
+            for category, score in category2valid_scores.items()
+        }
+        overall_average = ...
+
+        summary["llm_score"] = overall_average
+        for category, average_score in category2average_score.items():
+            summary[f"llm_score/{category}"] = average_score
 
         return MetricResult(
-            {"llm_score": average_evaluator_score, "num_failed_score_parses": num_failed_score_parses},
+            summary,
             instance_details=[
                 {"llm_score": eval_score, "llm_score_input": eval_in, "llm_score_output": eval_out}
                 for eval_score, eval_in, eval_out in zip(
