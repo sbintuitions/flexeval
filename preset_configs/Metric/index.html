@@ -1308,6 +1308,7 @@ Originally used to generate scores for MT-bench or Vicuna-bench.</p>
   class_path: &#39;ChatLLMScore&#39;,
   init_args: {
     language_model: { class_path: &#39;OpenAIChatAPI&#39;, init_args: { model: &#39;gpt-4-turbo-2024-04-09&#39; } },
+    valid_score_range: [1, 10],
     prompt_template: {
       class_path: &#39;Jinja2PromptTemplate&#39;,
       init_args: {
@@ -1344,6 +1345,7 @@ Originally used to generate scores for the Japanese versions of MT-bench or Vicu
   class_path: &#39;ChatLLMScore&#39;,
   init_args: {
     language_model: { class_path: &#39;OpenAIChatAPI&#39;, init_args: { model: &#39;gpt-4-turbo-2024-04-09&#39; } },
+    valid_score_range: [1, 10],
     prompt_template: {
       class_path: &#39;Jinja2PromptTemplate&#39;,
       init_args: {
@@ -1380,6 +1382,7 @@ The template is adapted from the blog post <a href="https://zenn.dev/elyza/artic
   class_path: &#39;ChatLLMScore&#39;,
   init_args: {
     language_model: { class_path: &#39;OpenAIChatAPI&#39;, init_args: { model: &#39;gpt-4-turbo-2024-04-09&#39; } },
+    valid_score_range: [1, 5],
     prompt_template: {
       class_path: &#39;Jinja2PromptTemplate&#39;,
       init_args: {

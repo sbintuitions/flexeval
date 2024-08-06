@@ -1366,7 +1366,7 @@
   class_path: &#39;HFGenerationDataset&#39;,
   init_args: {
     path: &#39;Muennighoff/babi&#39;,
-    references_template: &#39;[&quot;{{ answer }}&quot;]&#39;,
+    reference_template: &#39;{{ answer }}&#39;,
   },
 };
 
@@ -1416,7 +1416,7 @@ This is a setup for generating answers based on the choices provided.</p>
   class_path: &#39;HFGenerationDataset&#39;,
   init_args: {
     path: &#39;tau/commonsense_qa&#39;,
-    references_template: &#39;{% set answer_index = choices.label.index(answerKey) %}[&quot;{{ choices.text[answer_index] }}&quot;]&#39;,
+    reference_template: &#39;{% set answer_index = choices.label.index(answerKey) %}{{ choices.text[answer_index] }}&#39;,
   },
 };
 
@@ -1477,7 +1477,7 @@ The dataset was created to support the task of question answering on basic mathe
   init_args: {
     path: &#39;gsm8k&#39;,
     subset: &#39;main&#39;,
-    references_template: &#39;{{ answer | regex_replace(&quot;&lt;&lt;.*?&gt;&gt;&quot;, &quot;&quot;) }}&#39;,
+    reference_template: &#39;{{ answer | regex_replace(&quot;&lt;&lt;.*?&gt;&gt;&quot;, &quot;&quot;) }}&#39;,
   },
 };
 
@@ -1523,7 +1523,7 @@ The dataset was created to support the task of question answering on basic mathe
   class_path: &#39;HFGenerationDataset&#39;,
   init_args: {
     path: &#39;rajpurkar/squad&#39;,
-    references_template: &#39;{{ answers.text }}&#39;,
+    reference_list_template: &#39;{{ answers.text }}&#39;,
   },
 };
 
@@ -1575,7 +1575,7 @@ TriviaqQA includes 95K question-answer pairs authored by trivia enthusiasts and 
   init_args: {
     path: &#39;trivia_qa&#39;,
     subset: &#39;rc.nocontext&#39;,
-    references_template: &#39;{{ answer.aliases }}&#39;,
+    reference_list_template: &#39;{{ answer.aliases }}&#39;,
   },
 };
 
@@ -1626,7 +1626,7 @@ See the hugging face dataset page for more information.</p>
   class_path: &#39;HFGenerationDataset&#39;,
   init_args: {
     path: &#39;carblacac/twitter-sentiment-analysis&#39;,
-    references_template: &quot;{{ [&#39;Positive&#39;, &#39;Negative&#39;][feeling] }}&quot;,
+    reference_template: &quot;{{ [&#39;Positive&#39;, &#39;Negative&#39;][feeling] }}&quot;,
   },
 };
 

@@ -1385,7 +1385,7 @@
   class_path: &#39;HFGenerationDataset&#39;,
   init_args: {
     path: &#39;llm-book/aio&#39;,
-    references_template: &#39;{{ answers }}&#39;,
+    reference_list_template: &#39;{{ answers }}&#39;,
   },
 };
 
@@ -1436,7 +1436,7 @@ This is a setup for generating answers based on the choices provided.</p>
   init_args: {
     path: &#39;llm-book/JGLUE&#39;,
     subset: &#39;JCommonsenseQA&#39;,
-    references_template: &#39;{% set choices = [choice0, choice1, choice2, choice3, choice4] %}{{ choices[label] }}&#39;,
+    reference_template: &#39;{% set choices = [choice0, choice1, choice2, choice3, choice4] %}{{ choices[label] }}&#39;,
   },
 };
 
@@ -1497,7 +1497,7 @@ The sentence pairs are extracted from image captions and annotated by crowd work
   init_args: {
     path: &#39;llm-book/JGLUE&#39;,
     subset: &#39;JNLI&#39;,
-    references_template: &quot;{{ [&#39;\&quot;含意\&quot;&#39;, &#39;\&quot;矛盾\&quot;&#39;, &#39;\&quot;中立\&quot;&#39;][label] }}&quot;,
+    reference_template: &quot;{{ [&#39;\&quot;含意\&quot;&#39;, &#39;\&quot;矛盾\&quot;&#39;, &#39;\&quot;中立\&quot;&#39;][label] }}&quot;,
   },
 };
 
@@ -1550,7 +1550,7 @@ The passages are extracted from Japanese Wikipedia, and the questions and answer
   init_args: {
     path: &#39;llm-book/JGLUE&#39;,
     subset: &#39;JSQuAD&#39;,
-    references_template: &#39;{{ answers.text }}&#39;,
+    reference_list_template: &#39;{{ answers.text }}&#39;,
   },
 };
 
@@ -1606,7 +1606,7 @@ This is a Japanese subset of the benchmark.</p>
   init_args: {
     path: &#39;juletxara/mgsm&#39;,
     subset: &#39;ja&#39;,
-    references_template: &#39;[&quot;{{ answer_number }}&quot;]&#39;,
+    reference_template: &#39;{{ answer_number }}&#39;,
   },
 };
 
@@ -1655,7 +1655,7 @@ This setup converts the original dataset into binary sentiment classification.</
   class_path: &#39;HFGenerationDataset&#39;,
   init_args: {
     path: &#39;llm-book/wrime-sentiment&#39;,
-    references_template: &quot;{{ [&#39;\&quot;ポジティブ\&quot;&#39;, &#39;\&quot;ネガティブ\&quot;&#39;][label] }}&quot;,
+    reference_template: &quot;{{ [&#39;\&quot;ポジティブ\&quot;&#39;, &#39;\&quot;ネガティブ\&quot;&#39;][label] }}&quot;,
   },
 };
 
@@ -1705,7 +1705,7 @@ This is a Japanese subset of the dataset.</p>
   init_args: {
     path: &#39;csebuetnlp/xlsum&#39;,
     subset: &#39;japanese&#39;,
-    references_template: &#39;{{ summary }}&#39;,
+    reference_template: &#39;{{ summary }}&#39;,
   },
 };
 

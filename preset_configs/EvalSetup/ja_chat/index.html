@@ -1369,7 +1369,7 @@ This is a evaluation setup for chat LLMs.</p>
   init_args: {
     path: &#39;llm-book/aio&#39;,
     input_template: &#39;{{ question }}&#39;,
-    references_template: &#39;{{ answers }}&#39;,
+    reference_list_template: &#39;{{ answers }}&#39;,
   },
 };
 
@@ -1409,7 +1409,7 @@ This is a evaluation setup for chat LLMs.</p>
         path: &#39;elyza/ELYZA-tasks-100&#39;,
         split: &#39;test&#39;,
         input_template: &#39;{{ input }}&#39;,
-        references_template: &#39;{{ output }}&#39;,
+        reference_template: &#39;{{ output }}&#39;,
         extra_info_templates: { eval_aspect: &#39;{{ eval_aspect }}&#39; },
       },
     },
@@ -1435,7 +1435,7 @@ This is a evaluation setup for chat LLMs.</p>
   init_args: {
     path: &#39;juletxara/mgsm&#39;,
     subset: &#39;ja&#39;,
-    references_template: &#39;{{ answer }}&#39;,
+    reference_template: &#39;{{ answer }}&#39;,
   },
 };
 

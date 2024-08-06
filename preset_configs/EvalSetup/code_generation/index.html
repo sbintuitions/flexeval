@@ -1370,7 +1370,7 @@
       init_args: {
         path: &#39;kogi-jwu/jhumaneval&#39;,
         split: &#39;test&#39;,
-        references_template: &#39;{{ test }}\n\ncheck({{ entry_point }})\n&#39;,
+        reference_template: &#39;{{ test }}\n\ncheck({{ entry_point }})\n&#39;,
       },
     },
     prompt_template: {
@@ -1400,7 +1400,7 @@ original_config {
   init_args+: {
     eval_dataset+: {
       init_args+: {
-        references_template: &#39;{{ test | replace(&quot;    &quot;, &quot;\t&quot;) }}\n\ncheck({{ entry_point }})\n&#39;,
+        reference_template: &#39;{{ test | replace(&quot;    &quot;, &quot;\t&quot;) }}\n\ncheck({{ entry_point }})\n&#39;,
       },
     },
     prompt_template+: {
@@ -1427,7 +1427,7 @@ original_config {
   init_args: {
     path: &#39;mbpp&#39;,
     subset: &#39;sanitized&#39;,
-    references_template: &#39;{{ test_list }}&#39;,
+    reference_list_template: &#39;{{ test_list }}&#39;,
   },
 };
 
@@ -1531,7 +1531,7 @@ original_config {
       init_args: {
         path: &#39;openai_humaneval&#39;,
         split: &#39;test&#39;,
-        references_template: &#39;{{ test }}\n\ncheck({{ entry_point }})\n&#39;,
+        reference_template: &#39;{{ test }}\n\ncheck({{ entry_point }})\n&#39;,
       },
     },
     prompt_template: {
@@ -1561,7 +1561,7 @@ original_config {
   init_args+: {
     eval_dataset+: {
       init_args+: {
-        references_template: &#39;{{ test | replace(&quot;    &quot;, &quot;\t&quot;) }}\n\ncheck({{ entry_point }})\n&#39;,
+        reference_template: &#39;{{ test | replace(&quot;    &quot;, &quot;\t&quot;) }}\n\ncheck({{ entry_point }})\n&#39;,
       },
     },
     prompt_template+: {

@@ -1293,11 +1293,11 @@ This is a evaluation setup for chat LLMs.</p>
 {
   class_path: &#39;ChatResponse&#39;,
   init_args: {
-    eval_dataset: dataset_base_args { init_args+: { split: &#39;test&#39;, references_template: &#39;{{ test_list | join(&quot;\n&quot;) }}&#39; } },
+    eval_dataset: dataset_base_args { init_args+: { split: &#39;test&#39;, reference_list_template: &#39;{{ test_list | join(&quot;\n&quot;) }}&#39; } },
     few_shot_generator: {
       class_path: &#39;RandomFewShotGenerator&#39;,
       init_args: {
-        dataset: dataset_base_args { init_args+: { split: &#39;prompt&#39;, references_template: &#39;```python\n{{ code }}\n```&#39; } },
+        dataset: dataset_base_args { init_args+: { split: &#39;prompt&#39;, reference_template: &#39;```python\n{{ code }}\n```&#39; } },
         num_shots: 3,
       },
     },
