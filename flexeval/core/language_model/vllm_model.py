@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import Any
 
+import torch
 from transformers import AutoTokenizer, PreTrainedTokenizer
 
 from .base import LanguageModel
@@ -9,8 +10,7 @@ from .hf_lm import normalize_stop_sequences
 
 
 class VLLM(LanguageModel):
-    """
-    LanguageModel implementation using VLLM.
+    """LanguageModel implementation using VLLM.
 
     Args:
         model: The name of the model to use.
@@ -39,9 +39,13 @@ class VLLM(LanguageModel):
         self.custom_chat_template = custom_chat_template
         self.add_special_tokens = add_special_tokens
 
+        # import from vllm here because it is an extra dependency
         from vllm import LLM
 
         model_kwargs = model_kwargs or {}
+        # automatically set tensor_parallel_size to the number of GPUs
+        if "tensor_parallel_size" not in model_kwargs:
+            model_kwargs["tensor_parallel_size"] = torch.cuda.device_count()
         self.llm = LLM(model, trust_remote_code=True, **model_kwargs)
 
     def batch_complete_text(
