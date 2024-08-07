@@ -51,10 +51,6 @@ class ChatResponse(EvalSetup):
     batch_size: int = 4
     max_instances: int | None = None
 
-    def __post_init__(self):
-        for metric in self.metrics:
-            metric.category_key = self.eval_dataset.category_key
-
     def evaluate_lm(
         self,
         language_model: LanguageModel,
