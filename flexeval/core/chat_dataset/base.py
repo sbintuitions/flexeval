@@ -79,13 +79,5 @@ class ChatDataset(Sequence[ChatInstance], ABC):
         """
         raise NotImplementedError
 
-    @abstractmethod
-    def category_key(self) -> str | None:
-        """Key for "category" of dataset, which is used to category-wise
-        aggregation of metrics.
-        Can be None if there is no "category".
-        """
-        raise NotImplementedError
-
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(num_instances={len(self)})"
