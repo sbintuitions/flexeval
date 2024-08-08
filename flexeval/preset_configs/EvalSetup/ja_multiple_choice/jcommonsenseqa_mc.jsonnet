@@ -43,8 +43,7 @@ local dataset_base_args = {
           回答：「{{ item.choices[item.answer_index] }}」
           {% endfor %}
           問題：{{question}}
-          回答：「
-        |||,
+        ||| + '回答：「',
       },
     },
   },

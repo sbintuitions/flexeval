@@ -27,9 +27,7 @@ References:
     prompt_template: {
       class_path: 'Jinja2PromptTemplate',
       init_args: {
-        template: |||
-          {{ context }}
-        |||,
+        template: '{{ context }}',
       },
     },
   },

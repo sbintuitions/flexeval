@@ -36,8 +36,7 @@ local dataset_base_args = {
           {{ item.answer }}
           {% endfor %}
           問題: {{ question }}
-          ステップごとの答え:
-        |||,
+        ||| + 'ステップごとの答え:',
       },
     },
     metrics: [

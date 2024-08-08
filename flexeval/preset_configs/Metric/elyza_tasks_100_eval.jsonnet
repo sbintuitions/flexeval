@@ -10,7 +10,7 @@ The template is adapted from the blog post [ELYZAが公開した日本語LLM「E
     prompt_template: {
       class_path: 'Jinja2PromptTemplate',
       init_args: {
-        template: |||
+        template: std.stripChars(|||
           あなたは採点者です。
 
           問題, 正解例, 採点基準, 回答 が与えられます。
@@ -41,7 +41,7 @@ The template is adapted from the blog post [ELYZAが公開した日本語LLM「E
 
           # 回答
           {{ lm_output }}
-        |||,
+        |||, '\n'),
       },
     },
   },

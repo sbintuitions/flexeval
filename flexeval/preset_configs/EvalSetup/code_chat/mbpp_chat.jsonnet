@@ -12,7 +12,7 @@ local dataset_base_args = {
   init_args: {
     path: 'mbpp',
     subset: 'sanitized',
-    input_template: |||
+    input_template: std.stripChars(|||
       Generate a Python function that satisfies the following question and test cases.
       ## Question
       {{ prompt }}
@@ -20,7 +20,7 @@ local dataset_base_args = {
       ```python
       {{ test_list | join('\n') }}
       ```
-    |||,
+    |||, '\n'),
   },
 };
 

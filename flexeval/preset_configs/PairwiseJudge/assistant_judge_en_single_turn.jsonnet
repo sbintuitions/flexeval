@@ -11,7 +11,7 @@ Adapted from [lm-sys/FastChat](https://github.com/lm-sys/FastChat/blob/main/fast
     prompt_template: {
       class_path: 'Jinja2PromptTemplate',
       init_args: {
-        template: |||
+        template: std.stripChars(|||
           {% set question = model1_item["task_inputs"]["messages"][0]["content"] -%}
           {% set model1_messages = model1_item["task_inputs"]["messages"] -%}
           {% set model2_messages = model2_item["task_inputs"]["messages"] -%}
@@ -36,7 +36,7 @@ Adapted from [lm-sys/FastChat](https://github.com/lm-sys/FastChat/blob/main/fast
           [The Start of Assistant 2's Answer]
           {% if model2_messages|length == 1 %}{{ model2_item["lm_output"] }}{% else %}{{ model2_messages[1]["content"] }}{% endif %}
           [The End of Assistant's Answer]
-        |||,
+        |||, '\n'),
       },
     },
   },
