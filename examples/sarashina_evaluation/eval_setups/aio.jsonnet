@@ -12,9 +12,7 @@
     prompt_template: {
       class_path: 'Jinja2PromptTemplate',
       init_args: {
-        template: |||
-          {{ question }}答えは「
-        |||,
+        template: '{{ question }}答えは「',
       },
     },
     metrics: [

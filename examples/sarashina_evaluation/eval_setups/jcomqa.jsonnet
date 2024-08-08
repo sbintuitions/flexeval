@@ -46,7 +46,6 @@
           質問：{{question}}
           選択肢：{{ choice0 }},{{ choice1 }},{{ choice2 }},{{ choice3 }},{{ choice4 }}
           ### 回答：
-
         |||,
       },
     },
