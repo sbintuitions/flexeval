@@ -28,5 +28,5 @@ def test_if_jinja2_template_keep_trailing_newline() -> None:
 
         prompt_template = instantiate_from_config(f.name)
 
-        # not that the text block (||| ... |||) in the jsonnet file adds a newline at the end
+        # note that the text block (||| ... |||) in the jsonnet file adds a newline at the end
         assert prompt_template.embed_inputs({}) == "Hello World!\n"
