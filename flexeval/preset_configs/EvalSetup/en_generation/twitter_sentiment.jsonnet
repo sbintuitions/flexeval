@@ -37,8 +37,7 @@ local dataset_base_args = {
           Sentiment: `{{ item.references[0] }}`
           {% endfor %}
           Tweet: {{ text }}
-          Sentiment: `
-        |||,
+        ||| + 'Sentiment: `',
       },
     },
     metrics: [

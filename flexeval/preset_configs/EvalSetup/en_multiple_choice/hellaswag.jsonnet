@@ -35,13 +35,11 @@ local dataset_base_args = {
     prompt_template: {
       class_path: 'Jinja2PromptTemplate',
       init_args: {
-
         template: |||
           {% for item in few_shot_data %}
           {{ item.ctx }} {{ item.choices[item.answer_index] }}
           {% endfor %}
-          {{ ctx }}
-        |||,
+        ||| + '{{ ctx }}',
       },
     },
   },

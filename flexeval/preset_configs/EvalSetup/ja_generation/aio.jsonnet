@@ -33,8 +33,7 @@ local dataset_base_args = {
           {% for item in few_shot_data -%}
           {{ item.question }}答えは「{{ item.references[0] }}」
           {% endfor -%}
-          {{ question }}答えは「
-        |||,
+        ||| + '{{ question }}答えは「',
       },
     },
     metrics: [

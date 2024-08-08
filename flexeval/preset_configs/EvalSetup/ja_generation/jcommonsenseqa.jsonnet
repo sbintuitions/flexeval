@@ -50,8 +50,7 @@ local dataset_base_args = {
           3.「{{ choice3 }}」
           4.「{{ choice4 }}」
           問題：{{question}}
-          回答：「
-        |||,
+        ||| + '回答：「',
       },
     },
     metrics: [

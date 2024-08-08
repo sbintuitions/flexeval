@@ -46,8 +46,7 @@ local dataset_base_args = {
           {{ title }}
           {{ context }}
           質問：「{{ question }}」
-          回答：「
-        |||,
+        ||| + '回答：「',
       },
     },
     metrics: [

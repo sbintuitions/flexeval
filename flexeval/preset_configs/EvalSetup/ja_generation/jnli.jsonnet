@@ -41,8 +41,7 @@ local dataset_base_args = {
           {% endfor %}
           前提：「{{ sentence1 }}」
           仮説：「{{ sentence2 }}」
-          関係：「
-        |||,
+        ||| + '関係：「',
       },
     },
     metrics: [

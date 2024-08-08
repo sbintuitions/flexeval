@@ -41,8 +41,7 @@ local dataset_base_args = {
           Answer:{{ item.choices[item.answer_index] }}
           {% endfor %}
           Question: {{ question }}
-          Answer:
-        |||,
+        ||| + 'Answer:',
       },
     },
   },

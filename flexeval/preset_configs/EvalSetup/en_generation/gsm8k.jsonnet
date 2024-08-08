@@ -36,8 +36,7 @@ local dataset_base_args = {
           A: {{ item.references[0] }}
           {% endfor %}
           Q: {{ question }}
-          A:
-        |||,
+        ||| + 'A:',
       },
     },
     metrics: [
