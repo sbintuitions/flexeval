@@ -111,6 +111,15 @@ def test_batch_complete_text(lm: HuggingFaceLM) -> None:
     assert isinstance(completions[0], str)
 
 
+def test_compete_text(lm: HuggingFaceLM) -> None:
+    completion = lm.complete_text("こんにちは、")
+    assert isinstance(completion, str)
+
+    completions = lm.batch_complete_text(["こんにちは、", "おはよう、"])
+    assert len(completions) == 2
+    assert isinstance(completions[0], str)
+
+
 def test_batch_complete_text_is_not_affected_by_batch(lm: LanguageModel) -> None:
     single_batch_input = ["こんにちは。今日もいい天気。"]
     multi_batch_inputs = ["こんにちは。今日もいい天気。", "Lorem ipsum"]
@@ -134,6 +143,15 @@ def test_stop_sequences(lm: LanguageModel) -> None:
 
     completion = lm.batch_complete_text(["10 10 10 10 10 10 "], stop_sequences=["0"], max_new_tokens=10)[0]
     assert completion.strip() == "1"
+
+
+def test_compute_log_probs(lm: LanguageModel) -> None:
+    log_prob = lm.compute_log_probs("こんにちは")
+    assert isinstance(log_prob, float)
+
+    log_probs = lm.batch_compute_log_probs(["こんにちは", "こんばんは"])
+    assert len(log_probs) == 2
+    assert isinstance(log_probs[0], float)
 
 
 def test_batch_compute_log_probs_produces_reasonable_comparisons(lm: LanguageModel) -> None:
@@ -195,6 +213,21 @@ def test_if_random_seed_fixes_the_lm_outputs(lm_init_func: Callable[..., Hugging
 def test_batch_generate_chat_response(lm: LanguageModel) -> None:
     responses = lm.batch_generate_chat_response([[{"role": "user", "content": "こんにちは。"}]], max_length=40)
     assert len(responses) == 1
+    assert isinstance(responses[0], str)
+
+
+def test_generate_chat_response(lm: LanguageModel) -> None:
+    response = lm.generate_chat_response([{"role": "user", "content": "こんにちは。"}], max_length=40)
+    assert isinstance(response, str)
+
+    responses = lm.generate_chat_response(
+        [
+            [{"role": "user", "content": "こんにちは。"}],
+            [{"role": "user", "content": "こんばんわ"}],
+        ],
+        max_length=40,
+    )
+    assert len(responses) == 2
     assert isinstance(responses[0], str)
 
 
