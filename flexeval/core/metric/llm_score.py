@@ -164,7 +164,9 @@ class LLMScore(Metric):
             evaluator_score_list.append(evaluator_score)
 
         summary = summarize_evaluator_scores(
-            evaluator_score_list, task_inputs_list, self.category_key,
+            evaluator_score_list,
+            task_inputs_list,
+            self.category_key,
         )
 
         return MetricResult(
@@ -302,7 +304,9 @@ class ChatLLMScore(Metric):
             evaluator_score_list.append(evaluator_score)
 
         summary = summarize_evaluator_scores(
-            evaluator_score_list, task_inputs_list, self.category_key,
+            evaluator_score_list,
+            task_inputs_list,
+            self.category_key,
         )
 
         return MetricResult(
