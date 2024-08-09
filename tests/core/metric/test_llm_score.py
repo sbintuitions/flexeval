@@ -63,6 +63,7 @@ def test_llm_score_with_category() -> None:
     metric = LLMScore(
         language_model=EchoBackLanguageModel(),
         prompt_template=Jinja2PromptTemplate("{{ lm_output }}"),
+        category_key="category"
     )
     lm_outputs = ["This score is 1.", "This score is 2.", "This is a good one."]
     task_inputs_list = [
@@ -107,6 +108,7 @@ def test_chat_llm_score_with_category() -> None:
     metric = ChatLLMScore(
         language_model=EchoBackLanguageModel(),
         prompt_template=Jinja2PromptTemplate("{{ lm_output }}"),
+        category_key="category"
     )
     lm_outputs = ["This score is 1.", "This score is 2.", "This is a good one."]
     task_inputs_list = [
