@@ -133,12 +133,28 @@ class LLMScore(Metric):
                 logger.warning(f"Failed to parse score from evaluator output: {evaluator_output}")
             evaluator_score_list.append(evaluator_score)
 
-        valid_scores = [score for score in evaluator_score_list if score is not None]
-        average_evaluator_score = sum(valid_scores) / len(valid_scores) if valid_scores else 0
-        num_failed_score_parses = len(evaluator_score_list) - len(valid_scores)
+        all_scores = []
+        category2valid_scores = defaultdict(list)
+        for score, task_inputs in zip(evaluator_score_list, task_inputs_list):
+            if score is None:
+                continue
+            all_scores.append(score)
+            if self.category_key in task_inputs:
+                category2valid_scores[task_inputs["category"]].append(score)
+
+        category2average_score = {}
+        for category, valid_scores in category2valid_scores.items():
+            category2average_score[category] = sum(valid_scores) / len(valid_scores)
+
+        llm_score = sum(all_scores) / len(all_scores)
+        num_failed_score_parses = len(evaluator_score_list) - len(all_scores)
+
+        summary = {"llm_score": llm_score, "num_failed_score_parses": num_failed_score_parses}
+        for category, average_score in category2average_score.items():
+            summary[f"llm_score/{category}"] = average_score
 
         return MetricResult(
-            {"llm_score": average_evaluator_score, "num_failed_score_parses": num_failed_score_parses},
+            summary,
             instance_details=[
                 {"llm_score": eval_score, "llm_score_input": eval_in, "llm_score_output": eval_out}
                 for eval_score, eval_in, eval_out in zip(
