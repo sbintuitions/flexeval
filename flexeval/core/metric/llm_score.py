@@ -271,10 +271,12 @@ class ChatLLMScore(Metric):
                 logger.warning(f"Failed to parse score from evaluator output: {evaluator_output}")
             evaluator_score_list.append(evaluator_score)
 
+        all_scores = []
         category2valid_scores = defaultdict(list)
         for score, task_inputs in zip(evaluator_score_list, task_inputs_list):
             if score is None:
                 continue
+            all_scores.append(score)
             if self.category_key in task_inputs:
                 category2valid_scores[task_inputs["category"]].append(score)
 
@@ -282,11 +284,6 @@ class ChatLLMScore(Metric):
         for category, valid_scores in category2valid_scores.items():
             category2average_score[category] = sum(valid_scores) / len(valid_scores)
 
-        all_scores = [
-            valid_score
-            for valid_scores in category2valid_scores.values()
-            for valid_score in valid_scores
-        ]
         llm_score = sum(all_scores) / len(all_scores)
         num_failed_score_parses = len(evaluator_score_list) - len(all_scores)
 
