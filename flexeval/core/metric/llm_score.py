@@ -272,13 +272,25 @@ class ChatLLMScore(Metric):
             evaluator_score_list.append(evaluator_score)
 
         category2valid_scores = defaultdict(list)
-        category2average_score = {
-            category: sum(scores) / len(scores)
-            for category, score in category2valid_scores.items()
-        }
-        overall_average = ...
+        for score, task_inputs in zip(evaluator_score_list, task_inputs_list):
+            if score is None:
+                continue
+            if self.category_key in task_inputs:
+                category2valid_scores[task_inputs["category"]].append(score)
 
-        summary["llm_score"] = overall_average
+        category2average_score = {}
+        for category, valid_scores in category2valid_scores.items():
+            category2average_score[category] = sum(valid_scores) / len(valid_scores)
+
+        all_scores = [
+            valid_score
+            for valid_scores in category2valid_scores.values()
+            for valid_score in valid_scores
+        ]
+        llm_score = sum(all_scores) / len(all_scores)
+        num_failed_score_parses = len(evaluator_score_list) - len(all_scores)
+
+        summary = {"llm_score": llm_score, "num_failed_score_parses": num_failed_score_parses}
         for category, average_score in category2average_score.items():
             summary[f"llm_score/{category}"] = average_score
 
