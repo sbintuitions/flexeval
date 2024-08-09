@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from collections import defaultdict
 import re
+from collections import defaultdict
 
 import tqdm
 from loguru import logger
@@ -31,7 +31,7 @@ def parse_score_from_evaluator_output(evaluator_output: str, valid_score_range: 
 def summarize_evaluator_scores(
     evaluator_score_list: list[int | None],
     task_inputs_list: list[dict[str, str]],
-    category_key: str | None = None
+    category_key: str | None = None,
 ) -> dict[str, float]:
     """Summarize evaluator_score_list. If category_key is given, return
     category-wise mean score as well as overall mean score.
@@ -164,7 +164,7 @@ class LLMScore(Metric):
             evaluator_score_list.append(evaluator_score)
 
         summary = summarize_evaluator_scores(
-            evaluator_score_list, task_inputs_list, self.category_key
+            evaluator_score_list, task_inputs_list, self.category_key,
         )
 
         return MetricResult(
@@ -231,7 +231,7 @@ class ChatLLMScore(Metric):
         batch_size: int = 4,
         disable_tqdm: bool = False,
         valid_score_range: tuple[int, int] | None = None,
-        category_key: str | None = None
+        category_key: str | None = None,
     ) -> None:
         self.language_model = language_model
         self.prompt_template = prompt_template
@@ -302,7 +302,7 @@ class ChatLLMScore(Metric):
             evaluator_score_list.append(evaluator_score)
 
         summary = summarize_evaluator_scores(
-            evaluator_score_list, task_inputs_list, self.category_key
+            evaluator_score_list, task_inputs_list, self.category_key,
         )
 
         return MetricResult(
