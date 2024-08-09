@@ -28,30 +28,33 @@ def parse_score_from_evaluator_output(evaluator_output: str, valid_score_range: 
     return parsed_score
 
 
-def summarize_evaluator_scores_with_category(
-    evaluator_score_list: list[int],
+def summarize_evaluator_scores(
+    evaluator_score_list: list[int | None],
     task_inputs_list: list[dict[str, str]],
-    category_key: str
+    category_key: str | None = None
 ) -> dict[str, float]:
+    """Summarize evaluator_score_list. If category_key is given, return
+    category-wise mean score as well as overall mean score.
+    """
     all_scores = []
     category2valid_scores = defaultdict(list)
     for score, task_inputs in zip(evaluator_score_list, task_inputs_list):
         if score is None:
             continue
         all_scores.append(score)
-        if category_key in task_inputs:
+        if category_key is not None and category_key in task_inputs:
             category2valid_scores[task_inputs["category"]].append(score)
 
-    category2average_score = {}
+    category2mean_score = {}
     for category, valid_scores in category2valid_scores.items():
-        category2average_score[category] = sum(valid_scores) / len(valid_scores)
+        category2mean_score[category] = sum(valid_scores) / len(valid_scores)
 
     llm_score = sum(all_scores) / len(all_scores)
     num_failed_score_parses = len(evaluator_score_list) - len(all_scores)
 
     summary = {"llm_score": llm_score, "num_failed_score_parses": num_failed_score_parses}
-    for category, average_score in category2average_score.items():
-        summary[f"llm_score/{category}"] = average_score
+    for category, mean_score in category2mean_score.items():
+        summary[f"llm_score/{category}"] = mean_score
     return summary
 
 
@@ -160,7 +163,7 @@ class LLMScore(Metric):
                 logger.warning(f"Failed to parse score from evaluator output: {evaluator_output}")
             evaluator_score_list.append(evaluator_score)
 
-        summary = summarize_evaluator_scores_with_category(
+        summary = summarize_evaluator_scores(
             evaluator_score_list, task_inputs_list, self.category_key
         )
 
@@ -298,7 +301,7 @@ class ChatLLMScore(Metric):
                 logger.warning(f"Failed to parse score from evaluator output: {evaluator_output}")
             evaluator_score_list.append(evaluator_score)
 
-        summary = summarize_evaluator_scores_with_category(
+        summary = summarize_evaluator_scores(
             evaluator_score_list, task_inputs_list, self.category_key
         )
 
