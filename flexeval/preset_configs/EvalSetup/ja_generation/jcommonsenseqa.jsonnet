@@ -16,6 +16,7 @@ local dataset_base_args = {
     path: 'llm-book/JGLUE',
     subset: 'JCommonsenseQA',
     reference_template: '{% set choices = [choice0, choice1, choice2, choice3, choice4] %}{{ choices[label] }}',
+    dataset_kwargs: { trust_remote_code: true },
   },
 };
 

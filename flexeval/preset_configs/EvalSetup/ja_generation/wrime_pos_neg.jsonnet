@@ -14,6 +14,7 @@ local dataset_base_args = {
   init_args: {
     path: 'llm-book/wrime-sentiment',
     reference_template: "{{ ['\"ポジティブ\"', '\"ネガティブ\"'][label] }}",
+    dataset_kwargs: { trust_remote_code: true },
   },
 };
 

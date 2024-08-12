@@ -26,6 +26,11 @@ class HFChatDataset(ChatDataset):
             if the dataset has multiple references.
         subset: The subset of the dataset to use.
         require_incremental_response: Whether the dataset requires incremental response.
+        extra_info_templates: A dictionary of Jinja2 templates for extra information.
+        system_message_template: A Jinja2 template for the system message.
+        template_filters: A dictionary to indicate the condition to filter certain items.
+            The key is a Jinja2 template string to embed the item into a string, and the value is the value to keep.
+        dataset_kwargs: Additional keyword arguments to pass to the `datasets.load_dataset` function.
     """
 
     def __init__(
