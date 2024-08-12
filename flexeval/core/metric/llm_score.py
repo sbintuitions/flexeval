@@ -36,8 +36,8 @@ def summarize_evaluator_scores(
     """Summarize evaluator_score_list. If category_key is given, return
     category-wise mean score as well as overall mean score.
     """
-    all_scores = []
-    category2valid_scores = defaultdict(list)
+    all_scores: list[int] = []
+    category2valid_scores: dict[str, list[int]] = defaultdict(list)
     for score, task_inputs in zip(evaluator_score_list, task_inputs_list):
         if score is None:
             continue
@@ -45,7 +45,7 @@ def summarize_evaluator_scores(
         if category_key is not None and category_key in task_inputs:
             category2valid_scores[task_inputs["category"]].append(score)
 
-    category2mean_score = {}
+    category2mean_score: dict[str, float] = {}
     for category, valid_scores in category2valid_scores.items():
         category2mean_score[category] = sum(valid_scores) / len(valid_scores)
 
@@ -71,6 +71,8 @@ class LLMScore(Metric):
         disable_tqdm: Whether to disable the progress bar.
         valid_score_range: A tuple of two integers representing the valid score range.
             If the parsed score is out of the range, it will be ignored.
+        category_key: A key to create category-wise mean score.
+            The category key is expected to be in task inputs.
 
     Examples:
         >>> from flexeval import LLMScore, OpenAIChatAPI, Jinja2PromptTemplate
@@ -199,6 +201,8 @@ class ChatLLMScore(Metric):
         disable_tqdm: Whether to disable the progress bar.
         valid_score_range: A tuple of two integers representing the valid score range.
             If the parsed score is out of the range, it will be ignored.
+        category_key: A key to create category-wise mean score.
+            The category key is expected to be in task inputs.
 
     Examples:
         >>> from flexeval import ChatLLMScore, OpenAIChatAPI, Jinja2PromptTemplate
