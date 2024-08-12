@@ -15,6 +15,7 @@ local dataset_base_args = {
     path: 'llm-book/JGLUE',
     subset: 'JNLI',
     reference_template: "{{ ['\"含意\"', '\"矛盾\"', '\"中立\"'][label] }}",
+    dataset_kwargs: { trust_remote_code: true },
   },
 };
 

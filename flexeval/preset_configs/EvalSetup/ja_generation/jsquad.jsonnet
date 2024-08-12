@@ -15,6 +15,7 @@ local dataset_base_args = {
     path: 'llm-book/JGLUE',
     subset: 'JSQuAD',
     reference_list_template: '{{ answers.text }}',
+    dataset_kwargs: { trust_remote_code: true },
   },
 };
 
