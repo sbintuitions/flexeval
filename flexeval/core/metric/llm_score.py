@@ -36,23 +36,25 @@ def summarize_evaluator_scores(
     """Summarize evaluator_score_list. If category_key is given, return
     category-wise mean score as well as overall mean score.
     """
-    all_scores: list[int] = []
+
+    # compute overall mean score
+    all_valid_scores: list[int] = [s for s in evaluator_score_list if s is not None]
+    llm_score = sum(all_valid_scores) / len(all_valid_scores)
+    num_failed_score_parses = len(evaluator_score_list) - len(all_valid_scores)
+    summary = {"llm_score": llm_score, "num_failed_score_parses": num_failed_score_parses}
+
+    # compute category-wise mean score if category_key is given
     category2valid_scores: dict[str, list[int]] = defaultdict(list)
     for score, task_inputs in zip(evaluator_score_list, task_inputs_list):
-        if score is None:
+        if score is None or category_key is None:
             continue
-        all_scores.append(score)
-        if category_key is not None and category_key in task_inputs:
+        if category_key in task_inputs:
             category2valid_scores[task_inputs["category"]].append(score)
 
     category2mean_score: dict[str, float] = {}
     for category, valid_scores in category2valid_scores.items():
         category2mean_score[category] = sum(valid_scores) / len(valid_scores)
 
-    llm_score = sum(all_scores) / len(all_scores)
-    num_failed_score_parses = len(evaluator_score_list) - len(all_scores)
-
-    summary = {"llm_score": llm_score, "num_failed_score_parses": num_failed_score_parses}
     for category, mean_score in category2mean_score.items():
         summary[f"llm_score/{category}"] = mean_score
     return summary
