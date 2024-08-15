@@ -4,6 +4,7 @@ from dataclasses import asdict
 from typing import Any
 
 from loguru import logger
+from tqdm import tqdm
 
 from .pairwise_comparison import (
     AllCombinations,
@@ -44,12 +45,16 @@ def evaluate_pairwise(
         else:
             unjudged_matches.append((index, match))
     cache_count: int = len(judged_matches)
+    if cache_count > 0:
+        logger.info(f"Loaded {cache_count} judged matches from cache.")
 
     newly_judged_results: list[tuple[Winner, str]] = []
-    for batch_matches in batch_iter(unjudged_matches, batch_size):
-        batch_inputs = [(match.model1_item, match.model2_item) for (_, match) in batch_matches]
-        newly_judged_results.extend(judge.batch_judge(batch_inputs))
-    newly_judged_count: int = len(newly_judged_results)
+    with tqdm(total=len(unjudged_matches)) as pbar:
+        for batch_matches in batch_iter(unjudged_matches, batch_size):
+            batch_inputs = [(match.model1_item, match.model2_item) for (_, match) in batch_matches]
+            newly_judged_results.extend(judge.batch_judge(batch_inputs))
+            pbar.update(len(batch_matches))
+    logger.info(f"Judged {len(newly_judged_results)} matches.")
 
     for (index, match), (winner, rationale) in zip(
         unjudged_matches,
@@ -67,8 +72,5 @@ def evaluate_pairwise(
         )
         for scorer in scorers
     }
-    logger.info(
-        f"newly judged: {newly_judged_count} items, loaded from cache: {cache_count} items",
-    )
     logger.info(model_scores_dict)
     return model_scores_dict, match_info_list
