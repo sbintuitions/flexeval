@@ -18,13 +18,10 @@ from flexeval.utils import instantiate_from_config
 )
 def test_if_eval_setup_config_is_valid(config_path: str, mocker: MockerFixture) -> None:
     # datasets.load_dataset takes a long time to load the dataset, so we mock it
-    possible_keys = ["text", "question", "answer", "summary"]
-    mock_item = {k: "This is a mock data." for k in possible_keys}
-    possible_label_keys = ["label", "feeling"]
-    mock_item.update({k: 0 for k in possible_label_keys})
+    mock_item = {"text": "This is a mock data."}
     mock_dataset = datasets.Dataset.from_list([mock_item for _ in range(5)])
     mocker.patch("datasets.load_dataset", return_value=mock_dataset)
-    mocker.patch("datasets.Dataset.filter", return_value=mock_dataset)
+    mocker.patch("jinja2.Template.render", return_value="This is a mock data.")
 
     eval_setup = instantiate_from_config(config_path)
     assert isinstance(eval_setup, EvalSetup)
