@@ -46,7 +46,7 @@ class VLLM(LanguageModel):
         # automatically set tensor_parallel_size to the number of GPUs
         if "tensor_parallel_size" not in model_kwargs:
             model_kwargs["tensor_parallel_size"] = torch.cuda.device_count()
-        self.llm = LLM(model, trust_remote_code=True, **model_kwargs)
+        self.llm = LLM(model, **model_kwargs)
 
     def batch_complete_text(
         self,
