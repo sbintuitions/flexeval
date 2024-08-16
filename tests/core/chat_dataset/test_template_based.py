@@ -1,11 +1,39 @@
-from flexeval.core.chat_dataset import HFChatDataset
+from __future__ import annotations
+
+from typing import Any
+
+import pytest
+
+from flexeval.core.chat_dataset import HFChatDataset, JsonlChatDataset, TemplateChatDataset
+
+DATASETS_TO_TEST = [
+    (
+        HFChatDataset,
+        {
+            "path": "tests/dummy_modules/hf_dataset",
+            "split": "train",
+        },
+    ),
+    (
+        JsonlChatDataset,
+        {
+            "path": "tests/dummy_modules/test.jsonl",
+        },
+    ),
+]
 
 
-def test_hf_dataset_with_reference() -> None:
+@pytest.mark.parametrize(
+    ("dataset_class", "kwargs"),
+    DATASETS_TO_TEST,
+)
+def test_template_dataset_with_reference(
+    dataset_class: type[TemplateChatDataset],
+    kwargs: dict[str, Any],
+) -> None:
     system_message = "You are a quiz player."
-    chat_dataset = HFChatDataset(
-        path="tests/dummy_modules/hf_dataset",
-        split="train",
+    chat_dataset = dataset_class(
+        **kwargs,
         input_template="{{ question }}",
         reference_template="{{ answers[0] }}",
         extra_info_templates={"question_as_extra_info": "{{ question }}"},
@@ -25,11 +53,17 @@ def test_hf_dataset_with_reference() -> None:
     assert chat_dataset[0].extra_info["question"] == "What is the highest mountain in the world."
 
 
-def test_hf_dataset_with_reference_list() -> None:
+@pytest.mark.parametrize(
+    ("dataset_class", "kwargs"),
+    DATASETS_TO_TEST,
+)
+def test_hf_dataset_with_reference_list(
+    dataset_class: type[TemplateChatDataset],
+    kwargs: dict[str, Any],
+) -> None:
     system_message = "You are a quiz player."
-    chat_dataset = HFChatDataset(
-        path="tests/dummy_modules/hf_dataset",
-        split="train",
+    chat_dataset = dataset_class(
+        **kwargs,
         input_template="{{question}}",
         reference_list_template="{{ answers }}",
         extra_info_templates={"question_as_extra_info": "{{ question }}"},
@@ -49,17 +83,22 @@ def test_hf_dataset_with_reference_list() -> None:
     assert chat_dataset[0].extra_info["question"] == "What is the highest mountain in the world."
 
 
-def test_test_template_filters() -> None:
-    original_dataset = HFChatDataset(
-        path="tests/dummy_modules/hf_dataset",
-        split="train",
+@pytest.mark.parametrize(
+    ("dataset_class", "kwargs"),
+    DATASETS_TO_TEST,
+)
+def test_test_template_filters(
+    dataset_class: type[TemplateChatDataset],
+    kwargs: dict[str, Any],
+) -> None:
+    original_dataset = dataset_class(
+        **kwargs,
         input_template="{{question}}",
         reference_list_template="{{ answers }}",
     )
 
-    filtered_dataset = HFChatDataset(
-        path="tests/dummy_modules/hf_dataset",
-        split="train",
+    filtered_dataset = dataset_class(
+        **kwargs,
         input_template="{{question}}",
         reference_list_template="{{ answers }}",
         template_filters={

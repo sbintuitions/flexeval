@@ -1,3 +1,2 @@
 from .base import MultipleChoiceDataset, MultipleChoiceInstance
-from .hf_dataset import HFMultipleChoiceDataset
-from .jsonl import JsonlMultipleChoiceDataset
+from .template_based import HFMultipleChoiceDataset, JsonlMultipleChoiceDataset, TemplateMultipleChoiceDataset
