@@ -141,4 +141,4 @@ def normalize_stop_sequences(
 
     if eos_token and not ignore_eos:
         normalized_stop_sequences.append(eos_token)
-    return normalized_stop_sequences
+    return list(set(normalized_stop_sequences))
