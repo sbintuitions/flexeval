@@ -25,6 +25,8 @@ class LanguageModel:
                 This argument exists to give a common interface to various models that have different names for it.
             max_new_tokens: The maximum number of tokens to generate for each text.
                 This argument exists to give a common interface to various models that have different names for it.
+            **kwargs: Additional keyword arguments for the generation.
+                If the default generation kwargs set to the model, this will override them.
         """
         msg = f"{self.__class__.__name__} cannot generate text."
         raise NotImplementedError(msg)
