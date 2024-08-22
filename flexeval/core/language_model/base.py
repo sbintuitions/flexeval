@@ -29,7 +29,8 @@ class LanguageModel:
                 The acceptable keys depend on the specific implementation of the model.
                 These arguments override corresponding values in the model's default_gen_kwargs.
                 Special cases:
-                - 'stop_sequences': Merged with default_gen_kwargs instead of overriding.
+                - 'stop_sequences' or any similar model-specific kwargs:
+                    Merged with default_gen_kwargs instead of overriding.
         """
         msg = f"{self.__class__.__name__} cannot generate text."
         raise NotImplementedError(msg)
