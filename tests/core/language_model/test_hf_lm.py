@@ -266,7 +266,7 @@ def test_if_stop_sequences_work_as_expected(chat_lm: HuggingFaceLM) -> None:
     assert eos_token in response[: -len(eos_token)]
 
 
-def test_if_gen_kwargs_work_as_expected():
+def test_if_gen_kwargs_work_as_expected() -> None:
     lm = HuggingFaceLM(model="sbintuitions/tiny-lm", default_gen_kwargs={"max_new_tokens": 1})
     # check if the default gen_kwargs is used and the max_new_tokens is 1
     text = lm.complete_text("000000")
