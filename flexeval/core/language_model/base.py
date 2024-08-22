@@ -22,7 +22,9 @@ class LanguageModel:
         Args:
             text_list: A list of input texts.
             stop_sequences: A string or a list of strings that will stop the generation when they are generated.
+                This argument exists to give a common interface to various models that have different names for it.
             max_new_tokens: The maximum number of tokens to generate for each text.
+                This argument exists to give a common interface to various models that have different names for it.
         """
         msg = f"{self.__class__.__name__} cannot generate text."
         raise NotImplementedError(msg)
@@ -109,3 +111,29 @@ class LanguageModel:
         if isinstance(text_list, str):
             return self.batch_compute_log_probs([text_list], prefix_list, stride)[0]
         return self.batch_compute_log_probs(text_list, prefix_list, stride)
+
+
+def normalize_stop_sequences(
+    stop_sequences_list: list[str | list[str] | None],
+    eos_token: str | None = None,
+    ignore_eos: bool = False,
+) -> list[str]:
+    """
+    This function absorb stop sequences specified in various ways into a list of strings.
+    """
+    normalized_stop_sequences: list[str] = []
+    # collect stop sequences from `stop_sequences_list`
+    for stop_sequences in stop_sequences_list:
+        if stop_sequences is None:
+            pass
+        elif isinstance(stop_sequences, str):
+            normalized_stop_sequences.append(stop_sequences)
+        elif isinstance(stop_sequences, list):
+            normalized_stop_sequences.extend(stop_sequences)
+        else:
+            msg = f"Invalid type of stop_sequences: {type(stop_sequences)}"
+            raise ValueError(msg)
+
+    if eos_token and not ignore_eos:
+        normalized_stop_sequences.append(eos_token)
+    return normalized_stop_sequences
