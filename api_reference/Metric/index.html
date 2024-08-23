@@ -12,7 +12,7 @@
         <link rel="prev" href="../MatchMaker/">
       
       
-        <link rel="next" href="../MultipleChoiceDataset/">
+        <link rel="next" href="../PairwiseJudge/">
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
@@ -917,6 +917,27 @@
   
   
     <li class="md-nav__item">
+      <a href="../HFMultipleChoiceDataset/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    HFMultipleChoiceDataset
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../LanguageModel/" class="md-nav__link">
         
   
@@ -1139,27 +1160,6 @@
   
 </nav>
       
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../MultipleChoiceDataset/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    MultipleChoiceDataset
-  </span>
-  
-
-      </a>
     </li>
   
 
@@ -3766,6 +3766,17 @@ Unless reference_processor is specified, this processor will be applied to the r
 If the parsed score is out of the range, it will be ignored.</p>
           </div>
         </li>
+        <li class="doc-section-item field-body">
+          <b><code>category_key</code></b>
+              (<code>str | None</code>, default:
+                  <code>None</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>A key to create category-wise mean score.
+The category key is expected to be in task inputs.</p>
+          </div>
+        </li>
     </ul>
 
 
@@ -3796,46 +3807,7 @@ If the parsed score is out of the range, it will be ignored.</p>
 
               <details class="quote">
                 <summary>Source code in <code>flexeval/core/metric/llm_score.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">155</span>
-<span class="normal">156</span>
-<span class="normal">157</span>
-<span class="normal">158</span>
-<span class="normal">159</span>
-<span class="normal">160</span>
-<span class="normal">161</span>
-<span class="normal">162</span>
-<span class="normal">163</span>
-<span class="normal">164</span>
-<span class="normal">165</span>
-<span class="normal">166</span>
-<span class="normal">167</span>
-<span class="normal">168</span>
-<span class="normal">169</span>
-<span class="normal">170</span>
-<span class="normal">171</span>
-<span class="normal">172</span>
-<span class="normal">173</span>
-<span class="normal">174</span>
-<span class="normal">175</span>
-<span class="normal">176</span>
-<span class="normal">177</span>
-<span class="normal">178</span>
-<span class="normal">179</span>
-<span class="normal">180</span>
-<span class="normal">181</span>
-<span class="normal">182</span>
-<span class="normal">183</span>
-<span class="normal">184</span>
-<span class="normal">185</span>
-<span class="normal">186</span>
-<span class="normal">187</span>
-<span class="normal">188</span>
-<span class="normal">189</span>
-<span class="normal">190</span>
-<span class="normal">191</span>
-<span class="normal">192</span>
-<span class="normal">193</span>
-<span class="normal">194</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">194</span>
 <span class="normal">195</span>
 <span class="normal">196</span>
 <span class="normal">197</span>
@@ -3929,7 +3901,52 @@ If the parsed score is out of the range, it will be ignored.</p>
 <span class="normal">285</span>
 <span class="normal">286</span>
 <span class="normal">287</span>
-<span class="normal">288</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">ChatLLMScore</span><span class="p">(</span><span class="n">Metric</span><span class="p">):</span>
+<span class="normal">288</span>
+<span class="normal">289</span>
+<span class="normal">290</span>
+<span class="normal">291</span>
+<span class="normal">292</span>
+<span class="normal">293</span>
+<span class="normal">294</span>
+<span class="normal">295</span>
+<span class="normal">296</span>
+<span class="normal">297</span>
+<span class="normal">298</span>
+<span class="normal">299</span>
+<span class="normal">300</span>
+<span class="normal">301</span>
+<span class="normal">302</span>
+<span class="normal">303</span>
+<span class="normal">304</span>
+<span class="normal">305</span>
+<span class="normal">306</span>
+<span class="normal">307</span>
+<span class="normal">308</span>
+<span class="normal">309</span>
+<span class="normal">310</span>
+<span class="normal">311</span>
+<span class="normal">312</span>
+<span class="normal">313</span>
+<span class="normal">314</span>
+<span class="normal">315</span>
+<span class="normal">316</span>
+<span class="normal">317</span>
+<span class="normal">318</span>
+<span class="normal">319</span>
+<span class="normal">320</span>
+<span class="normal">321</span>
+<span class="normal">322</span>
+<span class="normal">323</span>
+<span class="normal">324</span>
+<span class="normal">325</span>
+<span class="normal">326</span>
+<span class="normal">327</span>
+<span class="normal">328</span>
+<span class="normal">329</span>
+<span class="normal">330</span>
+<span class="normal">331</span>
+<span class="normal">332</span>
+<span class="normal">333</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">ChatLLMScore</span><span class="p">(</span><span class="n">Metric</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A metric that evaluates the output of `LanguageModel.batch_generate_chat_response`.</span>
 
@@ -3941,6 +3958,8 @@ If the parsed score is out of the range, it will be ignored.</p>
 <span class="sd">        disable_tqdm: Whether to disable the progress bar.</span>
 <span class="sd">        valid_score_range: A tuple of two integers representing the valid score range.</span>
 <span class="sd">            If the parsed score is out of the range, it will be ignored.</span>
+<span class="sd">        category_key: A key to create category-wise mean score.</span>
+<span class="sd">            The category key is expected to be in task inputs.</span>
 
 <span class="sd">    Examples:</span>
 <span class="sd">        &gt;&gt;&gt; from flexeval import ChatLLMScore, OpenAIChatAPI, Jinja2PromptTemplate</span>
@@ -3975,6 +3994,7 @@ If the parsed score is out of the range, it will be ignored.</p>
         <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">4</span><span class="p">,</span>
         <span class="n">disable_tqdm</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">valid_score_range</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">category_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">language_model</span> <span class="o">=</span> <span class="n">language_model</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">prompt_template</span> <span class="o">=</span> <span class="n">prompt_template</span>
@@ -3982,6 +4002,7 @@ If the parsed score is out of the range, it will be ignored.</p>
         <span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span> <span class="o">=</span> <span class="n">batch_size</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">disable_tqdm</span> <span class="o">=</span> <span class="n">disable_tqdm</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">valid_score_range</span> <span class="o">=</span> <span class="n">valid_score_range</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">category_key</span> <span class="o">=</span> <span class="n">category_key</span>
 
     <span class="k">def</span> <span class="nf">evaluate</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -4043,12 +4064,14 @@ If the parsed score is out of the range, it will be ignored.</p>
                 <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to parse score from evaluator output: </span><span class="si">{</span><span class="n">evaluator_output</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="n">evaluator_score_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">evaluator_score</span><span class="p">)</span>
 
-        <span class="n">valid_scores</span> <span class="o">=</span> <span class="p">[</span><span class="n">score</span> <span class="k">for</span> <span class="n">score</span> <span class="ow">in</span> <span class="n">evaluator_score_list</span> <span class="k">if</span> <span class="n">score</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">]</span>
-        <span class="n">average_evaluator_score</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">valid_scores</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">valid_scores</span><span class="p">)</span> <span class="k">if</span> <span class="n">valid_scores</span> <span class="k">else</span> <span class="mi">0</span>
-        <span class="n">num_failed_score_parses</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">evaluator_score_list</span><span class="p">)</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">valid_scores</span><span class="p">)</span>
+        <span class="n">summary</span> <span class="o">=</span> <span class="n">summarize_evaluator_scores</span><span class="p">(</span>
+            <span class="n">evaluator_score_list</span><span class="p">,</span>
+            <span class="n">task_inputs_list</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">category_key</span><span class="p">,</span>
+        <span class="p">)</span>
 
         <span class="k">return</span> <span class="n">MetricResult</span><span class="p">(</span>
-            <span class="p">{</span><span class="s2">&quot;llm_score&quot;</span><span class="p">:</span> <span class="n">average_evaluator_score</span><span class="p">,</span> <span class="s2">&quot;num_failed_score_parses&quot;</span><span class="p">:</span> <span class="n">num_failed_score_parses</span><span class="p">},</span>
+            <span class="n">summary</span><span class="p">,</span>
             <span class="n">instance_details</span><span class="o">=</span><span class="p">[</span>
                 <span class="p">{</span><span class="s2">&quot;llm_score&quot;</span><span class="p">:</span> <span class="n">eval_score</span><span class="p">,</span> <span class="s2">&quot;llm_score_input&quot;</span><span class="p">:</span> <span class="n">eval_in</span><span class="p">,</span> <span class="s2">&quot;llm_score_output&quot;</span><span class="p">:</span> <span class="n">eval_out</span><span class="p">}</span>
                 <span class="k">for</span> <span class="n">eval_score</span><span class="p">,</span> <span class="n">eval_in</span><span class="p">,</span> <span class="n">eval_out</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span>
@@ -4202,6 +4225,27 @@ If the parsed score is out of the range, it will be ignored.</p>
 
 </div>
 
+<div class="doc doc-object doc-attribute">
+
+
+
+<h3 id="flexeval.core.metric.llm_score.ChatLLMScore.category_key" class="doc doc-heading">
+            <span class="doc doc-object-name doc-attribute-name">category_key</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+<a href="#flexeval.core.metric.llm_score.ChatLLMScore.category_key" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">category_key</span> <span class="o">=</span> <span class="n">category_key</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+    </div>
+
+</div>
+
 
 
 <div class="doc doc-object doc-function">
@@ -4212,28 +4256,30 @@ If the parsed score is out of the range, it will be ignored.</p>
 
 
 <a href="#flexeval.core.metric.llm_score.ChatLLMScore.__init__" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="fm">__init__</span><span class="p">(</span><span class="nf">language_model</span><span class="p">:</span> <span class="n">LanguageModel</span><span class="p">,</span> <span class="n">prompt_template</span><span class="p">:</span> <span class="n">PromptTemplate</span><span class="p">,</span> <span class="n">system_message</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">PromptTemplate</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">4</span><span class="p">,</span> <span class="n">disable_tqdm</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">valid_score_range</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="fm">__init__</span><span class="p">(</span><span class="nf">language_model</span><span class="p">:</span> <span class="n">LanguageModel</span><span class="p">,</span> <span class="n">prompt_template</span><span class="p">:</span> <span class="n">PromptTemplate</span><span class="p">,</span> <span class="n">system_message</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">PromptTemplate</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">4</span><span class="p">,</span> <span class="n">disable_tqdm</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">valid_score_range</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">category_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
 
             <details class="quote">
               <summary>Source code in <code>flexeval/core/metric/llm_score.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">193</span>
-<span class="normal">194</span>
-<span class="normal">195</span>
-<span class="normal">196</span>
-<span class="normal">197</span>
-<span class="normal">198</span>
-<span class="normal">199</span>
-<span class="normal">200</span>
-<span class="normal">201</span>
-<span class="normal">202</span>
-<span class="normal">203</span>
-<span class="normal">204</span>
-<span class="normal">205</span>
-<span class="normal">206</span>
-<span class="normal">207</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">234</span>
+<span class="normal">235</span>
+<span class="normal">236</span>
+<span class="normal">237</span>
+<span class="normal">238</span>
+<span class="normal">239</span>
+<span class="normal">240</span>
+<span class="normal">241</span>
+<span class="normal">242</span>
+<span class="normal">243</span>
+<span class="normal">244</span>
+<span class="normal">245</span>
+<span class="normal">246</span>
+<span class="normal">247</span>
+<span class="normal">248</span>
+<span class="normal">249</span>
+<span class="normal">250</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">language_model</span><span class="p">:</span> <span class="n">LanguageModel</span><span class="p">,</span>
     <span class="n">prompt_template</span><span class="p">:</span> <span class="n">PromptTemplate</span><span class="p">,</span>
@@ -4241,6 +4287,7 @@ If the parsed score is out of the range, it will be ignored.</p>
     <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">4</span><span class="p">,</span>
     <span class="n">disable_tqdm</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">valid_score_range</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">category_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">language_model</span> <span class="o">=</span> <span class="n">language_model</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">prompt_template</span> <span class="o">=</span> <span class="n">prompt_template</span>
@@ -4248,6 +4295,7 @@ If the parsed score is out of the range, it will be ignored.</p>
     <span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span> <span class="o">=</span> <span class="n">batch_size</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">disable_tqdm</span> <span class="o">=</span> <span class="n">disable_tqdm</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">valid_score_range</span> <span class="o">=</span> <span class="n">valid_score_range</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">category_key</span> <span class="o">=</span> <span class="n">category_key</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -4269,50 +4317,7 @@ If the parsed score is out of the range, it will be ignored.</p>
 
             <details class="quote">
               <summary>Source code in <code>flexeval/core/metric/llm_score.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">209</span>
-<span class="normal">210</span>
-<span class="normal">211</span>
-<span class="normal">212</span>
-<span class="normal">213</span>
-<span class="normal">214</span>
-<span class="normal">215</span>
-<span class="normal">216</span>
-<span class="normal">217</span>
-<span class="normal">218</span>
-<span class="normal">219</span>
-<span class="normal">220</span>
-<span class="normal">221</span>
-<span class="normal">222</span>
-<span class="normal">223</span>
-<span class="normal">224</span>
-<span class="normal">225</span>
-<span class="normal">226</span>
-<span class="normal">227</span>
-<span class="normal">228</span>
-<span class="normal">229</span>
-<span class="normal">230</span>
-<span class="normal">231</span>
-<span class="normal">232</span>
-<span class="normal">233</span>
-<span class="normal">234</span>
-<span class="normal">235</span>
-<span class="normal">236</span>
-<span class="normal">237</span>
-<span class="normal">238</span>
-<span class="normal">239</span>
-<span class="normal">240</span>
-<span class="normal">241</span>
-<span class="normal">242</span>
-<span class="normal">243</span>
-<span class="normal">244</span>
-<span class="normal">245</span>
-<span class="normal">246</span>
-<span class="normal">247</span>
-<span class="normal">248</span>
-<span class="normal">249</span>
-<span class="normal">250</span>
-<span class="normal">251</span>
-<span class="normal">252</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">252</span>
 <span class="normal">253</span>
 <span class="normal">254</span>
 <span class="normal">255</span>
@@ -4343,7 +4348,52 @@ If the parsed score is out of the range, it will be ignored.</p>
 <span class="normal">280</span>
 <span class="normal">281</span>
 <span class="normal">282</span>
-<span class="normal">283</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">evaluate</span><span class="p">(</span>
+<span class="normal">283</span>
+<span class="normal">284</span>
+<span class="normal">285</span>
+<span class="normal">286</span>
+<span class="normal">287</span>
+<span class="normal">288</span>
+<span class="normal">289</span>
+<span class="normal">290</span>
+<span class="normal">291</span>
+<span class="normal">292</span>
+<span class="normal">293</span>
+<span class="normal">294</span>
+<span class="normal">295</span>
+<span class="normal">296</span>
+<span class="normal">297</span>
+<span class="normal">298</span>
+<span class="normal">299</span>
+<span class="normal">300</span>
+<span class="normal">301</span>
+<span class="normal">302</span>
+<span class="normal">303</span>
+<span class="normal">304</span>
+<span class="normal">305</span>
+<span class="normal">306</span>
+<span class="normal">307</span>
+<span class="normal">308</span>
+<span class="normal">309</span>
+<span class="normal">310</span>
+<span class="normal">311</span>
+<span class="normal">312</span>
+<span class="normal">313</span>
+<span class="normal">314</span>
+<span class="normal">315</span>
+<span class="normal">316</span>
+<span class="normal">317</span>
+<span class="normal">318</span>
+<span class="normal">319</span>
+<span class="normal">320</span>
+<span class="normal">321</span>
+<span class="normal">322</span>
+<span class="normal">323</span>
+<span class="normal">324</span>
+<span class="normal">325</span>
+<span class="normal">326</span>
+<span class="normal">327</span>
+<span class="normal">328</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">evaluate</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">lm_outputs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
     <span class="n">references_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -4403,12 +4453,14 @@ If the parsed score is out of the range, it will be ignored.</p>
             <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to parse score from evaluator output: </span><span class="si">{</span><span class="n">evaluator_output</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="n">evaluator_score_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">evaluator_score</span><span class="p">)</span>
 
-    <span class="n">valid_scores</span> <span class="o">=</span> <span class="p">[</span><span class="n">score</span> <span class="k">for</span> <span class="n">score</span> <span class="ow">in</span> <span class="n">evaluator_score_list</span> <span class="k">if</span> <span class="n">score</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">]</span>
-    <span class="n">average_evaluator_score</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">valid_scores</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">valid_scores</span><span class="p">)</span> <span class="k">if</span> <span class="n">valid_scores</span> <span class="k">else</span> <span class="mi">0</span>
-    <span class="n">num_failed_score_parses</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">evaluator_score_list</span><span class="p">)</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">valid_scores</span><span class="p">)</span>
+    <span class="n">summary</span> <span class="o">=</span> <span class="n">summarize_evaluator_scores</span><span class="p">(</span>
+        <span class="n">evaluator_score_list</span><span class="p">,</span>
+        <span class="n">task_inputs_list</span><span class="p">,</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">category_key</span><span class="p">,</span>
+    <span class="p">)</span>
 
     <span class="k">return</span> <span class="n">MetricResult</span><span class="p">(</span>
-        <span class="p">{</span><span class="s2">&quot;llm_score&quot;</span><span class="p">:</span> <span class="n">average_evaluator_score</span><span class="p">,</span> <span class="s2">&quot;num_failed_score_parses&quot;</span><span class="p">:</span> <span class="n">num_failed_score_parses</span><span class="p">},</span>
+        <span class="n">summary</span><span class="p">,</span>
         <span class="n">instance_details</span><span class="o">=</span><span class="p">[</span>
             <span class="p">{</span><span class="s2">&quot;llm_score&quot;</span><span class="p">:</span> <span class="n">eval_score</span><span class="p">,</span> <span class="s2">&quot;llm_score_input&quot;</span><span class="p">:</span> <span class="n">eval_in</span><span class="p">,</span> <span class="s2">&quot;llm_score_output&quot;</span><span class="p">:</span> <span class="n">eval_out</span><span class="p">}</span>
             <span class="k">for</span> <span class="n">eval_score</span><span class="p">,</span> <span class="n">eval_in</span><span class="p">,</span> <span class="n">eval_out</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span>
@@ -4439,10 +4491,10 @@ If the parsed score is out of the range, it will be ignored.</p>
 
             <details class="quote">
               <summary>Source code in <code>flexeval/core/metric/llm_score.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">285</span>
-<span class="normal">286</span>
-<span class="normal">287</span>
-<span class="normal">288</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">330</span>
+<span class="normal">331</span>
+<span class="normal">332</span>
+<span class="normal">333</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="k">return</span> <span class="p">(</span>
         <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">(language_model=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">language_model</span><span class="si">}</span><span class="s2">, prompt_template=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">prompt_template</span><span class="si">}</span><span class="s2">)&quot;</span>
     <span class="p">)</span>
@@ -4528,6 +4580,17 @@ The last integer value in the output of the evaluator is used as the evaluation 
 If the parsed score is out of the range, it will be ignored.</p>
           </div>
         </li>
+        <li class="doc-section-item field-body">
+          <b><code>category_key</code></b>
+              (<code>str | None</code>, default:
+                  <code>None</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>A key to create category-wise mean score.
+The category key is expected to be in task inputs.</p>
+          </div>
+        </li>
     </ul>
 
 
@@ -4557,40 +4620,7 @@ If the parsed score is out of the range, it will be ignored.</p>
 
               <details class="quote">
                 <summary>Source code in <code>flexeval/core/metric/llm_score.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 30</span>
-<span class="normal"> 31</span>
-<span class="normal"> 32</span>
-<span class="normal"> 33</span>
-<span class="normal"> 34</span>
-<span class="normal"> 35</span>
-<span class="normal"> 36</span>
-<span class="normal"> 37</span>
-<span class="normal"> 38</span>
-<span class="normal"> 39</span>
-<span class="normal"> 40</span>
-<span class="normal"> 41</span>
-<span class="normal"> 42</span>
-<span class="normal"> 43</span>
-<span class="normal"> 44</span>
-<span class="normal"> 45</span>
-<span class="normal"> 46</span>
-<span class="normal"> 47</span>
-<span class="normal"> 48</span>
-<span class="normal"> 49</span>
-<span class="normal"> 50</span>
-<span class="normal"> 51</span>
-<span class="normal"> 52</span>
-<span class="normal"> 53</span>
-<span class="normal"> 54</span>
-<span class="normal"> 55</span>
-<span class="normal"> 56</span>
-<span class="normal"> 57</span>
-<span class="normal"> 58</span>
-<span class="normal"> 59</span>
-<span class="normal"> 60</span>
-<span class="normal"> 61</span>
-<span class="normal"> 62</span>
-<span class="normal"> 63</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 63</span>
 <span class="normal"> 64</span>
 <span class="normal"> 65</span>
 <span class="normal"> 66</span>
@@ -4679,7 +4709,46 @@ If the parsed score is out of the range, it will be ignored.</p>
 <span class="normal">149</span>
 <span class="normal">150</span>
 <span class="normal">151</span>
-<span class="normal">152</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">LLMScore</span><span class="p">(</span><span class="n">Metric</span><span class="p">):</span>
+<span class="normal">152</span>
+<span class="normal">153</span>
+<span class="normal">154</span>
+<span class="normal">155</span>
+<span class="normal">156</span>
+<span class="normal">157</span>
+<span class="normal">158</span>
+<span class="normal">159</span>
+<span class="normal">160</span>
+<span class="normal">161</span>
+<span class="normal">162</span>
+<span class="normal">163</span>
+<span class="normal">164</span>
+<span class="normal">165</span>
+<span class="normal">166</span>
+<span class="normal">167</span>
+<span class="normal">168</span>
+<span class="normal">169</span>
+<span class="normal">170</span>
+<span class="normal">171</span>
+<span class="normal">172</span>
+<span class="normal">173</span>
+<span class="normal">174</span>
+<span class="normal">175</span>
+<span class="normal">176</span>
+<span class="normal">177</span>
+<span class="normal">178</span>
+<span class="normal">179</span>
+<span class="normal">180</span>
+<span class="normal">181</span>
+<span class="normal">182</span>
+<span class="normal">183</span>
+<span class="normal">184</span>
+<span class="normal">185</span>
+<span class="normal">186</span>
+<span class="normal">187</span>
+<span class="normal">188</span>
+<span class="normal">189</span>
+<span class="normal">190</span>
+<span class="normal">191</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">LLMScore</span><span class="p">(</span><span class="n">Metric</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Let LanguageModel to evaluate the output of another LanguageModel.</span>
 
 <span class="sd">    You can specify the evaluation criteria in `PromptTemplate`.</span>
@@ -4692,6 +4761,8 @@ If the parsed score is out of the range, it will be ignored.</p>
 <span class="sd">        disable_tqdm: Whether to disable the progress bar.</span>
 <span class="sd">        valid_score_range: A tuple of two integers representing the valid score range.</span>
 <span class="sd">            If the parsed score is out of the range, it will be ignored.</span>
+<span class="sd">        category_key: A key to create category-wise mean score.</span>
+<span class="sd">            The category key is expected to be in task inputs.</span>
 
 <span class="sd">    Examples:</span>
 <span class="sd">        &gt;&gt;&gt; from flexeval import LLMScore, OpenAIChatAPI, Jinja2PromptTemplate</span>
@@ -4724,12 +4795,14 @@ If the parsed score is out of the range, it will be ignored.</p>
         <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">4</span><span class="p">,</span>
         <span class="n">disable_tqdm</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">valid_score_range</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">category_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">language_model</span> <span class="o">=</span> <span class="n">language_model</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">prompt_template</span> <span class="o">=</span> <span class="n">prompt_template</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span> <span class="o">=</span> <span class="n">batch_size</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">disable_tqdm</span> <span class="o">=</span> <span class="n">disable_tqdm</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">valid_score_range</span> <span class="o">=</span> <span class="n">valid_score_range</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">category_key</span> <span class="o">=</span> <span class="n">category_key</span>
 
     <span class="k">def</span> <span class="nf">evaluate</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -4782,12 +4855,14 @@ If the parsed score is out of the range, it will be ignored.</p>
                 <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to parse score from evaluator output: </span><span class="si">{</span><span class="n">evaluator_output</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="n">evaluator_score_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">evaluator_score</span><span class="p">)</span>
 
-        <span class="n">valid_scores</span> <span class="o">=</span> <span class="p">[</span><span class="n">score</span> <span class="k">for</span> <span class="n">score</span> <span class="ow">in</span> <span class="n">evaluator_score_list</span> <span class="k">if</span> <span class="n">score</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">]</span>
-        <span class="n">average_evaluator_score</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">valid_scores</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">valid_scores</span><span class="p">)</span> <span class="k">if</span> <span class="n">valid_scores</span> <span class="k">else</span> <span class="mi">0</span>
-        <span class="n">num_failed_score_parses</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">evaluator_score_list</span><span class="p">)</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">valid_scores</span><span class="p">)</span>
+        <span class="n">summary</span> <span class="o">=</span> <span class="n">summarize_evaluator_scores</span><span class="p">(</span>
+            <span class="n">evaluator_score_list</span><span class="p">,</span>
+            <span class="n">task_inputs_list</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">category_key</span><span class="p">,</span>
+        <span class="p">)</span>
 
         <span class="k">return</span> <span class="n">MetricResult</span><span class="p">(</span>
-            <span class="p">{</span><span class="s2">&quot;llm_score&quot;</span><span class="p">:</span> <span class="n">average_evaluator_score</span><span class="p">,</span> <span class="s2">&quot;num_failed_score_parses&quot;</span><span class="p">:</span> <span class="n">num_failed_score_parses</span><span class="p">},</span>
+            <span class="n">summary</span><span class="p">,</span>
             <span class="n">instance_details</span><span class="o">=</span><span class="p">[</span>
                 <span class="p">{</span><span class="s2">&quot;llm_score&quot;</span><span class="p">:</span> <span class="n">eval_score</span><span class="p">,</span> <span class="s2">&quot;llm_score_input&quot;</span><span class="p">:</span> <span class="n">eval_in</span><span class="p">,</span> <span class="s2">&quot;llm_score_output&quot;</span><span class="p">:</span> <span class="n">eval_out</span><span class="p">}</span>
                 <span class="k">for</span> <span class="n">eval_score</span><span class="p">,</span> <span class="n">eval_in</span><span class="p">,</span> <span class="n">eval_out</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span>
@@ -4920,6 +4995,27 @@ If the parsed score is out of the range, it will be ignored.</p>
 
 </div>
 
+<div class="doc doc-object doc-attribute">
+
+
+
+<h3 id="flexeval.core.metric.llm_score.LLMScore.category_key" class="doc doc-heading">
+            <span class="doc doc-object-name doc-attribute-name">category_key</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+<a href="#flexeval.core.metric.llm_score.LLMScore.category_key" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">category_key</span> <span class="o">=</span> <span class="n">category_key</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+    </div>
+
+</div>
+
 
 
 <div class="doc doc-object doc-function">
@@ -4930,38 +5026,42 @@ If the parsed score is out of the range, it will be ignored.</p>
 
 
 <a href="#flexeval.core.metric.llm_score.LLMScore.__init__" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="fm">__init__</span><span class="p">(</span><span class="nf">language_model</span><span class="p">:</span> <span class="n">LanguageModel</span><span class="p">,</span> <span class="n">prompt_template</span><span class="p">:</span> <span class="n">PromptTemplate</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">4</span><span class="p">,</span> <span class="n">disable_tqdm</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">valid_score_range</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="fm">__init__</span><span class="p">(</span><span class="nf">language_model</span><span class="p">:</span> <span class="n">LanguageModel</span><span class="p">,</span> <span class="n">prompt_template</span><span class="p">:</span> <span class="n">PromptTemplate</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">4</span><span class="p">,</span> <span class="n">disable_tqdm</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">valid_score_range</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">category_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
 
             <details class="quote">
               <summary>Source code in <code>flexeval/core/metric/llm_score.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">68</span>
-<span class="normal">69</span>
-<span class="normal">70</span>
-<span class="normal">71</span>
-<span class="normal">72</span>
-<span class="normal">73</span>
-<span class="normal">74</span>
-<span class="normal">75</span>
-<span class="normal">76</span>
-<span class="normal">77</span>
-<span class="normal">78</span>
-<span class="normal">79</span>
-<span class="normal">80</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">103</span>
+<span class="normal">104</span>
+<span class="normal">105</span>
+<span class="normal">106</span>
+<span class="normal">107</span>
+<span class="normal">108</span>
+<span class="normal">109</span>
+<span class="normal">110</span>
+<span class="normal">111</span>
+<span class="normal">112</span>
+<span class="normal">113</span>
+<span class="normal">114</span>
+<span class="normal">115</span>
+<span class="normal">116</span>
+<span class="normal">117</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">language_model</span><span class="p">:</span> <span class="n">LanguageModel</span><span class="p">,</span>
     <span class="n">prompt_template</span><span class="p">:</span> <span class="n">PromptTemplate</span><span class="p">,</span>
     <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">4</span><span class="p">,</span>
     <span class="n">disable_tqdm</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">valid_score_range</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">category_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">language_model</span> <span class="o">=</span> <span class="n">language_model</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">prompt_template</span> <span class="o">=</span> <span class="n">prompt_template</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span> <span class="o">=</span> <span class="n">batch_size</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">disable_tqdm</span> <span class="o">=</span> <span class="n">disable_tqdm</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">valid_score_range</span> <span class="o">=</span> <span class="n">valid_score_range</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">category_key</span> <span class="o">=</span> <span class="n">category_key</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -4983,44 +5083,7 @@ If the parsed score is out of the range, it will be ignored.</p>
 
             <details class="quote">
               <summary>Source code in <code>flexeval/core/metric/llm_score.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 82</span>
-<span class="normal"> 83</span>
-<span class="normal"> 84</span>
-<span class="normal"> 85</span>
-<span class="normal"> 86</span>
-<span class="normal"> 87</span>
-<span class="normal"> 88</span>
-<span class="normal"> 89</span>
-<span class="normal"> 90</span>
-<span class="normal"> 91</span>
-<span class="normal"> 92</span>
-<span class="normal"> 93</span>
-<span class="normal"> 94</span>
-<span class="normal"> 95</span>
-<span class="normal"> 96</span>
-<span class="normal"> 97</span>
-<span class="normal"> 98</span>
-<span class="normal"> 99</span>
-<span class="normal">100</span>
-<span class="normal">101</span>
-<span class="normal">102</span>
-<span class="normal">103</span>
-<span class="normal">104</span>
-<span class="normal">105</span>
-<span class="normal">106</span>
-<span class="normal">107</span>
-<span class="normal">108</span>
-<span class="normal">109</span>
-<span class="normal">110</span>
-<span class="normal">111</span>
-<span class="normal">112</span>
-<span class="normal">113</span>
-<span class="normal">114</span>
-<span class="normal">115</span>
-<span class="normal">116</span>
-<span class="normal">117</span>
-<span class="normal">118</span>
-<span class="normal">119</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">119</span>
 <span class="normal">120</span>
 <span class="normal">121</span>
 <span class="normal">122</span>
@@ -5048,7 +5111,46 @@ If the parsed score is out of the range, it will be ignored.</p>
 <span class="normal">144</span>
 <span class="normal">145</span>
 <span class="normal">146</span>
-<span class="normal">147</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">evaluate</span><span class="p">(</span>
+<span class="normal">147</span>
+<span class="normal">148</span>
+<span class="normal">149</span>
+<span class="normal">150</span>
+<span class="normal">151</span>
+<span class="normal">152</span>
+<span class="normal">153</span>
+<span class="normal">154</span>
+<span class="normal">155</span>
+<span class="normal">156</span>
+<span class="normal">157</span>
+<span class="normal">158</span>
+<span class="normal">159</span>
+<span class="normal">160</span>
+<span class="normal">161</span>
+<span class="normal">162</span>
+<span class="normal">163</span>
+<span class="normal">164</span>
+<span class="normal">165</span>
+<span class="normal">166</span>
+<span class="normal">167</span>
+<span class="normal">168</span>
+<span class="normal">169</span>
+<span class="normal">170</span>
+<span class="normal">171</span>
+<span class="normal">172</span>
+<span class="normal">173</span>
+<span class="normal">174</span>
+<span class="normal">175</span>
+<span class="normal">176</span>
+<span class="normal">177</span>
+<span class="normal">178</span>
+<span class="normal">179</span>
+<span class="normal">180</span>
+<span class="normal">181</span>
+<span class="normal">182</span>
+<span class="normal">183</span>
+<span class="normal">184</span>
+<span class="normal">185</span>
+<span class="normal">186</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">evaluate</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">lm_outputs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
     <span class="n">references_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -5099,12 +5201,14 @@ If the parsed score is out of the range, it will be ignored.</p>
             <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to parse score from evaluator output: </span><span class="si">{</span><span class="n">evaluator_output</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="n">evaluator_score_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">evaluator_score</span><span class="p">)</span>
 
-    <span class="n">valid_scores</span> <span class="o">=</span> <span class="p">[</span><span class="n">score</span> <span class="k">for</span> <span class="n">score</span> <span class="ow">in</span> <span class="n">evaluator_score_list</span> <span class="k">if</span> <span class="n">score</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">]</span>
-    <span class="n">average_evaluator_score</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">valid_scores</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">valid_scores</span><span class="p">)</span> <span class="k">if</span> <span class="n">valid_scores</span> <span class="k">else</span> <span class="mi">0</span>
-    <span class="n">num_failed_score_parses</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">evaluator_score_list</span><span class="p">)</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">valid_scores</span><span class="p">)</span>
+    <span class="n">summary</span> <span class="o">=</span> <span class="n">summarize_evaluator_scores</span><span class="p">(</span>
+        <span class="n">evaluator_score_list</span><span class="p">,</span>
+        <span class="n">task_inputs_list</span><span class="p">,</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">category_key</span><span class="p">,</span>
+    <span class="p">)</span>
 
     <span class="k">return</span> <span class="n">MetricResult</span><span class="p">(</span>
-        <span class="p">{</span><span class="s2">&quot;llm_score&quot;</span><span class="p">:</span> <span class="n">average_evaluator_score</span><span class="p">,</span> <span class="s2">&quot;num_failed_score_parses&quot;</span><span class="p">:</span> <span class="n">num_failed_score_parses</span><span class="p">},</span>
+        <span class="n">summary</span><span class="p">,</span>
         <span class="n">instance_details</span><span class="o">=</span><span class="p">[</span>
             <span class="p">{</span><span class="s2">&quot;llm_score&quot;</span><span class="p">:</span> <span class="n">eval_score</span><span class="p">,</span> <span class="s2">&quot;llm_score_input&quot;</span><span class="p">:</span> <span class="n">eval_in</span><span class="p">,</span> <span class="s2">&quot;llm_score_output&quot;</span><span class="p">:</span> <span class="n">eval_out</span><span class="p">}</span>
             <span class="k">for</span> <span class="n">eval_score</span><span class="p">,</span> <span class="n">eval_in</span><span class="p">,</span> <span class="n">eval_out</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span>
@@ -5135,10 +5239,10 @@ If the parsed score is out of the range, it will be ignored.</p>
 
             <details class="quote">
               <summary>Source code in <code>flexeval/core/metric/llm_score.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">149</span>
-<span class="normal">150</span>
-<span class="normal">151</span>
-<span class="normal">152</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">188</span>
+<span class="normal">189</span>
+<span class="normal">190</span>
+<span class="normal">191</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="k">return</span> <span class="p">(</span>
         <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">(language_model=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">language_model</span><span class="si">}</span><span class="s2">, prompt_template=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">prompt_template</span><span class="si">}</span><span class="s2">)&quot;</span>
     <span class="p">)</span>

@@ -1009,6 +1009,27 @@
   
   
     <li class="md-nav__item">
+      <a href="../../../api_reference/HFMultipleChoiceDataset/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    HFMultipleChoiceDataset
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../../api_reference/LanguageModel/" class="md-nav__link">
         
   
@@ -1056,27 +1077,6 @@
   
   <span class="md-ellipsis">
     Metric
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../../api_reference/MultipleChoiceDataset/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    MultipleChoiceDataset
   </span>
   
 
@@ -1376,9 +1376,7 @@
     prompt_template: {
       class_path: &#39;Jinja2PromptTemplate&#39;,
       init_args: {
-        template: |||
-          {{ prompt }}
-        |||,
+        template: &#39;{{ prompt }}&#39;,
       },
     },
     metrics: [
@@ -1405,9 +1403,7 @@ original_config {
     },
     prompt_template+: {
       init_args+: {
-        template: |||
-          {{ prompt | replace(&quot;    &quot;, &quot;\t&quot;) }}
-        |||,
+        template: &quot;{{ prompt | replace(&#39;    &#39;, &#39;\t&#39;) }}&quot;,
       },
     },
     metrics: [
@@ -1466,7 +1462,6 @@ original_config {
           ```
           ## Code
           ```python
-
         |||,
       },
     },
@@ -1510,7 +1505,6 @@ original_config {
           ```
           ## Code
           ```python
-
         |||,
       },
     },
@@ -1537,9 +1531,7 @@ original_config {
     prompt_template: {
       class_path: &#39;Jinja2PromptTemplate&#39;,
       init_args: {
-        template: |||
-          {{ prompt }}
-        |||,
+        template: &#39;{{ prompt }}&#39;,
       },
     },
     metrics: [
@@ -1566,9 +1558,7 @@ original_config {
     },
     prompt_template+: {
       init_args+: {
-        template: |||
-          {{ prompt | replace(&quot;    &quot;, &quot;\t&quot;) }}
-        |||,
+        template: &#39;{{ prompt | replace(&quot;    &quot;, &quot;\t&quot;) }}&#39;,
       },
     },
     metrics: [

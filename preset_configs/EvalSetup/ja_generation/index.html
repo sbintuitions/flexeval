@@ -1018,6 +1018,27 @@
   
   
     <li class="md-nav__item">
+      <a href="../../../api_reference/HFMultipleChoiceDataset/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    HFMultipleChoiceDataset
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../../api_reference/LanguageModel/" class="md-nav__link">
         
   
@@ -1065,27 +1086,6 @@
   
   <span class="md-ellipsis">
     Metric
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../../api_reference/MultipleChoiceDataset/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    MultipleChoiceDataset
   </span>
   
 
@@ -1386,6 +1386,7 @@
   init_args: {
     path: &#39;llm-book/aio&#39;,
     reference_list_template: &#39;{{ answers }}&#39;,
+    dataset_kwargs: { trust_remote_code: true },
   },
 };
 
@@ -1407,8 +1408,7 @@
           {% for item in few_shot_data -%}
           {{ item.question }}答えは「{{ item.references[0] }}」
           {% endfor -%}
-          {{ question }}答えは「
-        |||,
+        ||| + &#39;{{ question }}答えは「&#39;,
       },
     },
     metrics: [
@@ -1437,6 +1437,7 @@ This is a setup for generating answers based on the choices provided.</p>
     path: &#39;llm-book/JGLUE&#39;,
     subset: &#39;JCommonsenseQA&#39;,
     reference_template: &#39;{% set choices = [choice0, choice1, choice2, choice3, choice4] %}{{ choices[label] }}&#39;,
+    dataset_kwargs: { trust_remote_code: true },
   },
 };
 
@@ -1471,8 +1472,7 @@ This is a setup for generating answers based on the choices provided.</p>
           3.「{{ choice3 }}」
           4.「{{ choice4 }}」
           問題：{{question}}
-          回答：「
-        |||,
+        ||| + &#39;回答：「&#39;,
       },
     },
     metrics: [
@@ -1498,6 +1498,7 @@ The sentence pairs are extracted from image captions and annotated by crowd work
     path: &#39;llm-book/JGLUE&#39;,
     subset: &#39;JNLI&#39;,
     reference_template: &quot;{{ [&#39;\&quot;含意\&quot;&#39;, &#39;\&quot;矛盾\&quot;&#39;, &#39;\&quot;中立\&quot;&#39;][label] }}&quot;,
+    dataset_kwargs: { trust_remote_code: true },
   },
 };
 
@@ -1524,8 +1525,7 @@ The sentence pairs are extracted from image captions and annotated by crowd work
           {% endfor %}
           前提：「{{ sentence1 }}」
           仮説：「{{ sentence2 }}」
-          関係：「
-        |||,
+        ||| + &#39;関係：「&#39;,
       },
     },
     metrics: [
@@ -1551,6 +1551,7 @@ The passages are extracted from Japanese Wikipedia, and the questions and answer
     path: &#39;llm-book/JGLUE&#39;,
     subset: &#39;JSQuAD&#39;,
     reference_list_template: &#39;{{ answers.text }}&#39;,
+    dataset_kwargs: { trust_remote_code: true },
   },
 };
 
@@ -1582,8 +1583,7 @@ The passages are extracted from Japanese Wikipedia, and the questions and answer
           {{ title }}
           {{ context }}
           質問：「{{ question }}」
-          回答：「
-        |||,
+        ||| + &#39;回答：「&#39;,
       },
     },
     metrics: [
@@ -1630,8 +1630,7 @@ This is a Japanese subset of the benchmark.</p>
           {{ item.answer }}
           {% endfor %}
           問題: {{ question }}
-          ステップごとの答え:
-        |||,
+        ||| + &#39;ステップごとの答え:&#39;,
       },
     },
     metrics: [
@@ -1656,6 +1655,7 @@ This setup converts the original dataset into binary sentiment classification.</
   init_args: {
     path: &#39;llm-book/wrime-sentiment&#39;,
     reference_template: &quot;{{ [&#39;\&quot;ポジティブ\&quot;&#39;, &#39;\&quot;ネガティブ\&quot;&#39;][label] }}&quot;,
+    dataset_kwargs: { trust_remote_code: true },
   },
 };
 
@@ -1680,8 +1680,7 @@ This setup converts the original dataset into binary sentiment classification.</
           極性：「{{ item.references[0] }}」
           {% endfor %}
           文：{{sentence}}
-          極性：「
-        |||,
+        ||| + &#39;極性：「&#39;,
       },
     },
     metrics: [
@@ -1728,11 +1727,10 @@ This is a Japanese subset of the dataset.</p>
           文章を１〜３文で要約してください。
           {% for item in few_shot_data %}
           文章: {{ item.text }}
-          要約: {{ item.references[0] }}」
+          要約: {{ item.references[0] }}
           {% endfor %}
           文章: {{ text }}
-          要約:
-        |||,
+        ||| + &#39;要約:&#39;,
       },
     },
     metrics: [

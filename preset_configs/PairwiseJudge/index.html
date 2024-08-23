@@ -971,6 +971,27 @@
   
   
     <li class="md-nav__item">
+      <a href="../../api_reference/HFMultipleChoiceDataset/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    HFMultipleChoiceDataset
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../api_reference/LanguageModel/" class="md-nav__link">
         
   
@@ -1018,27 +1039,6 @@
   
   <span class="md-ellipsis">
     Metric
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../api_reference/MultipleChoiceDataset/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    MultipleChoiceDataset
   </span>
   
 
@@ -1293,7 +1293,7 @@ Originally used to generate scores for MT-bench or Vicuna-bench.</p>
     prompt_template: {
       class_path: &#39;Jinja2PromptTemplate&#39;,
       init_args: {
-        template: |||
+        template: std.stripChars(|||
           {% set question = model1_item[&quot;task_inputs&quot;][&quot;messages&quot;][0][&quot;content&quot;] -%}
           {% set model1_messages = model1_item[&quot;task_inputs&quot;][&quot;messages&quot;] -%}
           {% set model2_messages = model2_item[&quot;task_inputs&quot;][&quot;messages&quot;] -%}
@@ -1318,7 +1318,7 @@ Originally used to generate scores for MT-bench or Vicuna-bench.</p>
           [The Start of Assistant 2&#39;s Answer]
           {% if model2_messages|length == 1 %}{{ model2_item[&quot;lm_output&quot;] }}{% else %}{{ model2_messages[1][&quot;content&quot;] }}{% endif %}
           [The End of Assistant&#39;s Answer]
-        |||,
+        |||, &#39;\n&#39;),
       },
     },
   },
@@ -1335,7 +1335,7 @@ Originally used to generate scores for the Japanese versions of MT-bench or Vicu
     prompt_template: {
       class_path: &#39;Jinja2PromptTemplate&#39;,
       init_args: {
-        template: |||
+        template: std.stripChars(|||
           {% set question = model1_item[&quot;task_inputs&quot;][&quot;messages&quot;][0][&quot;content&quot;] -%}
           {% set model1_messages = model1_item[&quot;task_inputs&quot;][&quot;messages&quot;] -%}
           {% set model2_messages = model2_item[&quot;task_inputs&quot;][&quot;messages&quot;] -%}
@@ -1354,19 +1354,19 @@ Originally used to generate scores for the Japanese versions of MT-bench or Vicu
           [アシスタント2の回答開始]
           {% if model2_messages|length == 1 %}{{ model2_item[&quot;lm_output&quot;] }}{% else %}{{ model2_messages[1][&quot;content&quot;] }}{% endif %}
           [アシスタント2の回答終了]
-        |||,
+        |||, &#39;\n&#39;),
       },
     },
     system_message: {
       class_path: &#39;Jinja2PromptTemplate&#39;,
       init_args: {
-        template: |||
+        template: std.stripChars(|||
           {% if references|length &gt; 0 -%}
           あなたは、回答の質をチェックするための審判員です。以下に示されるユーザーの質問に対する2つのAIアシスタントの応答の品質を評価してください。回答の内容がユーザーの指示に従っており、ユーザーの質問によりよく答えているアシスタントを選んでください。参照回答、アシスタント1の回答、アシスタント2の回答が与えられるので、どちらのアシスタントの回答が優れているかを評価してください。評価の際には、まずそれぞれのアシスタントの回答を参照回答と比較し、回答の誤りを見つけて修正してください。立場が偏らないようにし、回答の提示順があなたの判断に影響しないようにしてください。回答の長さが評価に影響しないこと、特定のアシスタントの名前を好まないこと、できるだけ客観的であること、に気をつけてください。説明の後に、最終的な判断を以下の形式に従って出力してください：アシスタント1が優れていれば[[1]]、アシスタント2が優れていれば[[2]]、同点の場合は[[3]]
           {%- else -%}
           あなたは、回答の質をチェックするための審判員です。以下に示されるユーザーの質問に対する2つのAIアシスタントの応答の品質を評価してください。回答の内容がユーザーの指示に従っており、ユーザーの質問によりよく答えているアシスタントを選んでください。具体的には、回答の有用性、関連性、正確性、深さ、創造性、詳細レベルなどの要素を考慮する必要があります。評価の際には、まず2つの回答を比較し、簡単な説明をしてください。立場が偏らないようにし、回答の提示順があなたの判断に影響しないようにしてください。回答の長さが評価に影響しないこと、特定のアシスタントの名前を好まないこと、できるだけ客観的であること、に気をつけてください。説明の後に、最終的な判断を以下の形式に従って出力してください：アシスタント1が優れていれば[[1]]、アシスタント2が優れていれば[[2]]、同点の場合は[[3]]
           {%- endif %}
-        |||,
+        |||, &#39;\n&#39;),
       },
     },
   },

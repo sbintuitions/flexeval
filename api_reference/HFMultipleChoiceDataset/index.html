@@ -9,10 +9,10 @@
       
       
       
-        <link rel="prev" href="../Metric/">
+        <link rel="prev" href="../GenerationDataset/">
       
       
-        <link rel="next" href="../PairwiseJudge/">
+        <link rel="next" href="../LanguageModel/">
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
@@ -20,7 +20,7 @@
     
     
       
-        <title>MultipleChoiceDataset - flexeval</title>
+        <title>HFMultipleChoiceDataset - flexeval</title>
       
     
     
@@ -108,7 +108,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              MultipleChoiceDataset
+              HFMultipleChoiceDataset
             
           </span>
         </div>
@@ -914,6 +914,108 @@
                 
   
   
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    HFMultipleChoiceDataset
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    HFMultipleChoiceDataset
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#flexeval.core.multiple_choice_dataset.base.MultipleChoiceDataset" class="md-nav__link">
+    <span class="md-ellipsis">
+      MultipleChoiceDataset
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#flexeval.core.multiple_choice_dataset.base.MultipleChoiceInstance" class="md-nav__link">
+    <span class="md-ellipsis">
+      MultipleChoiceInstance
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#flexeval.core.multiple_choice_dataset.template_based.HFMultipleChoiceDataset" class="md-nav__link">
+    <span class="md-ellipsis">
+      HFMultipleChoiceDataset
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#flexeval.core.multiple_choice_dataset.template_based.JsonlMultipleChoiceDataset" class="md-nav__link">
+    <span class="md-ellipsis">
+      JsonlMultipleChoiceDataset
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#flexeval.core.multiple_choice_dataset.template_based.TemplateMultipleChoiceDataset" class="md-nav__link">
+    <span class="md-ellipsis">
+      TemplateMultipleChoiceDataset
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
   
   
     <li class="md-nav__item">
@@ -968,90 +1070,6 @@
   
 
       </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-    
-  
-  
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  <span class="md-ellipsis">
-    MultipleChoiceDataset
-  </span>
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
-        
-  
-  <span class="md-ellipsis">
-    MultipleChoiceDataset
-  </span>
-  
-
-      </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#flexeval.core.multiple_choice_dataset.base.MultipleChoiceDataset" class="md-nav__link">
-    <span class="md-ellipsis">
-      MultipleChoiceDataset
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#flexeval.core.multiple_choice_dataset.base.MultipleChoiceInstance" class="md-nav__link">
-    <span class="md-ellipsis">
-      MultipleChoiceInstance
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#flexeval.core.multiple_choice_dataset.hf_dataset.HFMultipleChoiceDataset" class="md-nav__link">
-    <span class="md-ellipsis">
-      HFMultipleChoiceDataset
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -1275,9 +1293,27 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#flexeval.core.multiple_choice_dataset.hf_dataset.HFMultipleChoiceDataset" class="md-nav__link">
+  <a href="#flexeval.core.multiple_choice_dataset.template_based.HFMultipleChoiceDataset" class="md-nav__link">
     <span class="md-ellipsis">
       HFMultipleChoiceDataset
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#flexeval.core.multiple_choice_dataset.template_based.JsonlMultipleChoiceDataset" class="md-nav__link">
+    <span class="md-ellipsis">
+      JsonlMultipleChoiceDataset
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#flexeval.core.multiple_choice_dataset.template_based.TemplateMultipleChoiceDataset" class="md-nav__link">
+    <span class="md-ellipsis">
+      TemplateMultipleChoiceDataset
     </span>
   </a>
   
@@ -1298,7 +1334,7 @@
                   
 
 
-  <h1>MultipleChoiceDataset</h1>
+  <h1>HFMultipleChoiceDataset</h1>
 
 <div class="doc doc-object doc-class">
 
@@ -1648,17 +1684,17 @@ This will be embedded into the prompt for the language model in <code>PromptTemp
 
 
 
-<h2 id="flexeval.core.multiple_choice_dataset.hf_dataset.HFMultipleChoiceDataset" class="doc doc-heading">
+<h2 id="flexeval.core.multiple_choice_dataset.template_based.HFMultipleChoiceDataset" class="doc doc-heading">
             <span class="doc doc-object-name doc-class-name">HFMultipleChoiceDataset</span>
 
 
-<a href="#flexeval.core.multiple_choice_dataset.hf_dataset.HFMultipleChoiceDataset" class="headerlink" title="Permanent link">&para;</a></h2>
+<a href="#flexeval.core.multiple_choice_dataset.template_based.HFMultipleChoiceDataset" class="headerlink" title="Permanent link">&para;</a></h2>
 
 
     <div class="doc doc-contents first">
 
 
-      <p>A dataset for multiple-choice tasks using Hugging Face datasets.</p>
+      <p>Load MultipleChoiceInstance from a huggingface dataset.</p>
 
 
 <p><span class="doc-section-title">Parameters:</span></p>
@@ -1677,6 +1713,368 @@ This will be embedded into the prompt for the language model in <code>PromptTemp
           –
           <div class="doc-md-description">
             <p>The split of the dataset to use.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+          <b><code>subset</code></b>
+              (<code>str | None</code>, default:
+                  <code>None</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>The subset of the dataset to use.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+          <b><code>dataset_kwargs</code></b>
+              (<code>dict[str, <span title="typing.Any">Any</span>] | None</code>, default:
+                  <code>None</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>The keyword arguments for loading the dataset.</p>
+          </div>
+        </li>
+    </ul>
+
+              <details class="quote">
+                <summary>Source code in <code>flexeval/core/multiple_choice_dataset/template_based.py</code></summary>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 78</span>
+<span class="normal"> 79</span>
+<span class="normal"> 80</span>
+<span class="normal"> 81</span>
+<span class="normal"> 82</span>
+<span class="normal"> 83</span>
+<span class="normal"> 84</span>
+<span class="normal"> 85</span>
+<span class="normal"> 86</span>
+<span class="normal"> 87</span>
+<span class="normal"> 88</span>
+<span class="normal"> 89</span>
+<span class="normal"> 90</span>
+<span class="normal"> 91</span>
+<span class="normal"> 92</span>
+<span class="normal"> 93</span>
+<span class="normal"> 94</span>
+<span class="normal"> 95</span>
+<span class="normal"> 96</span>
+<span class="normal"> 97</span>
+<span class="normal"> 98</span>
+<span class="normal"> 99</span>
+<span class="normal">100</span>
+<span class="normal">101</span>
+<span class="normal">102</span>
+<span class="normal">103</span>
+<span class="normal">104</span>
+<span class="normal">105</span>
+<span class="normal">106</span>
+<span class="normal">107</span>
+<span class="normal">108</span>
+<span class="normal">109</span>
+<span class="normal">110</span>
+<span class="normal">111</span>
+<span class="normal">112</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">HFMultipleChoiceDataset</span><span class="p">(</span><span class="n">TemplateMultipleChoiceDataset</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Load MultipleChoiceInstance from a huggingface dataset.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        path: The name or path of the huggingface dataset.</span>
+<span class="sd">        split: The split of the dataset to use.</span>
+<span class="sd">        subset: The subset of the dataset to use.</span>
+<span class="sd">        dataset_kwargs: The keyword arguments for loading the dataset.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">split</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">choices_templates</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+        <span class="n">answer_index_template</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">input_templates</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">subset</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">dataset_kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">whitespace_before_choices</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">template_filters</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">dataset_kwargs</span> <span class="o">=</span> <span class="n">dataset_kwargs</span> <span class="ow">or</span> <span class="p">{}</span>
+        <span class="n">items</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">load_dataset</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">split</span><span class="o">=</span><span class="n">split</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">subset</span><span class="p">,</span> <span class="o">**</span><span class="n">dataset_kwargs</span><span class="p">)</span>
+        <span class="n">items</span> <span class="o">=</span> <span class="p">[</span><span class="nb">dict</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">items</span><span class="p">]</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">items</span><span class="o">=</span><span class="n">items</span><span class="p">,</span>
+            <span class="n">choices_templates</span><span class="o">=</span><span class="n">choices_templates</span><span class="p">,</span>
+            <span class="n">answer_index_template</span><span class="o">=</span><span class="n">answer_index_template</span><span class="p">,</span>
+            <span class="n">input_templates</span><span class="o">=</span><span class="n">input_templates</span><span class="p">,</span>
+            <span class="n">whitespace_before_choices</span><span class="o">=</span><span class="n">whitespace_before_choices</span><span class="p">,</span>
+            <span class="n">template_filters</span><span class="o">=</span><span class="n">template_filters</span><span class="p">,</span>
+        <span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+              </details>
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="flexeval.core.multiple_choice_dataset.template_based.HFMultipleChoiceDataset.__init__" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">__init__</span>
+
+
+<a href="#flexeval.core.multiple_choice_dataset.template_based.HFMultipleChoiceDataset.__init__" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="fm">__init__</span><span class="p">(</span><span class="nf">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">split</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">choices_templates</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">answer_index_template</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">input_templates</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">subset</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">dataset_kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">whitespace_before_choices</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">template_filters</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+            <details class="quote">
+              <summary>Source code in <code>flexeval/core/multiple_choice_dataset/template_based.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 89</span>
+<span class="normal"> 90</span>
+<span class="normal"> 91</span>
+<span class="normal"> 92</span>
+<span class="normal"> 93</span>
+<span class="normal"> 94</span>
+<span class="normal"> 95</span>
+<span class="normal"> 96</span>
+<span class="normal"> 97</span>
+<span class="normal"> 98</span>
+<span class="normal"> 99</span>
+<span class="normal">100</span>
+<span class="normal">101</span>
+<span class="normal">102</span>
+<span class="normal">103</span>
+<span class="normal">104</span>
+<span class="normal">105</span>
+<span class="normal">106</span>
+<span class="normal">107</span>
+<span class="normal">108</span>
+<span class="normal">109</span>
+<span class="normal">110</span>
+<span class="normal">111</span>
+<span class="normal">112</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">split</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">choices_templates</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+    <span class="n">answer_index_template</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">input_templates</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">subset</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">dataset_kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">whitespace_before_choices</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">template_filters</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">dataset_kwargs</span> <span class="o">=</span> <span class="n">dataset_kwargs</span> <span class="ow">or</span> <span class="p">{}</span>
+    <span class="n">items</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">load_dataset</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">split</span><span class="o">=</span><span class="n">split</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">subset</span><span class="p">,</span> <span class="o">**</span><span class="n">dataset_kwargs</span><span class="p">)</span>
+    <span class="n">items</span> <span class="o">=</span> <span class="p">[</span><span class="nb">dict</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">items</span><span class="p">]</span>
+
+    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="n">items</span><span class="o">=</span><span class="n">items</span><span class="p">,</span>
+        <span class="n">choices_templates</span><span class="o">=</span><span class="n">choices_templates</span><span class="p">,</span>
+        <span class="n">answer_index_template</span><span class="o">=</span><span class="n">answer_index_template</span><span class="p">,</span>
+        <span class="n">input_templates</span><span class="o">=</span><span class="n">input_templates</span><span class="p">,</span>
+        <span class="n">whitespace_before_choices</span><span class="o">=</span><span class="n">whitespace_before_choices</span><span class="p">,</span>
+        <span class="n">template_filters</span><span class="o">=</span><span class="n">template_filters</span><span class="p">,</span>
+    <span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="flexeval.core.multiple_choice_dataset.template_based.JsonlMultipleChoiceDataset" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">JsonlMultipleChoiceDataset</span>
+
+
+<a href="#flexeval.core.multiple_choice_dataset.template_based.JsonlMultipleChoiceDataset" class="headerlink" title="Permanent link">&para;</a></h2>
+
+
+    <div class="doc doc-contents first">
+
+
+      <p>Load MultipleChoiceInstance from a JSONL file.</p>
+
+              <details class="quote">
+                <summary>Source code in <code>flexeval/core/multiple_choice_dataset/template_based.py</code></summary>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">115</span>
+<span class="normal">116</span>
+<span class="normal">117</span>
+<span class="normal">118</span>
+<span class="normal">119</span>
+<span class="normal">120</span>
+<span class="normal">121</span>
+<span class="normal">122</span>
+<span class="normal">123</span>
+<span class="normal">124</span>
+<span class="normal">125</span>
+<span class="normal">126</span>
+<span class="normal">127</span>
+<span class="normal">128</span>
+<span class="normal">129</span>
+<span class="normal">130</span>
+<span class="normal">131</span>
+<span class="normal">132</span>
+<span class="normal">133</span>
+<span class="normal">134</span>
+<span class="normal">135</span>
+<span class="normal">136</span>
+<span class="normal">137</span>
+<span class="normal">138</span>
+<span class="normal">139</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">JsonlMultipleChoiceDataset</span><span class="p">(</span><span class="n">TemplateMultipleChoiceDataset</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Load MultipleChoiceInstance from a JSONL file.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">choices_templates</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+        <span class="n">answer_index_template</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">input_templates</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">whitespace_before_choices</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">template_filters</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">items</span> <span class="o">=</span> <span class="p">[</span><span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">f</span><span class="p">]</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">items</span><span class="o">=</span><span class="n">items</span><span class="p">,</span>
+            <span class="n">choices_templates</span><span class="o">=</span><span class="n">choices_templates</span><span class="p">,</span>
+            <span class="n">answer_index_template</span><span class="o">=</span><span class="n">answer_index_template</span><span class="p">,</span>
+            <span class="n">input_templates</span><span class="o">=</span><span class="n">input_templates</span><span class="p">,</span>
+            <span class="n">whitespace_before_choices</span><span class="o">=</span><span class="n">whitespace_before_choices</span><span class="p">,</span>
+            <span class="n">template_filters</span><span class="o">=</span><span class="n">template_filters</span><span class="p">,</span>
+        <span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+              </details>
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="flexeval.core.multiple_choice_dataset.template_based.JsonlMultipleChoiceDataset.__init__" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">__init__</span>
+
+
+<a href="#flexeval.core.multiple_choice_dataset.template_based.JsonlMultipleChoiceDataset.__init__" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="fm">__init__</span><span class="p">(</span><span class="nf">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">choices_templates</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">answer_index_template</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">input_templates</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">whitespace_before_choices</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">template_filters</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+            <details class="quote">
+              <summary>Source code in <code>flexeval/core/multiple_choice_dataset/template_based.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">120</span>
+<span class="normal">121</span>
+<span class="normal">122</span>
+<span class="normal">123</span>
+<span class="normal">124</span>
+<span class="normal">125</span>
+<span class="normal">126</span>
+<span class="normal">127</span>
+<span class="normal">128</span>
+<span class="normal">129</span>
+<span class="normal">130</span>
+<span class="normal">131</span>
+<span class="normal">132</span>
+<span class="normal">133</span>
+<span class="normal">134</span>
+<span class="normal">135</span>
+<span class="normal">136</span>
+<span class="normal">137</span>
+<span class="normal">138</span>
+<span class="normal">139</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">choices_templates</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+    <span class="n">answer_index_template</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">input_templates</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">whitespace_before_choices</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">template_filters</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">items</span> <span class="o">=</span> <span class="p">[</span><span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">f</span><span class="p">]</span>
+
+    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="n">items</span><span class="o">=</span><span class="n">items</span><span class="p">,</span>
+        <span class="n">choices_templates</span><span class="o">=</span><span class="n">choices_templates</span><span class="p">,</span>
+        <span class="n">answer_index_template</span><span class="o">=</span><span class="n">answer_index_template</span><span class="p">,</span>
+        <span class="n">input_templates</span><span class="o">=</span><span class="n">input_templates</span><span class="p">,</span>
+        <span class="n">whitespace_before_choices</span><span class="o">=</span><span class="n">whitespace_before_choices</span><span class="p">,</span>
+        <span class="n">template_filters</span><span class="o">=</span><span class="n">template_filters</span><span class="p">,</span>
+    <span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="flexeval.core.multiple_choice_dataset.template_based.TemplateMultipleChoiceDataset" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">TemplateMultipleChoiceDataset</span>
+
+
+<a href="#flexeval.core.multiple_choice_dataset.template_based.TemplateMultipleChoiceDataset" class="headerlink" title="Permanent link">&para;</a></h2>
+
+
+    <div class="doc doc-contents first">
+
+
+      <p>An abstract dataset class for multiple-choice tasks.
+This class generates multiple-choice instances from a dict item and Jinja2 templates.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+          <b><code>items</code></b>
+              (<code>list[dict[str, <span title="typing.Any">Any</span>]]</code>)
+          –
+          <div class="doc-md-description">
+            <p>A list of dict items.</p>
           </div>
         </li>
         <li class="doc-section-item field-body">
@@ -1706,26 +2104,6 @@ This will be embedded into the prompt for the language model in <code>PromptTemp
           </div>
         </li>
         <li class="doc-section-item field-body">
-          <b><code>subset</code></b>
-              (<code>str | None</code>, default:
-                  <code>None</code>
-)
-          –
-          <div class="doc-md-description">
-            <p>The subset of the dataset to use.</p>
-          </div>
-        </li>
-        <li class="doc-section-item field-body">
-          <b><code>data_files</code></b>
-              (<code>str | None</code>, default:
-                  <code>None</code>
-)
-          –
-          <div class="doc-md-description">
-            <p>The data files to load.</p>
-          </div>
-        </li>
-        <li class="doc-section-item field-body">
           <b><code>whitespace_before_choices</code></b>
               (<code>bool</code>, default:
                   <code>False</code>
@@ -1736,12 +2114,22 @@ This will be embedded into the prompt for the language model in <code>PromptTemp
 Maybe necessary for language with whitespaces.</p>
           </div>
         </li>
+        <li class="doc-section-item field-body">
+          <b><code>template_filters</code></b>
+              (<code>dict[str, str] | None</code>, default:
+                  <code>None</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>A dictionary to indicate the condition to filter certain items.
+The key is a Jinja2 template string to embed the item into a string, and the value is the value to keep.</p>
+          </div>
+        </li>
     </ul>
 
               <details class="quote">
-                <summary>Source code in <code>flexeval/core/multiple_choice_dataset/hf_dataset.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">13</span>
-<span class="normal">14</span>
+                <summary>Source code in <code>flexeval/core/multiple_choice_dataset/template_based.py</code></summary>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">14</span>
 <span class="normal">15</span>
 <span class="normal">16</span>
 <span class="normal">17</span>
@@ -1802,69 +2190,62 @@ Maybe necessary for language with whitespaces.</p>
 <span class="normal">72</span>
 <span class="normal">73</span>
 <span class="normal">74</span>
-<span class="normal">75</span>
-<span class="normal">76</span>
-<span class="normal">77</span>
-<span class="normal">78</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">HFMultipleChoiceDataset</span><span class="p">(</span><span class="n">MultipleChoiceDataset</span><span class="p">):</span>
+<span class="normal">75</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">TemplateMultipleChoiceDataset</span><span class="p">(</span><span class="n">MultipleChoiceDataset</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    A dataset for multiple-choice tasks using Hugging Face datasets.</span>
+<span class="sd">    An abstract dataset class for multiple-choice tasks.</span>
+<span class="sd">    This class generates multiple-choice instances from a dict item and Jinja2 templates.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        path: The name or path of the huggingface dataset.</span>
-<span class="sd">        split: The split of the dataset to use.</span>
+<span class="sd">        items: A list of dict items.</span>
 <span class="sd">        choices_templates: A list of Jinja2 templates for the choices.</span>
 <span class="sd">        answer_index_template: A Jinja2 template for the index of the correct answer.</span>
 <span class="sd">        input_templates: A dictionary of Jinja2 templates for the inputs.</span>
-<span class="sd">        subset: The subset of the dataset to use.</span>
-<span class="sd">        data_files: The data files to load.</span>
 <span class="sd">        whitespace_before_choices: Whether to add a whitespace before each choice.</span>
 <span class="sd">            Maybe necessary for language with whitespaces.</span>
+<span class="sd">        template_filters: A dictionary to indicate the condition to filter certain items.</span>
+<span class="sd">            The key is a Jinja2 template string to embed the item into a string, and the value is the value to keep.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">split</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">items</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span>
         <span class="n">choices_templates</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
         <span class="n">answer_index_template</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">input_templates</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">subset</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">data_files</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">whitespace_before_choices</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">template_filters</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">dataset_kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">dataset_kwargs</span> <span class="o">=</span> <span class="n">dataset_kwargs</span> <span class="ow">or</span> <span class="p">{}</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_dataset</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">load_dataset</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">split</span><span class="o">=</span><span class="n">split</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">subset</span><span class="p">,</span> <span class="n">data_files</span><span class="o">=</span><span class="n">data_files</span><span class="p">,</span> <span class="o">**</span><span class="n">dataset_kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">items</span> <span class="o">=</span> <span class="n">items</span>
 
         <span class="n">template_filters</span> <span class="o">=</span> <span class="n">template_filters</span> <span class="ow">or</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">template_str</span><span class="p">,</span> <span class="n">value_to_keep</span> <span class="ow">in</span> <span class="n">template_filters</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_dataset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dataset</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">get_template_filter_function</span><span class="p">(</span><span class="n">template_str</span><span class="p">,</span> <span class="n">value_to_keep</span><span class="p">))</span>
+            <span class="n">filter_func</span> <span class="o">=</span> <span class="n">get_template_filter_function</span><span class="p">(</span><span class="n">template_str</span><span class="p">,</span> <span class="n">value_to_keep</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">items</span> <span class="o">=</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">items</span> <span class="k">if</span> <span class="n">filter_func</span><span class="p">(</span><span class="n">item</span><span class="p">)]</span>
 
         <span class="n">input_templates</span> <span class="o">=</span> <span class="n">input_templates</span> <span class="ow">or</span> <span class="p">{}</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_input_templates</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Template</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">JINJA2_ENV</span><span class="o">.</span><span class="n">from_string</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">input_templates</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_choices_templates</span> <span class="o">=</span> <span class="p">[</span><span class="n">JINJA2_ENV</span><span class="o">.</span><span class="n">from_string</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">choices_templates</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_answer_index_template</span> <span class="o">=</span> <span class="n">JINJA2_ENV</span><span class="o">.</span><span class="n">from_string</span><span class="p">(</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_templates</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Template</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">JINJA2_ENV</span><span class="o">.</span><span class="n">from_string</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">input_templates</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">choices_templates</span> <span class="o">=</span> <span class="p">[</span><span class="n">JINJA2_ENV</span><span class="o">.</span><span class="n">from_string</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">choices_templates</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">answer_index_template</span> <span class="o">=</span> <span class="n">JINJA2_ENV</span><span class="o">.</span><span class="n">from_string</span><span class="p">(</span>
             <span class="n">answer_index_template</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_whitespace_before_choices</span> <span class="o">=</span> <span class="n">whitespace_before_choices</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">whitespace_before_choices</span> <span class="o">=</span> <span class="n">whitespace_before_choices</span>
 
     <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_dataset</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">items</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MultipleChoiceInstance</span><span class="p">:</span>
-        <span class="n">item</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dataset</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="n">item</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">items</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
         <span class="n">inputs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
-        <span class="n">inputs</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="o">**</span><span class="n">item</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_input_templates</span><span class="o">.</span><span class="n">items</span><span class="p">()})</span>
+        <span class="n">inputs</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="o">**</span><span class="n">item</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_templates</span><span class="o">.</span><span class="n">items</span><span class="p">()})</span>
 
-        <span class="n">choices</span> <span class="o">=</span> <span class="p">[</span><span class="n">t</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="o">**</span><span class="n">item</span><span class="p">)</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_choices_templates</span><span class="p">]</span>
+        <span class="n">choices</span> <span class="o">=</span> <span class="p">[</span><span class="n">t</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="o">**</span><span class="n">item</span><span class="p">)</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">choices_templates</span><span class="p">]</span>
         <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">choices</span><span class="p">):</span>
             <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;choices must be non-empty, but got </span><span class="si">{</span><span class="n">choices</span><span class="si">}</span><span class="s2">&quot;</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_whitespace_before_choices</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">whitespace_before_choices</span><span class="p">:</span>
             <span class="n">choices</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">choices</span><span class="p">]</span>
 
-        <span class="n">answer_index</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_answer_index_template</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="o">**</span><span class="n">item</span><span class="p">))</span>
+        <span class="n">answer_index</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">answer_index_template</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="o">**</span><span class="n">item</span><span class="p">))</span>
 
         <span class="k">return</span> <span class="n">MultipleChoiceInstance</span><span class="p">(</span>
             <span class="n">inputs</span><span class="o">=</span><span class="n">inputs</span><span class="p">,</span>
@@ -1884,25 +2265,129 @@ Maybe necessary for language with whitespaces.</p>
 
 
 
+<div class="doc doc-object doc-attribute">
+
+
+
+<h3 id="flexeval.core.multiple_choice_dataset.template_based.TemplateMultipleChoiceDataset.items" class="doc doc-heading">
+            <span class="doc doc-object-name doc-attribute-name">items</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+<a href="#flexeval.core.multiple_choice_dataset.template_based.TemplateMultipleChoiceDataset.items" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">items</span> <span class="o">=</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">items</span> <span class="k">if</span> <span class="n">filter_func</span><span class="p">(</span><span class="n">item</span><span class="p">)]</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h3 id="flexeval.core.multiple_choice_dataset.template_based.TemplateMultipleChoiceDataset.input_templates" class="doc doc-heading">
+            <span class="doc doc-object-name doc-attribute-name">input_templates</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+<a href="#flexeval.core.multiple_choice_dataset.template_based.TemplateMultipleChoiceDataset.input_templates" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">input_templates</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Template</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">from_string</span><span class="p">(</span><span class="n">v</span><span class="p">)</span><span class="k">for</span> <span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="ow">in</span> <span class="n">items</span><span class="p">()}</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h3 id="flexeval.core.multiple_choice_dataset.template_based.TemplateMultipleChoiceDataset.choices_templates" class="doc doc-heading">
+            <span class="doc doc-object-name doc-attribute-name">choices_templates</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+<a href="#flexeval.core.multiple_choice_dataset.template_based.TemplateMultipleChoiceDataset.choices_templates" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">choices_templates</span> <span class="o">=</span> <span class="p">[</span><span class="n">from_string</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">choices_templates</span><span class="p">]</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h3 id="flexeval.core.multiple_choice_dataset.template_based.TemplateMultipleChoiceDataset.answer_index_template" class="doc doc-heading">
+            <span class="doc doc-object-name doc-attribute-name">answer_index_template</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+<a href="#flexeval.core.multiple_choice_dataset.template_based.TemplateMultipleChoiceDataset.answer_index_template" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">answer_index_template</span> <span class="o">=</span> <span class="n">from_string</span><span class="p">(</span><span class="n">answer_index_template</span><span class="p">)</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h3 id="flexeval.core.multiple_choice_dataset.template_based.TemplateMultipleChoiceDataset.whitespace_before_choices" class="doc doc-heading">
+            <span class="doc doc-object-name doc-attribute-name">whitespace_before_choices</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+<a href="#flexeval.core.multiple_choice_dataset.template_based.TemplateMultipleChoiceDataset.whitespace_before_choices" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">whitespace_before_choices</span> <span class="o">=</span> <span class="n">whitespace_before_choices</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+    </div>
+
+</div>
+
 
 
 <div class="doc doc-object doc-function">
 
 
-<h3 id="flexeval.core.multiple_choice_dataset.hf_dataset.HFMultipleChoiceDataset.__init__" class="doc doc-heading">
+<h3 id="flexeval.core.multiple_choice_dataset.template_based.TemplateMultipleChoiceDataset.__init__" class="doc doc-heading">
             <span class="doc doc-object-name doc-function-name">__init__</span>
 
 
-<a href="#flexeval.core.multiple_choice_dataset.hf_dataset.HFMultipleChoiceDataset.__init__" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="fm">__init__</span><span class="p">(</span><span class="nf">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">split</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">choices_templates</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">answer_index_template</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">input_templates</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">subset</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">data_files</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">whitespace_before_choices</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">template_filters</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">dataset_kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+<a href="#flexeval.core.multiple_choice_dataset.template_based.TemplateMultipleChoiceDataset.__init__" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="fm">__init__</span><span class="p">(</span><span class="nf">items</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span> <span class="n">choices_templates</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">answer_index_template</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">input_templates</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">whitespace_before_choices</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">template_filters</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
 
             <details class="quote">
-              <summary>Source code in <code>flexeval/core/multiple_choice_dataset/hf_dataset.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">29</span>
-<span class="normal">30</span>
+              <summary>Source code in <code>flexeval/core/multiple_choice_dataset/template_based.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">30</span>
 <span class="normal">31</span>
 <span class="normal">32</span>
 <span class="normal">33</span>
@@ -1924,36 +2409,29 @@ Maybe necessary for language with whitespaces.</p>
 <span class="normal">49</span>
 <span class="normal">50</span>
 <span class="normal">51</span>
-<span class="normal">52</span>
-<span class="normal">53</span>
-<span class="normal">54</span>
-<span class="normal">55</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<span class="normal">52</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
-    <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-    <span class="n">split</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">items</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span>
     <span class="n">choices_templates</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
     <span class="n">answer_index_template</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">input_templates</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">subset</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">data_files</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">whitespace_before_choices</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">template_filters</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">dataset_kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="n">dataset_kwargs</span> <span class="o">=</span> <span class="n">dataset_kwargs</span> <span class="ow">or</span> <span class="p">{}</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">_dataset</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">load_dataset</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">split</span><span class="o">=</span><span class="n">split</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">subset</span><span class="p">,</span> <span class="n">data_files</span><span class="o">=</span><span class="n">data_files</span><span class="p">,</span> <span class="o">**</span><span class="n">dataset_kwargs</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">items</span> <span class="o">=</span> <span class="n">items</span>
 
     <span class="n">template_filters</span> <span class="o">=</span> <span class="n">template_filters</span> <span class="ow">or</span> <span class="p">{}</span>
     <span class="k">for</span> <span class="n">template_str</span><span class="p">,</span> <span class="n">value_to_keep</span> <span class="ow">in</span> <span class="n">template_filters</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_dataset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dataset</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">get_template_filter_function</span><span class="p">(</span><span class="n">template_str</span><span class="p">,</span> <span class="n">value_to_keep</span><span class="p">))</span>
+        <span class="n">filter_func</span> <span class="o">=</span> <span class="n">get_template_filter_function</span><span class="p">(</span><span class="n">template_str</span><span class="p">,</span> <span class="n">value_to_keep</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">items</span> <span class="o">=</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">items</span> <span class="k">if</span> <span class="n">filter_func</span><span class="p">(</span><span class="n">item</span><span class="p">)]</span>
 
     <span class="n">input_templates</span> <span class="o">=</span> <span class="n">input_templates</span> <span class="ow">or</span> <span class="p">{}</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">_input_templates</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Template</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">JINJA2_ENV</span><span class="o">.</span><span class="n">from_string</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">input_templates</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">_choices_templates</span> <span class="o">=</span> <span class="p">[</span><span class="n">JINJA2_ENV</span><span class="o">.</span><span class="n">from_string</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">choices_templates</span><span class="p">]</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">_answer_index_template</span> <span class="o">=</span> <span class="n">JINJA2_ENV</span><span class="o">.</span><span class="n">from_string</span><span class="p">(</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">input_templates</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Template</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">JINJA2_ENV</span><span class="o">.</span><span class="n">from_string</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">input_templates</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">choices_templates</span> <span class="o">=</span> <span class="p">[</span><span class="n">JINJA2_ENV</span><span class="o">.</span><span class="n">from_string</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">choices_templates</span><span class="p">]</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">answer_index_template</span> <span class="o">=</span> <span class="n">JINJA2_ENV</span><span class="o">.</span><span class="n">from_string</span><span class="p">(</span>
         <span class="n">answer_index_template</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">_whitespace_before_choices</span> <span class="o">=</span> <span class="n">whitespace_before_choices</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">whitespace_before_choices</span> <span class="o">=</span> <span class="n">whitespace_before_choices</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -1963,21 +2441,21 @@ Maybe necessary for language with whitespaces.</p>
 <div class="doc doc-object doc-function">
 
 
-<h3 id="flexeval.core.multiple_choice_dataset.hf_dataset.HFMultipleChoiceDataset.__len__" class="doc doc-heading">
+<h3 id="flexeval.core.multiple_choice_dataset.template_based.TemplateMultipleChoiceDataset.__len__" class="doc doc-heading">
             <span class="doc doc-object-name doc-function-name">__len__</span>
 
 
-<a href="#flexeval.core.multiple_choice_dataset.hf_dataset.HFMultipleChoiceDataset.__len__" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#flexeval.core.multiple_choice_dataset.template_based.TemplateMultipleChoiceDataset.__len__" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature highlight"><pre><span></span><code><span class="fm">__len__</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">int</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
 
             <details class="quote">
-              <summary>Source code in <code>flexeval/core/multiple_choice_dataset/hf_dataset.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">57</span>
-<span class="normal">58</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-    <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_dataset</span><span class="p">)</span>
+              <summary>Source code in <code>flexeval/core/multiple_choice_dataset/template_based.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">54</span>
+<span class="normal">55</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">items</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -1987,19 +2465,22 @@ Maybe necessary for language with whitespaces.</p>
 <div class="doc doc-object doc-function">
 
 
-<h3 id="flexeval.core.multiple_choice_dataset.hf_dataset.HFMultipleChoiceDataset.__getitem__" class="doc doc-heading">
+<h3 id="flexeval.core.multiple_choice_dataset.template_based.TemplateMultipleChoiceDataset.__getitem__" class="doc doc-heading">
             <span class="doc doc-object-name doc-function-name">__getitem__</span>
 
 
-<a href="#flexeval.core.multiple_choice_dataset.hf_dataset.HFMultipleChoiceDataset.__getitem__" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#flexeval.core.multiple_choice_dataset.template_based.TemplateMultipleChoiceDataset.__getitem__" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature highlight"><pre><span></span><code><span class="fm">__getitem__</span><span class="p">(</span><span class="nf">i</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MultipleChoiceInstance</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
 
             <details class="quote">
-              <summary>Source code in <code>flexeval/core/multiple_choice_dataset/hf_dataset.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">60</span>
+              <summary>Source code in <code>flexeval/core/multiple_choice_dataset/template_based.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">57</span>
+<span class="normal">58</span>
+<span class="normal">59</span>
+<span class="normal">60</span>
 <span class="normal">61</span>
 <span class="normal">62</span>
 <span class="normal">63</span>
@@ -2014,22 +2495,19 @@ Maybe necessary for language with whitespaces.</p>
 <span class="normal">72</span>
 <span class="normal">73</span>
 <span class="normal">74</span>
-<span class="normal">75</span>
-<span class="normal">76</span>
-<span class="normal">77</span>
-<span class="normal">78</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MultipleChoiceInstance</span><span class="p">:</span>
-    <span class="n">item</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dataset</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+<span class="normal">75</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MultipleChoiceInstance</span><span class="p">:</span>
+    <span class="n">item</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">items</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
     <span class="n">inputs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
-    <span class="n">inputs</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="o">**</span><span class="n">item</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_input_templates</span><span class="o">.</span><span class="n">items</span><span class="p">()})</span>
+    <span class="n">inputs</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="o">**</span><span class="n">item</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_templates</span><span class="o">.</span><span class="n">items</span><span class="p">()})</span>
 
-    <span class="n">choices</span> <span class="o">=</span> <span class="p">[</span><span class="n">t</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="o">**</span><span class="n">item</span><span class="p">)</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_choices_templates</span><span class="p">]</span>
+    <span class="n">choices</span> <span class="o">=</span> <span class="p">[</span><span class="n">t</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="o">**</span><span class="n">item</span><span class="p">)</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">choices_templates</span><span class="p">]</span>
     <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">choices</span><span class="p">):</span>
         <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;choices must be non-empty, but got </span><span class="si">{</span><span class="n">choices</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
-    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_whitespace_before_choices</span><span class="p">:</span>
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">whitespace_before_choices</span><span class="p">:</span>
         <span class="n">choices</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">choices</span><span class="p">]</span>
 
-    <span class="n">answer_index</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_answer_index_template</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="o">**</span><span class="n">item</span><span class="p">))</span>
+    <span class="n">answer_index</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">answer_index_template</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="o">**</span><span class="n">item</span><span class="p">))</span>
 
     <span class="k">return</span> <span class="n">MultipleChoiceInstance</span><span class="p">(</span>
         <span class="n">inputs</span><span class="o">=</span><span class="n">inputs</span><span class="p">,</span>

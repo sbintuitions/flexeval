@@ -973,6 +973,27 @@
   
   
     <li class="md-nav__item">
+      <a href="../../../api_reference/HFMultipleChoiceDataset/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    HFMultipleChoiceDataset
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../../api_reference/LanguageModel/" class="md-nav__link">
         
   
@@ -1020,27 +1041,6 @@
   
   <span class="md-ellipsis">
     Metric
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../../api_reference/MultipleChoiceDataset/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    MultipleChoiceDataset
   </span>
   
 
@@ -1327,8 +1327,7 @@ This is a setup for multiple choice where the model chooses the correct answer b
           回答：「{{ item.choices[item.answer_index] }}」
           {% endfor %}
           問題：{{question}}
-          回答：「
-        |||,
+        ||| + &#39;回答：「&#39;,
       },
     },
   },
@@ -1362,9 +1361,7 @@ This is an Japanese subset of the dataset.</p>
     prompt_template: {
       class_path: &#39;Jinja2PromptTemplate&#39;,
       init_args: {
-        template: |||
-          {{ context }}
-        |||,
+        template: &#39;{{ context }}&#39;,
       },
     },
   },

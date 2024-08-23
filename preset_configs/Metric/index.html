@@ -980,6 +980,27 @@
   
   
     <li class="md-nav__item">
+      <a href="../../api_reference/HFMultipleChoiceDataset/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    HFMultipleChoiceDataset
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../api_reference/LanguageModel/" class="md-nav__link">
         
   
@@ -1027,27 +1048,6 @@
   
   <span class="md-ellipsis">
     Metric
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../api_reference/MultipleChoiceDataset/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    MultipleChoiceDataset
   </span>
   
 
@@ -1312,7 +1312,7 @@ Originally used to generate scores for MT-bench or Vicuna-bench.</p>
     prompt_template: {
       class_path: &#39;Jinja2PromptTemplate&#39;,
       init_args: {
-        template: |||
+        template: std.stripChars(|||
           [Instruction]
           {% if references|length &gt; 0 -%}
           Please act as an impartial judge and evaluate the quality of the response provided by an AI assistant to the user question displayed below. Your evaluation should consider correctness and helpfulness. You will be given a reference answer and the assistant&#39;s answer. Begin your evaluation by comparing the assistant&#39;s answer with the reference answer. Identify and correct any mistakes. Be as objective as possible. After providing your explanation, you must rate the response on a scale of 1 to 10 by strictly following this format: &quot;[[rating]]&quot;, for example: &quot;Rating: [[5]]&quot;.
@@ -1331,7 +1331,7 @@ Originally used to generate scores for MT-bench or Vicuna-bench.</p>
           [The Start of Assistant&#39;s Answer]
           {% if messages|length == 1 %}{{ lm_output }}{% else %}{{ messages[1][&quot;content&quot;] }}{% endif %}
           [The End of Assistant&#39;s Answer]
-        |||,
+        |||, &#39;\n&#39;),
       },
     },
   },
@@ -1349,7 +1349,7 @@ Originally used to generate scores for the Japanese versions of MT-bench or Vicu
     prompt_template: {
       class_path: &#39;Jinja2PromptTemplate&#39;,
       init_args: {
-        template: |||
+        template: std.stripChars(|||
           [指示]
           {% if references|length &gt; 0 -%}
           以下に表示されるユーザの質問に対するアシスタントの応答の品質を評価してください。評価は正確さと有用性を考慮すべきです。アシスタントの回答の言語は、ユーザが使用している言語と一致しているべきで、そうでない場合は減点されるべきです。参照回答とアシスタントの回答が与えられます。あなたの評価は、アシスタントの回答と参照回答を比較することから始めてください。ミスを特定し、訂正してください。できるだけ客観的であること。評価の説明をした後、&quot;[[rating]]&quot;という形式で、1から10までの整数の評価値を出力してください（例 &quot;rating：[[5]]&quot;）。
@@ -1368,10 +1368,10 @@ Originally used to generate scores for the Japanese versions of MT-bench or Vicu
           [アシスタントの回答開始]
           {% if messages|length == 1 %}{{ lm_output }}{% else %}{{ messages[1][&quot;content&quot;] }}{% endif %}
           [アシスタントの回答終了]
-        |||,
+        |||, &#39;\n&#39;),
       },
     },
-    system_message: &quot;あなたは優秀な助手です。&quot;,
+    system_message: &#39;あなたは優秀な助手です。&#39;,
   },
 }
 </code></pre></div></p>
@@ -1386,7 +1386,7 @@ The template is adapted from the blog post <a href="https://zenn.dev/elyza/artic
     prompt_template: {
       class_path: &#39;Jinja2PromptTemplate&#39;,
       init_args: {
-        template: |||
+        template: std.stripChars(|||
           あなたは採点者です。
 
           問題, 正解例, 採点基準, 回答 が与えられます。
@@ -1417,7 +1417,7 @@ The template is adapted from the blog post <a href="https://zenn.dev/elyza/artic
 
           # 回答
           {{ lm_output }}
-        |||,
+        |||, &#39;\n&#39;),
       },
     },
   },
