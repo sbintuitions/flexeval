@@ -1,13 +1,13 @@
 from __future__ import annotations
 
 import asyncio
-from typing import Awaitable, Callable, TypeVar
+from typing import Any, Awaitable, Callable, TypeVar
 
 import openai
 from loguru import logger
 from openai import AsyncOpenAI
 
-from .base import LanguageModel
+from .base import LanguageModel, normalize_stop_sequences
 
 T = TypeVar("T")
 
@@ -37,17 +37,23 @@ class OpenAIChatAPI(LanguageModel):
     Args:
         model: The name of the model to use.
         api_headers: A dictionary of headers to use when making requests to the OpenAI API.
+        default_gen_kwargs: Default generation kwargs to use when calling the API.
     """
 
     def __init__(
         self,
         model: str = "gpt-3.5-turbo",
         api_headers: dict[str, str] | None = None,
+        default_gen_kwargs: dict[str, Any] | None = None,
     ) -> None:
         self.model = model
         if api_headers is None:
             api_headers = {}
         self._client = AsyncOpenAI(**api_headers)
+        self.default_gen_kwargs = default_gen_kwargs or {}
+        # convert the flexeval-specific argument name to the OpenAI-specific name
+        if "max_new_tokens" in self.default_gen_kwargs:
+            self.default_gen_kwargs["max_tokens"] = self.default_gen_kwargs.pop("max_new_tokens")
 
     async def _async_batch_run_chatgpt(
         self,
@@ -57,25 +63,19 @@ class OpenAIChatAPI(LanguageModel):
         **kwargs,
     ) -> list[str]:
         """Send multiple chat requests to the OpenAI in parallel."""
-        if stop_sequences is not None:
-            if "stop" in kwargs:
-                msg = (
-                    "You specified both `stop_sequences` and `stop` in generation kwargs. "
-                    "However, `stop_sequences` will be normalized into `stop`. "
-                    "Please specify only one of them."
-                )
-                raise ValueError(msg)
-            kwargs["stop"] = stop_sequences
 
+        gen_kwargs = self.default_gen_kwargs.copy()
+        gen_kwargs.update(kwargs)
         if max_new_tokens is not None:
-            if "max_tokens" in kwargs:
-                msg = (
-                    "You specified both `max_new_tokens` and `max_tokens` in generation kwargs. "
-                    "However, `max_new_tokens` will be normalized into `max_tokens`. "
-                    "Please specify only one of them."
-                )
-                raise ValueError(msg)
-            kwargs["max_tokens"] = max_new_tokens
+            gen_kwargs["max_tokens"] = max_new_tokens
+
+        stop_sequences = normalize_stop_sequences(
+            stop_sequences_list=[
+                stop_sequences,
+                gen_kwargs.pop("stop", None),  # This is used in the OpenAI API
+                gen_kwargs.pop("stop_sequences", None),  # This is a common variable name used in flexeval
+            ],
+        )
 
         tasks = [
             _retry_on_error(
@@ -84,7 +84,8 @@ class OpenAIChatAPI(LanguageModel):
                 openai_call=lambda x=ms: self._client.chat.completions.create(
                     model=self.model,
                     messages=x,
-                    **kwargs,
+                    stop=stop_sequences,
+                    **gen_kwargs,
                 ),
             )
             for ms in messages_list

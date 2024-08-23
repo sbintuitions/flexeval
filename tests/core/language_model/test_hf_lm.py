@@ -264,3 +264,14 @@ def test_if_stop_sequences_work_as_expected(chat_lm: HuggingFaceLM) -> None:
     # check if ignore_eos=True works
     response = chat_lm.batch_generate_chat_response(test_inputs, max_new_tokens=50, ignore_eos=True)[0]
     assert eos_token in response[: -len(eos_token)]
+
+
+def test_if_gen_kwargs_work_as_expected() -> None:
+    lm = HuggingFaceLM(model="sbintuitions/tiny-lm", default_gen_kwargs={"max_new_tokens": 1})
+    # check if the default gen_kwargs is used and the max_new_tokens is 1
+    text = lm.complete_text("000000")
+    assert len(text) == 1
+
+    # check if the gen_kwargs will be overwritten by the given gen_kwargs
+    text = lm.complete_text("000000", max_new_tokens=10)
+    assert len(text) > 1
