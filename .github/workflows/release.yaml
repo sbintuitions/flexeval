@@ -38,7 +38,7 @@ jobs:
           poetry build
           poetry publish
   doc:
-    name: Build and publish to PyPI
+    name: Deploy documentation
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
