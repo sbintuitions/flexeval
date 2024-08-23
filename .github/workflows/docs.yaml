@@ -28,7 +28,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install poetry
-          poetry install --only docs
+          poetry install --with docs
       - name: Deploy docs
         run: |
           poetry run mkdocs gh-deploy
