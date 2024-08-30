@@ -122,3 +122,90 @@ class OpenAIChatAPI(LanguageModel):
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(model={self.model})"
+
+
+class OpenAICompletionAPI(LanguageModel):
+    """LanguageModel implementation using OpenAI's Completion API.
+
+    Note that Completion API is a legacy API, with only a few models (such as gpt-3.5-turbo-instruct)
+    supported by OpenAI. This LanguageModel implementation is primarily intended for use with on-premise
+    VLLM servers, as described in the documentation: https://docs.vllm.ai/en/latest/serving/openai_compatible_server.html
+
+    Args:
+        model: The name of the model to use.
+        api_headers: A dictionary of headers to use when making requests to the OpenAI API.
+        default_gen_kwargs: Default generation kwargs to use when calling the API.
+    """
+
+    def __init__(
+        self,
+        model: str = "gpt-3.5-turbo-instruct",
+        api_headers: dict[str, str] | None = None,
+        default_gen_kwargs: dict[str, Any] | None = None,
+    ) -> None:
+        self.model = model
+        if api_headers is None:
+            api_headers = {}
+        self._client = AsyncOpenAI(**api_headers)
+        self.default_gen_kwargs = default_gen_kwargs or {}
+        # convert the flexeval-specific argument name to the OpenAI-specific name
+        if "max_new_tokens" in self.default_gen_kwargs:
+            self.default_gen_kwargs["max_tokens"] = self.default_gen_kwargs.pop("max_new_tokens")
+
+    async def _async_batch_run_completion(
+        self,
+        prompt_list: list[str],
+        stop_sequences: str | list[str] | None = None,
+        max_new_tokens: int | None = None,
+        **kwargs,
+    ) -> list[str]:
+        """Send multiple completion requests to the OpenAI in parallel."""
+
+        gen_kwargs = self.default_gen_kwargs.copy()
+        gen_kwargs.update(kwargs)
+        if max_new_tokens is not None:
+            gen_kwargs["max_tokens"] = max_new_tokens
+
+        stop_sequences = normalize_stop_sequences(
+            stop_sequences_list=[
+                stop_sequences,
+                gen_kwargs.pop("stop", None),  # This is used in the OpenAI API
+                gen_kwargs.pop("stop_sequences", None),  # This is a common variable name used in flexeval
+            ],
+        )
+
+        tasks = [
+            _retry_on_error(
+                # Define an anonymous function with a lambda expression and pass it,
+                # and call it inside the _retry_on_error function
+                openai_call=lambda x=ms: self._client.completions.create(
+                    model=self.model,
+                    prompt=x,
+                    stop=stop_sequences,
+                    **gen_kwargs,
+                ),
+            )
+            for ms in prompt_list
+        ]
+        return await asyncio.gather(*tasks)
+
+    def batch_complete_text(
+        self,
+        text_list: list[str],
+        stop_sequences: str | list[str] | None = None,
+        max_new_tokens: int | None = None,
+        **kwargs,
+    ) -> list[str]:
+        api_responses = asyncio.run(
+            self._async_batch_run_completion(
+                text_list,
+                stop_sequences=stop_sequences,
+                max_new_tokens=max_new_tokens,
+                **kwargs,
+            ),
+        )
+
+        return [res.choices[0].text for res in api_responses]
+
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}(model={self.model})"
