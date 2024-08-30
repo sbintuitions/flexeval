@@ -138,10 +138,10 @@ class OpenAICompletionAPI(LanguageModel):
     """
 
     def __init__(
-            self,
-            model: str = "gpt-3.5-turbo-instruct",
-            api_headers: dict[str, str] | None = None,
-            default_gen_kwargs: dict[str, Any] | None = None,
+        self,
+        model: str = "gpt-3.5-turbo-instruct",
+        api_headers: dict[str, str] | None = None,
+        default_gen_kwargs: dict[str, Any] | None = None,
     ) -> None:
         self.model = model
         if api_headers is None:
@@ -153,11 +153,11 @@ class OpenAICompletionAPI(LanguageModel):
             self.default_gen_kwargs["max_tokens"] = self.default_gen_kwargs.pop("max_new_tokens")
 
     async def _async_batch_run_completion(
-            self,
-            prompt_list: list[str],
-            stop_sequences: str | list[str] | None = None,
-            max_new_tokens: int | None = None,
-            **kwargs,
+        self,
+        prompt_list: list[str],
+        stop_sequences: str | list[str] | None = None,
+        max_new_tokens: int | None = None,
+        **kwargs,
     ) -> list[str]:
         """Send multiple completion requests to the OpenAI in parallel."""
 
@@ -190,11 +190,11 @@ class OpenAICompletionAPI(LanguageModel):
         return await asyncio.gather(*tasks)
 
     def batch_complete_text(
-            self,
-            text_list: list[str],
-            stop_sequences: str | list[str] | None = None,
-            max_new_tokens: int | None = None,
-            **kwargs,
+        self,
+        text_list: list[str],
+        stop_sequences: str | list[str] | None = None,
+        max_new_tokens: int | None = None,
+        **kwargs,
     ) -> list[str]:
         api_responses = asyncio.run(
             self._async_batch_run_completion(
