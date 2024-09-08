@@ -7,7 +7,7 @@
         path: 'sbintuitions/niilc-qa',
         reference_list_template: '{{ answers }}',
         split: 'test',
-        template_filters: { "{{ answers | length }}": "1" }
+        keep_conditions: { "{{ answers | length }}": "1" }
       },
     },
     prompt_template: {

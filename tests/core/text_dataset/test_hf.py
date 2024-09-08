@@ -13,7 +13,7 @@ def test_hf_text_dataset() -> None:
     assert isinstance(texts[0], str)
 
 
-def test_test_template_filters() -> None:
+def test_test_keep_conditions() -> None:
     original_dataset = HFTextDataset(
         path="tests/dummy_modules/hf_dataset",
         split="train",
@@ -24,7 +24,7 @@ def test_test_template_filters() -> None:
         path="tests/dummy_modules/hf_dataset",
         split="train",
         text_template="{{ question }}",
-        template_filters={
+        keep_conditions={
             "{{ answers | length }}": "1",
         },
     )

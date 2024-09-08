@@ -77,7 +77,7 @@ def test_template_dataset_with_reference_list(
     ("dataset_class", "kwargs"),
     DATASETS_TO_TEST,
 )
-def test_test_template_filters(
+def test_test_keep_conditions(
     dataset_class: type[TemplateGenerationDataset],
     kwargs: dict[str, Any],
 ) -> None:
@@ -87,7 +87,7 @@ def test_test_template_filters(
 
     filtered_dataset = dataset_class(
         **kwargs,
-        template_filters={
+        keep_conditions={
             "{{ answers | length }}": "1",
         },
     )
@@ -95,3 +95,27 @@ def test_test_template_filters(
     assert 0 < len(filtered_dataset) < len(original_dataset)
     for item in filtered_dataset:
         assert len(item.inputs["answers"]) == 1
+
+
+@pytest.mark.parametrize(
+    ("dataset_class", "kwargs"),
+    DATASETS_TO_TEST,
+)
+def test_test_remove_conditions(
+    dataset_class: type[TemplateGenerationDataset],
+    kwargs: dict[str, Any],
+) -> None:
+    original_dataset = dataset_class(
+        **kwargs,
+    )
+
+    filtered_dataset = dataset_class(
+        **kwargs,
+        remove_conditions={
+            "{{ answers | length }}": "1",
+        },
+    )
+
+    assert 0 < len(filtered_dataset) < len(original_dataset)
+    for item in filtered_dataset:
+        assert len(item.inputs["answers"]) > 1

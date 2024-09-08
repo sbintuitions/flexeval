@@ -7,7 +7,7 @@ from typing import Any
 import datasets
 from jinja2 import Template
 
-from flexeval.core.utils.jinja2_utils import JINJA2_ENV, get_template_filter_function
+from flexeval.core.utils.jinja2_utils import JINJA2_ENV
 
 from .base import GenerationDataset, GenerationInstance
 
@@ -24,8 +24,10 @@ class TemplateGenerationDataset(GenerationDataset):
             if the dataset has multiple references.
         input_templates: A dictionary of Jinja2 templates for the inputs.
         data_range: The range of data to use.
-        template_filters: A dictionary to indicate the condition to filter certain items.
+        keep_conditions: A dictionary to indicate the condition to filter certain items.
             The key is a Jinja2 template string to embed the item into a string, and the value is the value to keep.
+        remove_conditions: A dictionary to indicate the condition to remove certain items.
+            The key is a Jinja2 template string to embed the item into a string, and the value is the value to remove.
     """
 
     def __init__(
@@ -35,7 +37,8 @@ class TemplateGenerationDataset(GenerationDataset):
         reference_list_template: str | None = None,
         input_templates: dict[str, str] | None = None,
         data_range: tuple[int, int] | None = None,
-        template_filters: dict[str, str] | None = None,
+        keep_conditions: dict[str, Any] | None = None,
+        remove_conditions: dict[str, Any] | None = None,
     ) -> None:
         if reference_template and reference_list_template:
             msg = "Only one of reference_template and reference_list_template can be set."
@@ -45,10 +48,14 @@ class TemplateGenerationDataset(GenerationDataset):
             start, end = data_range
             items = items[start:end]
 
-        template_filters = template_filters or {}
-        for template_str, value_to_keep in template_filters.items():
-            filter_func = get_template_filter_function(template_str, value_to_keep)
-            items = [item for item in items if filter_func(item)]
+        keep_conditions = keep_conditions or {}
+        for template_str, value_to_keep in keep_conditions.items():
+            key_template = JINJA2_ENV.from_string(template_str)
+            items = [item for item in items if key_template.render(**item) == value_to_keep]
+        remove_conditions = remove_conditions or {}
+        for template_str, value_to_remove in remove_conditions.items():
+            key_template = JINJA2_ENV.from_string(template_str)
+            items = [item for item in items if key_template.render(**item) != value_to_remove]
 
         self.items = items
         input_templates = input_templates or {}
@@ -103,7 +110,8 @@ class HFGenerationDataset(TemplateGenerationDataset):
         reference_list_template: str | None = None,
         input_templates: dict[str, str] | None = None,
         data_range: tuple[int, int] | None = None,
-        template_filters: dict[str, str] | None = None,
+        keep_conditions: dict[str, Any] | None = None,
+        remove_conditions: dict[str, Any] | None = None,
     ) -> None:
         dataset_kwargs = dataset_kwargs or {}
         dataset = datasets.load_dataset(path, name=subset, split=split, **dataset_kwargs)
@@ -115,7 +123,8 @@ class HFGenerationDataset(TemplateGenerationDataset):
             reference_list_template=reference_list_template,
             input_templates=input_templates,
             data_range=data_range,
-            template_filters=template_filters,
+            keep_conditions=keep_conditions,
+            remove_conditions=remove_conditions,
         )
 
 
@@ -134,7 +143,8 @@ class JsonlGenerationDataset(TemplateGenerationDataset):
         reference_list_template: str | None = None,
         input_templates: dict[str, str] | None = None,
         data_range: tuple[int, int] | None = None,
-        template_filters: dict[str, str] | None = None,
+        keep_conditions: dict[str, Any] | None = None,
+        remove_conditions: dict[str, Any] | None = None,
     ) -> None:
         with open(path) as f:
             items = [json.loads(line) for line in f]
@@ -145,5 +155,6 @@ class JsonlGenerationDataset(TemplateGenerationDataset):
             reference_list_template=reference_list_template,
             input_templates=input_templates,
             data_range=data_range,
-            template_filters=template_filters,
+            keep_conditions=keep_conditions,
+            remove_conditions=remove_conditions,
         )
