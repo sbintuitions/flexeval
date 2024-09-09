@@ -2,7 +2,7 @@ import os
 
 import pytest
 
-from flexeval.core.language_model.openai_chatgpt_batch_api import OpenAIChatBatchAPI
+from flexeval.core.language_model.openai_batch_api import OpenAIChatBatchAPI
 
 
 def is_openai_enabled() -> bool:

@@ -8,10 +8,11 @@ import uuid
 from enum import Enum
 from typing import Any
 
-from flexeval import LanguageModel
 from loguru import logger
 from openai import AsyncOpenAI
 from openai.types import Batch
+
+from flexeval import LanguageModel
 
 MAX_NUM_TRIALS = 3
 
