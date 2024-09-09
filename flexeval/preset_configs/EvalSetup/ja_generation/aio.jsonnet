@@ -12,6 +12,7 @@ local dataset_base_args = {
   init_args: {
     path: 'llm-book/aio',
     reference_list_template: '{{ answers }}',
+    dataset_kwargs: { trust_remote_code: true },
   },
 };
 
@@ -33,8 +34,7 @@ local dataset_base_args = {
           {% for item in few_shot_data -%}
           {{ item.question }}答えは「{{ item.references[0] }}」
           {% endfor -%}
-          {{ question }}答えは「
-        |||,
+        ||| + '{{ question }}答えは「',
       },
     },
     metrics: [

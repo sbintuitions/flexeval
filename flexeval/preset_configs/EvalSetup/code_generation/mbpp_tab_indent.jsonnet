@@ -31,7 +31,6 @@ original_config {
           ```
           ## Code
           ```python
-
         |||,
       },
     },

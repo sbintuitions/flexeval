@@ -14,6 +14,7 @@ local dataset_base_args = {
   init_args: {
     path: 'llm-book/wrime-sentiment',
     reference_template: "{{ ['\"ポジティブ\"', '\"ネガティブ\"'][label] }}",
+    dataset_kwargs: { trust_remote_code: true },
   },
 };
 
@@ -38,8 +39,7 @@ local dataset_base_args = {
           極性：「{{ item.references[0] }}」
           {% endfor %}
           文：{{sentence}}
-          極性：「
-        |||,
+        ||| + '極性：「',
       },
     },
     metrics: [

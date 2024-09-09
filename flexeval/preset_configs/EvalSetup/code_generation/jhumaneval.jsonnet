@@ -20,9 +20,7 @@ References:
     prompt_template: {
       class_path: 'Jinja2PromptTemplate',
       init_args: {
-        template: |||
-          {{ prompt }}
-        |||,
+        template: '{{ prompt }}',
       },
     },
     metrics: [

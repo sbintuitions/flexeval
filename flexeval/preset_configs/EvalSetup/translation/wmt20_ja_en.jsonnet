@@ -34,8 +34,7 @@ local dataset = {
           En: `{{ item.references[0] }}`
           {% endfor %}
           Ja: `{{ source }}`
-          En: `
-        |||,
+        ||| + 'En: `',
       },
     },
     metrics: [

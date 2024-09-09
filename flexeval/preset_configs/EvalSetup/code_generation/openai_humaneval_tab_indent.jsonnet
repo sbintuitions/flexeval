@@ -15,9 +15,7 @@ original_config {
     },
     prompt_template+: {
       init_args+: {
-        template: |||
-          {{ prompt | replace("    ", "\t") }}
-        |||,
+        template: '{{ prompt | replace("    ", "\t") }}',
       },
     },
     metrics: [

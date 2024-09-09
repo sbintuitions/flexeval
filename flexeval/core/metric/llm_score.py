@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import re
+from collections import defaultdict
 
 import tqdm
 from loguru import logger
@@ -27,6 +28,38 @@ def parse_score_from_evaluator_output(evaluator_output: str, valid_score_range: 
     return parsed_score
 
 
+def summarize_evaluator_scores(
+    evaluator_score_list: list[int | None],
+    task_inputs_list: list[dict[str, str]],
+    category_key: str | None = None,
+) -> dict[str, float]:
+    """Summarize evaluator_score_list. If category_key is given, return
+    category-wise mean score as well as overall mean score.
+    """
+
+    # compute overall mean score
+    all_valid_scores: list[int] = [s for s in evaluator_score_list if s is not None]
+    llm_score = sum(all_valid_scores) / len(all_valid_scores)
+    num_failed_score_parses = len(evaluator_score_list) - len(all_valid_scores)
+    summary = {"llm_score": llm_score, "num_failed_score_parses": num_failed_score_parses}
+
+    # compute category-wise mean score if category_key is given
+    category2valid_scores: dict[str, list[int]] = defaultdict(list)
+    for score, task_inputs in zip(evaluator_score_list, task_inputs_list):
+        if score is None or category_key is None:
+            continue
+        if category_key in task_inputs:
+            category2valid_scores[task_inputs["category"]].append(score)
+
+    category2mean_score: dict[str, float] = {}
+    for category, valid_scores in category2valid_scores.items():
+        category2mean_score[category] = sum(valid_scores) / len(valid_scores)
+
+    for category, mean_score in category2mean_score.items():
+        summary[f"llm_score/{category}"] = mean_score
+    return summary
+
+
 class LLMScore(Metric):
     """Let LanguageModel to evaluate the output of another LanguageModel.
 
@@ -40,6 +73,8 @@ class LLMScore(Metric):
         disable_tqdm: Whether to disable the progress bar.
         valid_score_range: A tuple of two integers representing the valid score range.
             If the parsed score is out of the range, it will be ignored.
+        category_key: A key to create category-wise mean score.
+            The category key is expected to be in task inputs.
 
     Examples:
         >>> from flexeval import LLMScore, OpenAIChatAPI, Jinja2PromptTemplate
@@ -72,12 +107,14 @@ class LLMScore(Metric):
         batch_size: int = 4,
         disable_tqdm: bool = False,
         valid_score_range: tuple[int, int] | None = None,
+        category_key: str | None = None,
     ) -> None:
         self.language_model = language_model
         self.prompt_template = prompt_template
         self.batch_size = batch_size
         self.disable_tqdm = disable_tqdm
         self.valid_score_range = valid_score_range
+        self.category_key = category_key
 
     def evaluate(
         self,
@@ -130,12 +167,14 @@ class LLMScore(Metric):
                 logger.warning(f"Failed to parse score from evaluator output: {evaluator_output}")
             evaluator_score_list.append(evaluator_score)
 
-        valid_scores = [score for score in evaluator_score_list if score is not None]
-        average_evaluator_score = sum(valid_scores) / len(valid_scores) if valid_scores else 0
-        num_failed_score_parses = len(evaluator_score_list) - len(valid_scores)
+        summary = summarize_evaluator_scores(
+            evaluator_score_list,
+            task_inputs_list,
+            self.category_key,
+        )
 
         return MetricResult(
-            {"llm_score": average_evaluator_score, "num_failed_score_parses": num_failed_score_parses},
+            summary,
             instance_details=[
                 {"llm_score": eval_score, "llm_score_input": eval_in, "llm_score_output": eval_out}
                 for eval_score, eval_in, eval_out in zip(
@@ -164,6 +203,8 @@ class ChatLLMScore(Metric):
         disable_tqdm: Whether to disable the progress bar.
         valid_score_range: A tuple of two integers representing the valid score range.
             If the parsed score is out of the range, it will be ignored.
+        category_key: A key to create category-wise mean score.
+            The category key is expected to be in task inputs.
 
     Examples:
         >>> from flexeval import ChatLLMScore, OpenAIChatAPI, Jinja2PromptTemplate
@@ -198,6 +239,7 @@ class ChatLLMScore(Metric):
         batch_size: int = 4,
         disable_tqdm: bool = False,
         valid_score_range: tuple[int, int] | None = None,
+        category_key: str | None = None,
     ) -> None:
         self.language_model = language_model
         self.prompt_template = prompt_template
@@ -205,6 +247,7 @@ class ChatLLMScore(Metric):
         self.batch_size = batch_size
         self.disable_tqdm = disable_tqdm
         self.valid_score_range = valid_score_range
+        self.category_key = category_key
 
     def evaluate(
         self,
@@ -266,12 +309,14 @@ class ChatLLMScore(Metric):
                 logger.warning(f"Failed to parse score from evaluator output: {evaluator_output}")
             evaluator_score_list.append(evaluator_score)
 
-        valid_scores = [score for score in evaluator_score_list if score is not None]
-        average_evaluator_score = sum(valid_scores) / len(valid_scores) if valid_scores else 0
-        num_failed_score_parses = len(evaluator_score_list) - len(valid_scores)
+        summary = summarize_evaluator_scores(
+            evaluator_score_list,
+            task_inputs_list,
+            self.category_key,
+        )
 
         return MetricResult(
-            {"llm_score": average_evaluator_score, "num_failed_score_parses": num_failed_score_parses},
+            summary,
             instance_details=[
                 {"llm_score": eval_score, "llm_score_input": eval_in, "llm_score_output": eval_out}
                 for eval_score, eval_in, eval_out in zip(

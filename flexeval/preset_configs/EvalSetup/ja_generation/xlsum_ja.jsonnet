@@ -36,11 +36,10 @@ local dataset_base_args = {
           文章を１〜３文で要約してください。
           {% for item in few_shot_data %}
           文章: {{ item.text }}
-          要約: {{ item.references[0] }}」
+          要約: {{ item.references[0] }}
           {% endfor %}
           文章: {{ text }}
-          要約:
-        |||,
+        ||| + '要約:',
       },
     },
     metrics: [

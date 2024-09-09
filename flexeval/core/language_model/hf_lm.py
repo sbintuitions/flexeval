@@ -9,7 +9,7 @@ import transformers
 from loguru import logger
 from transformers import AutoModelForCausalLM, AutoTokenizer, BatchEncoding, PreTrainedModel, PreTrainedTokenizer
 
-from .base import LanguageModel
+from .base import LanguageModel, normalize_stop_sequences
 
 T = TypeVar("T")
 
@@ -106,35 +106,6 @@ def tokenize_text_for_lm_continuation(
         return tokenizer.pad(encoding_list, return_tensors="pt")
 
 
-def normalize_stop_sequences(
-    stop_sequences: str | list[str] | None,
-    stop_from_kwargs: str | list[str] | None,
-    eos_token: str | None = None,
-    ignore_eos: bool = False,
-) -> list[str]:
-    """
-    This function absorb stop sequences specified in various ways into a list of strings.
-    """
-
-    # normalize `stop_sequences` into a list of strings
-    if stop_sequences is None:
-        stop_sequences = []
-    if isinstance(stop_sequences, str):
-        stop_sequences = [stop_sequences]
-    stop_sequences: list[str]
-
-    # absorb `stop` from kwargs into `stop_sequences`
-    if stop_from_kwargs is None:
-        stop_from_kwargs = []
-    if isinstance(stop_from_kwargs, str):
-        stop_from_kwargs = [stop_from_kwargs]
-    stop_sequences = stop_sequences + stop_from_kwargs
-
-    if eos_token and not ignore_eos:
-        stop_sequences = [*stop_sequences, eos_token]
-    return stop_sequences
-
-
 class HuggingFaceLM(LanguageModel):
     """
     LanguageModel implementation using Hugging Face Transformers.
@@ -164,6 +135,7 @@ class HuggingFaceLM(LanguageModel):
         random_seed: int = 42,
         load_peft: bool = False,
         custom_chat_template: str | None = None,
+        default_gen_kwargs: dict[str, Any] | None = None,
     ) -> None:
         self._model_name_or_path = model
         tokenizer = tokenizer if tokenizer else model
@@ -171,6 +143,7 @@ class HuggingFaceLM(LanguageModel):
         self.tokenizer: PreTrainedTokenizer = AutoTokenizer.from_pretrained(tokenizer, **tokenizer_kwargs)
         self.custom_chat_template = custom_chat_template
         self.add_special_tokens = add_special_tokens
+        self.default_gen_kwargs = default_gen_kwargs or {}
 
         model_kwargs = model_kwargs or {}
         model_kwargs = {**model_kwargs}  # copy kwargs to avoid modifying the original dict
@@ -266,7 +239,10 @@ class HuggingFaceLM(LanguageModel):
         include_stop_str_in_output: bool = False,
         **kwargs,
     ) -> list[str]:
-        kwargs = kwargs.copy()  # avoid modifying the original kwargs
+        gen_kwargs = self.default_gen_kwargs.copy()
+        gen_kwargs.update(kwargs)
+        if max_new_tokens is not None:
+            gen_kwargs["max_new_tokens"] = max_new_tokens
 
         model_inputs = tokenize_text_for_lm_prefix(
             text_list,
@@ -275,24 +251,26 @@ class HuggingFaceLM(LanguageModel):
         ).to(self.model.device)
         input_token_length = model_inputs["input_ids"].shape[1]
 
+        # set the stop sequences
         stop_sequences = normalize_stop_sequences(
-            stop_sequences=stop_sequences,
-            stop_from_kwargs=kwargs.pop("stop_strings", None),
+            stop_sequences_list=[
+                stop_sequences,
+                gen_kwargs.pop("stop_strings", None),  # This is used in the transformers `generate` function
+                gen_kwargs.pop("stop_sequences", None),  # This is a common variable name used in flexeval
+            ],
             eos_token=self.tokenizer.eos_token,
             ignore_eos=ignore_eos,
         )
         stop_token_ids = self._get_stop_token_ids(stop_sequences)
-
-        kwargs.update(
+        gen_kwargs.update(
             {
                 "eos_token_id": stop_token_ids,
                 "pad_token_id": self.tokenizer.pad_token_id,
-                "max_new_tokens": max_new_tokens,
             },
         )
 
         with self._get_amp_context():
-            lm_outputs = self.model.generate(**model_inputs, **kwargs)
+            lm_outputs = self.model.generate(**model_inputs, **gen_kwargs)
 
         # `lm_outputs` contains full text including the input text.
         # We strip the input text and stop sequences from the output text.

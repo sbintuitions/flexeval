@@ -38,8 +38,7 @@ local dataset_base_args = {
           {% endfor %}
           Context: {{ context | trim }}
           Question: {{ question }}
-          Answer: "
-        |||,
+        ||| + 'Answer: "',
       },
     },
     metrics: [

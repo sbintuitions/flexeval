@@ -38,8 +38,7 @@ local dataset_base_args = {
           Answer: "{{ item.references[0] }}"
           {% endfor %}
           Question: {{ question }}
-          Answer: "
-        |||,
+        ||| + 'Answer: "',
       },
     },
     metrics: [

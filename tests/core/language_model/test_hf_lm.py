@@ -111,6 +111,15 @@ def test_batch_complete_text(lm: HuggingFaceLM) -> None:
     assert isinstance(completions[0], str)
 
 
+def test_compete_text(lm: HuggingFaceLM) -> None:
+    completion = lm.complete_text("こんにちは、")
+    assert isinstance(completion, str)
+
+    completions = lm.batch_complete_text(["こんにちは、", "おはよう、"])
+    assert len(completions) == 2
+    assert isinstance(completions[0], str)
+
+
 def test_batch_complete_text_is_not_affected_by_batch(lm: LanguageModel) -> None:
     single_batch_input = ["こんにちは。今日もいい天気。"]
     multi_batch_inputs = ["こんにちは。今日もいい天気。", "Lorem ipsum"]
@@ -134,6 +143,15 @@ def test_stop_sequences(lm: LanguageModel) -> None:
 
     completion = lm.batch_complete_text(["10 10 10 10 10 10 "], stop_sequences=["0"], max_new_tokens=10)[0]
     assert completion.strip() == "1"
+
+
+def test_compute_log_probs(lm: LanguageModel) -> None:
+    log_prob = lm.compute_log_probs("こんにちは")
+    assert isinstance(log_prob, float)
+
+    log_probs = lm.batch_compute_log_probs(["こんにちは", "こんばんは"])
+    assert len(log_probs) == 2
+    assert isinstance(log_probs[0], float)
 
 
 def test_batch_compute_log_probs_produces_reasonable_comparisons(lm: LanguageModel) -> None:
@@ -198,6 +216,21 @@ def test_batch_generate_chat_response(lm: LanguageModel) -> None:
     assert isinstance(responses[0], str)
 
 
+def test_generate_chat_response(lm: LanguageModel) -> None:
+    response = lm.generate_chat_response([{"role": "user", "content": "こんにちは。"}], max_length=40)
+    assert isinstance(response, str)
+
+    responses = lm.generate_chat_response(
+        [
+            [{"role": "user", "content": "こんにちは。"}],
+            [{"role": "user", "content": "こんばんわ"}],
+        ],
+        max_length=40,
+    )
+    assert len(responses) == 2
+    assert isinstance(responses[0], str)
+
+
 def test_if_custom_chat_template_is_given(lm_init_func: Callable[..., HuggingFaceLM]) -> None:
     # To verify that the template specified in `custom_chat_template` is passed to `tokenizer.apply_chat_template()`,
     # prepare a template where the model is expected to output "0 0..." for any input.
@@ -231,3 +264,14 @@ def test_if_stop_sequences_work_as_expected(chat_lm: HuggingFaceLM) -> None:
     # check if ignore_eos=True works
     response = chat_lm.batch_generate_chat_response(test_inputs, max_new_tokens=50, ignore_eos=True)[0]
     assert eos_token in response[: -len(eos_token)]
+
+
+def test_if_gen_kwargs_work_as_expected() -> None:
+    lm = HuggingFaceLM(model="sbintuitions/tiny-lm", default_gen_kwargs={"max_new_tokens": 1})
+    # check if the default gen_kwargs is used and the max_new_tokens is 1
+    text = lm.complete_text("000000")
+    assert len(text) == 1
+
+    # check if the gen_kwargs will be overwritten by the given gen_kwargs
+    text = lm.complete_text("000000", max_new_tokens=10)
+    assert len(text) > 1

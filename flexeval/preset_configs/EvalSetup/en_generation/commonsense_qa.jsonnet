@@ -48,8 +48,7 @@ local dataset_base_args = {
           3. "{{ choices.text[3] }}"
           4. "{{ choices.text[4] }}"
           Question: {{question}}
-          Answer: "
-        |||,
+        ||| + 'Answer: "',
       },
     },
     metrics: [

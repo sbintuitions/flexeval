@@ -15,6 +15,7 @@ local dataset_base_args = {
     path: 'llm-book/JGLUE',
     subset: 'JNLI',
     reference_template: "{{ ['\"含意\"', '\"矛盾\"', '\"中立\"'][label] }}",
+    dataset_kwargs: { trust_remote_code: true },
   },
 };
 
@@ -41,8 +42,7 @@ local dataset_base_args = {
           {% endfor %}
           前提：「{{ sentence1 }}」
           仮説：「{{ sentence2 }}」
-          関係：「
-        |||,
+        ||| + '関係：「',
       },
     },
     metrics: [

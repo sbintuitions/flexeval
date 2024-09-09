@@ -14,6 +14,7 @@ local dataset_base_args = {
     path: 'llm-book/aio',
     input_template: '{{ question }}',
     reference_list_template: '{{ answers }}',
+    dataset_kwargs: { trust_remote_code: true },
   },
 };
 

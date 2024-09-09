@@ -11,7 +11,7 @@ Translated and adapted from [lm-sys/FastChat](https://github.com/lm-sys/FastChat
     prompt_template: {
       class_path: 'Jinja2PromptTemplate',
       init_args: {
-        template: |||
+        template: std.stripChars(|||
           {% set question = model1_item["task_inputs"]["messages"][0]["content"] -%}
           {% set model1_messages = model1_item["task_inputs"]["messages"] -%}
           {% set model2_messages = model2_item["task_inputs"]["messages"] -%}
@@ -30,19 +30,19 @@ Translated and adapted from [lm-sys/FastChat](https://github.com/lm-sys/FastChat
           [アシスタント2の回答開始]
           {% if model2_messages|length == 1 %}{{ model2_item["lm_output"] }}{% else %}{{ model2_messages[1]["content"] }}{% endif %}
           [アシスタント2の回答終了]
-        |||,
+        |||, '\n'),
       },
     },
     system_message: {
       class_path: 'Jinja2PromptTemplate',
       init_args: {
-        template: |||
+        template: std.stripChars(|||
           {% if references|length > 0 -%}
           あなたは、回答の質をチェックするための審判員です。以下に示されるユーザーの質問に対する2つのAIアシスタントの応答の品質を評価してください。回答の内容がユーザーの指示に従っており、ユーザーの質問によりよく答えているアシスタントを選んでください。参照回答、アシスタント1の回答、アシスタント2の回答が与えられるので、どちらのアシスタントの回答が優れているかを評価してください。評価の際には、まずそれぞれのアシスタントの回答を参照回答と比較し、回答の誤りを見つけて修正してください。立場が偏らないようにし、回答の提示順があなたの判断に影響しないようにしてください。回答の長さが評価に影響しないこと、特定のアシスタントの名前を好まないこと、できるだけ客観的であること、に気をつけてください。説明の後に、最終的な判断を以下の形式に従って出力してください：アシスタント1が優れていれば[[1]]、アシスタント2が優れていれば[[2]]、同点の場合は[[3]]
           {%- else -%}
           あなたは、回答の質をチェックするための審判員です。以下に示されるユーザーの質問に対する2つのAIアシスタントの応答の品質を評価してください。回答の内容がユーザーの指示に従っており、ユーザーの質問によりよく答えているアシスタントを選んでください。具体的には、回答の有用性、関連性、正確性、深さ、創造性、詳細レベルなどの要素を考慮する必要があります。評価の際には、まず2つの回答を比較し、簡単な説明をしてください。立場が偏らないようにし、回答の提示順があなたの判断に影響しないようにしてください。回答の長さが評価に影響しないこと、特定のアシスタントの名前を好まないこと、できるだけ客観的であること、に気をつけてください。説明の後に、最終的な判断を以下の形式に従って出力してください：アシスタント1が優れていれば[[1]]、アシスタント2が優れていれば[[2]]、同点の場合は[[3]]
           {%- endif %}
-        |||,
+        |||, '\n'),
       },
     },
   },

@@ -16,6 +16,7 @@ local dataset_base_args = {
     path: 'llm-book/JGLUE',
     subset: 'JCommonsenseQA',
     reference_template: '{% set choices = [choice0, choice1, choice2, choice3, choice4] %}{{ choices[label] }}',
+    dataset_kwargs: { trust_remote_code: true },
   },
 };
 
@@ -50,8 +51,7 @@ local dataset_base_args = {
           3.「{{ choice3 }}」
           4.「{{ choice4 }}」
           問題：{{question}}
-          回答：「
-        |||,
+        ||| + '回答：「',
       },
     },
     metrics: [
