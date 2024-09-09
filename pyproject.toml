@@ -26,7 +26,7 @@ python-levenshtein = "^0.23.0"
 rouge = "^1.0.1"
 sacrebleu = {extras = ["ja"], version = "^2.4.1"}
 jiwer = "^3.0.4"
-openai = "^1.16.1"
+openai = "^1.44.0"
 google-api-python-client = "^2.131.0"
 vllm = {version = "^0.5.3.post1", optional = true }
 loguru = "^0.7.2"
