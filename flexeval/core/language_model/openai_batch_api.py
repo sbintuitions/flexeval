@@ -45,11 +45,12 @@ class OpenAIChatBatchAPI(LanguageModel):
     Args:
         model: The name of the model to use.
         api_headers: A dictionary of headers to use when making requests to the OpenAI API.
+        polling_interval_seconds: The interval in seconds to poll the batch status.
     """
 
     def __init__(
         self,
-        model: str = "gpt-3.5-turbo",
+        model: str,
         api_headers: dict[str, str] | None = None,
         polling_interval_seconds: int = 60,
     ) -> None:
@@ -139,7 +140,7 @@ class OpenAIChatBatchAPI(LanguageModel):
         exec_cnt = 0
 
         while len(custom_id_2_message) > 0 or exec_cnt >= MAX_NUM_TRIALS:
-            logger.info(f"{exec_cnt}: {custom_id_2_message}")
+            logger.info(f"Trial {exec_cnt}")
             batch_id = asyncio.run(self._post_batch_requests(custom_id_2_message, **kwargs))
 
             status, batch_response = asyncio.run(
