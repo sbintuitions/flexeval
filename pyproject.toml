@@ -31,6 +31,7 @@ google-api-python-client = "^2.131.0"
 vllm = {version = "^0.5.3.post1", optional = true }
 loguru = "^0.7.2"
 wandb = {version = "^0.17.2", optional = true}
+pyarrow = "16.1.0"  # set the version because we get "Unable to find installation candidates" with 17.0.0
 
 [tool.poetry.extras]
 vllm = ["vllm"]
