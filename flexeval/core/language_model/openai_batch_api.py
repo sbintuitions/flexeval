@@ -139,7 +139,9 @@ class OpenAIChatBatchAPI(LanguageModel):
         custom_id_2_response: dict[str, str | None] = {custom_id: None for custom_id in custom_id_2_message}
         exec_cnt = 0
 
-        while len(custom_id_2_message) > 0 or exec_cnt >= MAX_NUM_TRIALS:
+        while len(custom_id_2_message) > 0:
+            if exec_cnt > MAX_NUM_TRIALS:
+                break
             logger.info(f"Trial {exec_cnt}")
             batch_id = asyncio.run(self._post_batch_requests(custom_id_2_message, **kwargs))
 
