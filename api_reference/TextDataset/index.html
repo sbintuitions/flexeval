@@ -1508,14 +1508,35 @@
           </div>
         </li>
         <li class="doc-section-item field-body">
-          <b><code>template_filters</code></b>
-              (<code>dict[str, str] | None</code>, default:
+          <b><code>keep_conditions</code></b>
+              (<code>dict[str, str | None] | None</code>, default:
                   <code>None</code>
 )
           –
           <div class="doc-md-description">
             <p>A dictionary to indicate the condition to filter certain items.
 The key is a Jinja2 template string to embed the item into a string, and the value is the value to keep.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+          <b><code>remove_conditions</code></b>
+              (<code>dict[str, str | None] | None</code>, default:
+                  <code>None</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>A dictionary to indicate the condition to remove certain items.
+The key is a Jinja2 template string to embed the item into a string, and the value is the value to remove.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+          <b><code>dataset_kwargs</code></b>
+              (<code>dict[str, <span title="typing.Any">Any</span>] | None</code>, default:
+                  <code>None</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>Additional keyword arguments for <code>datasets.load_dataset</code>.</p>
           </div>
         </li>
     </ul>
@@ -1558,7 +1579,16 @@ The key is a Jinja2 template string to embed the item into a string, and the val
 <span class="normal">45</span>
 <span class="normal">46</span>
 <span class="normal">47</span>
-<span class="normal">48</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">HFTextDataset</span><span class="p">(</span><span class="n">TextDataset</span><span class="p">):</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span>
+<span class="normal">55</span>
+<span class="normal">56</span>
+<span class="normal">57</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">HFTextDataset</span><span class="p">(</span><span class="n">TextDataset</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This class represents a dataset of text examples loaded from Hugging Face datasets.</span>
 
@@ -1567,8 +1597,11 @@ The key is a Jinja2 template string to embed the item into a string, and the val
 <span class="sd">        split: The split of the dataset to load.</span>
 <span class="sd">        text_template: A Jinja2 template for the text.</span>
 <span class="sd">        subset: The subset of the dataset to load.</span>
-<span class="sd">        template_filters: A dictionary to indicate the condition to filter certain items.</span>
+<span class="sd">        keep_conditions: A dictionary to indicate the condition to filter certain items.</span>
 <span class="sd">            The key is a Jinja2 template string to embed the item into a string, and the value is the value to keep.</span>
+<span class="sd">        remove_conditions: A dictionary to indicate the condition to remove certain items.</span>
+<span class="sd">            The key is a Jinja2 template string to embed the item into a string, and the value is the value to remove.</span>
+<span class="sd">        dataset_kwargs: Additional keyword arguments for `datasets.load_dataset`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
@@ -1577,15 +1610,21 @@ The key is a Jinja2 template string to embed the item into a string, and the val
         <span class="n">split</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">text_template</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">subset</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">template_filters</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">keep_conditions</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">remove_conditions</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">dataset_kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">dataset_kwargs</span> <span class="o">=</span> <span class="n">dataset_kwargs</span> <span class="ow">or</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">load_dataset</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">split</span><span class="o">=</span><span class="n">split</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">subset</span><span class="p">,</span> <span class="o">**</span><span class="n">dataset_kwargs</span><span class="p">)</span>
 
-        <span class="n">template_filters</span> <span class="o">=</span> <span class="n">template_filters</span> <span class="ow">or</span> <span class="p">{}</span>
-        <span class="k">for</span> <span class="n">template_str</span><span class="p">,</span> <span class="n">value_to_keep</span> <span class="ow">in</span> <span class="n">template_filters</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">get_template_filter_function</span><span class="p">(</span><span class="n">template_str</span><span class="p">,</span> <span class="n">value_to_keep</span><span class="p">))</span>
+        <span class="n">keep_conditions</span> <span class="o">=</span> <span class="n">keep_conditions</span> <span class="ow">or</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">template_str</span><span class="p">,</span> <span class="n">value_to_keep</span> <span class="ow">in</span> <span class="n">keep_conditions</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">filter_template</span> <span class="o">=</span> <span class="n">JINJA2_ENV</span><span class="o">.</span><span class="n">from_string</span><span class="p">(</span><span class="n">template_str</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="n">filter_template</span><span class="p">,</span> <span class="n">v</span><span class="o">=</span><span class="n">value_to_keep</span><span class="p">:</span> <span class="n">t</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="o">**</span><span class="n">x</span><span class="p">)</span> <span class="o">==</span> <span class="n">v</span><span class="p">)</span>
+        <span class="n">remove_conditions</span> <span class="o">=</span> <span class="n">remove_conditions</span> <span class="ow">or</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">template_str</span><span class="p">,</span> <span class="n">value_to_remove</span> <span class="ow">in</span> <span class="n">remove_conditions</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">filter_template</span> <span class="o">=</span> <span class="n">JINJA2_ENV</span><span class="o">.</span><span class="n">from_string</span><span class="p">(</span><span class="n">template_str</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="n">filter_template</span><span class="p">,</span> <span class="n">v</span><span class="o">=</span><span class="n">value_to_remove</span><span class="p">:</span> <span class="n">t</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="o">**</span><span class="n">x</span><span class="p">)</span> <span class="o">!=</span> <span class="n">v</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">text_template</span> <span class="o">=</span> <span class="n">JINJA2_ENV</span><span class="o">.</span><span class="n">from_string</span><span class="p">(</span><span class="n">text_template</span><span class="p">)</span>
 
@@ -1621,7 +1660,7 @@ The key is a Jinja2 template string to embed the item into a string, and the val
   </span>
 
 <a href="#flexeval.core.text_dataset.hf.HFTextDataset.dataset" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="n">dataset</span> <span class="o">=</span> <span class="nb">filter</span><span class="p">(</span><span class="n">get_template_filter_function</span><span class="p">(</span><span class="n">template_str</span><span class="p">,</span> <span class="n">value_to_keep</span><span class="p">))</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">dataset</span> <span class="o">=</span> <span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="n">filter_template</span><span class="p">,</span> <span class="n">v</span><span class="o">=</span><span class="n">value_to_remove</span><span class="p">:</span> <span class="n">render</span><span class="p">(</span><span class="o">**</span><span class="n">x</span><span class="p">)</span> <span class="o">!=</span> <span class="n">v</span><span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -1660,17 +1699,14 @@ The key is a Jinja2 template string to embed the item into a string, and the val
 
 
 <a href="#flexeval.core.text_dataset.hf.HFTextDataset.__init__" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="fm">__init__</span><span class="p">(</span><span class="nf">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">split</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">text_template</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">subset</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">template_filters</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">dataset_kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="fm">__init__</span><span class="p">(</span><span class="nf">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">split</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">text_template</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">subset</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">keep_conditions</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">remove_conditions</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">dataset_kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
 
             <details class="quote">
               <summary>Source code in <code>flexeval/core/text_dataset/hf.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">25</span>
-<span class="normal">26</span>
-<span class="normal">27</span>
-<span class="normal">28</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">28</span>
 <span class="normal">29</span>
 <span class="normal">30</span>
 <span class="normal">31</span>
@@ -1683,21 +1719,36 @@ The key is a Jinja2 template string to embed the item into a string, and the val
 <span class="normal">38</span>
 <span class="normal">39</span>
 <span class="normal">40</span>
-<span class="normal">41</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">split</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">text_template</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">subset</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">template_filters</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">keep_conditions</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">remove_conditions</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">dataset_kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="n">dataset_kwargs</span> <span class="o">=</span> <span class="n">dataset_kwargs</span> <span class="ow">or</span> <span class="p">{}</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">load_dataset</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">split</span><span class="o">=</span><span class="n">split</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">subset</span><span class="p">,</span> <span class="o">**</span><span class="n">dataset_kwargs</span><span class="p">)</span>
 
-    <span class="n">template_filters</span> <span class="o">=</span> <span class="n">template_filters</span> <span class="ow">or</span> <span class="p">{}</span>
-    <span class="k">for</span> <span class="n">template_str</span><span class="p">,</span> <span class="n">value_to_keep</span> <span class="ow">in</span> <span class="n">template_filters</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">get_template_filter_function</span><span class="p">(</span><span class="n">template_str</span><span class="p">,</span> <span class="n">value_to_keep</span><span class="p">))</span>
+    <span class="n">keep_conditions</span> <span class="o">=</span> <span class="n">keep_conditions</span> <span class="ow">or</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">template_str</span><span class="p">,</span> <span class="n">value_to_keep</span> <span class="ow">in</span> <span class="n">keep_conditions</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">filter_template</span> <span class="o">=</span> <span class="n">JINJA2_ENV</span><span class="o">.</span><span class="n">from_string</span><span class="p">(</span><span class="n">template_str</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="n">filter_template</span><span class="p">,</span> <span class="n">v</span><span class="o">=</span><span class="n">value_to_keep</span><span class="p">:</span> <span class="n">t</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="o">**</span><span class="n">x</span><span class="p">)</span> <span class="o">==</span> <span class="n">v</span><span class="p">)</span>
+    <span class="n">remove_conditions</span> <span class="o">=</span> <span class="n">remove_conditions</span> <span class="ow">or</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">template_str</span><span class="p">,</span> <span class="n">value_to_remove</span> <span class="ow">in</span> <span class="n">remove_conditions</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">filter_template</span> <span class="o">=</span> <span class="n">JINJA2_ENV</span><span class="o">.</span><span class="n">from_string</span><span class="p">(</span><span class="n">template_str</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="n">filter_template</span><span class="p">,</span> <span class="n">v</span><span class="o">=</span><span class="n">value_to_remove</span><span class="p">:</span> <span class="n">t</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="o">**</span><span class="n">x</span><span class="p">)</span> <span class="o">!=</span> <span class="n">v</span><span class="p">)</span>
 
     <span class="bp">self</span><span class="o">.</span><span class="n">text_template</span> <span class="o">=</span> <span class="n">JINJA2_ENV</span><span class="o">.</span><span class="n">from_string</span><span class="p">(</span><span class="n">text_template</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -1721,8 +1772,8 @@ The key is a Jinja2 template string to embed the item into a string, and the val
 
             <details class="quote">
               <summary>Source code in <code>flexeval/core/text_dataset/hf.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">43</span>
-<span class="normal">44</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">52</span>
+<span class="normal">53</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
     <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -1745,9 +1796,9 @@ The key is a Jinja2 template string to embed the item into a string, and the val
 
             <details class="quote">
               <summary>Source code in <code>flexeval/core/text_dataset/hf.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">46</span>
-<span class="normal">47</span>
-<span class="normal">48</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">55</span>
+<span class="normal">56</span>
+<span class="normal">57</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="n">item</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">text_template</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="o">**</span><span class="n">item</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
