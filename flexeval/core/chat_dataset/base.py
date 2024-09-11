@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import warnings
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from typing import Any, Sequence
@@ -40,8 +41,13 @@ class ChatInstance:
 
     def __post_init__(self) -> None:
         if "messages" in self.extra_info:
-            msg = "extra_info cannot contain a key named 'messages'. It will conflict with the 'messages' attribute."
-            raise ValueError(msg)
+            msg = (
+                "'extra_info' in ChatInstance cannot contain a key named 'messages', "
+                "as it will conflict with the 'messages' attribute. "
+                "The key 'messages' will be removed."
+            )
+            warnings.warn(msg, stacklevel=2)
+            self.extra_info.pop("messages")
 
     @property
     def inputs(self) -> list[dict[str, str]]:
