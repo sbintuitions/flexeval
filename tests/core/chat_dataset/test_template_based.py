@@ -87,7 +87,7 @@ def test_hf_dataset_with_reference_list(
     ("dataset_class", "kwargs"),
     DATASETS_TO_TEST,
 )
-def test_test_template_filters(
+def test_test_keep_conditions(
     dataset_class: type[TemplateChatDataset],
     kwargs: dict[str, Any],
 ) -> None:
@@ -101,7 +101,7 @@ def test_test_template_filters(
         **kwargs,
         input_template="{{question}}",
         reference_list_template="{{ answers }}",
-        template_filters={
+        keep_conditions={
             "{{ answers | length }}": "1",
         },
     )
@@ -109,3 +109,31 @@ def test_test_template_filters(
     assert 0 < len(filtered_dataset) < len(original_dataset)
     for item in filtered_dataset:
         assert len(item.references) == 1
+
+
+@pytest.mark.parametrize(
+    ("dataset_class", "kwargs"),
+    DATASETS_TO_TEST,
+)
+def test_test_remove_conditions(
+    dataset_class: type[TemplateChatDataset],
+    kwargs: dict[str, Any],
+) -> None:
+    original_dataset = dataset_class(
+        **kwargs,
+        input_template="{{question}}",
+        reference_list_template="{{ answers }}",
+    )
+
+    filtered_dataset = dataset_class(
+        **kwargs,
+        input_template="{{question}}",
+        reference_list_template="{{ answers }}",
+        remove_conditions={
+            "{{ answers | length }}": "1",
+        },
+    )
+
+    assert 0 < len(filtered_dataset) < len(original_dataset)
+    for item in filtered_dataset:
+        assert len(item.references) > 1

@@ -122,7 +122,7 @@ local template_compositioal = |||
         subset: 'v1.1',
         reference_template: '{{ answer }}',
         split: 'validation',
-        template_filters: { "{{ time_dependent }}": "False" }
+        keep_conditions: { "{{ time_dependent }}": "False" }
       },
     },
     prompt_template: {

@@ -7,7 +7,7 @@ from typing import Any
 import datasets
 from jinja2 import Template
 
-from flexeval.core.utils.jinja2_utils import JINJA2_ENV, get_template_filter_function
+from flexeval.core.utils.jinja2_utils import JINJA2_ENV
 
 from .base import ChatDataset, ChatInstance
 
@@ -27,8 +27,10 @@ class TemplateChatDataset(ChatDataset):
         require_incremental_response: Whether the dataset requires incremental response.
         extra_info_templates: A dictionary of Jinja2 templates for extra information.
         system_message_template: A Jinja2 template for the system message.
-        template_filters: A dictionary to indicate the condition to filter certain items.
+        keep_conditions: A dictionary to indicate the condition to filter certain items.
             The key is a Jinja2 template string to embed the item into a string, and the value is the value to keep.
+        remove_conditions: A dictionary to indicate the condition to remove certain items.
+            The key is a Jinja2 template string to embed the item into a string, and the value is the value to remove.
     """
 
     def __init__(
@@ -40,16 +42,21 @@ class TemplateChatDataset(ChatDataset):
         require_incremental_response: bool = False,
         extra_info_templates: dict[str, str] | None = None,
         system_message_template: str | None = None,
-        template_filters: dict[str, str] | None = None,
+        keep_conditions: dict[str, str | None] | None = None,
+        remove_conditions: dict[str, str | None] | None = None,
     ) -> None:
         if reference_template and reference_list_template:
             msg = "Only one of reference_template and reference_list_template can be set."
             raise ValueError(msg)
 
-        template_filters = template_filters or {}
-        for template_str, value_to_keep in template_filters.items():
-            filter_func = get_template_filter_function(template_str, value_to_keep)
-            items = [item for item in items if filter_func(item)]
+        keep_conditions = keep_conditions or {}
+        for template_str, value_to_keep in keep_conditions.items():
+            key_template = JINJA2_ENV.from_string(template_str)
+            items = [item for item in items if key_template.render(**item) == value_to_keep]
+        remove_conditions = remove_conditions or {}
+        for template_str, value_to_remove in remove_conditions.items():
+            key_template = JINJA2_ENV.from_string(template_str)
+            items = [item for item in items if key_template.render(**item) != value_to_remove]
 
         self.items = items
 
@@ -131,7 +138,8 @@ class HFChatDataset(TemplateChatDataset):
         require_incremental_response: bool = False,
         extra_info_templates: dict[str, str] | None = None,
         system_message_template: str | None = None,
-        template_filters: dict[str, str] | None = None,
+        keep_conditions: dict[str, str | None] | None = None,
+        remove_conditions: dict[str, str | None] | None = None,
     ) -> None:
         dataset_kwargs = dataset_kwargs or {}
         dataset = datasets.load_dataset(path, name=subset, split=split, **dataset_kwargs)
@@ -145,7 +153,8 @@ class HFChatDataset(TemplateChatDataset):
             require_incremental_response=require_incremental_response,
             extra_info_templates=extra_info_templates,
             system_message_template=system_message_template,
-            template_filters=template_filters,
+            keep_conditions=keep_conditions,
+            remove_conditions=remove_conditions,
         )
 
 
@@ -166,7 +175,8 @@ class JsonlChatDataset(TemplateChatDataset):
         require_incremental_response: bool = False,
         extra_info_templates: dict[str, str] | None = None,
         system_message_template: str | None = None,
-        template_filters: dict[str, str] | None = None,
+        keep_conditions: dict[str, str | None] | None = None,
+        remove_conditions: dict[str, str | None] | None = None,
     ) -> None:
         with open(path) as f:
             items = [json.loads(line) for line in f]
@@ -179,5 +189,6 @@ class JsonlChatDataset(TemplateChatDataset):
             require_incremental_response=require_incremental_response,
             extra_info_templates=extra_info_templates,
             system_message_template=system_message_template,
-            template_filters=template_filters,
+            keep_conditions=keep_conditions,
+            remove_conditions=remove_conditions,
         )

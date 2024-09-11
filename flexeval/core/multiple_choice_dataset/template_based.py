@@ -6,7 +6,7 @@ from typing import Any
 import datasets
 from jinja2 import Template
 
-from flexeval.core.utils.jinja2_utils import JINJA2_ENV, get_template_filter_function
+from flexeval.core.utils.jinja2_utils import JINJA2_ENV
 
 from .base import MultipleChoiceDataset, MultipleChoiceInstance
 
@@ -23,8 +23,10 @@ class TemplateMultipleChoiceDataset(MultipleChoiceDataset):
         input_templates: A dictionary of Jinja2 templates for the inputs.
         whitespace_before_choices: Whether to add a whitespace before each choice.
             Maybe necessary for language with whitespaces.
-        template_filters: A dictionary to indicate the condition to filter certain items.
+        keep_conditions: A dictionary to indicate the condition to filter certain items.
             The key is a Jinja2 template string to embed the item into a string, and the value is the value to keep.
+        remove_conditions: A dictionary to indicate the condition to remove certain items.
+            The key is a Jinja2 template string to embed the item into a string, and the value is the value to remove.
     """
 
     def __init__(
@@ -34,14 +36,18 @@ class TemplateMultipleChoiceDataset(MultipleChoiceDataset):
         answer_index_template: str,
         input_templates: dict[str, str] | None = None,
         whitespace_before_choices: bool = False,
-        template_filters: dict[str, str] | None = None,
+        keep_conditions: dict[str, str | None] | None = None,
+        remove_conditions: dict[str, str | None] | None = None,
     ) -> None:
+        keep_conditions = keep_conditions or {}
+        for template_str, value_to_keep in keep_conditions.items():
+            key_template = JINJA2_ENV.from_string(template_str)
+            items = [item for item in items if key_template.render(**item) == value_to_keep]
+        remove_conditions = remove_conditions or {}
+        for template_str, value_to_remove in remove_conditions.items():
+            key_template = JINJA2_ENV.from_string(template_str)
+            items = [item for item in items if key_template.render(**item) != value_to_remove]
         self.items = items
-
-        template_filters = template_filters or {}
-        for template_str, value_to_keep in template_filters.items():
-            filter_func = get_template_filter_function(template_str, value_to_keep)
-            self.items = [item for item in self.items if filter_func(item)]
 
         input_templates = input_templates or {}
         self.input_templates: dict[str, Template] = {k: JINJA2_ENV.from_string(v) for k, v in input_templates.items()}
@@ -96,7 +102,8 @@ class HFMultipleChoiceDataset(TemplateMultipleChoiceDataset):
         subset: str | None = None,
         dataset_kwargs: dict[str, Any] | None = None,
         whitespace_before_choices: bool = False,
-        template_filters: dict[str, str] | None = None,
+        keep_conditions: dict[str, str | None] | None = None,
+        remove_conditions: dict[str, str | None] | None = None,
     ) -> None:
         dataset_kwargs = dataset_kwargs or {}
         items = datasets.load_dataset(path, split=split, name=subset, **dataset_kwargs)
@@ -108,7 +115,8 @@ class HFMultipleChoiceDataset(TemplateMultipleChoiceDataset):
             answer_index_template=answer_index_template,
             input_templates=input_templates,
             whitespace_before_choices=whitespace_before_choices,
-            template_filters=template_filters,
+            keep_conditions=keep_conditions,
+            remove_conditions=remove_conditions,
         )
 
 
@@ -124,7 +132,8 @@ class JsonlMultipleChoiceDataset(TemplateMultipleChoiceDataset):
         answer_index_template: str,
         input_templates: dict[str, str] | None = None,
         whitespace_before_choices: bool = False,
-        template_filters: dict[str, str] | None = None,
+        keep_conditions: dict[str, str | None] | None = None,
+        remove_conditions: dict[str, str | None] | None = None,
     ) -> None:
         with open(path) as f:
             items = [json.loads(line) for line in f]
@@ -135,5 +144,6 @@ class JsonlMultipleChoiceDataset(TemplateMultipleChoiceDataset):
             answer_index_template=answer_index_template,
             input_templates=input_templates,
             whitespace_before_choices=whitespace_before_choices,
-            template_filters=template_filters,
+            keep_conditions=keep_conditions,
+            remove_conditions=remove_conditions,
         )

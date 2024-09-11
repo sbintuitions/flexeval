@@ -57,7 +57,7 @@ def test_template_multiple_choice_dataset(
     ("dataset_class", "kwargs"),
     DATASETS_TO_TEST,
 )
-def test_test_template_filters(dataset_class: type[TemplateMultipleChoiceDataset], kwargs: dict[str, Any]) -> None:
+def test_test_keep_conditions(dataset_class: type[TemplateMultipleChoiceDataset], kwargs: dict[str, Any]) -> None:
     original_dataset = dataset_class(
         **kwargs,
         choices_templates=["{{ answers[0] }}"],
@@ -68,7 +68,7 @@ def test_test_template_filters(dataset_class: type[TemplateMultipleChoiceDataset
         **kwargs,
         choices_templates=["{{ answers[0] }}"],
         answer_index_template="0",
-        template_filters={
+        keep_conditions={
             "{{ answers | length }}": "1",
         },
     )
@@ -76,3 +76,28 @@ def test_test_template_filters(dataset_class: type[TemplateMultipleChoiceDataset
     assert 0 < len(filtered_dataset) < len(original_dataset)
     for item in filtered_dataset:
         assert len(item.inputs["answers"]) == 1
+
+
+@pytest.mark.parametrize(
+    ("dataset_class", "kwargs"),
+    DATASETS_TO_TEST,
+)
+def test_test_remove_conditions(dataset_class: type[TemplateMultipleChoiceDataset], kwargs: dict[str, Any]) -> None:
+    original_dataset = dataset_class(
+        **kwargs,
+        choices_templates=["{{ answers[0] }}"],
+        answer_index_template="0",
+    )
+
+    filtered_dataset = dataset_class(
+        **kwargs,
+        choices_templates=["{{ answers[0] }}"],
+        answer_index_template="0",
+        remove_conditions={
+            "{{ answers | length }}": "1",
+        },
+    )
+
+    assert 0 < len(filtered_dataset) < len(original_dataset)
+    for item in filtered_dataset:
+        assert len(item.inputs["answers"]) > 1
