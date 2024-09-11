@@ -4,6 +4,9 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from typing import Any
 
+from flexeval.core.evaluate_reward_model import evaluate_reward_model
+from flexeval.core.reward_bench_dataset.reward_bench_dataset import RewardBenchDataset
+
 from .chat_dataset import ChatDataset
 from .evaluate_chat_response import evaluate_chat_response
 from .evaluate_generation import evaluate_generation
@@ -156,3 +159,28 @@ class Perplexity(EvalSetup):
             max_instances=self.max_instances,
         )
         return metrics, None
+
+@dataclass
+class RewardEvalSetup(EvalSetup):
+    """Evaluation setup for llm reward model."""
+
+    eval_dataset: RewardBenchDataset
+    prompt_template: PromptTemplate
+    gen_kwargs: dict[str, Any]
+    system_message: str | PromptTemplate | None = None
+    batch_size: int = 4
+    max_instances: int | None = None
+
+    def evaluate_lm(
+        self,
+        language_model: LanguageModel,
+    ) -> tuple[dict[str, float], list[dict[str, Any]] | None]:
+        return evaluate_reward_model(
+            language_model=language_model,
+            gen_kwargs=self.gen_kwargs,
+            eval_dataset=self.eval_dataset,
+            prompt_template=self.prompt_template,
+            batch_size=self.batch_size,
+            system_message=self.system_message,
+            max_instances=self.max_instances,
+        )
