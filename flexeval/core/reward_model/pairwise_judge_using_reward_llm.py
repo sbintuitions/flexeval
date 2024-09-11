@@ -37,7 +37,7 @@ class PairwiseJudgeUsingRewardLLM(PairwiseJudgeUsingRewardModel):
         self,
         batch_reward_bench_instances: list[RewardBenchInstance],
         gen_kwargs: dict[str, Any],
-    ) -> list[bool]:
+    ) -> tuple[list[str], list[bool]]:
         input_chat_messages_list: list[list[dict[str, str]]] = []
         shuffle_pairwise_instances: list[ShufflePairwiseInstance] = [
             reward_bench_instance_to_shuffle_pairwise_instance(batch_reward_bench_instance)
@@ -61,4 +61,4 @@ class PairwiseJudgeUsingRewardLLM(PairwiseJudgeUsingRewardModel):
             self._is_correct(judge_output, shuffle_pairwise_instance)
             for judge_output, shuffle_pairwise_instance in zip(judge_outputs, shuffle_pairwise_instances)
         ]
-        return judge_results
+        return judge_outputs, judge_results

@@ -33,17 +33,22 @@ def evaluate_reward_model(
     if max_instances is not None:
         reward_bench_instances = [eval_dataset[i] for i in range(min(max_instances, len(eval_dataset)))]
 
+    judge_outputs: list[str] = []
     judge_results: list[bool] = []
     with tqdm(total=len(reward_bench_instances)) as pbar:
         for i, batch_reward_bench_instances in enumerate(batch_iter(reward_bench_instances, batch_size)):
-            judge_results += judge.batch_judge(batch_reward_bench_instances, gen_kwargs)
+            judge_outputs_i, judge_results_i = judge.batch_judge(batch_reward_bench_instances, gen_kwargs)
+            judge_outputs += judge_outputs_i
+            judge_results += judge_results_i
 
             if i == 0:
                 logger.info("Example of the model inputs and outputs:")
                 logger.info(f"prompt: {batch_reward_bench_instances[0].prompt}")
                 logger.info(f"chosen: {batch_reward_bench_instances[0].chosen}")
                 logger.info(f"rejected: {batch_reward_bench_instances[0].rejected}")
+                logger.info(f"Output: {judge_outputs_i[0]}")
 
             pbar.update(len(batch_reward_bench_instances))
     
-    return judge_results
+    accuracy = sum(judge_results) / len(judge_results)
+    return {"accuracy": accuracy}, judge_outputs
