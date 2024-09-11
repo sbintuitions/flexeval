@@ -1,9 +1,9 @@
 from __future__ import annotations
 
+import random
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from enum import Enum
-import random
 from typing import Any, Literal, Sequence
 
 import datasets

@@ -2,15 +2,16 @@ from __future__ import annotations
 
 from typing import Any, Sequence
 
+from loguru import logger
 from tqdm import tqdm
+
 from flexeval.core.prompt_template.base import PromptTemplate
 from flexeval.core.reward_bench_dataset.reward_bench_dataset import RewardBenchDataset, RewardBenchInstance
 from flexeval.core.reward_model.pairwise_judge_using_reward_llm import PairwiseJudgeUsingRewardLLM
 from flexeval.core.utils.data_util import batch_iter
-from loguru import logger
-
 
 from .language_model import LanguageModel
+
 
 # https://github.com/sbintuitions/flexeval/blob/aa72fd4aae901ab7c11986ac32ae1281de46013e/flexeval/core/evaluate_pairwise.py#L14
 def evaluate_reward_model(
@@ -49,6 +50,6 @@ def evaluate_reward_model(
                 logger.info(f"Output: {judge_outputs_i[0]}")
 
             pbar.update(len(batch_reward_bench_instances))
-    
+
     accuracy = sum(judge_results) / len(judge_results)
     return {"accuracy": accuracy}, judge_outputs

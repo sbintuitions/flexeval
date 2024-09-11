@@ -1,16 +1,8 @@
 from __future__ import annotations
 
-import json
 import os
 import subprocess
 import tempfile
-from pathlib import Path
-
-import pytest
-
-from flexeval.core.result_recorder.local_recorder import CONFIG_FILE_NAME
-
-from .test_flexeval_lm import check_if_eval_results_are_correctly_saved
 
 
 def test_cli() -> None:

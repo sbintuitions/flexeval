@@ -1,10 +1,17 @@
-from typing import Any
-from flexeval.core.language_model.base import LanguageModel
-from flexeval.core.prompt_template.base import PromptTemplate
-from flexeval.core.reward_bench_dataset.reward_bench_dataset import RewardBenchInstance, ShufflePairwiseInstance, reward_bench_instance_to_shuffle_pairwise_instance
-from flexeval.core.reward_model.base import PairwiseJudgeUsingRewardModel
+from __future__ import annotations
 
 from dataclasses import asdict
+from typing import Any
+
+from flexeval.core.language_model.base import LanguageModel
+from flexeval.core.prompt_template.base import PromptTemplate
+from flexeval.core.reward_bench_dataset.reward_bench_dataset import (
+    RewardBenchInstance,
+    ShufflePairwiseInstance,
+    reward_bench_instance_to_shuffle_pairwise_instance,
+)
+from flexeval.core.reward_model.base import PairwiseJudgeUsingRewardModel
+
 
 class PairwiseJudgeUsingRewardLLM(PairwiseJudgeUsingRewardModel):
     """Pairwise judge using a chat language model to compare two model or human

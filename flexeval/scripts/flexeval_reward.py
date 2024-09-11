@@ -1,10 +1,13 @@
 from __future__ import annotations
 
-from importlib.metadata import version
 import os
-from pathlib import Path
 import sys
+from importlib.metadata import version
+from pathlib import Path
 from typing import Any, Dict
+
+from jsonargparse import ActionConfigFile, ArgumentParser
+from loguru import logger
 
 from flexeval import LanguageModel, RewardEvalSetup
 from flexeval.core.result_recorder.base import ResultRecorder
@@ -13,8 +16,6 @@ from flexeval.scripts.common import (
     Timer,
     get_env_metadata,
 )
-from jsonargparse import ActionConfigFile, ArgumentParser
-from loguru import logger
 
 
 def calc_accuracy(predictions: list[str], answers: list[str]) -> float:

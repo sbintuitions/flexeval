@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 from flexeval.core.language_model import LanguageModel
 
 
