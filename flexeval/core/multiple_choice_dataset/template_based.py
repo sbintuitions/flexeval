@@ -36,8 +36,8 @@ class TemplateMultipleChoiceDataset(MultipleChoiceDataset):
         answer_index_template: str,
         input_templates: dict[str, str] | None = None,
         whitespace_before_choices: bool = False,
-        keep_conditions: dict[str, Any] | None = None,
-        remove_conditions: dict[str, Any] | None = None,
+        keep_conditions: dict[str, str | None] | None = None,
+        remove_conditions: dict[str, str | None] | None = None,
     ) -> None:
         keep_conditions = keep_conditions or {}
         for template_str, value_to_keep in keep_conditions.items():
@@ -102,8 +102,8 @@ class HFMultipleChoiceDataset(TemplateMultipleChoiceDataset):
         subset: str | None = None,
         dataset_kwargs: dict[str, Any] | None = None,
         whitespace_before_choices: bool = False,
-        keep_conditions: dict[str, Any] | None = None,
-        remove_conditions: dict[str, Any] | None = None,
+        keep_conditions: dict[str, str | None] | None = None,
+        remove_conditions: dict[str, str | None] | None = None,
     ) -> None:
         dataset_kwargs = dataset_kwargs or {}
         items = datasets.load_dataset(path, split=split, name=subset, **dataset_kwargs)
@@ -132,8 +132,8 @@ class JsonlMultipleChoiceDataset(TemplateMultipleChoiceDataset):
         answer_index_template: str,
         input_templates: dict[str, str] | None = None,
         whitespace_before_choices: bool = False,
-        keep_conditions: dict[str, Any] | None = None,
-        remove_conditions: dict[str, Any] | None = None,
+        keep_conditions: dict[str, str | None] | None = None,
+        remove_conditions: dict[str, str | None] | None = None,
     ) -> None:
         with open(path) as f:
             items = [json.loads(line) for line in f]
