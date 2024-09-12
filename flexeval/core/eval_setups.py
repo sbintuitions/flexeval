@@ -160,6 +160,7 @@ class Perplexity(EvalSetup):
         )
         return metrics, None
 
+
 @dataclass
 class RewardEvalSetup(EvalSetup):
     """Evaluation setup for llm reward model."""

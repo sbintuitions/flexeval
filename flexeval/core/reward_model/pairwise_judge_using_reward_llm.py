@@ -33,9 +33,7 @@ class PairwiseJudgeUsingRewardLLM(PairwiseJudgeUsingRewardModel):
         self.prompt_template = prompt_template
         self.system_message = system_message
 
-    def _is_correct(self,
-                    judge_output: str,
-                    pairwise_instances: ShufflePairwiseInstance) -> bool:
+    def _is_correct(self, judge_output: str, pairwise_instances: ShufflePairwiseInstance) -> bool:
         if judge_output == pairwise_instances.chosen:
             return True
         return False

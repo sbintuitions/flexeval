@@ -18,6 +18,7 @@ class RewardBenchInstance:
     chosen: str
     rejected: str
 
+
 class Choice(str, Enum):
     A = "[[A]]"
     B = "[[B]]"
@@ -46,6 +47,7 @@ def reward_bench_instance_to_shuffle_pairwise_instance(
         answer_b=answer_b,
         chosen=chosen,
     )
+
 
 class RewardBenchDataset(Sequence[RewardBenchInstance], ABC):
     @abstractmethod

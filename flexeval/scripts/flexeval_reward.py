@@ -100,12 +100,13 @@ def main() -> None:
         metrics, outputs = args.eval_setup.evaluate_lm(
             language_model=args.language_model,
         )
-        metrics["elapsed_time"] = timer.time
-        logger.info(f"Elapsed time: {timer.time:.2f} sec")
+    metrics["elapsed_time"] = timer.time
+    logger.info(f"Elapsed time: {timer.time:.2f} sec")
 
     for result_recorder in result_recorders:
         result_recorder.record_metrics(metrics)
         result_recorder.record_model_outputs(outputs)
+
 
 if __name__ == "__main__":
     main()

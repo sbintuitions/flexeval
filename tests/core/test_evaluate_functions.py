@@ -162,6 +162,7 @@ def test_evaluate_pairwise(cached_matches: list[Match] | None) -> None:
     if cached_matches:
         assert match_info_list[0]["rationale"] == "cache test"
 
+
 def test_evaluate_reward_model() -> None:
     metrics, outputs = evaluate_reward_model(
         language_model=DummyRewardLanguageModel(),
