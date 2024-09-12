@@ -66,6 +66,8 @@ line-length = 120
 [tool.ruff.lint]
 select = ["ALL"]
 ignore = [
+    "COM812", # flake8-commas "Trailing comma missing"
+    "ISC001", # flake8-implicit-str-concat
     "D",  # Docstring-related rules
     "FBT",  # flake8-boolean-trap
     "G",  # flake8-logging-format
