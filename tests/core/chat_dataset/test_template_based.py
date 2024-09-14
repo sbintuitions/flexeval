@@ -105,7 +105,7 @@ def test_data_range(
     ("dataset_class", "kwargs"),
     DATASETS_TO_TEST,
 )
-def test_test_keep_conditions(
+def test_keep_conditions(
     dataset_class: type[TemplateChatDataset],
     kwargs: dict[str, Any],
 ) -> None:
@@ -133,7 +133,7 @@ def test_test_keep_conditions(
     ("dataset_class", "kwargs"),
     DATASETS_TO_TEST,
 )
-def test_test_remove_conditions(
+def test_remove_conditions(
     dataset_class: type[TemplateChatDataset],
     kwargs: dict[str, Any],
 ) -> None:

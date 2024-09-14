@@ -76,7 +76,7 @@ def test_data_range(
     ("dataset_class", "kwargs"),
     DATASETS_TO_TEST,
 )
-def test_test_keep_conditions(dataset_class: type[TemplateMultipleChoiceDataset], kwargs: dict[str, Any]) -> None:
+def test_keep_conditions(dataset_class: type[TemplateMultipleChoiceDataset], kwargs: dict[str, Any]) -> None:
     original_dataset = dataset_class(
         **kwargs,
         choices_templates=["{{ answers[0] }}"],
@@ -101,7 +101,7 @@ def test_test_keep_conditions(dataset_class: type[TemplateMultipleChoiceDataset]
     ("dataset_class", "kwargs"),
     DATASETS_TO_TEST,
 )
-def test_test_remove_conditions(dataset_class: type[TemplateMultipleChoiceDataset], kwargs: dict[str, Any]) -> None:
+def test_remove_conditions(dataset_class: type[TemplateMultipleChoiceDataset], kwargs: dict[str, Any]) -> None:
     original_dataset = dataset_class(
         **kwargs,
         choices_templates=["{{ answers[0] }}"],
