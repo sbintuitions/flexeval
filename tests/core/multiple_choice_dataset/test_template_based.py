@@ -58,6 +58,24 @@ def test_template_multiple_choice_dataset(
     ("dataset_class", "kwargs"),
     DATASETS_TO_TEST,
 )
+def test_data_range(
+    dataset_class: type[TemplateMultipleChoiceDataset],
+    kwargs: dict[str, Any],
+) -> None:
+    data_range = (2, 5)
+    dataset = dataset_class(
+        **kwargs,
+        choices_templates=["{{ answers[0] }}"],
+        answer_index_template="0",
+        data_range=data_range,
+    )
+    assert list(range(*data_range)) == [i.inputs["id"] for i in dataset]
+
+
+@pytest.mark.parametrize(
+    ("dataset_class", "kwargs"),
+    DATASETS_TO_TEST,
+)
 def test_test_keep_conditions(dataset_class: type[TemplateMultipleChoiceDataset], kwargs: dict[str, Any]) -> None:
     original_dataset = dataset_class(
         **kwargs,

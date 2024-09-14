@@ -79,6 +79,22 @@ def test_template_dataset_with_reference_list(
     ("dataset_class", "kwargs"),
     DATASETS_TO_TEST,
 )
+def test_data_range(
+    dataset_class: type[TemplateGenerationDataset],
+    kwargs: dict[str, Any],
+) -> None:
+    data_range = (2, 5)
+    dataset = dataset_class(
+        **kwargs,
+        data_range=data_range,
+    )
+    assert list(range(*data_range)) == [i.inputs["id"] for i in dataset]
+
+
+@pytest.mark.parametrize(
+    ("dataset_class", "kwargs"),
+    DATASETS_TO_TEST,
+)
 def test_test_keep_conditions(
     dataset_class: type[TemplateGenerationDataset],
     kwargs: dict[str, Any],

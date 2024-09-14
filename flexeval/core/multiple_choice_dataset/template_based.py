@@ -23,6 +23,7 @@ class TemplateMultipleChoiceDataset(MultipleChoiceDataset):
         input_templates: A dictionary of Jinja2 templates for the inputs.
         whitespace_before_choices: Whether to add a whitespace before each choice.
             Maybe necessary for language with whitespaces.
+        data_range: The range of data to use.
         keep_conditions: A dictionary to indicate the condition to filter certain items.
             The key is a Jinja2 template string to embed the item into a string, and the value is the value to keep.
         remove_conditions: A dictionary to indicate the condition to remove certain items.
@@ -36,9 +37,14 @@ class TemplateMultipleChoiceDataset(MultipleChoiceDataset):
         answer_index_template: str,
         input_templates: dict[str, str] | None = None,
         whitespace_before_choices: bool = False,
+        data_range: tuple[int, int] | None = None,
         keep_conditions: dict[str, str] | None = None,
         remove_conditions: dict[str, str] | None = None,
     ) -> None:
+        if data_range:
+            start, end = data_range
+            items = items[start:end]
+
         keep_conditions = keep_conditions or {}
         for template_str, value_to_keep in keep_conditions.items():
             key_template = JINJA2_ENV.from_string(template_str)
@@ -102,6 +108,7 @@ class HFMultipleChoiceDataset(TemplateMultipleChoiceDataset):
         subset: str | None = None,
         dataset_kwargs: dict[str, Any] | None = None,
         whitespace_before_choices: bool = False,
+        data_range: tuple[int, int] | None = None,
         keep_conditions: dict[str, str] | None = None,
         remove_conditions: dict[str, str] | None = None,
     ) -> None:
@@ -115,6 +122,7 @@ class HFMultipleChoiceDataset(TemplateMultipleChoiceDataset):
             answer_index_template=answer_index_template,
             input_templates=input_templates,
             whitespace_before_choices=whitespace_before_choices,
+            data_range=data_range,
             keep_conditions=keep_conditions,
             remove_conditions=remove_conditions,
         )
@@ -132,6 +140,7 @@ class JsonlMultipleChoiceDataset(TemplateMultipleChoiceDataset):
         answer_index_template: str,
         input_templates: dict[str, str] | None = None,
         whitespace_before_choices: bool = False,
+        data_range: tuple[int, int] | None = None,
         keep_conditions: dict[str, str] | None = None,
         remove_conditions: dict[str, str] | None = None,
     ) -> None:
@@ -144,6 +153,7 @@ class JsonlMultipleChoiceDataset(TemplateMultipleChoiceDataset):
             answer_index_template=answer_index_template,
             input_templates=input_templates,
             whitespace_before_choices=whitespace_before_choices,
+            data_range=data_range,
             keep_conditions=keep_conditions,
             remove_conditions=remove_conditions,
         )

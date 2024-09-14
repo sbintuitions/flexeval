@@ -87,6 +87,24 @@ def test_hf_dataset_with_reference_list(
     ("dataset_class", "kwargs"),
     DATASETS_TO_TEST,
 )
+def test_data_range(
+    dataset_class: type[TemplateChatDataset],
+    kwargs: dict[str, Any],
+) -> None:
+    data_range = (2, 5)
+    dataset = dataset_class(
+        **kwargs,
+        input_template="{{question}}",
+        reference_list_template="{{ answers }}",
+        data_range=data_range,
+    )
+    assert list(range(*data_range)) == [i.extra_info["id"] for i in dataset]
+
+
+@pytest.mark.parametrize(
+    ("dataset_class", "kwargs"),
+    DATASETS_TO_TEST,
+)
 def test_test_keep_conditions(
     dataset_class: type[TemplateChatDataset],
     kwargs: dict[str, Any],
