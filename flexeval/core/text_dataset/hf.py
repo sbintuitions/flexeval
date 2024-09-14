@@ -31,8 +31,8 @@ class HFTextDataset(TextDataset):
         split: str,
         text_template: str,
         subset: str | None = None,
-        keep_conditions: dict[str, str | None] | None = None,
-        remove_conditions: dict[str, str | None] | None = None,
+        keep_conditions: dict[str, str] | None = None,
+        remove_conditions: dict[str, str] | None = None,
         dataset_kwargs: dict[str, Any] | None = None,
     ) -> None:
         dataset_kwargs = dataset_kwargs or {}
