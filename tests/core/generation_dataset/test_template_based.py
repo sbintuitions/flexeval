@@ -41,6 +41,7 @@ def test_template_dataset_with_reference(
 
     item = dataset[0]
     assert item.inputs == {
+        "id": 0,
         "question": "What is the highest mountain in the world.",
         "answers": ["Mount Everest", "Everest"],
         "additional_input": "added_question: What is the highest mountain in the world.",
@@ -66,6 +67,7 @@ def test_template_dataset_with_reference_list(
 
     item = dataset[0]
     assert item.inputs == {
+        "id": 0,
         "question": "What is the highest mountain in the world.",
         "answers": ["Mount Everest", "Everest"],
         "additional_input": "added_question: What is the highest mountain in the world.",
@@ -77,7 +79,23 @@ def test_template_dataset_with_reference_list(
     ("dataset_class", "kwargs"),
     DATASETS_TO_TEST,
 )
-def test_test_keep_conditions(
+def test_data_range(
+    dataset_class: type[TemplateGenerationDataset],
+    kwargs: dict[str, Any],
+) -> None:
+    data_range = (2, 5)
+    dataset = dataset_class(
+        **kwargs,
+        data_range=data_range,
+    )
+    assert list(range(*data_range)) == [i.inputs["id"] for i in dataset]
+
+
+@pytest.mark.parametrize(
+    ("dataset_class", "kwargs"),
+    DATASETS_TO_TEST,
+)
+def test_keep_conditions(
     dataset_class: type[TemplateGenerationDataset],
     kwargs: dict[str, Any],
 ) -> None:
@@ -101,7 +119,7 @@ def test_test_keep_conditions(
     ("dataset_class", "kwargs"),
     DATASETS_TO_TEST,
 )
-def test_test_remove_conditions(
+def test_remove_conditions(
     dataset_class: type[TemplateGenerationDataset],
     kwargs: dict[str, Any],
 ) -> None:

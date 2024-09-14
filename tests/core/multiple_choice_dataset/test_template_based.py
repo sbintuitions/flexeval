@@ -45,6 +45,7 @@ def test_template_multiple_choice_dataset(
     assert len(dataset) > 0
     item = dataset[0]
     assert item.inputs == {
+        "id": 0,
         "question": "What is the highest mountain in the world.",
         "answers": ["Mount Everest", "Everest"],
         "test_additional_input": "additional: What is the highest mountain in the world.",
@@ -57,7 +58,25 @@ def test_template_multiple_choice_dataset(
     ("dataset_class", "kwargs"),
     DATASETS_TO_TEST,
 )
-def test_test_keep_conditions(dataset_class: type[TemplateMultipleChoiceDataset], kwargs: dict[str, Any]) -> None:
+def test_data_range(
+    dataset_class: type[TemplateMultipleChoiceDataset],
+    kwargs: dict[str, Any],
+) -> None:
+    data_range = (2, 5)
+    dataset = dataset_class(
+        **kwargs,
+        choices_templates=["{{ answers[0] }}"],
+        answer_index_template="0",
+        data_range=data_range,
+    )
+    assert list(range(*data_range)) == [i.inputs["id"] for i in dataset]
+
+
+@pytest.mark.parametrize(
+    ("dataset_class", "kwargs"),
+    DATASETS_TO_TEST,
+)
+def test_keep_conditions(dataset_class: type[TemplateMultipleChoiceDataset], kwargs: dict[str, Any]) -> None:
     original_dataset = dataset_class(
         **kwargs,
         choices_templates=["{{ answers[0] }}"],
@@ -82,7 +101,7 @@ def test_test_keep_conditions(dataset_class: type[TemplateMultipleChoiceDataset]
     ("dataset_class", "kwargs"),
     DATASETS_TO_TEST,
 )
-def test_test_remove_conditions(dataset_class: type[TemplateMultipleChoiceDataset], kwargs: dict[str, Any]) -> None:
+def test_remove_conditions(dataset_class: type[TemplateMultipleChoiceDataset], kwargs: dict[str, Any]) -> None:
     original_dataset = dataset_class(
         **kwargs,
         choices_templates=["{{ answers[0] }}"],

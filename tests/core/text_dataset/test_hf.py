@@ -13,7 +13,7 @@ def test_hf_text_dataset() -> None:
     assert isinstance(texts[0], str)
 
 
-def test_test_keep_conditions() -> None:
+def test_keep_conditions() -> None:
     original_dataset = HFTextDataset(
         path="tests/dummy_modules/hf_dataset",
         split="train",
