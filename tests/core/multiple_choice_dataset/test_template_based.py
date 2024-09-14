@@ -45,6 +45,7 @@ def test_template_multiple_choice_dataset(
     assert len(dataset) > 0
     item = dataset[0]
     assert item.inputs == {
+        "id": 0,
         "question": "What is the highest mountain in the world.",
         "answers": ["Mount Everest", "Everest"],
         "test_additional_input": "additional: What is the highest mountain in the world.",
