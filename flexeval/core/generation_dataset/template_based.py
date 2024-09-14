@@ -37,8 +37,8 @@ class TemplateGenerationDataset(GenerationDataset):
         reference_list_template: str | None = None,
         input_templates: dict[str, str] | None = None,
         data_range: tuple[int, int] | None = None,
-        keep_conditions: dict[str, str | None] | None = None,
-        remove_conditions: dict[str, str | None] | None = None,
+        keep_conditions: dict[str, str] | None = None,
+        remove_conditions: dict[str, str] | None = None,
     ) -> None:
         if reference_template and reference_list_template:
             msg = "Only one of reference_template and reference_list_template can be set."
@@ -110,8 +110,8 @@ class HFGenerationDataset(TemplateGenerationDataset):
         reference_list_template: str | None = None,
         input_templates: dict[str, str] | None = None,
         data_range: tuple[int, int] | None = None,
-        keep_conditions: dict[str, str | None] | None = None,
-        remove_conditions: dict[str, str | None] | None = None,
+        keep_conditions: dict[str, str] | None = None,
+        remove_conditions: dict[str, str] | None = None,
     ) -> None:
         dataset_kwargs = dataset_kwargs or {}
         dataset = datasets.load_dataset(path, name=subset, split=split, **dataset_kwargs)
@@ -143,8 +143,8 @@ class JsonlGenerationDataset(TemplateGenerationDataset):
         reference_list_template: str | None = None,
         input_templates: dict[str, str] | None = None,
         data_range: tuple[int, int] | None = None,
-        keep_conditions: dict[str, str | None] | None = None,
-        remove_conditions: dict[str, str | None] | None = None,
+        keep_conditions: dict[str, str] | None = None,
+        remove_conditions: dict[str, str] | None = None,
     ) -> None:
         with open(path) as f:
             items = [json.loads(line) for line in f]

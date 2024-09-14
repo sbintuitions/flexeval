@@ -42,8 +42,8 @@ class TemplateChatDataset(ChatDataset):
         require_incremental_response: bool = False,
         extra_info_templates: dict[str, str] | None = None,
         system_message_template: str | None = None,
-        keep_conditions: dict[str, str | None] | None = None,
-        remove_conditions: dict[str, str | None] | None = None,
+        keep_conditions: dict[str, str] | None = None,
+        remove_conditions: dict[str, str] | None = None,
     ) -> None:
         if reference_template and reference_list_template:
             msg = "Only one of reference_template and reference_list_template can be set."
@@ -138,8 +138,8 @@ class HFChatDataset(TemplateChatDataset):
         require_incremental_response: bool = False,
         extra_info_templates: dict[str, str] | None = None,
         system_message_template: str | None = None,
-        keep_conditions: dict[str, str | None] | None = None,
-        remove_conditions: dict[str, str | None] | None = None,
+        keep_conditions: dict[str, str] | None = None,
+        remove_conditions: dict[str, str] | None = None,
     ) -> None:
         dataset_kwargs = dataset_kwargs or {}
         dataset = datasets.load_dataset(path, name=subset, split=split, **dataset_kwargs)
@@ -175,8 +175,8 @@ class JsonlChatDataset(TemplateChatDataset):
         require_incremental_response: bool = False,
         extra_info_templates: dict[str, str] | None = None,
         system_message_template: str | None = None,
-        keep_conditions: dict[str, str | None] | None = None,
-        remove_conditions: dict[str, str | None] | None = None,
+        keep_conditions: dict[str, str] | None = None,
+        remove_conditions: dict[str, str] | None = None,
     ) -> None:
         with open(path) as f:
             items = [json.loads(line) for line in f]
