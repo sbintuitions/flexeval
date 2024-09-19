@@ -22,6 +22,7 @@ class PairwiseInstance:
     answer_b: str
     answer_label: PairwiseChoice
 
+
 class PairwiseJudgeRewardModel(RewardModel):
     """Pairwise judge using a chat language model to compare two model or human
     outputs.
@@ -43,9 +44,7 @@ class PairwiseJudgeRewardModel(RewardModel):
         self.prompt_template = prompt_template
         self.system_message = system_message
 
-    def _is_correct(self,
-                    judge_output: str,
-                    pairwise_instance: PairwiseInstance) -> bool:
+    def _is_correct(self, judge_output: str, pairwise_instance: PairwiseInstance) -> bool:
         if judge_output == pairwise_instance.answer_label:
             return True
         return False
@@ -86,7 +85,7 @@ class PairwiseJudgeRewardModel(RewardModel):
                 prompt=reward_bench_instance.prompt,
                 answer_a=reward_bench_instance.chosen,
                 answer_b=reward_bench_instance.rejected,
-                answer_label=PairwiseChoice.A
+                answer_label=PairwiseChoice.A,
             )
             input_chat_messages = self._create_input_chat_messages_list(pairwise_instance_answer_a_is_chosen)
             input_chat_messages_list.append(input_chat_messages)
@@ -95,7 +94,7 @@ class PairwiseJudgeRewardModel(RewardModel):
                 prompt=reward_bench_instance.prompt,
                 answer_a=reward_bench_instance.rejected,
                 answer_b=reward_bench_instance.chosen,
-                answer_label=PairwiseChoice.B
+                answer_label=PairwiseChoice.B,
             )
             input_chat_messages = self._create_input_chat_messages_list(pairwise_instance_answer_b_is_chosen)
             input_chat_messages_list.append(input_chat_messages)
