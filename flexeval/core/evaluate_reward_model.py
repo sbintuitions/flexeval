@@ -5,30 +5,20 @@ from typing import Any, Sequence
 from loguru import logger
 from tqdm import tqdm
 
-from flexeval.core.prompt_template.base import PromptTemplate
 from flexeval.core.reward_bench_dataset.hf import RewardBenchDataset, RewardBenchInstance
 from flexeval.core.reward_model.base import RewardModel
 from flexeval.core.utils.data_util import batch_iter
 
-from .language_model import LanguageModel
-
 
 def evaluate_reward_model(
-    language_model: LanguageModel,
+    reward_model: RewardModel,
     gen_kwargs: dict[str, Any],
     eval_dataset: RewardBenchDataset,
-    prompt_template: PromptTemplate,
     batch_size: int,
-    system_message: str | PromptTemplate | None = None,
     max_instances: int | None = None,
 ) -> tuple[dict[str, float], list[dict[str, Any]]]:
     logger.info(f"Evaluate the model with gen_kwargs: {gen_kwargs}")
 
-    judge = RewardModel(
-        language_model=language_model,
-        prompt_template=prompt_template,
-        system_message=system_message,
-    )
     reward_bench_instances: Sequence[RewardBenchInstance] = eval_dataset
     if max_instances is not None:
         reward_bench_instances = [eval_dataset[i] for i in range(min(max_instances, len(eval_dataset)))]
@@ -37,7 +27,7 @@ def evaluate_reward_model(
     judge_results: list[bool] = []
     with tqdm(total=len(reward_bench_instances)) as pbar:
         for i, batch_reward_bench_instances in enumerate(batch_iter(reward_bench_instances, batch_size)):
-            judge_outputs_i, judge_results_i = judge.batch_judge(batch_reward_bench_instances, gen_kwargs)
+            judge_outputs_i, judge_results_i = reward_model.batch_judge(batch_reward_bench_instances, gen_kwargs)
             judge_outputs += judge_outputs_i
             judge_results += judge_results_i
 

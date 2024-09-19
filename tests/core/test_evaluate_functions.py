@@ -14,6 +14,7 @@ from flexeval.core.evaluate_reward_model import evaluate_reward_model
 from flexeval.core.few_shot_generator import RandomFewShotGenerator
 from flexeval.core.metric import ExactMatch
 from flexeval.core.prompt_template import Jinja2PromptTemplate
+from flexeval.core.reward_model.pairwise_judge_reward_model import PairwiseJudgeRewardModel
 from tests.dummy_modules import (
     DummyChatDataset,
     DummyGenerationDataset,
@@ -164,13 +165,17 @@ def test_evaluate_pairwise(cached_matches: list[Match] | None) -> None:
 
 
 def test_evaluate_reward_model() -> None:
-    metrics, outputs = evaluate_reward_model(
+    reward_model = PairwiseJudgeRewardModel(
         language_model=DummyRewardLanguageModel(),
+        prompt_template=Jinja2PromptTemplate(template="{{ prompt }} {{ answer_a }} {{ answer_b }}"),
+        system_message="",
+    )
+    metrics, outputs = evaluate_reward_model(
+        reward_model=reward_model,
         gen_kwargs={},
         eval_dataset=DummyRewardBenchDataset(),
-        prompt_template=Jinja2PromptTemplate(template="{{ prompt }} {{ answer_a }} {{ answer_b }}"),
         batch_size=1,
     )
     # The probability of accuracy being 0 is (1/2)^100.
     assert metrics["accuracy"] > 0
-    assert outputs == ["[[A]]"] * 100
+    assert outputs == ["[[A]]"] * (100 * 2)

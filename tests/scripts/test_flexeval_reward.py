@@ -21,13 +21,13 @@ def test_cli() -> None:
     )
     command = [
         "flexeval_reward",
-        "--language_model", "tests.dummy_modules.DummyRewardLanguageModel",
-        "--eval_setup", "RewardEvalSetup",
-        "--eval_setup.eval_dataset", "tests.dummy_modules.DummyRewardBenchDataset",
-        "--eval_setup.prompt_template", "Jinja2PromptTemplate",
-        "--eval_setup.prompt_template.template", template,
-        "--eval_setup.gen_kwargs", "{}",
-        "--eval_setup.batch_size", "1",
+        "--reward_model", "PairwiseJudgeRewardModel",
+        "--reward_model.language_model", "tests.dummy_modules.DummyRewardLanguageModel",
+        "--reward_model.prompt_template", "Jinja2PromptTemplate",
+        "--reward_model.prompt_template.template", template,
+        "--gen_kwargs", "{}",
+        "--eval_dataset", "tests.dummy_modules.DummyRewardBenchDataset",
+        "--batch_size", "1",
     ]
 
     with tempfile.TemporaryDirectory() as f:

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from dataclasses import asdict
+from dataclasses import asdict, dataclass
 from enum import Enum
 from typing import Any
 
@@ -15,6 +15,7 @@ class PairwiseChoice(str, Enum):
     B = "[[B]]"
 
 
+@dataclass
 class PairwiseInstance:
     prompt: str
     answer_a: str

@@ -9,9 +9,11 @@ from typing import Any, Dict
 from jsonargparse import ActionConfigFile, ArgumentParser
 from loguru import logger
 
-from flexeval import LanguageModel, RewardEvalSetup
+from flexeval.core.evaluate_reward_model import evaluate_reward_model
 from flexeval.core.result_recorder.base import ResultRecorder
 from flexeval.core.result_recorder.local_recorder import LocalRecorder
+from flexeval.core.reward_bench_dataset.base import RewardBenchDataset
+from flexeval.core.reward_model.base import RewardModel
 from flexeval.scripts.common import (
     Timer,
     get_env_metadata,
@@ -25,18 +27,15 @@ def calc_accuracy(predictions: list[str], answers: list[str]) -> float:
 def main() -> None:
     parser = ArgumentParser(parser_mode="jsonnet")
     parser.add_subclass_arguments(
-        LanguageModel,
-        nested_key="language_model",
+        RewardModel,
+        nested_key="reward_model",
         required=True,
-        help="Language model",
-    )
-    parser.add_argument(
-        "--eval_setup",
-        type=RewardEvalSetup,
-        help="A reward evaluation setup. ",
-        enable_path=True,
+        help="RewardModel model",
     )
     parser.add_argument("--batch_size", type=int, default=4)
+    parser.add_argument("--gen_kwargs", type=dict[str, Any])
+    parser.add_argument("--eval_dataset", type=RewardBenchDataset)
+    parser.add_argument("--max_instances", type=int, default=None)
     # Saving arguments
     parser.add_argument(
         "--save_dir",
@@ -97,8 +96,12 @@ def main() -> None:
         result_recorder.record_config(args_as_dict)
 
     with Timer() as timer:
-        metrics, outputs = args.eval_setup.evaluate_lm(
-            language_model=args.language_model,
+        metrics, outputs = evaluate_reward_model(
+            reward_model=args.reward_model,
+            gen_kwargs=args.gen_kwargs,
+            eval_dataset=args.eval_dataset,
+            batch_size=args.batch_size,
+            max_instances=args.max_instances,
         )
     metrics["elapsed_time"] = timer.time
     logger.info(f"Elapsed time: {timer.time:.2f} sec")
