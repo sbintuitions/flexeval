@@ -28,7 +28,8 @@ class PairwiseJudgeRewardModel(RewardModel):
 
     Args:
         language_model: The language model to use for pairwise comparison.
-        prompt_template: The prompt template to embed the model outputs to be compared. Be sure to include {{prompt}}, {{answer_a}}, and {{answer_b}}.
+        prompt_template: The prompt template to embed the model outputs to be compared.
+                         Be sure to include {{prompt}}, {{answer_a}}, and {{answer_b}}.
         system_message: The system message to prepend to the chat messages.
     """
 
@@ -48,7 +49,7 @@ class PairwiseJudgeRewardModel(RewardModel):
         if judge_output == pairwise_instance.answer_label:
             return True
         return False
-    
+
     def _create_input_chat_messages_list(self, pairwise_instance: PairwiseInstance) -> list[dict[str, str]]:
         pairwise_instance_asdict = asdict(pairwise_instance)
         judge_input = self.prompt_template.embed_inputs(pairwise_instance_asdict)
