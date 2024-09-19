@@ -1,4 +1,4 @@
-from flexeval.core.reward_bench_dataset.reward_bench_dataset import HFRewardBenchDataset
+from flexeval.core.reward_bench_dataset.hf import HFRewardBenchDataset
 
 
 def test_load_hf_reward_bench_dataset() -> None:

@@ -6,14 +6,13 @@ from loguru import logger
 from tqdm import tqdm
 
 from flexeval.core.prompt_template.base import PromptTemplate
-from flexeval.core.reward_bench_dataset.reward_bench_dataset import RewardBenchDataset, RewardBenchInstance
-from flexeval.core.reward_model.pairwise_judge_using_reward_llm import PairwiseJudgeUsingRewardLLM
+from flexeval.core.reward_bench_dataset.hf import RewardBenchDataset, RewardBenchInstance
+from flexeval.core.reward_model.base import RewardModel
 from flexeval.core.utils.data_util import batch_iter
 
 from .language_model import LanguageModel
 
 
-# https://github.com/sbintuitions/flexeval/blob/aa72fd4aae901ab7c11986ac32ae1281de46013e/flexeval/core/evaluate_pairwise.py#L14
 def evaluate_reward_model(
     language_model: LanguageModel,
     gen_kwargs: dict[str, Any],
@@ -25,7 +24,7 @@ def evaluate_reward_model(
 ) -> tuple[dict[str, float], list[dict[str, Any]]]:
     logger.info(f"Evaluate the model with gen_kwargs: {gen_kwargs}")
 
-    judge = PairwiseJudgeUsingRewardLLM(
+    judge = RewardModel(
         language_model=language_model,
         prompt_template=prompt_template,
         system_message=system_message,

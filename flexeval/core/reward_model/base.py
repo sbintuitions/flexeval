@@ -3,10 +3,10 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import Any
 
-from flexeval.core.reward_bench_dataset.reward_bench_dataset import RewardBenchInstance
+from flexeval.core.reward_bench_dataset.hf import RewardBenchInstance
 
 
-class PairwiseJudgeUsingRewardModel(ABC):
+class RewardModel(ABC):
     """Judge which model is better given two items.
 
     The output is a tuple of the winner and the rationale.

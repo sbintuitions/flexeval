@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from flexeval.core.reward_bench_dataset.reward_bench_dataset import RewardBenchDataset, RewardBenchInstance
+from flexeval.core.reward_bench_dataset.hf import RewardBenchDataset, RewardBenchInstance
 
 
 class DummyRewardBenchDataset(RewardBenchDataset):
