@@ -33,7 +33,7 @@ def main() -> None:
         help="RewardModel model",
     )
     parser.add_argument("--batch_size", type=int, default=4)
-    parser.add_argument("--gen_kwargs")
+    parser.add_argument("--gen_kwargs", type=Dict[str, Any])
     parser.add_argument("--eval_dataset", type=RewardBenchDataset)
     parser.add_argument("--max_instances", type=int, default=None)
     # Saving arguments
