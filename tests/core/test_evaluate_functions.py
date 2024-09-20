@@ -66,6 +66,7 @@ def test_evaluate_generation(use_few_shot: bool) -> None:
 
     metrics, outputs = evaluate_generation(
         language_model=DummyLanguageModel(),
+        gen_kwargs={},
         eval_dataset=DummyGenerationDataset(),
         prompt_template=Jinja2PromptTemplate("{{text}}"),
         few_shot_generator=few_shot_generator,
