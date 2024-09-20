@@ -29,9 +29,11 @@ class PairwiseJudgeRewardModel(RewardModel):
 
     Args:
         language_model: The language model to use for pairwise comparison.
+                        This model is expected to output PairwiseChoice.
         prompt_template: The prompt template to embed the model outputs to be compared.
                          Be sure to include {{prompt}}, {{answer_a}}, and {{answer_b}}.
         system_message: The system message to prepend to the chat messages.
+        gen_kwargs: Generation kwargs for the language model.
     """
 
     def __init__(
@@ -39,10 +41,12 @@ class PairwiseJudgeRewardModel(RewardModel):
         language_model: LanguageModel,
         prompt_template: PromptTemplate,
         system_message: str | PromptTemplate | None = None,
+        gen_kwargs: dict[str, Any] = {},
     ) -> None:
         self.language_model = language_model
         self.prompt_template = prompt_template
         self.system_message = system_message
+        self.gen_kwargs = gen_kwargs
 
     def _is_correct(self, judge_output: str, pairwise_instance: PairwiseInstance) -> bool:
         if judge_output == pairwise_instance.answer_label:
@@ -67,7 +71,6 @@ class PairwiseJudgeRewardModel(RewardModel):
     def batch_judge(
         self,
         batch_reward_bench_instances: list[RewardBenchInstance],
-        gen_kwargs: dict[str, Any],
     ) -> tuple[list[str], list[bool]]:
         """Judge which model is better given a batch of item pairs.
 
@@ -76,7 +79,7 @@ class PairwiseJudgeRewardModel(RewardModel):
             gen_kwargs (dict[str, Any]): Generation kwargs for the language model.
 
         Returns:
-            tuple[list[str], list[bool]]: A tuple of the judge outputs and the judge results.
+            tuple[list[str], list[bool]]: A tuple of the judge outputs and the chosen_is_betters.
         """
         input_chat_messages_list: list[list[dict[str, str]]] = []
         all_pairwise_instances: list[PairwiseInstance] = []
@@ -100,9 +103,9 @@ class PairwiseJudgeRewardModel(RewardModel):
             input_chat_messages_list.append(input_chat_messages)
             all_pairwise_instances += [pairwise_instance_answer_a_is_chosen, pairwise_instance_answer_b_is_chosen]
 
-        judge_outputs = self.language_model.batch_generate_chat_response(input_chat_messages_list, **gen_kwargs)
-        judge_results = [
+        judge_outputs = self.language_model.batch_generate_chat_response(input_chat_messages_list, **self.gen_kwargs)
+        chosen_is_betters: list[bool] = [
             self._is_correct(judge_output, shuffle_pairwise_instance)
             for judge_output, shuffle_pairwise_instance in zip(judge_outputs, all_pairwise_instances)
         ]
-        return judge_outputs, judge_results
+        return judge_outputs, chosen_is_betters

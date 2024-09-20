@@ -25,7 +25,7 @@ def test_cli() -> None:
         "--reward_model.language_model", "tests.dummy_modules.DummyRewardLanguageModel",
         "--reward_model.prompt_template", "Jinja2PromptTemplate",
         "--reward_model.prompt_template.template", template,
-        "--gen_kwargs", "{}",
+        "--reward_model.gen_kwargs", "{}",
         "--eval_dataset", "tests.dummy_modules.DummyRewardBenchDataset",
         "--batch_size", "1",
     ]

@@ -66,7 +66,6 @@ def test_evaluate_generation(use_few_shot: bool) -> None:
 
     metrics, outputs = evaluate_generation(
         language_model=DummyLanguageModel(),
-        gen_kwargs={},
         eval_dataset=DummyGenerationDataset(),
         prompt_template=Jinja2PromptTemplate("{{text}}"),
         few_shot_generator=few_shot_generator,
@@ -169,10 +168,10 @@ def test_evaluate_reward_model() -> None:
         language_model=DummyRewardLanguageModel(),
         prompt_template=Jinja2PromptTemplate(template="{{ prompt }} {{ answer_a }} {{ answer_b }}"),
         system_message="",
+        gen_kwargs={},
     )
     metrics, outputs = evaluate_reward_model(
         reward_model=reward_model,
-        gen_kwargs={},
         eval_dataset=DummyRewardBenchDataset(),
         batch_size=1,
     )

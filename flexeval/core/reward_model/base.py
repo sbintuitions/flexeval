@@ -7,19 +7,18 @@ from flexeval.core.reward_bench_dataset.hf import RewardBenchInstance
 
 
 class RewardModel(ABC):
-    """Judge which model is better given two items.
-
-    The output is a tuple of the winner and the rationale.
-    """
+    """Base class for reward models."""
 
     @abstractmethod
     def batch_judge(
         self,
         batch_reward_bench_instances: list[RewardBenchInstance],
-        gen_kwargs: dict[str, Any],
-    ) -> list[str]:
-        """Judge which model is better given a batch of item pairs.
+    ) -> tuple[list[Any], list[bool]]:
+        """Judge a batch of reward bench instances.
 
         Args:
-            batch_model_items: A list of tuples, each containing two model items.
+            batch_reward_bench_instances (list[RewardBenchInstance]): A list of tuples, each containing two model items.
+
+        Returns:
+            tuple[list[Any], list[bool]]: A tuple of the judge outputs and the chosen_is_betters.
         """

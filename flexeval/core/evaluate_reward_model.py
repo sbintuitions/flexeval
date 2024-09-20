@@ -12,13 +12,10 @@ from flexeval.core.utils.data_util import batch_iter
 
 def evaluate_reward_model(
     reward_model: RewardModel,
-    gen_kwargs: dict[str, Any],
     eval_dataset: RewardBenchDataset,
     batch_size: int,
     max_instances: int | None = None,
 ) -> tuple[dict[str, float], list[dict[str, Any]]]:
-    logger.info(f"Evaluate the model with gen_kwargs: {gen_kwargs}")
-
     reward_bench_instances: Sequence[RewardBenchInstance] = eval_dataset
     if max_instances is not None:
         reward_bench_instances = [eval_dataset[i] for i in range(min(max_instances, len(eval_dataset)))]
@@ -27,7 +24,7 @@ def evaluate_reward_model(
     judge_results: list[bool] = []
     with tqdm(total=len(reward_bench_instances)) as pbar:
         for i, batch_reward_bench_instances in enumerate(batch_iter(reward_bench_instances, batch_size)):
-            judge_outputs_i, judge_results_i = reward_model.batch_judge(batch_reward_bench_instances, gen_kwargs)
+            judge_outputs_i, judge_results_i = reward_model.batch_judge(batch_reward_bench_instances)
             judge_outputs += judge_outputs_i
             judge_results += judge_results_i
 

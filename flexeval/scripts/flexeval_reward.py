@@ -33,7 +33,6 @@ def main() -> None:
         help="RewardModel model",
     )
     parser.add_argument("--batch_size", type=int, default=4)
-    parser.add_argument("--gen_kwargs", type=Dict[str, Any])
     parser.add_argument("--eval_dataset", type=RewardBenchDataset)
     parser.add_argument("--max_instances", type=int, default=None)
     # Saving arguments
@@ -98,7 +97,6 @@ def main() -> None:
     with Timer() as timer:
         metrics, outputs = evaluate_reward_model(
             reward_model=args.reward_model,
-            gen_kwargs=args.gen_kwargs,
             eval_dataset=args.eval_dataset,
             batch_size=args.batch_size,
             max_instances=args.max_instances,
