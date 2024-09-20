@@ -41,8 +41,10 @@ class PairwiseJudgeRewardModel(RewardModel):
         language_model: LanguageModel,
         prompt_template: PromptTemplate,
         system_message: str | PromptTemplate | None = None,
-        gen_kwargs: dict[str, Any] = {},
+        gen_kwargs: dict[str, Any] | None = None,
     ) -> None:
+        if gen_kwargs is None:
+            gen_kwargs = {}
         self.language_model = language_model
         self.prompt_template = prompt_template
         self.system_message = system_message
