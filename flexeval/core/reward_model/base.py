@@ -13,12 +13,14 @@ class RewardModel(ABC):
     def batch_judge(
         self,
         batch_reward_bench_instances: list[RewardBenchInstance],
-    ) -> tuple[list[Any], list[bool]]:
+    ) -> tuple[list[bool], list[Any]]:
         """Judge a batch of reward bench instances.
 
         Args:
             batch_reward_bench_instances (list[RewardBenchInstance]): A list of tuples, each containing two model items.
 
         Returns:
-            tuple[list[Any], list[bool]]: A tuple of the judge outputs and the chosen_is_betters.
+            tuple[list[bool], list[Any]]: A tuple with the following elements:
+                - chosen_is_betters: Indicating whether each `chosen` item is considered better by the model.
+                - judge_outputs: A list of outputs (rationale, score, etc....) from the model.
         """

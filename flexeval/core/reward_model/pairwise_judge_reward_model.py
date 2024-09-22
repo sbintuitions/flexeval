@@ -37,11 +37,11 @@ class PairwiseJudgeRewardModel(RewardModel):
     """
 
     def __init__(
-            self,
-            language_model: LanguageModel,
-            prompt_template: PromptTemplate,
-            system_message: str | PromptTemplate | None = None,
-            gen_kwargs: dict[str, Any] | None = None,
+        self,
+        language_model: LanguageModel,
+        prompt_template: PromptTemplate,
+        system_message: str | PromptTemplate | None = None,
+        gen_kwargs: dict[str, Any] | None = None,
     ) -> None:
         if gen_kwargs is None:
             gen_kwargs = {}
@@ -66,17 +66,9 @@ class PairwiseJudgeRewardModel(RewardModel):
         return input_chat_messages
 
     def batch_judge(
-            self,
-            batch_reward_bench_instances: list[RewardBenchInstance],
-    ) -> tuple[list[str], list[bool]]:
-        """Judge which model is better given a batch of item pairs.
-
-        Args:
-            batch_reward_bench_instances (list[RewardBenchInstance]): A list of tuples, each containing two model items.
-
-        Returns:
-            tuple[list[str], list[bool]]: A tuple of the judge outputs and the chosen_is_betters.
-        """
+        self,
+        batch_reward_bench_instances: list[RewardBenchInstance],
+    ) -> tuple[list[bool], list[Any]]:
         input_chat_messages_list: list[list[dict[str, str]]] = []
         all_pairwise_instances: list[PairwiseInstance] = []
         for reward_bench_instance in batch_reward_bench_instances:
@@ -104,4 +96,4 @@ class PairwiseJudgeRewardModel(RewardModel):
             judge_output == shuffle_pairwise_instance.answer_label
             for judge_output, shuffle_pairwise_instance in zip(judge_outputs, all_pairwise_instances)
         ]
-        return judge_outputs, chosen_is_betters
+        return chosen_is_betters, judge_outputs

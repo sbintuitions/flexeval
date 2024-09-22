@@ -15,18 +15,18 @@ def evaluate_reward_model(
     eval_dataset: RewardBenchDataset,
     batch_size: int,
     max_instances: int | None = None,
-) -> tuple[dict[str, float], list[dict[str, Any]]]:
+) -> tuple[dict[str, float], list[Any]]:
     reward_bench_instances: Sequence[RewardBenchInstance] = eval_dataset
     if max_instances is not None:
         reward_bench_instances = [eval_dataset[i] for i in range(min(max_instances, len(eval_dataset)))]
 
     judge_outputs: list[str] = []
-    judge_results: list[bool] = []
+    chosen_is_better_list: list[bool] = []
     with tqdm(total=len(reward_bench_instances)) as pbar:
         for i, batch_reward_bench_instances in enumerate(batch_iter(reward_bench_instances, batch_size)):
-            judge_outputs_i, judge_results_i = reward_model.batch_judge(batch_reward_bench_instances)
+            chosen_is_better_list_i, judge_outputs_i = reward_model.batch_judge(batch_reward_bench_instances)
+            chosen_is_better_list += chosen_is_better_list_i
             judge_outputs += judge_outputs_i
-            judge_results += judge_results_i
 
             if i == 0:
                 logger.info("Example of the model inputs and outputs:")
@@ -37,5 +37,5 @@ def evaluate_reward_model(
 
             pbar.update(len(batch_reward_bench_instances))
 
-    accuracy = sum(judge_results) / len(judge_results)
+    accuracy = sum(chosen_is_better_list) / len(chosen_is_better_list)
     return {"accuracy": accuracy}, judge_outputs
