@@ -73,7 +73,6 @@ class PairwiseJudgeRewardModel(RewardModel):
 
         Args:
             batch_reward_bench_instances (list[RewardBenchInstance]): A list of tuples, each containing two model items.
-            gen_kwargs (dict[str, Any]): Generation kwargs for the language model.
 
         Returns:
             tuple[list[str], list[bool]]: A tuple of the judge outputs and the chosen_is_betters.
