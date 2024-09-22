@@ -5,8 +5,8 @@ from typing import Any, Sequence
 from loguru import logger
 from tqdm import tqdm
 
-from flexeval.core.reward_bench_dataset.hf import RewardBenchDataset, RewardBenchInstance
-from flexeval.core.reward_model.base import RewardModel
+from flexeval.core.reward_bench_dataset import RewardBenchDataset, RewardBenchInstance
+from flexeval.core.reward_model import RewardModel
 from flexeval.core.utils.data_util import batch_iter
 
 
