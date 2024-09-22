@@ -14,14 +14,7 @@ from flexeval.core.result_recorder.base import ResultRecorder
 from flexeval.core.result_recorder.local_recorder import LocalRecorder
 from flexeval.core.reward_bench_dataset.base import RewardBenchDataset
 from flexeval.core.reward_model.base import RewardModel
-from flexeval.scripts.common import (
-    Timer,
-    get_env_metadata,
-)
-
-
-def calc_accuracy(predictions: list[str], answers: list[str]) -> float:
-    return sum(prediction == answer for prediction, answer in zip(predictions, answers)) / len(answers)
+from flexeval.scripts.common import Timer, get_env_metadata
 
 
 def main() -> None:
