@@ -9,6 +9,7 @@ packages = [{ include = "flexeval", from = "." }]
 [tool.poetry.scripts]
 flexeval_lm = "flexeval.scripts.flexeval_lm:main"
 flexeval_pairwise = "flexeval.scripts.flexeval_pairwise:main"
+flexeval_reward = "flexeval.scripts.flexeval_reward:main"
 flexeval_file = "flexeval.scripts.flexeval_file:main"
 flexeval_presets = "flexeval.scripts.flexeval_presets:main"
 
@@ -65,6 +66,8 @@ line-length = 120
 [tool.ruff.lint]
 select = ["ALL"]
 ignore = [
+    "COM812", # flake8-commas "Trailing comma missing"
+    "ISC001", # flake8-implicit-str-concat
     "D",  # Docstring-related rules
     "FBT",  # flake8-boolean-trap
     "G",  # flake8-logging-format

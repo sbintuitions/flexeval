@@ -10,9 +10,11 @@ from flexeval.core.evaluate_generation import evaluate_generation
 from flexeval.core.evaluate_multiple_choice import evaluate_multiple_choice
 from flexeval.core.evaluate_pairwise import Match, evaluate_pairwise
 from flexeval.core.evaluate_perplexity import evaluate_perplexity
+from flexeval.core.evaluate_reward_model import evaluate_reward_model
 from flexeval.core.few_shot_generator import RandomFewShotGenerator
 from flexeval.core.metric import ExactMatch
 from flexeval.core.prompt_template import Jinja2PromptTemplate
+from flexeval.core.reward_model.pairwise_judge_reward_model import PairwiseJudgeRewardModel
 from tests.dummy_modules import (
     DummyChatDataset,
     DummyGenerationDataset,
@@ -21,6 +23,8 @@ from tests.dummy_modules import (
     DummyPairwiseJudge,
     DummyTextDataset,
 )
+from tests.dummy_modules.reward_bench_dataset import DummyRewardBenchDataset
+from tests.dummy_modules.reward_lm import DummyRewardLanguageModel
 
 
 @pytest.mark.parametrize(
@@ -158,3 +162,20 @@ def test_evaluate_pairwise(cached_matches: list[Match] | None) -> None:
     assert len(match_info_list) == 2 * num_items
     if cached_matches:
         assert match_info_list[0]["rationale"] == "cache test"
+
+
+def test_evaluate_reward_model() -> None:
+    reward_model = PairwiseJudgeRewardModel(
+        language_model=DummyRewardLanguageModel(),
+        prompt_template=Jinja2PromptTemplate(template="{{ prompt }} {{ answer_a }} {{ answer_b }}"),
+        system_message="",
+        gen_kwargs={},
+    )
+    metrics, outputs = evaluate_reward_model(
+        reward_model=reward_model,
+        eval_dataset=DummyRewardBenchDataset(),
+        batch_size=1,
+    )
+    # The probability of accuracy being 0 is (1/2)^100.
+    assert metrics["accuracy"] > 0
+    assert outputs == ["[[A]]"] * (100 * 2)
