@@ -37,11 +37,11 @@ class PairwiseJudgeRewardModel(RewardModel):
     """
 
     def __init__(
-        self,
-        language_model: LanguageModel,
-        prompt_template: PromptTemplate,
-        system_message: str | PromptTemplate | None = None,
-        gen_kwargs: dict[str, Any] | None = None,
+            self,
+            language_model: LanguageModel,
+            prompt_template: PromptTemplate,
+            system_message: str | PromptTemplate | None = None,
+            gen_kwargs: dict[str, Any] | None = None,
     ) -> None:
         if gen_kwargs is None:
             gen_kwargs = {}
@@ -49,11 +49,6 @@ class PairwiseJudgeRewardModel(RewardModel):
         self.prompt_template = prompt_template
         self.system_message = system_message
         self.gen_kwargs = gen_kwargs
-
-    def _is_correct(self, judge_output: str, pairwise_instance: PairwiseInstance) -> bool:
-        if judge_output == pairwise_instance.answer_label:
-            return True
-        return False
 
     def _create_input_chat_messages_list(self, pairwise_instance: PairwiseInstance) -> list[dict[str, str]]:
         pairwise_instance_asdict = asdict(pairwise_instance)
@@ -71,8 +66,8 @@ class PairwiseJudgeRewardModel(RewardModel):
         return input_chat_messages
 
     def batch_judge(
-        self,
-        batch_reward_bench_instances: list[RewardBenchInstance],
+            self,
+            batch_reward_bench_instances: list[RewardBenchInstance],
     ) -> tuple[list[str], list[bool]]:
         """Judge which model is better given a batch of item pairs.
 
@@ -107,7 +102,7 @@ class PairwiseJudgeRewardModel(RewardModel):
 
         judge_outputs = self.language_model.batch_generate_chat_response(input_chat_messages_list, **self.gen_kwargs)
         chosen_is_betters: list[bool] = [
-            self._is_correct(judge_output, shuffle_pairwise_instance)
+            judge_output == shuffle_pairwise_instance.answer_label
             for judge_output, shuffle_pairwise_instance in zip(judge_outputs, all_pairwise_instances)
         ]
         return judge_outputs, chosen_is_betters
