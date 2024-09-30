@@ -204,20 +204,45 @@ class VLLM(LanguageModel):
             ],
         )
 
-        batch_input_ids = [prefix + continuation for prefix, continuation in zip(batch_prefix_ids, batch_continuation_ids)]
+        batch_input_ids = [
+            prefix + continuation for prefix, continuation in zip(batch_prefix_ids, batch_continuation_ids)
+        ]
+
+        max_length = self.llm.llm_engine.get_model_config().max_seq_len_to_capture
+        stride = stride or max_length // 2
+        if not (0 < stride < max_length):
+            msg = f"stride must be in (0, {max_length}), but got {stride}"
+            raise ValueError(msg)
+        sequence_length = max([len(input_ids) for input_ids in batch_input_ids])
 
         from vllm import SamplingParams
-
         sampling_params = SamplingParams(temperature=0.0, max_tokens=1, prompt_logprobs=1)
-        batch_outputs = self.llm.generate(prompt_token_ids=batch_input_ids, sampling_params=sampling_params)
 
-        batch_logprobs = []
-        for ids, output, prefix_ids in zip(batch_input_ids, batch_outputs, batch_prefix_ids):
-            all_token_logprobs = [
-                cands[token_id].logprob if cands else 0.0 for cands, token_id in zip(output.prompt_logprobs, ids)
+        batch_logprobs = [0.0] * batch_size
+        last_computed_index = 0
+        for chunk_start in range(0, sequence_length, stride):
+            chunk_end = min(chunk_start + max_length, sequence_length)
+            chunk_batch_input_ids = [input_ids[chunk_start: chunk_end] for input_ids in batch_input_ids]
+            chunk_batch_input_ids = [
+                [self.tokenizer.bos_token_id] if len(chunk_input_ids) == 0 else chunk_input_ids
+                for chunk_input_ids in chunk_batch_input_ids
             ]
-            continuation_logprob = sum(all_token_logprobs[len(prefix_ids):])
-            batch_logprobs.append(continuation_logprob)
+            chunk_batch_outputs = self.llm.generate(
+                prompt_token_ids=chunk_batch_input_ids, sampling_params=sampling_params
+            )
+
+            i = 0
+            for ids, output, prefix_ids in zip(chunk_batch_input_ids, chunk_batch_outputs, batch_prefix_ids):
+                chunk_rest_prefix_length = max(len(prefix_ids) - last_computed_index, 0)
+                chunk_continuation_start = last_computed_index - chunk_start + chunk_rest_prefix_length
+                all_token_logprobs = [
+                    cands[token_id].logprob if cands else 0.0 for cands, token_id in zip(output.prompt_logprobs, ids)
+                ]
+                continuation_logprob = float(sum(all_token_logprobs[chunk_continuation_start:]))
+                batch_logprobs[i] += continuation_logprob
+                i += 1
+
+            last_computed_index = chunk_end
 
         return batch_logprobs
 
