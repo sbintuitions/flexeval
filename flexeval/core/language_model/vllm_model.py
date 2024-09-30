@@ -8,6 +8,61 @@ from transformers import AutoTokenizer, PreTrainedTokenizer
 from .base import LanguageModel, normalize_stop_sequences
 
 
+def tokenize_text_for_lm_prefix(
+    text_list: list[str],
+    tokenizer: PreTrainedTokenizer,
+    add_special_tokens: bool = False,
+) -> list[list[int]]:
+    if tokenizer.pad_token is None:
+        tokenizer.pad_token = tokenizer.eos_token
+    model_inputs = tokenizer(
+        text_list,
+        return_tensors=None,
+        padding=False,
+        add_special_tokens=add_special_tokens,
+        return_token_type_ids=False,
+    )
+    return model_inputs.input_ids
+
+
+def tokenize_text_for_lm_continuation(
+    text_list: list[str],
+    tokenizer: PreTrainedTokenizer,
+    oov_character: str = "彁",
+    as_continuation: bool | list[bool] = True,
+) -> list[list[int]]:
+    if isinstance(as_continuation, bool):
+        as_continuation = [as_continuation] * len(text_list)
+
+    if len(as_continuation) != len(text_list):
+        msg = "The length of as_continuation must be the same as the length of text_list."
+        raise ValueError(msg)
+
+    if oov_character in tokenizer.get_vocab():
+        msg = f"oov_character '{oov_character}' is already in the tokenizer's vocab."
+        raise ValueError(msg)
+    oov_char_len = len(tokenizer.tokenize(oov_character))
+
+    encoding_list: list[list[int]] = []
+    for text, as_cont in zip(text_list, as_continuation):
+        input_text = text
+        # tokenize with OOV character
+        if as_cont:
+            input_text = oov_character + text
+        encoding = tokenizer(
+            input_text,
+            add_special_tokens=False,
+            return_token_type_ids=False,
+        )
+        # remove OOV character
+        if as_cont:
+            for k in encoding:
+                encoding[k] = encoding[k][oov_char_len:]
+        encoding_list.append(encoding.input_ids)
+
+    return encoding_list
+
+
 class VLLM(LanguageModel):
     """LanguageModel implementation using VLLM.
 
@@ -116,6 +171,55 @@ class VLLM(LanguageModel):
             for chat_messages in chat_messages_list
         ]
         return self.batch_complete_text(chat_messages_as_string, **kwargs)
+
+    def batch_compute_log_probs(
+            self,
+            text_list: list[str],
+            prefix_list: list[str] | None = None,
+            stride: int | None = None
+        ) -> list[float]:
+        batch_size = len(text_list)
+
+        # prepare prefix encoding
+        prefix_list = prefix_list if prefix_list else ["" for _ in range(batch_size)]
+        # If the prefix is an empty string, replace it with the bos token regardless of the model being trained with it.
+        # This is needed to correctly calculate the log probabilities of the first token.
+        for i in range(batch_size):
+            if prefix_list[i] == "":
+                prefix_list[i] = self.tokenizer.bos_token
+
+        batch_prefix_ids = tokenize_text_for_lm_prefix(
+            prefix_list,
+            self.tokenizer,
+            add_special_tokens=self.add_special_tokens,
+        )
+
+        # prepare continuation encoding
+        # If the last token is a special token, it is treated as a beginning of a new sentence.
+        batch_continuation_ids = tokenize_text_for_lm_continuation(
+            text_list,
+            self.tokenizer,
+            as_continuation=[
+                prefix_ids[-1] not in self.tokenizer.all_special_ids for prefix_ids in batch_prefix_ids
+            ],
+        )
+
+        batch_input_ids = [prefix + continuation for prefix, continuation in zip(batch_prefix_ids, batch_continuation_ids)]
+
+        from vllm import SamplingParams
+
+        sampling_params = SamplingParams(temperature=0.0, max_tokens=1, prompt_logprobs=1)
+        batch_outputs = self.llm.generate(prompt_token_ids=batch_input_ids, sampling_params=sampling_params)
+
+        batch_logprobs = []
+        for ids, output, prefix_ids in zip(batch_input_ids, batch_outputs, batch_prefix_ids):
+            all_token_logprobs = [
+                cands[token_id].logprob if cands else 0.0 for cands, token_id in zip(output.prompt_logprobs, ids)
+            ]
+            continuation_logprob = sum(all_token_logprobs[len(prefix_ids):])
+            batch_logprobs.append(continuation_logprob)
+
+        return batch_logprobs
 
     def __repr__(self) -> str:
         return f"VLLM(model_name={self.model_name})"
