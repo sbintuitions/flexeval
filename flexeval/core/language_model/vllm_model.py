@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, Optional
+from typing import Any
 
 import torch
 from transformers import AutoTokenizer, PreTrainedTokenizer
@@ -173,11 +173,8 @@ class VLLM(LanguageModel):
         return self.batch_complete_text(chat_messages_as_string, **kwargs)
 
     def batch_compute_log_probs(
-            self,
-            text_list: list[str],
-            prefix_list: list[str] | None = None,
-            stride: int | None = None
-        ) -> list[float]:
+        self, text_list: list[str], prefix_list: list[str] | None = None, stride: int | None = None
+    ) -> list[float]:
         batch_size = len(text_list)
 
         # prepare prefix encoding
@@ -199,9 +196,7 @@ class VLLM(LanguageModel):
         batch_continuation_ids = tokenize_text_for_lm_continuation(
             text_list,
             self.tokenizer,
-            as_continuation=[
-                prefix_ids[-1] not in self.tokenizer.all_special_ids for prefix_ids in batch_prefix_ids
-            ],
+            as_continuation=[prefix_ids[-1] not in self.tokenizer.all_special_ids for prefix_ids in batch_prefix_ids],
         )
 
         batch_input_ids = [
@@ -217,13 +212,14 @@ class VLLM(LanguageModel):
 
         from vllm import RequestOutput, SamplingParams
         from vllm.sequence import Logprob
+
         sampling_params = SamplingParams(temperature=0.0, max_tokens=1, prompt_logprobs=1)
 
         batch_logprobs = [0.0] * batch_size
         last_computed_index = 0
         for chunk_start in range(0, sequence_length, stride):
             chunk_end = min(chunk_start + max_length, sequence_length)
-            chunk_batch_input_ids = [input_ids[chunk_start: chunk_end] for input_ids in batch_input_ids]
+            chunk_batch_input_ids = [input_ids[chunk_start:chunk_end] for input_ids in batch_input_ids]
             chunk_batch_input_ids = [
                 [self.tokenizer.bos_token_id] if len(chunk_input_ids) == 0 else chunk_input_ids
                 for chunk_input_ids in chunk_batch_input_ids
