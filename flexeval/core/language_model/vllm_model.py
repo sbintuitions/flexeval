@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, Optional
 
 import torch
 from transformers import AutoTokenizer, PreTrainedTokenizer
@@ -215,7 +215,8 @@ class VLLM(LanguageModel):
             raise ValueError(msg)
         sequence_length = max([len(input_ids) for input_ids in batch_input_ids])
 
-        from vllm import SamplingParams
+        from vllm import RequestOutput, SamplingParams
+        from vllm.sequence import Logprob
         sampling_params = SamplingParams(temperature=0.0, max_tokens=1, prompt_logprobs=1)
 
         batch_logprobs = [0.0] * batch_size
@@ -227,7 +228,7 @@ class VLLM(LanguageModel):
                 [self.tokenizer.bos_token_id] if len(chunk_input_ids) == 0 else chunk_input_ids
                 for chunk_input_ids in chunk_batch_input_ids
             ]
-            chunk_batch_outputs = self.llm.generate(
+            chunk_batch_outputs: list[RequestOutput] = self.llm.generate(
                 prompt_token_ids=chunk_batch_input_ids, sampling_params=sampling_params
             )
 
@@ -235,8 +236,14 @@ class VLLM(LanguageModel):
             for ids, output, prefix_ids in zip(chunk_batch_input_ids, chunk_batch_outputs, batch_prefix_ids):
                 chunk_rest_prefix_length = max(len(prefix_ids) - last_computed_index, 0)
                 chunk_continuation_start = last_computed_index - chunk_start + chunk_rest_prefix_length
+
+                # `prompt_logprobs` has the same length as the input `ids`.
+                # The i-th element contains the log probabilities of the i-th token in `ids`
+                # and the highest-likelihood token at that position.
+                # The 0-th element is always `None` because the log probability cannot be computed for it.
+                prompt_logprobs: list[dict[int, Logprob] | None] = output.prompt_logprobs
                 all_token_logprobs = [
-                    cands[token_id].logprob if cands else 0.0 for cands, token_id in zip(output.prompt_logprobs, ids)
+                    cands[token_id].logprob if cands else 0.0 for cands, token_id in zip(prompt_logprobs, ids)
                 ]
                 continuation_logprob = float(sum(all_token_logprobs[chunk_continuation_start:]))
                 batch_logprobs[i] += continuation_logprob
