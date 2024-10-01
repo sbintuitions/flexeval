@@ -107,6 +107,8 @@ class VLLM(LanguageModel):
         # automatically set tensor_parallel_size to the number of GPUs
         if "tensor_parallel_size" not in model_kwargs:
             model_kwargs["tensor_parallel_size"] = torch.cuda.device_count()
+        if "enable_chunked_prefill" not in model_kwargs:
+            model_kwargs["enable_chunked_prefill"] = True
         self.llm = LLM(model, **model_kwargs)
 
     def batch_complete_text(
@@ -225,7 +227,9 @@ class VLLM(LanguageModel):
                 for chunk_input_ids in chunk_batch_input_ids
             ]
             chunk_batch_outputs: list[RequestOutput] = self.llm.generate(
-                prompt_token_ids=chunk_batch_input_ids, sampling_params=sampling_params
+                prompt_token_ids=chunk_batch_input_ids,
+                sampling_params=sampling_params,
+                use_tqdm=False,
             )
 
             i = 0
