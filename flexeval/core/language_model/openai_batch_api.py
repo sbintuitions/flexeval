@@ -198,6 +198,10 @@ class OpenAIChatBatchAPI(LanguageModel):
         return self._execute_batch_requests(chat_messages_list, **kwargs)
 
     def close(self) -> None:
+        # in case that the program fails before the file is initialized in __init__
+        if not hasattr(self, "temp_jsonl_file"):
+            return
+
         try:
             self.temp_jsonl_file.close()
             os.unlink(self.temp_jsonl_file.name)  # noqa: PTH108
