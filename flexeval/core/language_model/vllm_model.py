@@ -109,6 +109,7 @@ class VLLM(LanguageModel):
             model_kwargs["tensor_parallel_size"] = torch.cuda.device_count()
         if "enable_chunked_prefill" not in model_kwargs:
             model_kwargs["enable_chunked_prefill"] = True
+            model_kwargs["disable_sliding_window"] = True
         self.llm = LLM(model, **model_kwargs)
 
     def batch_complete_text(
