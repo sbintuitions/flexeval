@@ -26,7 +26,12 @@ def main() -> None:
         help="RewardModel model",
     )
     parser.add_argument("--batch_size", type=int, default=4)
-    parser.add_argument("--eval_dataset", type=RewardBenchDataset)
+    parser.add_subclass_arguments(
+        RewardBenchDataset,
+        nested_key="eval_dataset",
+        required=True,
+        help="Eval Dataset",
+    )
     parser.add_argument("--max_instances", type=int, default=None)
     # Saving arguments
     parser.add_argument(
