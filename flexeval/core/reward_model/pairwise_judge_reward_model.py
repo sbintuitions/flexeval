@@ -65,6 +65,14 @@ class PairwiseJudgeRewardModel(RewardModel):
             )
         return input_chat_messages
 
+    def _is_correct_llm_answer(self, llm_answer: str, pairwise_choice: PairwiseChoice) -> bool:
+        # Check if the answer is one of the valid choices.
+        if PairwiseChoice.A.value in PairwiseChoice.B in llm_answer and PairwiseChoice.B in llm_answer:
+            return False
+        if pairwise_choice.value in llm_answer:
+            return True
+        return False
+
     def batch_judge(
         self,
         batch_reward_bench_instances: list[RewardBenchInstance],
@@ -93,7 +101,7 @@ class PairwiseJudgeRewardModel(RewardModel):
 
         judge_outputs = self.language_model.batch_generate_chat_response(input_chat_messages_list, **self.gen_kwargs)
         chosen_is_betters: list[bool] = [
-            judge_output == shuffle_pairwise_instance.answer_label
+            self._is_correct_llm_answer(judge_output, shuffle_pairwise_instance.answer_label)
             for judge_output, shuffle_pairwise_instance in zip(judge_outputs, all_pairwise_instances)
         ]
         return chosen_is_betters, judge_outputs
