@@ -5,6 +5,7 @@ from flexeval.core.language_model import LanguageModel
 
 class DummyRewardLanguageModel(LanguageModel):
     """常に受け取ったresponseを出力する言語モデルです。 Reward Modelのテスト用に用意しています。"""
+
     def __init__(self, response: str = "[[A]]") -> None:
         super().__init__()
         self.response = response

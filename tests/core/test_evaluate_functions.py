@@ -180,7 +180,6 @@ def test_evaluate_reward_model() -> None:
     assert metrics["accuracy"] > 0
     assert outputs == ["[[A]]"] * (100 * 2)
 
-
     reward_model = PairwiseJudgeRewardModel(
         language_model=DummyRewardLanguageModel("Results: [[B]]"),
         prompt_template=Jinja2PromptTemplate(template="{{ prompt }} {{ answer_a }} {{ answer_b }}"),
@@ -195,4 +194,3 @@ def test_evaluate_reward_model() -> None:
     # The probability of accuracy being 0 is (1/2)^100.
     assert metrics["accuracy"] > 0
     assert outputs == ["Results: [[B]]"] * (100 * 2)
-
