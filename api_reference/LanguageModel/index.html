@@ -1175,6 +1175,48 @@
   
   
     <li class="md-nav__item">
+      <a href="../RewardBenchDataset/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    RewardBenchDataset
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../RewardModel/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    RewardModel
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../StringProcessor/" class="md-nav__link">
         
   
@@ -4637,7 +4679,11 @@ NOTE: Batch size should be more than or equal to the size of the given dataset f
 <span class="normal">209</span>
 <span class="normal">210</span>
 <span class="normal">211</span>
-<span class="normal">212</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">OpenAIChatBatchAPI</span><span class="p">(</span><span class="n">LanguageModel</span><span class="p">):</span>
+<span class="normal">212</span>
+<span class="normal">213</span>
+<span class="normal">214</span>
+<span class="normal">215</span>
+<span class="normal">216</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">OpenAIChatBatchAPI</span><span class="p">(</span><span class="n">LanguageModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;LanguageModel implementation using OpenAI&#39;s ChatGPT API for Batch API.</span>
 <span class="sd">    NOTE: Batch size should be more than or equal to the size of the given dataset for efficient generation.</span>
 
@@ -4797,6 +4843,10 @@ NOTE: Batch size should be more than or equal to the size of the given dataset f
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_execute_batch_requests</span><span class="p">(</span><span class="n">chat_messages_list</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># in case that the program fails before the file is initialized in __init__</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;temp_jsonl_file&quot;</span><span class="p">):</span>
+            <span class="k">return</span>
+
         <span class="k">try</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">temp_jsonl_file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
             <span class="n">os</span><span class="o">.</span><span class="n">unlink</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">temp_jsonl_file</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>  <span class="c1"># noqa: PTH108</span>
@@ -5116,7 +5166,15 @@ NOTE: Batch size should be more than or equal to the size of the given dataset f
 <span class="normal">203</span>
 <span class="normal">204</span>
 <span class="normal">205</span>
-<span class="normal">206</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">206</span>
+<span class="normal">207</span>
+<span class="normal">208</span>
+<span class="normal">209</span>
+<span class="normal">210</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="c1"># in case that the program fails before the file is initialized in __init__</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;temp_jsonl_file&quot;</span><span class="p">):</span>
+        <span class="k">return</span>
+
     <span class="k">try</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">temp_jsonl_file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
         <span class="n">os</span><span class="o">.</span><span class="n">unlink</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">temp_jsonl_file</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>  <span class="c1"># noqa: PTH108</span>
@@ -5144,8 +5202,8 @@ NOTE: Batch size should be more than or equal to the size of the given dataset f
 
             <details class="quote">
               <summary>Source code in <code>flexeval/core/language_model/openai_batch_api.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">208</span>
-<span class="normal">209</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">212</span>
+<span class="normal">213</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -5168,8 +5226,8 @@ NOTE: Batch size should be more than or equal to the size of the given dataset f
 
             <details class="quote">
               <summary>Source code in <code>flexeval/core/language_model/openai_batch_api.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">211</span>
-<span class="normal">212</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">215</span>
+<span class="normal">216</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">(model=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="si">}</span><span class="s2">)&quot;</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -5278,62 +5336,7 @@ If specified, this overrides the default chat template of the tokenizer.</p>
 
               <details class="quote">
                 <summary>Source code in <code>flexeval/core/language_model/vllm_model.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 11</span>
-<span class="normal"> 12</span>
-<span class="normal"> 13</span>
-<span class="normal"> 14</span>
-<span class="normal"> 15</span>
-<span class="normal"> 16</span>
-<span class="normal"> 17</span>
-<span class="normal"> 18</span>
-<span class="normal"> 19</span>
-<span class="normal"> 20</span>
-<span class="normal"> 21</span>
-<span class="normal"> 22</span>
-<span class="normal"> 23</span>
-<span class="normal"> 24</span>
-<span class="normal"> 25</span>
-<span class="normal"> 26</span>
-<span class="normal"> 27</span>
-<span class="normal"> 28</span>
-<span class="normal"> 29</span>
-<span class="normal"> 30</span>
-<span class="normal"> 31</span>
-<span class="normal"> 32</span>
-<span class="normal"> 33</span>
-<span class="normal"> 34</span>
-<span class="normal"> 35</span>
-<span class="normal"> 36</span>
-<span class="normal"> 37</span>
-<span class="normal"> 38</span>
-<span class="normal"> 39</span>
-<span class="normal"> 40</span>
-<span class="normal"> 41</span>
-<span class="normal"> 42</span>
-<span class="normal"> 43</span>
-<span class="normal"> 44</span>
-<span class="normal"> 45</span>
-<span class="normal"> 46</span>
-<span class="normal"> 47</span>
-<span class="normal"> 48</span>
-<span class="normal"> 49</span>
-<span class="normal"> 50</span>
-<span class="normal"> 51</span>
-<span class="normal"> 52</span>
-<span class="normal"> 53</span>
-<span class="normal"> 54</span>
-<span class="normal"> 55</span>
-<span class="normal"> 56</span>
-<span class="normal"> 57</span>
-<span class="normal"> 58</span>
-<span class="normal"> 59</span>
-<span class="normal"> 60</span>
-<span class="normal"> 61</span>
-<span class="normal"> 62</span>
-<span class="normal"> 63</span>
-<span class="normal"> 64</span>
-<span class="normal"> 65</span>
-<span class="normal"> 66</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 66</span>
 <span class="normal"> 67</span>
 <span class="normal"> 68</span>
 <span class="normal"> 69</span>
@@ -5388,7 +5391,144 @@ If specified, this overrides the default chat template of the tokenizer.</p>
 <span class="normal">118</span>
 <span class="normal">119</span>
 <span class="normal">120</span>
-<span class="normal">121</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">VLLM</span><span class="p">(</span><span class="n">LanguageModel</span><span class="p">):</span>
+<span class="normal">121</span>
+<span class="normal">122</span>
+<span class="normal">123</span>
+<span class="normal">124</span>
+<span class="normal">125</span>
+<span class="normal">126</span>
+<span class="normal">127</span>
+<span class="normal">128</span>
+<span class="normal">129</span>
+<span class="normal">130</span>
+<span class="normal">131</span>
+<span class="normal">132</span>
+<span class="normal">133</span>
+<span class="normal">134</span>
+<span class="normal">135</span>
+<span class="normal">136</span>
+<span class="normal">137</span>
+<span class="normal">138</span>
+<span class="normal">139</span>
+<span class="normal">140</span>
+<span class="normal">141</span>
+<span class="normal">142</span>
+<span class="normal">143</span>
+<span class="normal">144</span>
+<span class="normal">145</span>
+<span class="normal">146</span>
+<span class="normal">147</span>
+<span class="normal">148</span>
+<span class="normal">149</span>
+<span class="normal">150</span>
+<span class="normal">151</span>
+<span class="normal">152</span>
+<span class="normal">153</span>
+<span class="normal">154</span>
+<span class="normal">155</span>
+<span class="normal">156</span>
+<span class="normal">157</span>
+<span class="normal">158</span>
+<span class="normal">159</span>
+<span class="normal">160</span>
+<span class="normal">161</span>
+<span class="normal">162</span>
+<span class="normal">163</span>
+<span class="normal">164</span>
+<span class="normal">165</span>
+<span class="normal">166</span>
+<span class="normal">167</span>
+<span class="normal">168</span>
+<span class="normal">169</span>
+<span class="normal">170</span>
+<span class="normal">171</span>
+<span class="normal">172</span>
+<span class="normal">173</span>
+<span class="normal">174</span>
+<span class="normal">175</span>
+<span class="normal">176</span>
+<span class="normal">177</span>
+<span class="normal">178</span>
+<span class="normal">179</span>
+<span class="normal">180</span>
+<span class="normal">181</span>
+<span class="normal">182</span>
+<span class="normal">183</span>
+<span class="normal">184</span>
+<span class="normal">185</span>
+<span class="normal">186</span>
+<span class="normal">187</span>
+<span class="normal">188</span>
+<span class="normal">189</span>
+<span class="normal">190</span>
+<span class="normal">191</span>
+<span class="normal">192</span>
+<span class="normal">193</span>
+<span class="normal">194</span>
+<span class="normal">195</span>
+<span class="normal">196</span>
+<span class="normal">197</span>
+<span class="normal">198</span>
+<span class="normal">199</span>
+<span class="normal">200</span>
+<span class="normal">201</span>
+<span class="normal">202</span>
+<span class="normal">203</span>
+<span class="normal">204</span>
+<span class="normal">205</span>
+<span class="normal">206</span>
+<span class="normal">207</span>
+<span class="normal">208</span>
+<span class="normal">209</span>
+<span class="normal">210</span>
+<span class="normal">211</span>
+<span class="normal">212</span>
+<span class="normal">213</span>
+<span class="normal">214</span>
+<span class="normal">215</span>
+<span class="normal">216</span>
+<span class="normal">217</span>
+<span class="normal">218</span>
+<span class="normal">219</span>
+<span class="normal">220</span>
+<span class="normal">221</span>
+<span class="normal">222</span>
+<span class="normal">223</span>
+<span class="normal">224</span>
+<span class="normal">225</span>
+<span class="normal">226</span>
+<span class="normal">227</span>
+<span class="normal">228</span>
+<span class="normal">229</span>
+<span class="normal">230</span>
+<span class="normal">231</span>
+<span class="normal">232</span>
+<span class="normal">233</span>
+<span class="normal">234</span>
+<span class="normal">235</span>
+<span class="normal">236</span>
+<span class="normal">237</span>
+<span class="normal">238</span>
+<span class="normal">239</span>
+<span class="normal">240</span>
+<span class="normal">241</span>
+<span class="normal">242</span>
+<span class="normal">243</span>
+<span class="normal">244</span>
+<span class="normal">245</span>
+<span class="normal">246</span>
+<span class="normal">247</span>
+<span class="normal">248</span>
+<span class="normal">249</span>
+<span class="normal">250</span>
+<span class="normal">251</span>
+<span class="normal">252</span>
+<span class="normal">253</span>
+<span class="normal">254</span>
+<span class="normal">255</span>
+<span class="normal">256</span>
+<span class="normal">257</span>
+<span class="normal">258</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">VLLM</span><span class="p">(</span><span class="n">LanguageModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;LanguageModel implementation using VLLM.</span>
 
 <span class="sd">    Args:</span>
@@ -5432,6 +5572,9 @@ If specified, this overrides the default chat template of the tokenizer.</p>
         <span class="c1"># automatically set tensor_parallel_size to the number of GPUs</span>
         <span class="k">if</span> <span class="s2">&quot;tensor_parallel_size&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">model_kwargs</span><span class="p">:</span>
             <span class="n">model_kwargs</span><span class="p">[</span><span class="s2">&quot;tensor_parallel_size&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">device_count</span><span class="p">()</span>
+        <span class="k">if</span> <span class="s2">&quot;enable_chunked_prefill&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">model_kwargs</span><span class="p">:</span>
+            <span class="n">model_kwargs</span><span class="p">[</span><span class="s2">&quot;enable_chunked_prefill&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">model_kwargs</span><span class="p">[</span><span class="s2">&quot;disable_sliding_window&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">llm</span> <span class="o">=</span> <span class="n">LLM</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="o">**</span><span class="n">model_kwargs</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">batch_complete_text</span><span class="p">(</span>
@@ -5496,6 +5639,85 @@ If specified, this overrides the default chat template of the tokenizer.</p>
             <span class="k">for</span> <span class="n">chat_messages</span> <span class="ow">in</span> <span class="n">chat_messages_list</span>
         <span class="p">]</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">batch_complete_text</span><span class="p">(</span><span class="n">chat_messages_as_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">batch_compute_log_probs</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">text_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">prefix_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">stride</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
+        <span class="n">batch_size</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">text_list</span><span class="p">)</span>
+
+        <span class="c1"># prepare prefix encoding</span>
+        <span class="n">prefix_list</span> <span class="o">=</span> <span class="n">prefix_list</span> <span class="k">if</span> <span class="n">prefix_list</span> <span class="k">else</span> <span class="p">[</span><span class="s2">&quot;&quot;</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">batch_size</span><span class="p">)]</span>
+        <span class="c1"># If the prefix is an empty string, replace it with the bos token regardless of the model being trained with it.</span>
+        <span class="c1"># This is needed to correctly calculate the log probabilities of the first token.</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">batch_size</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">prefix_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+                <span class="n">prefix_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tokenizer</span><span class="o">.</span><span class="n">bos_token</span>
+
+        <span class="n">batch_prefix_ids</span> <span class="o">=</span> <span class="n">tokenize_text_for_lm_prefix</span><span class="p">(</span>
+            <span class="n">prefix_list</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tokenizer</span><span class="p">,</span>
+            <span class="n">add_special_tokens</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">add_special_tokens</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="c1"># prepare continuation encoding</span>
+        <span class="c1"># If the last token is a special token, it is treated as a beginning of a new sentence.</span>
+        <span class="n">batch_continuation_ids</span> <span class="o">=</span> <span class="n">tokenize_text_for_lm_continuation</span><span class="p">(</span>
+            <span class="n">text_list</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tokenizer</span><span class="p">,</span>
+            <span class="n">as_continuation</span><span class="o">=</span><span class="p">[</span><span class="n">prefix_ids</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tokenizer</span><span class="o">.</span><span class="n">all_special_ids</span> <span class="k">for</span> <span class="n">prefix_ids</span> <span class="ow">in</span> <span class="n">batch_prefix_ids</span><span class="p">],</span>
+        <span class="p">)</span>
+
+        <span class="n">batch_input_ids</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">prefix</span> <span class="o">+</span> <span class="n">continuation</span> <span class="k">for</span> <span class="n">prefix</span><span class="p">,</span> <span class="n">continuation</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">batch_prefix_ids</span><span class="p">,</span> <span class="n">batch_continuation_ids</span><span class="p">)</span>
+        <span class="p">]</span>
+
+        <span class="n">max_length</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">llm</span><span class="o">.</span><span class="n">llm_engine</span><span class="o">.</span><span class="n">get_model_config</span><span class="p">()</span><span class="o">.</span><span class="n">max_seq_len_to_capture</span>
+        <span class="n">stride</span> <span class="o">=</span> <span class="n">stride</span> <span class="ow">or</span> <span class="n">max_length</span> <span class="o">//</span> <span class="mi">2</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="mi">0</span> <span class="o">&lt;</span> <span class="n">stride</span> <span class="o">&lt;</span> <span class="n">max_length</span><span class="p">):</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;stride must be in (0, </span><span class="si">{</span><span class="n">max_length</span><span class="si">}</span><span class="s2">), but got </span><span class="si">{</span><span class="n">stride</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        <span class="n">sequence_length</span> <span class="o">=</span> <span class="nb">max</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">input_ids</span><span class="p">)</span> <span class="k">for</span> <span class="n">input_ids</span> <span class="ow">in</span> <span class="n">batch_input_ids</span><span class="p">])</span>
+
+        <span class="kn">from</span> <span class="nn">vllm</span> <span class="kn">import</span> <span class="n">RequestOutput</span><span class="p">,</span> <span class="n">SamplingParams</span>
+        <span class="kn">from</span> <span class="nn">vllm.sequence</span> <span class="kn">import</span> <span class="n">Logprob</span>
+
+        <span class="n">sampling_params</span> <span class="o">=</span> <span class="n">SamplingParams</span><span class="p">(</span><span class="n">temperature</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">max_tokens</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">prompt_logprobs</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="n">batch_logprobs</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">]</span> <span class="o">*</span> <span class="n">batch_size</span>
+        <span class="n">last_computed_index</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">chunk_start</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">sequence_length</span><span class="p">,</span> <span class="n">stride</span><span class="p">):</span>
+            <span class="n">chunk_end</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">chunk_start</span> <span class="o">+</span> <span class="n">max_length</span><span class="p">,</span> <span class="n">sequence_length</span><span class="p">)</span>
+            <span class="n">chunk_batch_input_ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">input_ids</span><span class="p">[</span><span class="n">chunk_start</span><span class="p">:</span><span class="n">chunk_end</span><span class="p">]</span> <span class="k">for</span> <span class="n">input_ids</span> <span class="ow">in</span> <span class="n">batch_input_ids</span><span class="p">]</span>
+            <span class="n">chunk_batch_input_ids</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">tokenizer</span><span class="o">.</span><span class="n">bos_token_id</span><span class="p">]</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">chunk_input_ids</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">chunk_input_ids</span>
+                <span class="k">for</span> <span class="n">chunk_input_ids</span> <span class="ow">in</span> <span class="n">chunk_batch_input_ids</span>
+            <span class="p">]</span>
+            <span class="n">chunk_batch_outputs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">RequestOutput</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">llm</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span>
+                <span class="n">prompt_token_ids</span><span class="o">=</span><span class="n">chunk_batch_input_ids</span><span class="p">,</span>
+                <span class="n">sampling_params</span><span class="o">=</span><span class="n">sampling_params</span><span class="p">,</span>
+                <span class="n">use_tqdm</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="p">)</span>
+
+            <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">for</span> <span class="n">ids</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">prefix_ids</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">chunk_batch_input_ids</span><span class="p">,</span> <span class="n">chunk_batch_outputs</span><span class="p">,</span> <span class="n">batch_prefix_ids</span><span class="p">):</span>
+                <span class="n">chunk_rest_prefix_length</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">prefix_ids</span><span class="p">)</span> <span class="o">-</span> <span class="n">last_computed_index</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+                <span class="n">chunk_continuation_start</span> <span class="o">=</span> <span class="n">last_computed_index</span> <span class="o">-</span> <span class="n">chunk_start</span> <span class="o">+</span> <span class="n">chunk_rest_prefix_length</span>
+
+                <span class="c1"># `prompt_logprobs` has the same length as the input `ids`.</span>
+                <span class="c1"># The i-th element contains the log probabilities of the i-th token in `ids`</span>
+                <span class="c1"># and the highest-likelihood token at that position.</span>
+                <span class="c1"># The 0-th element is always `None` because the log probability cannot be computed for it.</span>
+                <span class="n">prompt_logprobs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Logprob</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="n">output</span><span class="o">.</span><span class="n">prompt_logprobs</span>
+                <span class="n">all_token_logprobs</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="n">cands</span><span class="p">[</span><span class="n">token_id</span><span class="p">]</span><span class="o">.</span><span class="n">logprob</span> <span class="k">if</span> <span class="n">cands</span> <span class="k">else</span> <span class="mf">0.0</span> <span class="k">for</span> <span class="n">cands</span><span class="p">,</span> <span class="n">token_id</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">prompt_logprobs</span><span class="p">,</span> <span class="n">ids</span><span class="p">)</span>
+                <span class="p">]</span>
+                <span class="n">continuation_logprob</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="n">all_token_logprobs</span><span class="p">[</span><span class="n">chunk_continuation_start</span><span class="p">:]))</span>
+                <span class="n">batch_logprobs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+=</span> <span class="n">continuation_logprob</span>
+                <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+
+            <span class="n">last_computed_index</span> <span class="o">=</span> <span class="n">chunk_end</span>
+
+        <span class="k">return</span> <span class="n">batch_logprobs</span>
 
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;VLLM(model_name=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">model_name</span><span class="si">}</span><span class="s2">)&quot;</span>
@@ -5655,36 +5877,39 @@ If specified, this overrides the default chat template of the tokenizer.</p>
 
             <details class="quote">
               <summary>Source code in <code>flexeval/core/language_model/vllm_model.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">26</span>
-<span class="normal">27</span>
-<span class="normal">28</span>
-<span class="normal">29</span>
-<span class="normal">30</span>
-<span class="normal">31</span>
-<span class="normal">32</span>
-<span class="normal">33</span>
-<span class="normal">34</span>
-<span class="normal">35</span>
-<span class="normal">36</span>
-<span class="normal">37</span>
-<span class="normal">38</span>
-<span class="normal">39</span>
-<span class="normal">40</span>
-<span class="normal">41</span>
-<span class="normal">42</span>
-<span class="normal">43</span>
-<span class="normal">44</span>
-<span class="normal">45</span>
-<span class="normal">46</span>
-<span class="normal">47</span>
-<span class="normal">48</span>
-<span class="normal">49</span>
-<span class="normal">50</span>
-<span class="normal">51</span>
-<span class="normal">52</span>
-<span class="normal">53</span>
-<span class="normal">54</span>
-<span class="normal">55</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 81</span>
+<span class="normal"> 82</span>
+<span class="normal"> 83</span>
+<span class="normal"> 84</span>
+<span class="normal"> 85</span>
+<span class="normal"> 86</span>
+<span class="normal"> 87</span>
+<span class="normal"> 88</span>
+<span class="normal"> 89</span>
+<span class="normal"> 90</span>
+<span class="normal"> 91</span>
+<span class="normal"> 92</span>
+<span class="normal"> 93</span>
+<span class="normal"> 94</span>
+<span class="normal"> 95</span>
+<span class="normal"> 96</span>
+<span class="normal"> 97</span>
+<span class="normal"> 98</span>
+<span class="normal"> 99</span>
+<span class="normal">100</span>
+<span class="normal">101</span>
+<span class="normal">102</span>
+<span class="normal">103</span>
+<span class="normal">104</span>
+<span class="normal">105</span>
+<span class="normal">106</span>
+<span class="normal">107</span>
+<span class="normal">108</span>
+<span class="normal">109</span>
+<span class="normal">110</span>
+<span class="normal">111</span>
+<span class="normal">112</span>
+<span class="normal">113</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">model</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">model_kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -5713,6 +5938,9 @@ If specified, this overrides the default chat template of the tokenizer.</p>
     <span class="c1"># automatically set tensor_parallel_size to the number of GPUs</span>
     <span class="k">if</span> <span class="s2">&quot;tensor_parallel_size&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">model_kwargs</span><span class="p">:</span>
         <span class="n">model_kwargs</span><span class="p">[</span><span class="s2">&quot;tensor_parallel_size&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">device_count</span><span class="p">()</span>
+    <span class="k">if</span> <span class="s2">&quot;enable_chunked_prefill&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">model_kwargs</span><span class="p">:</span>
+        <span class="n">model_kwargs</span><span class="p">[</span><span class="s2">&quot;enable_chunked_prefill&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">model_kwargs</span><span class="p">[</span><span class="s2">&quot;disable_sliding_window&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">llm</span> <span class="o">=</span> <span class="n">LLM</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="o">**</span><span class="n">model_kwargs</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -5735,52 +5963,52 @@ If specified, this overrides the default chat template of the tokenizer.</p>
 
             <details class="quote">
               <summary>Source code in <code>flexeval/core/language_model/vllm_model.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 57</span>
-<span class="normal"> 58</span>
-<span class="normal"> 59</span>
-<span class="normal"> 60</span>
-<span class="normal"> 61</span>
-<span class="normal"> 62</span>
-<span class="normal"> 63</span>
-<span class="normal"> 64</span>
-<span class="normal"> 65</span>
-<span class="normal"> 66</span>
-<span class="normal"> 67</span>
-<span class="normal"> 68</span>
-<span class="normal"> 69</span>
-<span class="normal"> 70</span>
-<span class="normal"> 71</span>
-<span class="normal"> 72</span>
-<span class="normal"> 73</span>
-<span class="normal"> 74</span>
-<span class="normal"> 75</span>
-<span class="normal"> 76</span>
-<span class="normal"> 77</span>
-<span class="normal"> 78</span>
-<span class="normal"> 79</span>
-<span class="normal"> 80</span>
-<span class="normal"> 81</span>
-<span class="normal"> 82</span>
-<span class="normal"> 83</span>
-<span class="normal"> 84</span>
-<span class="normal"> 85</span>
-<span class="normal"> 86</span>
-<span class="normal"> 87</span>
-<span class="normal"> 88</span>
-<span class="normal"> 89</span>
-<span class="normal"> 90</span>
-<span class="normal"> 91</span>
-<span class="normal"> 92</span>
-<span class="normal"> 93</span>
-<span class="normal"> 94</span>
-<span class="normal"> 95</span>
-<span class="normal"> 96</span>
-<span class="normal"> 97</span>
-<span class="normal"> 98</span>
-<span class="normal"> 99</span>
-<span class="normal">100</span>
-<span class="normal">101</span>
-<span class="normal">102</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">batch_complete_text</span><span class="p">(</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">115</span>
+<span class="normal">116</span>
+<span class="normal">117</span>
+<span class="normal">118</span>
+<span class="normal">119</span>
+<span class="normal">120</span>
+<span class="normal">121</span>
+<span class="normal">122</span>
+<span class="normal">123</span>
+<span class="normal">124</span>
+<span class="normal">125</span>
+<span class="normal">126</span>
+<span class="normal">127</span>
+<span class="normal">128</span>
+<span class="normal">129</span>
+<span class="normal">130</span>
+<span class="normal">131</span>
+<span class="normal">132</span>
+<span class="normal">133</span>
+<span class="normal">134</span>
+<span class="normal">135</span>
+<span class="normal">136</span>
+<span class="normal">137</span>
+<span class="normal">138</span>
+<span class="normal">139</span>
+<span class="normal">140</span>
+<span class="normal">141</span>
+<span class="normal">142</span>
+<span class="normal">143</span>
+<span class="normal">144</span>
+<span class="normal">145</span>
+<span class="normal">146</span>
+<span class="normal">147</span>
+<span class="normal">148</span>
+<span class="normal">149</span>
+<span class="normal">150</span>
+<span class="normal">151</span>
+<span class="normal">152</span>
+<span class="normal">153</span>
+<span class="normal">154</span>
+<span class="normal">155</span>
+<span class="normal">156</span>
+<span class="normal">157</span>
+<span class="normal">158</span>
+<span class="normal">159</span>
+<span class="normal">160</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">batch_complete_text</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">text_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
     <span class="n">stop_sequences</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -5847,21 +6075,21 @@ If specified, this overrides the default chat template of the tokenizer.</p>
 
             <details class="quote">
               <summary>Source code in <code>flexeval/core/language_model/vllm_model.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">104</span>
-<span class="normal">105</span>
-<span class="normal">106</span>
-<span class="normal">107</span>
-<span class="normal">108</span>
-<span class="normal">109</span>
-<span class="normal">110</span>
-<span class="normal">111</span>
-<span class="normal">112</span>
-<span class="normal">113</span>
-<span class="normal">114</span>
-<span class="normal">115</span>
-<span class="normal">116</span>
-<span class="normal">117</span>
-<span class="normal">118</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">batch_generate_chat_response</span><span class="p">(</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">162</span>
+<span class="normal">163</span>
+<span class="normal">164</span>
+<span class="normal">165</span>
+<span class="normal">166</span>
+<span class="normal">167</span>
+<span class="normal">168</span>
+<span class="normal">169</span>
+<span class="normal">170</span>
+<span class="normal">171</span>
+<span class="normal">172</span>
+<span class="normal">173</span>
+<span class="normal">174</span>
+<span class="normal">175</span>
+<span class="normal">176</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">batch_generate_chat_response</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">chat_messages_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]],</span>
     <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
@@ -5885,6 +6113,182 @@ If specified, this overrides the default chat template of the tokenizer.</p>
 <div class="doc doc-object doc-function">
 
 
+<h3 id="flexeval.core.language_model.vllm_model.VLLM.batch_compute_log_probs" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">batch_compute_log_probs</span>
+
+
+<a href="#flexeval.core.language_model.vllm_model.VLLM.batch_compute_log_probs" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">batch_compute_log_probs</span><span class="p">(</span><span class="n">text_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">prefix_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">stride</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+            <details class="quote">
+              <summary>Source code in <code>flexeval/core/language_model/vllm_model.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">178</span>
+<span class="normal">179</span>
+<span class="normal">180</span>
+<span class="normal">181</span>
+<span class="normal">182</span>
+<span class="normal">183</span>
+<span class="normal">184</span>
+<span class="normal">185</span>
+<span class="normal">186</span>
+<span class="normal">187</span>
+<span class="normal">188</span>
+<span class="normal">189</span>
+<span class="normal">190</span>
+<span class="normal">191</span>
+<span class="normal">192</span>
+<span class="normal">193</span>
+<span class="normal">194</span>
+<span class="normal">195</span>
+<span class="normal">196</span>
+<span class="normal">197</span>
+<span class="normal">198</span>
+<span class="normal">199</span>
+<span class="normal">200</span>
+<span class="normal">201</span>
+<span class="normal">202</span>
+<span class="normal">203</span>
+<span class="normal">204</span>
+<span class="normal">205</span>
+<span class="normal">206</span>
+<span class="normal">207</span>
+<span class="normal">208</span>
+<span class="normal">209</span>
+<span class="normal">210</span>
+<span class="normal">211</span>
+<span class="normal">212</span>
+<span class="normal">213</span>
+<span class="normal">214</span>
+<span class="normal">215</span>
+<span class="normal">216</span>
+<span class="normal">217</span>
+<span class="normal">218</span>
+<span class="normal">219</span>
+<span class="normal">220</span>
+<span class="normal">221</span>
+<span class="normal">222</span>
+<span class="normal">223</span>
+<span class="normal">224</span>
+<span class="normal">225</span>
+<span class="normal">226</span>
+<span class="normal">227</span>
+<span class="normal">228</span>
+<span class="normal">229</span>
+<span class="normal">230</span>
+<span class="normal">231</span>
+<span class="normal">232</span>
+<span class="normal">233</span>
+<span class="normal">234</span>
+<span class="normal">235</span>
+<span class="normal">236</span>
+<span class="normal">237</span>
+<span class="normal">238</span>
+<span class="normal">239</span>
+<span class="normal">240</span>
+<span class="normal">241</span>
+<span class="normal">242</span>
+<span class="normal">243</span>
+<span class="normal">244</span>
+<span class="normal">245</span>
+<span class="normal">246</span>
+<span class="normal">247</span>
+<span class="normal">248</span>
+<span class="normal">249</span>
+<span class="normal">250</span>
+<span class="normal">251</span>
+<span class="normal">252</span>
+<span class="normal">253</span>
+<span class="normal">254</span>
+<span class="normal">255</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">batch_compute_log_probs</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span> <span class="n">text_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">prefix_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">stride</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
+    <span class="n">batch_size</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">text_list</span><span class="p">)</span>
+
+    <span class="c1"># prepare prefix encoding</span>
+    <span class="n">prefix_list</span> <span class="o">=</span> <span class="n">prefix_list</span> <span class="k">if</span> <span class="n">prefix_list</span> <span class="k">else</span> <span class="p">[</span><span class="s2">&quot;&quot;</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">batch_size</span><span class="p">)]</span>
+    <span class="c1"># If the prefix is an empty string, replace it with the bos token regardless of the model being trained with it.</span>
+    <span class="c1"># This is needed to correctly calculate the log probabilities of the first token.</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">batch_size</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">prefix_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+            <span class="n">prefix_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tokenizer</span><span class="o">.</span><span class="n">bos_token</span>
+
+    <span class="n">batch_prefix_ids</span> <span class="o">=</span> <span class="n">tokenize_text_for_lm_prefix</span><span class="p">(</span>
+        <span class="n">prefix_list</span><span class="p">,</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tokenizer</span><span class="p">,</span>
+        <span class="n">add_special_tokens</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">add_special_tokens</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="c1"># prepare continuation encoding</span>
+    <span class="c1"># If the last token is a special token, it is treated as a beginning of a new sentence.</span>
+    <span class="n">batch_continuation_ids</span> <span class="o">=</span> <span class="n">tokenize_text_for_lm_continuation</span><span class="p">(</span>
+        <span class="n">text_list</span><span class="p">,</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tokenizer</span><span class="p">,</span>
+        <span class="n">as_continuation</span><span class="o">=</span><span class="p">[</span><span class="n">prefix_ids</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tokenizer</span><span class="o">.</span><span class="n">all_special_ids</span> <span class="k">for</span> <span class="n">prefix_ids</span> <span class="ow">in</span> <span class="n">batch_prefix_ids</span><span class="p">],</span>
+    <span class="p">)</span>
+
+    <span class="n">batch_input_ids</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">prefix</span> <span class="o">+</span> <span class="n">continuation</span> <span class="k">for</span> <span class="n">prefix</span><span class="p">,</span> <span class="n">continuation</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">batch_prefix_ids</span><span class="p">,</span> <span class="n">batch_continuation_ids</span><span class="p">)</span>
+    <span class="p">]</span>
+
+    <span class="n">max_length</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">llm</span><span class="o">.</span><span class="n">llm_engine</span><span class="o">.</span><span class="n">get_model_config</span><span class="p">()</span><span class="o">.</span><span class="n">max_seq_len_to_capture</span>
+    <span class="n">stride</span> <span class="o">=</span> <span class="n">stride</span> <span class="ow">or</span> <span class="n">max_length</span> <span class="o">//</span> <span class="mi">2</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="mi">0</span> <span class="o">&lt;</span> <span class="n">stride</span> <span class="o">&lt;</span> <span class="n">max_length</span><span class="p">):</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;stride must be in (0, </span><span class="si">{</span><span class="n">max_length</span><span class="si">}</span><span class="s2">), but got </span><span class="si">{</span><span class="n">stride</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+    <span class="n">sequence_length</span> <span class="o">=</span> <span class="nb">max</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">input_ids</span><span class="p">)</span> <span class="k">for</span> <span class="n">input_ids</span> <span class="ow">in</span> <span class="n">batch_input_ids</span><span class="p">])</span>
+
+    <span class="kn">from</span> <span class="nn">vllm</span> <span class="kn">import</span> <span class="n">RequestOutput</span><span class="p">,</span> <span class="n">SamplingParams</span>
+    <span class="kn">from</span> <span class="nn">vllm.sequence</span> <span class="kn">import</span> <span class="n">Logprob</span>
+
+    <span class="n">sampling_params</span> <span class="o">=</span> <span class="n">SamplingParams</span><span class="p">(</span><span class="n">temperature</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">max_tokens</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">prompt_logprobs</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="n">batch_logprobs</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">]</span> <span class="o">*</span> <span class="n">batch_size</span>
+    <span class="n">last_computed_index</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">chunk_start</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">sequence_length</span><span class="p">,</span> <span class="n">stride</span><span class="p">):</span>
+        <span class="n">chunk_end</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">chunk_start</span> <span class="o">+</span> <span class="n">max_length</span><span class="p">,</span> <span class="n">sequence_length</span><span class="p">)</span>
+        <span class="n">chunk_batch_input_ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">input_ids</span><span class="p">[</span><span class="n">chunk_start</span><span class="p">:</span><span class="n">chunk_end</span><span class="p">]</span> <span class="k">for</span> <span class="n">input_ids</span> <span class="ow">in</span> <span class="n">batch_input_ids</span><span class="p">]</span>
+        <span class="n">chunk_batch_input_ids</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">tokenizer</span><span class="o">.</span><span class="n">bos_token_id</span><span class="p">]</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">chunk_input_ids</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">chunk_input_ids</span>
+            <span class="k">for</span> <span class="n">chunk_input_ids</span> <span class="ow">in</span> <span class="n">chunk_batch_input_ids</span>
+        <span class="p">]</span>
+        <span class="n">chunk_batch_outputs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">RequestOutput</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">llm</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span>
+            <span class="n">prompt_token_ids</span><span class="o">=</span><span class="n">chunk_batch_input_ids</span><span class="p">,</span>
+            <span class="n">sampling_params</span><span class="o">=</span><span class="n">sampling_params</span><span class="p">,</span>
+            <span class="n">use_tqdm</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">ids</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">prefix_ids</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">chunk_batch_input_ids</span><span class="p">,</span> <span class="n">chunk_batch_outputs</span><span class="p">,</span> <span class="n">batch_prefix_ids</span><span class="p">):</span>
+            <span class="n">chunk_rest_prefix_length</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">prefix_ids</span><span class="p">)</span> <span class="o">-</span> <span class="n">last_computed_index</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="n">chunk_continuation_start</span> <span class="o">=</span> <span class="n">last_computed_index</span> <span class="o">-</span> <span class="n">chunk_start</span> <span class="o">+</span> <span class="n">chunk_rest_prefix_length</span>
+
+            <span class="c1"># `prompt_logprobs` has the same length as the input `ids`.</span>
+            <span class="c1"># The i-th element contains the log probabilities of the i-th token in `ids`</span>
+            <span class="c1"># and the highest-likelihood token at that position.</span>
+            <span class="c1"># The 0-th element is always `None` because the log probability cannot be computed for it.</span>
+            <span class="n">prompt_logprobs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Logprob</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="n">output</span><span class="o">.</span><span class="n">prompt_logprobs</span>
+            <span class="n">all_token_logprobs</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">cands</span><span class="p">[</span><span class="n">token_id</span><span class="p">]</span><span class="o">.</span><span class="n">logprob</span> <span class="k">if</span> <span class="n">cands</span> <span class="k">else</span> <span class="mf">0.0</span> <span class="k">for</span> <span class="n">cands</span><span class="p">,</span> <span class="n">token_id</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">prompt_logprobs</span><span class="p">,</span> <span class="n">ids</span><span class="p">)</span>
+            <span class="p">]</span>
+            <span class="n">continuation_logprob</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="n">all_token_logprobs</span><span class="p">[</span><span class="n">chunk_continuation_start</span><span class="p">:]))</span>
+            <span class="n">batch_logprobs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+=</span> <span class="n">continuation_logprob</span>
+            <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="n">last_computed_index</span> <span class="o">=</span> <span class="n">chunk_end</span>
+
+    <span class="k">return</span> <span class="n">batch_logprobs</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
 <h3 id="flexeval.core.language_model.vllm_model.VLLM.__repr__" class="doc doc-heading">
             <span class="doc doc-object-name doc-function-name">__repr__</span>
 
@@ -5897,8 +6301,8 @@ If specified, this overrides the default chat template of the tokenizer.</p>
 
             <details class="quote">
               <summary>Source code in <code>flexeval/core/language_model/vllm_model.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">120</span>
-<span class="normal">121</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">257</span>
+<span class="normal">258</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;VLLM(model_name=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">model_name</span><span class="si">}</span><span class="s2">)&quot;</span>
 </code></pre></div></td></tr></table></div>
             </details>
