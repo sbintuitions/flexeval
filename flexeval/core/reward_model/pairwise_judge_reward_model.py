@@ -105,9 +105,6 @@ class PairwiseJudgeRewardModel(RewardModel):
             all_pairwise_instances += [pairwise_instance_answer_a_is_chosen, pairwise_instance_answer_b_is_chosen]
 
             output = {
-                "prompt": reward_bench_instance.prompt,
-                "chosen": reward_bench_instance.chosen,
-                "rejected": reward_bench_instance.rejected,
                 "llm_inputs": [input_chat_messages_a_is_chosen, input_chat_messages_b_is_chosen],
             }
             outputs.append(output)

@@ -37,5 +37,11 @@ def evaluate_reward_model(
 
             pbar.update(len(batch_reward_bench_instances))
 
+    # Add the datasets information to the outputs
+    for i in range(len(outputs)):
+        outputs[i]["prompt"] = reward_bench_instances[i].prompt
+        outputs[i]["chosen"] = reward_bench_instances[i].chosen
+        outputs[i]["rejected"] = reward_bench_instances[i].rejected
+
     accuracy = sum(chosen_is_better_list) / len(chosen_is_better_list)
     return {"accuracy": accuracy}, outputs
