@@ -165,10 +165,11 @@ def test_evaluate_pairwise(cached_matches: list[Match] | None) -> None:
 
 
 def test_evaluate_reward_model() -> None:
-    TEMPLATE = "## prompt\n{{ prompt }}\n\n## answer A\n{{ answer_a }}\n\n## answer B\n{{ answer_b }}"
+    template = "## prompt\n{{ prompt }}\n\n## answer A\n{{ answer_a }}\n\n## answer B\n{{ answer_b }}"
+
     reward_model = PairwiseJudgeRewardModel(
         language_model=DummyRewardLanguageModel(),
-        prompt_template=Jinja2PromptTemplate(template=TEMPLATE),
+        prompt_template=Jinja2PromptTemplate(template=template),
         system_message="",
         gen_kwargs={},
     )
@@ -177,8 +178,8 @@ def test_evaluate_reward_model() -> None:
         eval_dataset=DummyRewardBenchDataset(),
         batch_size=1,
     )
-    # The probability of accuracy being 0 is (1/2)^100.
-    assert metrics["accuracy"] > 0
+
+    assert metrics["accuracy"] == 0.5
     assert outputs[0] == {
         "prompt": "prompt_text_0",
         "chosen": "chosen_text_0",
@@ -203,9 +204,10 @@ def test_evaluate_reward_model() -> None:
         "is_corrects": [True, False],
     }
 
+    # Check DummyRewardLanguageModel generate prefix-text
     reward_model = PairwiseJudgeRewardModel(
         language_model=DummyRewardLanguageModel("Results: [[B]]"),
-        prompt_template=Jinja2PromptTemplate(template=TEMPLATE),
+        prompt_template=Jinja2PromptTemplate(template=template),
         system_message="",
         gen_kwargs={},
     )
@@ -214,8 +216,8 @@ def test_evaluate_reward_model() -> None:
         eval_dataset=DummyRewardBenchDataset(),
         batch_size=1,
     )
-    # The probability of accuracy being 0 is (1/2)^100.
-    assert metrics["accuracy"] > 0
+
+    assert metrics["accuracy"] == 0.5
     assert outputs[0] == {
         "prompt": "prompt_text_0",
         "chosen": "chosen_text_0",

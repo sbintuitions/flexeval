@@ -118,7 +118,8 @@ class PairwiseJudgeRewardModel(RewardModel):
         ]
 
         if len(outputs) * 2 != len(chosen_is_betters):
-            raise ValueError("The number of outputs should be twice the number of inputs.")
+            msg = "The number of outputs should be twice the number of inputs."
+            raise ValueError(msg)
 
         for i in range(len(outputs)):
             outputs[i]["llm_outputs"] = [judge_outputs[i * 2], judge_outputs[i * 2 + 1]]
