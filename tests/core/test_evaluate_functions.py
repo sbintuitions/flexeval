@@ -165,9 +165,10 @@ def test_evaluate_pairwise(cached_matches: list[Match] | None) -> None:
 
 
 def test_evaluate_reward_model() -> None:
+    TEMPLATE = "## prompt\n{{ prompt }}\n\n## answer A\n{{ answer_a }}\n\n## answer B\n{{ answer_b }}"
     reward_model = PairwiseJudgeRewardModel(
         language_model=DummyRewardLanguageModel(),
-        prompt_template=Jinja2PromptTemplate(template="{{ prompt }} {{ answer_a }} {{ answer_b }}"),
+        prompt_template=Jinja2PromptTemplate(template=TEMPLATE),
         system_message="",
         gen_kwargs={},
     )
@@ -178,11 +179,33 @@ def test_evaluate_reward_model() -> None:
     )
     # The probability of accuracy being 0 is (1/2)^100.
     assert metrics["accuracy"] > 0
-    assert outputs == ["[[A]]"] * (100 * 2)
+    assert outputs[0] == {
+        "prompt": "prompt_text_0",
+        "chosen": "chosen_text_0",
+        "rejected": "rejected_text_0",
+        "llm_inputs": [
+            # A is chosen text
+            [
+                {
+                    "role": "user",
+                    "content": "## prompt\nprompt_text_0\n\n## answer A\nchosen_text_0\n\n## answer B\nrejected_text_0",
+                }
+            ],
+            # B is chosen text
+            [
+                {
+                    "role": "user",
+                    "content": "## prompt\nprompt_text_0\n\n## answer A\nrejected_text_0\n\n## answer B\nchosen_text_0",
+                }
+            ],
+        ],
+        "llm_outputs": ["[[A]]", "[[A]]"],
+        "is_corrects": [True, False],
+    }
 
     reward_model = PairwiseJudgeRewardModel(
         language_model=DummyRewardLanguageModel("Results: [[B]]"),
-        prompt_template=Jinja2PromptTemplate(template="{{ prompt }} {{ answer_a }} {{ answer_b }}"),
+        prompt_template=Jinja2PromptTemplate(template=TEMPLATE),
         system_message="",
         gen_kwargs={},
     )
@@ -193,4 +216,26 @@ def test_evaluate_reward_model() -> None:
     )
     # The probability of accuracy being 0 is (1/2)^100.
     assert metrics["accuracy"] > 0
-    assert outputs == ["Results: [[B]]"] * (100 * 2)
+    assert outputs[0] == {
+        "prompt": "prompt_text_0",
+        "chosen": "chosen_text_0",
+        "rejected": "rejected_text_0",
+        "llm_inputs": [
+            [
+                # A is chosen text
+                {
+                    "role": "user",
+                    "content": "## prompt\nprompt_text_0\n\n## answer A\nchosen_text_0\n\n## answer B\nrejected_text_0",
+                }
+            ],
+            [
+                # B is chosen text
+                {
+                    "role": "user",
+                    "content": "## prompt\nprompt_text_0\n\n## answer A\nrejected_text_0\n\n## answer B\nchosen_text_0",
+                }
+            ],
+        ],
+        "llm_outputs": ["Results: [[B]]", "Results: [[B]]"],
+        "is_corrects": [False, True],
+    }

@@ -13,7 +13,7 @@ class RewardModel(ABC):
     def batch_judge(
         self,
         batch_reward_bench_instances: list[RewardBenchInstance],
-    ) -> tuple[list[bool], list[Any]]:
+    ) -> tuple[list[bool], list[dict[str, Any]]]:
         """Judge a batch of reward bench instances.
 
         Args:

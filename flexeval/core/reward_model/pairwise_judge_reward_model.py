@@ -76,9 +76,10 @@ class PairwiseJudgeRewardModel(RewardModel):
     def batch_judge(
         self,
         batch_reward_bench_instances: list[RewardBenchInstance],
-    ) -> tuple[list[bool], list[Any]]:
+    ) -> tuple[list[bool], list[dict[str, Any]]]:
         input_chat_messages_list: list[list[dict[str, str]]] = []
         all_pairwise_instances: list[PairwiseInstance] = []
+        outputs: list[dict[str, Any]] = []
         for reward_bench_instance in batch_reward_bench_instances:
             pairwise_instance_answer_a_is_chosen = PairwiseInstance(
                 prompt=reward_bench_instance.prompt,
@@ -86,8 +87,10 @@ class PairwiseJudgeRewardModel(RewardModel):
                 answer_b=reward_bench_instance.rejected,
                 answer_label=PairwiseChoice.A,
             )
-            input_chat_messages = self._create_input_chat_messages_list(pairwise_instance_answer_a_is_chosen)
-            input_chat_messages_list.append(input_chat_messages)
+            input_chat_messages_a_is_chosen = self._create_input_chat_messages_list(
+                pairwise_instance_answer_a_is_chosen
+            )
+            input_chat_messages_list.append(input_chat_messages_a_is_chosen)
 
             pairwise_instance_answer_b_is_chosen = PairwiseInstance(
                 prompt=reward_bench_instance.prompt,
@@ -95,13 +98,30 @@ class PairwiseJudgeRewardModel(RewardModel):
                 answer_b=reward_bench_instance.chosen,
                 answer_label=PairwiseChoice.B,
             )
-            input_chat_messages = self._create_input_chat_messages_list(pairwise_instance_answer_b_is_chosen)
-            input_chat_messages_list.append(input_chat_messages)
+            input_chat_messages_b_is_chosen = self._create_input_chat_messages_list(
+                pairwise_instance_answer_b_is_chosen
+            )
+            input_chat_messages_list.append(input_chat_messages_b_is_chosen)
             all_pairwise_instances += [pairwise_instance_answer_a_is_chosen, pairwise_instance_answer_b_is_chosen]
 
+            output = {
+                "prompt": reward_bench_instance.prompt,
+                "chosen": reward_bench_instance.chosen,
+                "rejected": reward_bench_instance.rejected,
+                "llm_inputs": [input_chat_messages_a_is_chosen, input_chat_messages_b_is_chosen],
+            }
+            outputs.append(output)
         judge_outputs = self.language_model.batch_generate_chat_response(input_chat_messages_list, **self.gen_kwargs)
         chosen_is_betters: list[bool] = [
             self._is_correct_llm_answer(judge_output, shuffle_pairwise_instance.answer_label)
             for judge_output, shuffle_pairwise_instance in zip(judge_outputs, all_pairwise_instances)
         ]
-        return chosen_is_betters, judge_outputs
+
+        if len(outputs) * 2 != len(chosen_is_betters):
+            raise ValueError("The number of outputs should be twice the number of inputs.")
+
+        for i in range(len(outputs)):
+            outputs[i]["llm_outputs"] = [judge_outputs[i * 2], judge_outputs[i * 2 + 1]]
+            outputs[i]["is_corrects"] = [chosen_is_betters[i * 2], chosen_is_betters[i * 2 + 1]]
+
+        return chosen_is_betters, outputs

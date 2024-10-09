@@ -7,9 +7,9 @@ class DummyRewardBenchDataset(RewardBenchDataset):
     def __init__(self) -> None:
         self.items = [
             RewardBenchInstance(
-                prompt=f"prompt: {i}",
-                chosen=f"chosen: {i}",
-                rejected=f"rejected: {i}",
+                prompt=f"prompt_text_{i}",
+                chosen=f"chosen_text_{i}",
+                rejected=f"rejected_text_{i}",
             )
             for i in range(100)
         ]
