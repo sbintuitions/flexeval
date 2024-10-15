@@ -1,4 +1,5 @@
 import tempfile
+
 import pytest
 
 from flexeval.core.prompt_template.jinja2 import Jinja2PromptTemplate
