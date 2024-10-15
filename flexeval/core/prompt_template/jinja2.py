@@ -13,10 +13,22 @@ class Jinja2PromptTemplate(PromptTemplate):
 
     Args:
         template: The Jinja2 template to use.
+        template_path: The path to a file with the Jinja2 template to use.
     """
 
-    def __init__(self, template: str) -> None:
-        self.template = template
+    def __init__(self, template: str | None = None, template_path: str | None = None) -> None:
+        if template is None and template_path is None:
+            msg = "Either template or template_path must be provided"
+            raise ValueError(msg)
+        if template is not None and template_path is not None:
+            msg = "Only one of template or template_path can be provided"
+            raise ValueError(msg)
+
+        if template_path is not None:
+            with open(template_path) as f:
+                self.template = f.read()
+        else:
+            self.template = template
 
     def embed_inputs(self, input_dict: dict[str, Any]) -> str:
         return JINJA2_ENV.from_string(self.template).render(input_dict)
