@@ -120,6 +120,6 @@ class PairwiseJudgeRewardModel(RewardModel):
 
         for i in range(len(outputs)):
             outputs[i]["llm_outputs"] = [judge_outputs[i * 2], judge_outputs[i * 2 + 1]]
-            outputs[i]["is_corrects"] = [chosen_is_betters[i * 2], chosen_is_betters[i * 2 + 1]]
+            outputs[i]["evaluation_results"] = [chosen_is_betters[i * 2], chosen_is_betters[i * 2 + 1]]
 
         return chosen_is_betters, outputs
