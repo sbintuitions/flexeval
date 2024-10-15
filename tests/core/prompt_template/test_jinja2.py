@@ -1,4 +1,5 @@
 import tempfile
+import pytest
 
 from flexeval.core.prompt_template.jinja2 import Jinja2PromptTemplate
 from flexeval.utils import instantiate_from_config
@@ -10,6 +11,21 @@ def test_jinja2_template() -> None:
 
     inputs = dummy_dataset[0].inputs
     assert Jinja2PromptTemplate(template="{{ text }}").embed_inputs(inputs) == inputs["text"]
+
+
+def test_jinja2_template_with_template_path() -> None:
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".jsonnet") as f:
+        f.write("""Hello World!""")
+        f.flush()
+
+        prompt_template = Jinja2PromptTemplate(template_path=f.name)
+
+    assert prompt_template.embed_inputs({}) == "Hello World!"
+
+
+def test_if_jinja2_template_raises_errors_with_conflicting_args() -> None:
+    with pytest.raises(ValueError):
+        Jinja2PromptTemplate(template="Hello World!", template_path="some_path")
 
 
 def test_if_jinja2_template_keep_trailing_newline() -> None:
