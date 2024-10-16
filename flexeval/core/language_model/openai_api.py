@@ -6,11 +6,33 @@ from typing import Any, Awaitable, Callable, TypeVar
 import openai
 from loguru import logger
 from openai import AsyncOpenAI
-from openai.types import Completion, CompletionChoice, CompletionUsage
+from openai.types.chat import ChatCompletion, ChatCompletionMessage, Choice
 
 from .base import LanguageModel, normalize_stop_sequences
 
 T = TypeVar("T")
+
+
+# NOTE: current implementation uses only choices[0].message.content field.
+EMPTY_RESPONSE = ChatCompletion(
+    id="dummy",
+    choices=[Choice(
+        index=0,
+        message=ChatCompletionMessage(
+            content="",
+            refusal=None,
+            role="assistant",
+            function_call=None,
+            tool_calls=None
+        )
+    )],
+    created=946652400,  # dummy integer
+    model="dummy_model",
+    object="chat.completion",
+    service_tier=None,
+    system_fingerprint=None,
+    usage=None
+)
 
 
 async def _retry_on_error(
