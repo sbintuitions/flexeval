@@ -128,6 +128,13 @@ class OpenAIChatBatchAPI(LanguageModel):
             logger.info(f"Current status: {status.value}")
         return status, batch_response
 
+    def _retrieve_file_content(self, file_id: str)-> list[dict[any, any]]:
+        file_response = asyncio.run(self._client.files.content(file_id))
+        return [
+            json.loads(line) for line in
+            file_response.text.strip().split("\n")
+        ]
+
     def _execute_batch_requests(
         self,
         messages_list: list[list[dict[str, str]]],
@@ -136,7 +143,7 @@ class OpenAIChatBatchAPI(LanguageModel):
         custom_id_2_message: dict[str, list[dict[str, str]]] = {
             str(uuid.uuid4()): messages for messages in messages_list
         }
-        custom_id_2_response: dict[str, str | None] = {custom_id: None for custom_id in custom_id_2_message}
+        custom_id_2_response: dict[str, str] = {custom_id: "" for custom_id in custom_id_2_message}
         exec_cnt = 0
 
         while len(custom_id_2_message) > 0:
@@ -152,12 +159,13 @@ class OpenAIChatBatchAPI(LanguageModel):
                 error_message = f"Failed: {batch_response}"
                 raise ValueError(error_message)
 
-            file_response = asyncio.run(self._client.files.content(batch_response.output_file_id))
+            output_file_id = batch_response.output_file_id
 
-            data = []
-            for line in file_response.text.strip().split("\n"):
-                json_data = json.loads(line)
-                data.append(json_data)
+            # If completion on any input fails, output_file_id is None.
+            if output_file_id is None:
+                # Retrieve error_file and log error messages.
+                data: list[dict[str, Any]] = self._retrieve_file_content(batch_response.error_file_id)
+
 
             for data_i in data:
                 if data_i["error"] is not None:
