@@ -138,7 +138,7 @@ class OpenAIChatAPI(LanguageModel):
         )
         completions = [res.choices[0].message.content for res in api_responses]
         if all(completion == "" for completion in completions):
-            logger.warning("All generated texts are empty string. Something may go wrong.")
+            logger.warning("All generated texts are empty strings. Something may be wrong.")
         return completions
 
     def batch_generate_chat_response(
