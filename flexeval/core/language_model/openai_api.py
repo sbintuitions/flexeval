@@ -45,14 +45,17 @@ async def _retry_on_error(
             return await openai_call()
         except openai.APIError as e:  # noqa: PERF203
             if i == max_num_trials - 1:
-                logger.warning(f"We reached maximum number of trials ({max_num_trials} trials.).")
-                logger.warning("Response including empty string is returned.")
-                return EMPTY_RESPONSE
+                # Since reaching maximum number of trials, exit for-loop and return
+                # empty response.
+                break
             logger.warning(f"We got an error: {e}")
             wait_time_seconds = first_wait_time * (2**i)
             logger.warning(f"Wait for {wait_time_seconds} seconds...")
             await asyncio.sleep(wait_time_seconds)
-    return None
+
+    logger.warning(f"We reached maximum number of trials ({max_num_trials} trials.).")
+    logger.warning("Response including empty string is returned.")
+    return EMPTY_RESPONSE
 
 
 class OpenAIChatAPI(LanguageModel):
