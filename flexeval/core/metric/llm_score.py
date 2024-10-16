@@ -49,7 +49,7 @@ def summarize_evaluator_scores(
         if score is None or category_key is None:
             continue
         if category_key in task_inputs:
-            category2valid_scores[task_inputs["category"]].append(score)
+            category2valid_scores[task_inputs[category_key]].append(score)
 
     category2mean_score: dict[str, float] = {}
     for category, valid_scores in category2valid_scores.items():
