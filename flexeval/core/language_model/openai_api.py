@@ -6,28 +6,56 @@ from typing import Any, Awaitable, Callable, TypeVar
 import openai
 from loguru import logger
 from openai import AsyncOpenAI
+from openai.types.chat import ChatCompletion, ChatCompletionMessage
+from openai.types.chat.chat_completion import Choice
 
 from .base import LanguageModel, normalize_stop_sequences
 
 T = TypeVar("T")
 
 
+# NOTE: current implementation uses only choices[0].message.content field.
+EMPTY_RESPONSE = ChatCompletion(
+    id="dummy",
+    choices=[
+        Choice(
+            finish_reason="stop",
+            index=0,
+            message=ChatCompletionMessage(
+                content="", refusal=None, role="assistant", function_call=None, tool_calls=None
+            ),
+        )
+    ],
+    created=946652400,  # dummy integer
+    model="dummy_model",
+    object="chat.completion",
+    service_tier=None,
+    system_fingerprint=None,
+    usage=None,
+)
+
+
 async def _retry_on_error(
     openai_call: Callable[[], Awaitable[T]],
     max_num_trials: int = 5,
     first_wait_time: int = 10,
-) -> Awaitable[T] | None:
+) -> Awaitable[T]:
     for i in range(max_num_trials):
         try:
             return await openai_call()
         except openai.APIError as e:  # noqa: PERF203
             if i == max_num_trials - 1:
-                raise
+                # Since reaching maximum number of trials, exit for-loop and return
+                # empty response.
+                break
             logger.warning(f"We got an error: {e}")
             wait_time_seconds = first_wait_time * (2**i)
             logger.warning(f"Wait for {wait_time_seconds} seconds...")
             await asyncio.sleep(wait_time_seconds)
-    return None
+
+    logger.warning(f"We reached maximum number of trials ({max_num_trials} trials.).")
+    logger.warning("Response including empty string is returned.")
+    return EMPTY_RESPONSE
 
 
 class OpenAIChatAPI(LanguageModel):
@@ -108,7 +136,10 @@ class OpenAIChatAPI(LanguageModel):
                 **kwargs,
             ),
         )
-        return [res.choices[0].message.content for res in api_responses]
+        completions = [res.choices[0].message.content for res in api_responses]
+        if all(completion == "" for completion in completions):
+            logger.warning("All generated texts are empty strings. Something may be wrong.")
+        return completions
 
     def batch_generate_chat_response(
         self,
@@ -118,7 +149,10 @@ class OpenAIChatAPI(LanguageModel):
         api_responses = asyncio.run(
             self._async_batch_run_chatgpt(chat_messages_list, **kwargs),
         )
-        return [res.choices[0].message.content for res in api_responses]
+        completions = [res.choices[0].message.content for res in api_responses]
+        if all(completion == "" for completion in completions):
+            logger.warning("All generated texts are empty string. Something may go wrong.")
+        return completions
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(model={self.model})"
