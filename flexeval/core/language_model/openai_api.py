@@ -47,8 +47,7 @@ async def _retry_on_error(
             if i == max_num_trials - 1:
                 logger.warning(f"We reached maximum number of trials ({max_num_trials} trials.).")
                 logger.warning("Response including empty string is returned.")
-                # TODO: return dummy instance including empty string.
-                raise
+                return EMPTY_RESPONSE
             logger.warning(f"We got an error: {e}")
             wait_time_seconds = first_wait_time * (2**i)
             logger.warning(f"Wait for {wait_time_seconds} seconds...")
@@ -134,7 +133,6 @@ class OpenAIChatAPI(LanguageModel):
                 **kwargs,
             ),
         )
-        print(api_responses)
         return [res.choices[0].message.content for res in api_responses]
 
     def batch_generate_chat_response(
@@ -145,7 +143,6 @@ class OpenAIChatAPI(LanguageModel):
         api_responses = asyncio.run(
             self._async_batch_run_chatgpt(chat_messages_list, **kwargs),
         )
-        print(api_responses)
         return [res.choices[0].message.content for res in api_responses]
 
     def __repr__(self) -> str:
