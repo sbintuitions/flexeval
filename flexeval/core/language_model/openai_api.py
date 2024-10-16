@@ -17,23 +17,21 @@ T = TypeVar("T")
 # NOTE: current implementation uses only choices[0].message.content field.
 EMPTY_RESPONSE = ChatCompletion(
     id="dummy",
-    choices=[Choice(
-        finish_reason="stop",
-        index=0,
-        message=ChatCompletionMessage(
-            content="",
-            refusal=None,
-            role="assistant",
-            function_call=None,
-            tool_calls=None
+    choices=[
+        Choice(
+            finish_reason="stop",
+            index=0,
+            message=ChatCompletionMessage(
+                content="", refusal=None, role="assistant", function_call=None, tool_calls=None
+            ),
         )
-    )],
+    ],
     created=946652400,  # dummy integer
     model="dummy_model",
     object="chat.completion",
     service_tier=None,
     system_fingerprint=None,
-    usage=None
+    usage=None,
 )
 
 
