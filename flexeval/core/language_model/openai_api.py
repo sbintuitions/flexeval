@@ -6,7 +6,8 @@ from typing import Any, Awaitable, Callable, TypeVar
 import openai
 from loguru import logger
 from openai import AsyncOpenAI
-from openai.types.chat import ChatCompletion, ChatCompletionMessage, Choice
+from openai.types.chat import ChatCompletion, ChatCompletionMessage
+from openai.types.chat.chat_completion import Choice
 
 from .base import LanguageModel, normalize_stop_sequences
 
@@ -17,6 +18,7 @@ T = TypeVar("T")
 EMPTY_RESPONSE = ChatCompletion(
     id="dummy",
     choices=[Choice(
+        finish_reason="stop",
         index=0,
         message=ChatCompletionMessage(
             content="",
@@ -133,7 +135,10 @@ class OpenAIChatAPI(LanguageModel):
                 **kwargs,
             ),
         )
-        return [res.choices[0].message.content for res in api_responses]
+        completions = [res.choices[0].message.content for res in api_responses]
+        if all(completion == "" for completion in completions):
+            logger.warning("All generated texts are empty string. Something may go wrong.")
+        return completions
 
     def batch_generate_chat_response(
         self,
@@ -143,7 +148,10 @@ class OpenAIChatAPI(LanguageModel):
         api_responses = asyncio.run(
             self._async_batch_run_chatgpt(chat_messages_list, **kwargs),
         )
-        return [res.choices[0].message.content for res in api_responses]
+        completions = [res.choices[0].message.content for res in api_responses]
+        if all(completion == "" for completion in completions):
+            logger.warning("All generated texts are empty string. Something may go wrong.")
+        return completions
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(model={self.model})"
