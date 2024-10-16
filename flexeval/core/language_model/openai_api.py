@@ -39,7 +39,7 @@ async def _retry_on_error(
     openai_call: Callable[[], Awaitable[T]],
     max_num_trials: int = 5,
     first_wait_time: int = 10,
-) -> Awaitable[T] | None:
+) -> Awaitable[T]:
     for i in range(max_num_trials):
         try:
             return await openai_call()
