@@ -6,6 +6,7 @@ import os
 import tempfile
 import uuid
 from enum import Enum
+from pprint import pformat
 from typing import Any
 
 from loguru import logger
@@ -183,9 +184,10 @@ class OpenAIChatBatchAPI(LanguageModel):
 
             exec_cnt += 1
 
-        if sum([response is not None for response in custom_id_2_response.values()]) < len(messages_list):
-            error_message = "Exec failed"
-            raise ValueError(error_message)
+        # The remaining elements are all those that failed to complete request.
+        if custom_id_2_message:
+            logger.warning("The following messages failed to complete request.")
+            logger.warning(pformat(list(custom_id_2_message.values())))
 
         return list(custom_id_2_response.values())
 
