@@ -6,6 +6,7 @@ import os
 import tempfile
 import uuid
 from enum import Enum
+from pprint import pformat
 from typing import Any
 
 from loguru import logger
@@ -128,6 +129,10 @@ class OpenAIChatBatchAPI(LanguageModel):
             logger.info(f"Current status: {status.value}")
         return status, batch_response
 
+    def _retrieve_file_content(self, file_id: str) -> list[dict[any, any]]:
+        file_response = asyncio.run(self._client.files.content(file_id))
+        return [json.loads(line) for line in file_response.text.strip().split("\n")]
+
     def _execute_batch_requests(
         self,
         messages_list: list[list[dict[str, str]]],
@@ -136,13 +141,15 @@ class OpenAIChatBatchAPI(LanguageModel):
         custom_id_2_message: dict[str, list[dict[str, str]]] = {
             str(uuid.uuid4()): messages for messages in messages_list
         }
-        custom_id_2_response: dict[str, str | None] = {custom_id: None for custom_id in custom_id_2_message}
-        exec_cnt = 0
+        # The response will be an empty string if the API produces an error.
+        custom_id_2_response: dict[str, str] = {custom_id: "" for custom_id in custom_id_2_message}
+        exec_cnt = 1
 
         while len(custom_id_2_message) > 0:
             if exec_cnt > MAX_NUM_TRIALS:
                 break
             logger.info(f"Trial {exec_cnt}")
+            exec_cnt += 1
             batch_id = asyncio.run(self._post_batch_requests(custom_id_2_message, **kwargs))
 
             status, batch_response = asyncio.run(
@@ -152,13 +159,25 @@ class OpenAIChatBatchAPI(LanguageModel):
                 error_message = f"Failed: {batch_response}"
                 raise ValueError(error_message)
 
-            file_response = asyncio.run(self._client.files.content(batch_response.output_file_id))
+            # Check error_file_id exists and if exists, log error details.
+            error_file_id = batch_response.error_file_id
+            # If any request fails, error_file_id is set.
+            if error_file_id is not None:
+                logger.warning("Request on some messages failed following reason.")
+                data: list[dict[str, Any]] = self._retrieve_file_content(error_file_id)
+                # [Error](https://github.com/openai/openai-openapi/blob/master/openapi.yaml#L8857])
+                # instance is embedded in response.
+                for data_i in data:
+                    error = data_i["response"]
+                    logger.warning(f"Failed: {error}")
 
-            data = []
-            for line in file_response.text.strip().split("\n"):
-                json_data = json.loads(line)
-                data.append(json_data)
+            output_file_id = batch_response.output_file_id
+            # If completion on all input fails, output_file_id is None.
+            if output_file_id is None:
+                logger.warning("All request failed. Continue...")
+                continue
 
+            data: list[dict[str, Any]] = self._retrieve_file_content(output_file_id)
             for data_i in data:
                 if data_i["error"] is not None:
                     continue
@@ -167,11 +186,10 @@ class OpenAIChatBatchAPI(LanguageModel):
                 custom_id_2_message.pop(custom_id)
                 custom_id_2_response[custom_id] = data_i["response"]["body"]["choices"][0]["message"]["content"]
 
-            exec_cnt += 1
-
-        if sum([response is not None for response in custom_id_2_response.values()]) < len(messages_list):
-            error_message = "Exec failed"
-            raise ValueError(error_message)
+        # The remaining elements are all those that failed to complete request.
+        if custom_id_2_message:
+            logger.warning("The following messages failed to complete request.")
+            logger.warning(pformat(list(custom_id_2_message.values())))
 
         return list(custom_id_2_response.values())
 
