@@ -187,8 +187,6 @@ class OpenAIChatBatchAPI(LanguageModel):
                 custom_id_2_message.pop(custom_id)
                 custom_id_2_response[custom_id] = data_i["response"]["body"]["choices"][0]["message"]["content"]
 
-            exec_cnt += 1
-
         # The remaining elements are all those that failed to complete request.
         if custom_id_2_message:
             logger.warning("The following messages failed to complete request.")
