@@ -151,6 +151,7 @@ class OpenAIChatBatchAPI(LanguageModel):
             if exec_cnt > MAX_NUM_TRIALS:
                 break
             logger.info(f"Trial {exec_cnt}")
+            exec_cnt += 1
             batch_id = asyncio.run(self._post_batch_requests(custom_id_2_message, **kwargs))
 
             status, batch_response = asyncio.run(
@@ -164,17 +165,17 @@ class OpenAIChatBatchAPI(LanguageModel):
             error_file_id = batch_response.error_file_id
             # If any request fails, error_file_id is set.
             if error_file_id is not None:
-                logger.warn("Request on some messages failed following reason.")
+                logger.warning("Request on some messages failed following reason.")
                 data: list[dict[str, Any]] = self._retrieve_file_content(error_file_id)
                 # [Error](https://github.com/openai/openai-openapi/blob/master/openapi.yaml#L8857]) instance is embedded in response.
                 for data_i in data:
                     error = data_i["response"]
-                    logger.warn(f"Failed: {error}")
+                    logger.warning(f"Failed: {error}")
 
             output_file_id = batch_response.output_file_id
             # If completion on all input fails, output_file_id is None.
             if output_file_id is None:
-                logger.warn("All request failed. Continue...")
+                logger.warning("All request failed. Continue...")
                 continue
 
             data: list[dict[str, Any]] = self._retrieve_file_content(output_file_id)
