@@ -141,6 +141,7 @@ class OpenAIChatBatchAPI(LanguageModel):
         custom_id_2_message: dict[str, list[dict[str, str]]] = {
             str(uuid.uuid4()): messages for messages in messages_list
         }
+        # The response will be an empty string if the API produces an error.
         custom_id_2_response: dict[str, str] = {custom_id: "" for custom_id in custom_id_2_message}
         exec_cnt = 1
 
