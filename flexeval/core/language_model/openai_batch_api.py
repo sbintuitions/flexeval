@@ -145,7 +145,7 @@ class OpenAIChatBatchAPI(LanguageModel):
             str(uuid.uuid4()): messages for messages in messages_list
         }
         custom_id_2_response: dict[str, str] = {custom_id: "" for custom_id in custom_id_2_message}
-        exec_cnt = 0
+        exec_cnt = 1
 
         while len(custom_id_2_message) > 0:
             if exec_cnt > MAX_NUM_TRIALS:
