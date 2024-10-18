@@ -129,12 +129,9 @@ class OpenAIChatBatchAPI(LanguageModel):
             logger.info(f"Current status: {status.value}")
         return status, batch_response
 
-    def _retrieve_file_content(self, file_id: str)-> list[dict[any, any]]:
+    def _retrieve_file_content(self, file_id: str) -> list[dict[any, any]]:
         file_response = asyncio.run(self._client.files.content(file_id))
-        return [
-            json.loads(line) for line in
-            file_response.text.strip().split("\n")
-        ]
+        return [json.loads(line) for line in file_response.text.strip().split("\n")]
 
     def _execute_batch_requests(
         self,
