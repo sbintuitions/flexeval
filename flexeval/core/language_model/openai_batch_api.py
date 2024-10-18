@@ -160,20 +160,24 @@ class OpenAIChatBatchAPI(LanguageModel):
                 error_message = f"Failed: {batch_response}"
                 raise ValueError(error_message)
 
-            output_file_id = batch_response.output_file_id
-
-            # If completion on all input fails, output_file_id is None.
-            if output_file_id is None:
+            # Check error_file_id exists and if exists, log error details.
+            error_file_id = batch_response.error_file_id
+            # If any request fails, error_file_id is set.
+            if error_file_id is not None:
                 logger.warn("Request on some messages failed following reason.")
-                # Retrieve error_file and log error messages.
-                # Data follows schema of [BatchRequestOutput](https://github.com/openai/openai-openapi/blob/master/openapi.yaml#L15767).
-                data: list[dict[str, Any]] = self._retrieve_file_content(batch_response.error_file_id)
+                data: list[dict[str, Any]] = self._retrieve_file_content(error_file_id)
                 # [Error](https://github.com/openai/openai-openapi/blob/master/openapi.yaml#L8857]) instance is embedded in response.
                 for data_i in data:
                     error = data_i["response"]
                     logger.warn(f"Failed: {error}")
+
+            output_file_id = batch_response.output_file_id
+            # If completion on all input fails, output_file_id is None.
+            if output_file_id is None:
+                logger.warn("All request failed. Continue...")
                 continue
 
+            data: list[dict[str, Any]] = self._retrieve_file_content(output_file_id)
             for data_i in data:
                 if data_i["error"] is not None:
                     continue
