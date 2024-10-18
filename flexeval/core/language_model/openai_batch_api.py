@@ -167,7 +167,8 @@ class OpenAIChatBatchAPI(LanguageModel):
             if error_file_id is not None:
                 logger.warning("Request on some messages failed following reason.")
                 data: list[dict[str, Any]] = self._retrieve_file_content(error_file_id)
-                # [Error](https://github.com/openai/openai-openapi/blob/master/openapi.yaml#L8857]) instance is embedded in response.
+                # [Error](https://github.com/openai/openai-openapi/blob/master/openapi.yaml#L8857])
+                # instance is embedded in response.
                 for data_i in data:
                     error = data_i["response"]
                     logger.warning(f"Failed: {error}")
