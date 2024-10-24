@@ -60,6 +60,89 @@ def summarize_evaluator_scores(
     return summary
 
 
+def prepare_text_input_for_evaluator(
+        lm_outputs: list[str],
+        references_list: list[list[str]],
+        task_inputs_list: list[dict[str, str]],
+        prompt_template: PromptTemplate,
+    ) -> list[str]:
+    evaluator_input_list: list[str] = []
+    for lm_output, task_input, references in zip(
+        lm_outputs,
+        task_inputs_list,
+        references_list,
+    ):
+        prompt_inputs = {
+            "lm_output": lm_output,
+            "references": references,
+            **task_input,
+        }
+        evaluator_input = prompt_template.embed_inputs(prompt_inputs)
+        evaluator_input_list.append(evaluator_input)
+    return evaluator_input_list
+
+
+def prepare_chat_input_for_evaluator(
+        lm_outputs: list[str],
+        references_list: list[list[str]],
+        task_inputs_list: list[dict[str, str]],
+        prompt_template: PromptTemplate,
+        system_message: str | PromptTemplate | None = None,
+    ) -> list[list[dict[str, str]]]:
+    evaluator_input_list: list[list[dict[str, str]]] = []
+    for lm_output, task_input, references in zip(
+        lm_outputs,
+        task_inputs_list,
+        references_list,
+    ):
+        prompt_inputs = {
+            "lm_output": lm_output,
+            "references": references,
+            **task_input,
+        }
+        evaluator_input = prompt_template.embed_inputs(prompt_inputs)
+        input_chat_messages = [{"role": "user", "content": evaluator_input}]
+        if system_message:
+            if not isinstance(system_message, str):
+                system_message = system_message.embed_inputs(prompt_inputs)
+            input_chat_messages.insert(
+                0,
+                {"role": "system", "content": system_message},
+            )
+        evaluator_input_list.append(input_chat_messages)
+    return evaluator_input_list
+
+
+def generate_evaluations(
+        evaluator_input_list: list[str] | list[list[dict[str, str]]],
+        language_model: LanguageModel,
+        batch_size: int,
+        disable_tqdm: bool = False,
+        desc_for_tqdm: str | None = None,
+    ) -> list[str]:
+    with tqdm.tqdm(
+        total=len(evaluator_input_list),
+        disable=disable_tqdm,
+        desc=desc_for_tqdm,
+    ) as pbar:
+        evaluator_output_list: list[str] = []
+        for batch_inputs in batch_iter(
+            evaluator_input_list,
+            batch_size=batch_size,
+        ):
+            if isinstance(batch_inputs[0], str):
+                evaluator_outputs = language_model.batch_complete_text(
+                    batch_inputs,
+                )
+            else:
+                evaluator_outputs = language_model.batch_generate_chat_response(
+                    batch_inputs,
+                )
+            evaluator_output_list += evaluator_outputs
+            pbar.update(len(batch_inputs))
+    return evaluator_output_list
+
+
 class LLMScore(Metric):
     """Let LanguageModel to evaluate the output of another LanguageModel.
 
@@ -127,35 +210,12 @@ class LLMScore(Metric):
         if references_list is None:
             references_list = [[] for _ in lm_outputs]
 
-        evaluator_input_list: list[str] = []
-        for lm_output, task_input, references in zip(
-            lm_outputs,
-            task_inputs_list,
-            references_list,
-        ):
-            prompt_inputs = {
-                "lm_output": lm_output,
-                "references": references,
-                **task_input,
-            }
-            evaluator_input = self.prompt_template.embed_inputs(prompt_inputs)
-            evaluator_input_list.append(evaluator_input)
-
-        with tqdm.tqdm(
-            total=len(evaluator_input_list),
-            disable=self.disable_tqdm,
-            desc="Calculating LLM score",
-        ) as pbar:
-            evaluator_output_list: list[str] = []
-            for batch_evaluator_input in batch_iter(
-                evaluator_input_list,
-                batch_size=self.batch_size,
-            ):
-                evaluator_outputs = self.language_model.batch_complete_text(
-                    batch_evaluator_input,
-                )
-                evaluator_output_list += evaluator_outputs
-                pbar.update(len(batch_evaluator_input))
+        evaluator_input_list: list[str] = prepare_text_input_for_evaluator(
+            lm_outputs, references_list, task_inputs_list, self.prompt_template
+        )
+        evaluator_output_list: list[str] = generate_evaluations(
+            evaluator_input_list, self.language_model, self.batch_size, self.disable_tqdm, "Calculating LLM score"
+        )
 
         evaluator_score_list: list[int | None] = []
         for evaluator_output in evaluator_output_list:
@@ -259,45 +319,13 @@ class ChatLLMScore(Metric):
             task_inputs_list = [{} for _ in lm_outputs]
         if references_list is None:
             references_list = [[] for _ in lm_outputs]
-        evaluator_input_list: list[list[dict[str, str]]] = []
-        for lm_output, task_input, references in zip(
-            lm_outputs,
-            task_inputs_list,
-            references_list,
-        ):
-            prompt_inputs = {
-                "lm_output": lm_output,
-                "references": references,
-                **task_input,
-            }
-            evaluator_input = self.prompt_template.embed_inputs(prompt_inputs)
-            input_chat_messages = [{"role": "user", "content": evaluator_input}]
-            if self.system_message:
-                if isinstance(self.system_message, str):
-                    system_message = self.system_message
-                else:
-                    system_message = self.system_message.embed_inputs(prompt_inputs)
-                input_chat_messages.insert(
-                    0,
-                    {"role": "system", "content": system_message},
-                )
-            evaluator_input_list.append(input_chat_messages)
 
-        with tqdm.tqdm(
-            total=len(evaluator_input_list),
-            disable=self.disable_tqdm,
-            desc="Calculating ChatLLM score",
-        ) as pbar:
-            evaluator_output_list: list[str] = []
-            for batch_inputs in batch_iter(
-                evaluator_input_list,
-                batch_size=self.batch_size,
-            ):
-                evaluator_outputs = self.language_model.batch_generate_chat_response(
-                    batch_inputs,
-                )
-                evaluator_output_list += evaluator_outputs
-                pbar.update(len(batch_inputs))
+        evaluator_input_list = prepare_chat_input_for_evaluator(
+            lm_outputs, references_list, task_inputs_list, self.prompt_template, self.system_message
+        )
+        evaluator_output_list: list[str] = generate_evaluations(
+            evaluator_input_list, self.language_model, self.batch_size, self.disable_tqdm, "Calculating ChatLLM score"
+        )
 
         evaluator_score_list: list[int] = []
         for evaluator_output in evaluator_output_list:
