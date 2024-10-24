@@ -11,7 +11,7 @@ class MetricResult:
     A dataclass representing the result of a metric evaluation.
     """
 
-    summary: dict[str, float]
+    summary: dict[str, Any]
     """
     Summary containing aggregated metric values.
     """
