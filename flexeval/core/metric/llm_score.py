@@ -66,6 +66,10 @@ def prepare_text_input_for_evaluator(
         task_inputs_list: list[dict[str, str]],
         prompt_template: PromptTemplate,
     ) -> list[str]:
+    """Create input texts for the evaluator
+    by integrating the task inputs, the model outputs, and the prompt template for evaluator.
+    """
+
     evaluator_input_list: list[str] = []
     for lm_output, task_input, references in zip(
         lm_outputs,
@@ -89,6 +93,10 @@ def prepare_chat_input_for_evaluator(
         prompt_template: PromptTemplate,
         system_message: str | PromptTemplate | None = None,
     ) -> list[list[dict[str, str]]]:
+    """Create input chat messages for the evaluator
+    by integrating the task inputs, the model outputs, and the prompt template for evaluator.
+    """
+
     evaluator_input_list: list[list[dict[str, str]]] = []
     for lm_output, task_input, references in zip(
         lm_outputs,
@@ -120,6 +128,14 @@ def generate_evaluations(
         disable_tqdm: bool = False,
         desc_for_tqdm: str | None = None,
     ) -> list[str]:
+    """Generate evaluation texts for each input in evaluator_input_list.
+
+    - If evaluator_input_list contains a list of plain texts, use
+      language_model.batch_complete_text() to generate evaluation outputs.
+    - If evaluator_input_list contains a list of chat message dictionaries,
+      use language_model.batch_generate_chat_response().
+    """
+
     with tqdm.tqdm(
         total=len(evaluator_input_list),
         disable=disable_tqdm,
@@ -130,7 +146,7 @@ def generate_evaluations(
             evaluator_input_list,
             batch_size=batch_size,
         ):
-            if isinstance(batch_inputs[0], str):
+            if all(isinstance(elem, str) for elem in batch_inputs):
                 evaluator_outputs = language_model.batch_complete_text(
                     batch_inputs,
                 )
