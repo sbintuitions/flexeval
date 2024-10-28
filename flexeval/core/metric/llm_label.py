@@ -90,6 +90,8 @@ class LLMLabel(Metric):
 
     You can specify the evaluation criteria in `PromptTemplate`.
     The last label value found in the output of the evaluator is used to compute the evaluation score.
+    You can assign a score to each label.
+    The final output is the average score and the distribution of the labels.
 
     Args:
         language_model: An instance of `LanguageModel` to evaluate the output of the model.
