@@ -251,7 +251,7 @@ class ChatLLMLabel(Metric):
         >>> label_points = [1.0, 0.0]
         >>> llm_label = ChatLLMLabel(language_model, prompt_template, label_names, label_points)
         >>> lm_outputs = ["Hello, world!", "Good morning!"]
-        >>> result = llm_score.evaluate(lm_outputs)
+        >>> result = llm_label.evaluate(lm_outputs)
         >>> print(result)
         MetricResult(
             summary={'llm_score': 0.5, 'llm_label_distribution': {'Good': 0.5, 'Bad': 0.5}, 'num_failed_score_parses': 0},
