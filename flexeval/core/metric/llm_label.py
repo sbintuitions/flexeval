@@ -104,8 +104,7 @@ class LLMLabel(Metric):
             The category key is expected to be in task inputs.
 
     Examples:
-        >>> from flexeval_instruction.plugins.llm_label import LLMLabel
-        >>> from flexeval import OpenAIChatAPI, Jinja2PromptTemplate
+        >>> from flexeval import OpenAIChatAPI, Jinja2PromptTemplate, LLMLabel
         >>> language_model = OpenAIChatAPI(model="gpt-3.5-turbo")
         >>> template = "Evaluate the quality of this text on a scale of Good/Bad.\\n`{{ lm_output }}`\\nPut the label at the end like [[Good]]."
         >>> prompt_template = Jinja2PromptTemplate(template)
