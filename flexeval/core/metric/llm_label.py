@@ -238,8 +238,6 @@ class ChatLLMLabel(Metric):
         system_message: A system message to be prepended to the input for the evaluator.
         batch_size: The batch size for the evaluator.
         disable_tqdm: Whether to disable the progress bar.
-        valid_score_range: A tuple of two integers representing the valid score range.
-            If the parsed score is out of the range, it will be ignored.
         category_key: A key to create category-wise mean score.
             The category key is expected to be in task inputs.
 
