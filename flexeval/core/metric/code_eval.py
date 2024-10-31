@@ -22,6 +22,7 @@ class CodeEval(Metric):
             The template can contain variables from task inputs.
             If `None`, the code prompt will be the generated text itself.
         processor: A processor applied to model outputs before evaluation.
+        evaluate_module: An evaluate module to use.
 
     Examples:
         >>> from flexeval import CodeEval
@@ -39,12 +40,17 @@ class CodeEval(Metric):
         )
     """
 
-    def __init__(self, code_template: str | None = None, processor: StringProcessor | None = None) -> None:
+    def __init__(
+        self,
+        code_template: str | None = None,
+        processor: StringProcessor | None = None,
+        evaluate_module: str = "code_eval",
+    ) -> None:
         if code_template is None:
             code_template = "{{ lm_output }}"
 
         self.code_template = JINJA2_ENV.from_string(code_template)
-        self.code_eval = evaluate.load("code_eval")
+        self.code_eval = evaluate.load(evaluate_module)
         self.processor = processor
 
     def evaluate(
