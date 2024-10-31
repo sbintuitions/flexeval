@@ -40,7 +40,12 @@ class CodeEval(Metric):
         )
     """
 
-    def __init__(self, code_template: str | None = None, processor: StringProcessor | None = None, evaluate_module: str = "code_eval") -> None:
+    def __init__(
+        self,
+        code_template: str | None = None,
+        processor: StringProcessor | None = None,
+        evaluate_module: str = "code_eval",
+    ) -> None:
         if code_template is None:
             code_template = "{{ lm_output }}"
 
