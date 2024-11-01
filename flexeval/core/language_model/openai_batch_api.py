@@ -104,7 +104,6 @@ class OpenAIChatBatchAPI(LanguageModel):
         # Update batch file
         with open(self.temp_jsonl_file.name, "rb") as batch_file:  # noqa: ASYNC101
             batch_input_file = await self._client.files.create(file=batch_file, purpose="batch")
-        logger.info(f"Input File ID: {batch_input_file.id}")
 
         # Run Job
         # Batch Object: https://platform.openai.com/docs/api-reference/batch/object
@@ -114,6 +113,7 @@ class OpenAIChatBatchAPI(LanguageModel):
             completion_window="24h",
             metadata={"description": "flexeval job"},
         )
+        logger.info(f"Input File ID: {batch_input_file.id}, Batch ID: {batch_object.id}")
         return batch_object.id
 
     async def poll_batch_status_until_completion(
