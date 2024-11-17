@@ -3,7 +3,12 @@ from __future__ import annotations
 import pytest
 
 from flexeval import Jinja2PromptTemplate, LanguageModel
-from flexeval.core.metric.llm_score import ChatLLMScore, LLMScore, parse_score_from_evaluator_output, prepare_chat_input_for_evaluator
+from flexeval.core.metric.llm_score import (
+    ChatLLMScore,
+    LLMScore,
+    parse_score_from_evaluator_output,
+    prepare_chat_input_for_evaluator,
+)
 
 
 class EchoBackLanguageModel(LanguageModel):
@@ -148,8 +153,6 @@ def test_prepare_chat_input_for_evaluator() -> None:
     system_messsage = Jinja2PromptTemplate(
         "{%- if references|length > 0 -%}With Reference{%- else -%}Without Reference{%- endif -%}"
     )
-
-
 
     evaluator_input_list = prepare_chat_input_for_evaluator(
         lm_outputs, references_list, task_inputs_list, prompt_template, system_messsage
