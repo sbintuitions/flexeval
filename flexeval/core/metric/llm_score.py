@@ -112,10 +112,12 @@ def prepare_chat_input_for_evaluator(
         input_chat_messages = [{"role": "user", "content": evaluator_input}]
         if system_message:
             if not isinstance(system_message, str):
-                system_message = system_message.embed_inputs(prompt_inputs)
+                system_message_rendered = system_message.embed_inputs(prompt_inputs)
+            else:
+                system_message_rendered = system_message
             input_chat_messages.insert(
                 0,
-                {"role": "system", "content": system_message},
+                {"role": "system", "content": system_message_rendered},
             )
         evaluator_input_list.append(input_chat_messages)
     return evaluator_input_list

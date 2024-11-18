@@ -3,7 +3,12 @@ from __future__ import annotations
 import pytest
 
 from flexeval import Jinja2PromptTemplate, LanguageModel
-from flexeval.core.metric.llm_score import ChatLLMScore, LLMScore, parse_score_from_evaluator_output
+from flexeval.core.metric.llm_score import (
+    ChatLLMScore,
+    LLMScore,
+    parse_score_from_evaluator_output,
+    prepare_chat_input_for_evaluator,
+)
 
 
 class EchoBackLanguageModel(LanguageModel):
@@ -130,3 +135,31 @@ def test_chat_llm_score_with_category() -> None:
     for lm_output, instance_detail in zip(lm_outputs, metric_output.instance_details):
         assert instance_detail["llm_score_input"] == [{"role": "user", "content": lm_output}]
         assert instance_detail["llm_score_output"] == lm_output
+
+
+def test_prepare_chat_input_for_evaluator() -> None:
+    lm_outputs = ["Output1", "Output2"]
+    references_list = [
+        ["Reference1"],
+        [],
+    ]
+    task_inputs_list = [
+        {"messages": [{"role": "user", "content": "Input1"}]},
+        {"messages": [{"role": "user", "content": "Input2"}]},
+    ]
+    prompt_template = Jinja2PromptTemplate(
+        "{{ messages[0]['content'] }}, {{ lm_output }}{%- if references|length > 0 -%}, {{ references[0] }}{%- endif -%}"  # noqa: E501
+    )
+    system_messsage = Jinja2PromptTemplate(
+        "{%- if references|length > 0 -%}With Reference{%- else -%}Without Reference{%- endif -%}"
+    )
+
+    evaluator_input_list = prepare_chat_input_for_evaluator(
+        lm_outputs, references_list, task_inputs_list, prompt_template, system_messsage
+    )
+
+    assert evaluator_input_list[0][0] == {"role": "system", "content": "With Reference"}
+    assert evaluator_input_list[0][1] == {"role": "user", "content": "Input1, Output1, Reference1"}
+
+    assert evaluator_input_list[1][0] == {"role": "system", "content": "Without Reference"}
+    assert evaluator_input_list[1][1] == {"role": "user", "content": "Input2, Output2"}
