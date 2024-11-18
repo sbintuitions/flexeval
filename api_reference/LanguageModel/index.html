@@ -4789,7 +4789,6 @@ NOTE: Batch size should be more than or equal to the size of the given dataset f
         <span class="c1"># Update batch file</span>
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">temp_jsonl_file</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">batch_file</span><span class="p">:</span>  <span class="c1"># noqa: ASYNC101</span>
             <span class="n">batch_input_file</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">files</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">file</span><span class="o">=</span><span class="n">batch_file</span><span class="p">,</span> <span class="n">purpose</span><span class="o">=</span><span class="s2">&quot;batch&quot;</span><span class="p">)</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Input File ID: </span><span class="si">{</span><span class="n">batch_input_file</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
         <span class="c1"># Run Job</span>
         <span class="c1"># Batch Object: https://platform.openai.com/docs/api-reference/batch/object</span>
@@ -4799,6 +4798,7 @@ NOTE: Batch size should be more than or equal to the size of the given dataset f
             <span class="n">completion_window</span><span class="o">=</span><span class="s2">&quot;24h&quot;</span><span class="p">,</span>
             <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;flexeval job&quot;</span><span class="p">},</span>
         <span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Input File ID: </span><span class="si">{</span><span class="n">batch_input_file</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">, Batch ID: </span><span class="si">{</span><span class="n">batch_object</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">batch_object</span><span class="o">.</span><span class="n">id</span>
 
     <span class="k">async</span> <span class="k">def</span> <span class="nf">poll_batch_status_until_completion</span><span class="p">(</span>
