@@ -1,6 +1,8 @@
 /*
 AI王 (AI king) is a Japanese quiz dataset developed for research and competition purposes.
+
 References:
+
 * [Hugging Face Dataset](https://huggingface.co/datasets/llm-book/aio)
 * [AI王 〜クイズAI日本一決定戦〜](https://sites.google.com/view/project-aio/home)
 * [JAQKET: クイズを題材にした日本語 QA データセットの構築](https://www.anlp.jp/proceedings/annual_meeting/2020/pdf_dir/P2-24.pdf)
