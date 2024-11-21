@@ -1,3 +1,15 @@
+/*
+JSQuAD is a Japanese version of SQuAD, one of the datasets of reading comprehension.
+The passages are extracted from Japanese Wikipedia, and the questions and answers are created by crowd workers.
+
+References:
+
+* [Hugging Face Dataset](https://huggingface.co/datasets/llm-book/JGLUE)
+* [Original Repository](https://github.com/yahoojapan/JGLUE)
+* [JGLUE: Japanese General Language Understanding Evaluation](https://aclanthology.org/2022.lrec-1.317)
+* [JGLUE: 日本語言語理解ベンチマーク](https://www.anlp.jp/proceedings/annual_meeting/2022/pdf_dir/E8-4.pdf)
+*/
+
 local dataset_base_args = {
   class_path: 'HFGenerationDataset',
   init_args: {
