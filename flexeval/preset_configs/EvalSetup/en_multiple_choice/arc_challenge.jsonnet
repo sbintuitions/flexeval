@@ -1,7 +1,7 @@
 /*
 The ARC dataset contains 7,787 genuine grade-school level, multiple-choice science questions,
 assembled to encourage research in advanced question-answering.
-The dataset is partitioned into a Challenge Set and an Easy Set, and this is tthe Challenge Set.
+The dataset is partitioned into a Challenge Set and an Easy Set, and this is the Challenge Set.
 
 References:
 
@@ -12,7 +12,7 @@ local dataset_base_args = {
   path: 'allenai/ai2_arc',
   subset: 'ARC-Challenge',
   choices_templates: ['{{ choices.text[0] }}', '{{ choices.text[1] }}', '{{ choices.text[2] }}', '{{ choices.text[3] }}'],
-  # answerKey is one of A, B, C, D, E,  1, 2, 3, 4
+  # answerKey is one of A, B, C, D, 1, 2, 3, 4
   answer_index_template: '{% if answerKey == "A" %}0{% elif answerKey == "B" %}1{% elif answerKey == "C" %}2{% elif answerKey == "D" %}3{% else %}{{ answerKey | int - 1 }}{% endif %}',
   whitespace_before_choices: true,
   remove_conditions: {
