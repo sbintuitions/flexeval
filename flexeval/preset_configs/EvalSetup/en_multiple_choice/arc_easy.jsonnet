@@ -16,8 +16,9 @@ local dataset_base_args = {
   answer_index_template: '{% if answerKey == "A" %}0{% elif answerKey == "B" %}1{% elif answerKey == "C" %}2{% elif answerKey == "D" %}3{% else %}{{ answerKey | int - 1 }}{% endif %}',
   whitespace_before_choices: true,
   remove_conditions: {
+    # Remove questions with 3 or 5 choices because the size of choices_template is fixed to 4.
     '{{ choices.text | length }}': '3',
-    '{{ choices.text | length }}': '5',
+    '{{ choices.label | length }}': '5',
   },
 };
 
