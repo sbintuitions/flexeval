@@ -15,9 +15,9 @@ local dataset_base_args = {
   # answerKey is one of A, B, C, D, E, 1, 2, 3, 4
   answer_index_template: '{% if answerKey == "A" %}0{% elif answerKey == "B" %}1{% elif answerKey == "C" %}2{% elif answerKey == "D" %}3{% else %}{{ answerKey | int - 1 }}{% endif %}',
   whitespace_before_choices: true,
-  keep_conditions: {
-    '{{ choices.text | length }}': '4',
-    '{{ choices.label | length }}': '4',
+  remove_conditions: {
+    '{{ choices.text | length }}': '3',
+    '{{ choices.text | length }}': '5',
   },
 };
 
