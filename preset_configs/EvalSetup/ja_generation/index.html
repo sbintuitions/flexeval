@@ -1420,45 +1420,46 @@
 <p>AI王 (AI king) is a Japanese quiz dataset developed for research and competition purposes.</p>
 <p>References:</p>
 <ul>
-<li><a href="https://huggingface.co/datasets/llm-book/aio">Hugging Face Dataset</a></li>
+<li><a href="https://huggingface.co/datasets/sbintuitions/aio-extended-answers">Hugging Face Dataset</a></li>
 <li><a href="https://sites.google.com/view/project-aio/home">AI王 〜クイズAI日本一決定戦〜</a></li>
 <li><a href="https://www.anlp.jp/proceedings/annual_meeting/2020/pdf_dir/P2-24.pdf">JAQKET: クイズを題材にした日本語 QA データセットの構築</a>
 <div class="highlight"><pre><span></span><code>local dataset_base_args = {
   class_path: &#39;HFGenerationDataset&#39;,
   init_args: {
-    path: &#39;llm-book/aio&#39;,
+    path: &#39;sbintuitions/aio-extended-answers&#39;,
+    split: &#39;validation&#39;,
     reference_list_template: &#39;{{ answers }}&#39;,
-    dataset_kwargs: { trust_remote_code: true },
   },
 };
+
+local template_ = &#39;{{ question }}答えは「&#39;;
 
 {
   class_path: &#39;Generation&#39;,
   init_args: {
-    eval_dataset: dataset_base_args { init_args+: { split: &#39;validation&#39; } },
-    few_shot_generator: {
-      class_path: &#39;RandomFewShotGenerator&#39;,
-      init_args: {
-        dataset: dataset_base_args { init_args+: { split: &#39;train&#39; } },
-        num_shots: 0,
-      },
-    },
+    eval_dataset: dataset_base_args,
     prompt_template: {
       class_path: &#39;Jinja2PromptTemplate&#39;,
-      init_args: {
-        template: |||
-          {% for item in few_shot_data -%}
-          {{ item.question }}答えは「{{ item.references[0] }}」
-          {% endfor -%}
-        ||| + &#39;{{ question }}答えは「&#39;,
-      },
+      init_args: { template: template_, },
     },
     metrics: [
-      { class_path: &#39;CharF1&#39;, init_args: { processor: { class_path: &#39;AIONormalizer&#39; } } },
-      { class_path: &#39;ExactMatch&#39;, init_args: { processor: { class_path: &#39;AIONormalizer&#39; } } },
+      {
+        class_path: &#39;CharF1&#39;,
+        init_args: {
+          processor: { class_path: &#39;AIONormalizer&#39; },
+          reference_processor: { class_path: &#39;AIONormalizer&#39; },
+        },
+      },
+      {
+        class_path: &#39;ExactMatch&#39;,
+        init_args: {
+          processor: { class_path: &#39;AIONormalizer&#39; },
+          reference_processor: { class_path: &#39;AIONormalizer&#39; },
+        },
+      },
     ],
-    gen_kwargs: { max_new_tokens: 32, stop_sequences: [&#39;」&#39;] },
-    batch_size: 4,
+    gen_kwargs: { max_new_tokens: 64, stop_sequences: [&#39;」&#39;], },
+    batch_size: 1,
   },
 }
 </code></pre></div></li>
@@ -1469,58 +1470,67 @@ The dataset is built using crowdsourcing with seeds extracted from the knowledge
 This is a setup for generating answers based on the choices provided.</p>
 <p>References:</p>
 <ul>
-<li><a href="https://huggingface.co/datasets/llm-book/JGLUE">Hugging Face Dataset</a></li>
+<li><a href="https://huggingface.co/datasets/sbintuitions/JCommonsenseQA">Hugging Face Dataset</a></li>
 <li><a href="https://github.com/yahoojapan/JGLUE">Original Repository</a></li>
 <li><a href="https://aclanthology.org/2022.lrec-1.317">JGLUE: Japanese General Language Understanding Evaluation</a></li>
 <li><a href="https://www.anlp.jp/proceedings/annual_meeting/2022/pdf_dir/E8-4.pdf">JGLUE: 日本語言語理解ベンチマーク</a>
 <div class="highlight"><pre><span></span><code>local dataset_base_args = {
   class_path: &#39;HFGenerationDataset&#39;,
   init_args: {
-    path: &#39;llm-book/JGLUE&#39;,
-    subset: &#39;JCommonsenseQA&#39;,
+    path: &#39;sbintuitions/JCommonsenseQA&#39;,
+    split: &#39;validation&#39;,
     reference_template: &#39;{% set choices = [choice0, choice1, choice2, choice3, choice4] %}{{ choices[label] }}&#39;,
-    dataset_kwargs: { trust_remote_code: true },
   },
 };
+
+local template_ = |||
+  以下はタスクを説明する指示と、追加の背景情報を提供する入力の組み合わせです。要求を適切に満たす回答を書いてください。
+  ### 指示
+  質問と回答の選択肢を入力として受け取り、選択肢から回答を選択してください。回答の他には何も含めないことを厳守してください。
+
+  ### 入力：
+  質問：主に子ども向けのもので、イラストのついた物語が書かれているものはどれ？
+  選択肢：世界,写真集,絵本,論文,図鑑
+  ### 回答：
+  絵本
+
+  ### 入力：
+  質問：未成年者を監護・教育し，彼らを監督し，彼らの財産上の利益を守る法律上の義務をもつ人は？
+  選択肢：浮浪者,保護者,お坊さん,宗教者,預言者
+  ### 回答：
+  保護者
+
+  ### 入力：
+  質問：数字の１を表すときに使う体は？
+  選択肢：胸,肉球,背中,人差し指,親指
+  ### 回答：
+  人差し指
+
+  ### 入力：
+  質問：火を起こすとあらわれるもくもくするものは？
+  選択肢：歯の変色,ガス,中毒,爆発,煙
+  ### 回答：
+  煙
+
+  ### 入力：
+  質問：{{ question }}
+  選択肢：{{ choice0 }},{{ choice1 }},{{ choice2 }},{{ choice3 }},{{ choice4 }}
+  ### 回答：
+|||;
 
 {
   class_path: &#39;Generation&#39;,
   init_args: {
-    eval_dataset: dataset_base_args { init_args+: { split: &#39;validation&#39; } },
-    few_shot_generator: {
-      class_path: &#39;RandomFewShotGenerator&#39;,
-      init_args: {
-        dataset: dataset_base_args { init_args+: { split: &#39;train&#39; } },
-        num_shots: 2,
-      },
-    },
+    eval_dataset: dataset_base_args,
     prompt_template: {
       class_path: &#39;Jinja2PromptTemplate&#39;,
-      init_args: {
-        template: |||
-          正しい答えは何でしょう？
-          {% for item in few_shot_data %}
-          0.「{{ item.choice0 }}」
-          1.「{{ item.choice1 }}」
-          2.「{{ item.choice2 }}」
-          3.「{{ item.choice3 }}」
-          4.「{{ item.choice4 }}」
-          問題：{{ item.question }}
-          回答：「{{ item.references[0] }}」
-          {% endfor %}
-          0.「{{ choice0 }}」
-          1.「{{ choice1 }}」
-          2.「{{ choice2 }}」
-          3.「{{ choice3 }}」
-          4.「{{ choice4 }}」
-          問題：{{question}}
-        ||| + &#39;回答：「&#39;,
-      },
+      init_args: { template: template_, },
     },
     metrics: [
       { class_path: &#39;ExactMatch&#39; },
     ],
-    gen_kwargs: { max_new_tokens: 40, stop_sequences: [&#39;」&#39;] },
+    gen_kwargs: { max_new_tokens: 64, stop_sequences: [&#39;\n\n&#39;], },
+    batch_size: 1,
   },
 }
 </code></pre></div></li>
@@ -1583,55 +1593,68 @@ The sentence pairs are extracted from image captions and annotated by crowd work
 The passages are extracted from Japanese Wikipedia, and the questions and answers are created by crowd workers.</p>
 <p>References:</p>
 <ul>
-<li><a href="https://huggingface.co/datasets/llm-book/JGLUE">Hugging Face Dataset</a></li>
+<li><a href="https://huggingface.co/datasets/sbintuitions/JSQuAD">Hugging Face Dataset</a></li>
 <li><a href="https://github.com/yahoojapan/JGLUE">Original Repository</a></li>
 <li><a href="https://aclanthology.org/2022.lrec-1.317">JGLUE: Japanese General Language Understanding Evaluation</a></li>
 <li><a href="https://www.anlp.jp/proceedings/annual_meeting/2022/pdf_dir/E8-4.pdf">JGLUE: 日本語言語理解ベンチマーク</a>
 <div class="highlight"><pre><span></span><code>local dataset_base_args = {
   class_path: &#39;HFGenerationDataset&#39;,
   init_args: {
-    path: &#39;llm-book/JGLUE&#39;,
-    subset: &#39;JSQuAD&#39;,
+    path: &#39;sbintuitions/JSQuAD&#39;,
+    split: &#39;validation&#39;,
     reference_list_template: &#39;{{ answers.text }}&#39;,
-    dataset_kwargs: { trust_remote_code: true },
   },
 };
 
+local template_ = |||
+  以下はタスクを説明する指示と、追加の背景情報を提供する入力の組み合わせです。要求を適切に満たす回答を書いてください。
+  ### 指示
+  質問に対する回答を文章から一言で抽出してください。回答は名詞で答えてください。 それ以外には何も含めないことを厳守してください。
+
+  ### 入力：
+  文章：聖武天皇 [SEP] 文武天皇の第一皇子として生まれたが、慶雲4年6月15日（707年7月18日）に7歳で父と死別、母・宮子も心的障害に陥ったため、その後は長らく会うことはなかった。物心がついて以後の天皇が病気の平癒した母との対面を果たしたのは齢37のときであった。このため、同年7月17日（707年8月18日）、父方の祖母・元明天皇（天智天皇皇女）が中継ぎの天皇として即位した。和銅7年6月25日（714年8月9日）には首皇子の元服が行われて同日正式に立太子されるも、病弱であったこと、皇親勢力と外戚である藤原氏との対立もあり、即位は先延ばしにされ、翌霊亀元年9月2日（715年10月3日）に伯母（文武天皇の姉）・元正天皇が「中継ぎの中継ぎ」として皇位を継ぐことになった。24歳のときに元正天皇より皇位を譲られて即位することになる。
+  質問：文武天皇の第一皇子として生まれたのは？
+  ### 回答：
+  聖武天皇
+
+  ### 入力：
+  文章：通称 [SEP] 人名としての通称は通り名、二つ名、異名、などと呼ばれる事もある。近世までは、本名（実名）は「」と呼ばれ、公言は避ける習慣があった。そのため、人を呼ぶ時は「仮名」「字」などの通称、官職名を用いるのが一般的だった。今日でも「総理」「大臣」「社長」「専務」などと呼びかけに使うのがこれにあたる。
+  質問：人名としての通称は何と呼ばれているか
+  ### 回答：
+  通り名、二つ名、異名
+
+  ### 入力：
+  文章：坂本龍一 [SEP] 2014年7月10日、所属事務所エイベックス・ミュージック・クリエイティヴから中咽頭癌であること、療養に専念するためにコンサート活動などを中止する旨が発表された。かつてはインタビューなどで度々自身の健康状態や体力に自信を表しており、コンサート等公演スケジュールを自身の健康に起因する理由でキャンセルしたことがなかった。
+  質問：坂本龍一が療養に専念するためコンサート活動などを中止すると発表したのはいつか。
+  ### 回答：
+  2014年7月10日
+
+  ### 入力：
+  文章：リリーフ [SEP] プレッシャーの比較的かからない状態で投げることができるので、若手投手のテストの場としたり、故障明けや登板間隔の開いた投手を調整目的で登板させることもある。敗戦処理であっても好投すれば次回から先発や接戦での中継ぎに起用されるようになる場合もあり、幸い打線の援護を受けてチームが逆転すれば勝利投手に輝くこともある。
+  質問：打線の援護を受けてチームが逆転するとどんな投手になる？
+  ### 回答：
+  勝利投手
+
+  ### 入力：
+  文章：{{ context }}
+  質問：{{ question }}
+  ### 回答：
+|||;
 
 {
   class_path: &#39;Generation&#39;,
   init_args: {
-    eval_dataset: dataset_base_args { init_args+: { split: &#39;validation&#39; } },
-    few_shot_generator: {
-      class_path: &#39;RandomFewShotGenerator&#39;,
-      init_args: {
-        dataset: dataset_base_args { init_args+: { split: &#39;train&#39; } },
-        num_shots: 3,
-      },
-    },
+    eval_dataset: dataset_base_args,
     prompt_template: {
       class_path: &#39;Jinja2PromptTemplate&#39;,
-      init_args: {
-        template: |||
-          質問に対する回答を文章から一言で抜き出してください。
-          {% for item in few_shot_data %}
-          文章
-          {{ item.title }}
-          {{ item.context }}
-          質問：「{{ item.question }}」
-          回答：「{{ item.references[0] }}」
-          {% endfor %}
-          文章
-          {{ title }}
-          {{ context }}
-          質問：「{{ question }}」
-        ||| + &#39;回答：「&#39;,
-      },
+      init_args: { template: template_, },
     },
     metrics: [
+      { class_path: &#39;CharF1&#39; },
       { class_path: &#39;ExactMatch&#39; },
     ],
-    gen_kwargs: { max_new_tokens: 40, stop_sequences: [&#39;」&#39;] },
+    gen_kwargs: { max_new_tokens: 64, stop_sequences: [&#39;\n\n&#39;], },
+    batch_size: 1,
   },
 }
 </code></pre></div></li>

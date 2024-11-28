@@ -72,7 +72,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#commonsense_qa_mc" class="md-skip">
+        <a href="#arc_challenge" class="md-skip">
           Skip to content
         </a>
       
@@ -630,6 +630,24 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#arc_challenge" class="md-nav__link">
+    <span class="md-ellipsis">
+      arc_challenge
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#arc_easy" class="md-nav__link">
+    <span class="md-ellipsis">
+      arc_easy
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#commonsense_qa_mc" class="md-nav__link">
     <span class="md-ellipsis">
       commonsense_qa_mc
@@ -651,6 +669,15 @@
   <a href="#openbookqa" class="md-nav__link">
     <span class="md-ellipsis">
       openbookqa
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#piqa" class="md-nav__link">
+    <span class="md-ellipsis">
+      piqa
     </span>
   </a>
   
@@ -1310,6 +1337,24 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#arc_challenge" class="md-nav__link">
+    <span class="md-ellipsis">
+      arc_challenge
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#arc_easy" class="md-nav__link">
+    <span class="md-ellipsis">
+      arc_easy
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#commonsense_qa_mc" class="md-nav__link">
     <span class="md-ellipsis">
       commonsense_qa_mc
@@ -1331,6 +1376,15 @@
   <a href="#openbookqa" class="md-nav__link">
     <span class="md-ellipsis">
       openbookqa
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#piqa" class="md-nav__link">
+    <span class="md-ellipsis">
+      piqa
     </span>
   </a>
   
@@ -1362,6 +1416,120 @@
 
   <h1>En multiple choice</h1>
 
+<h2 id="arc_challenge">arc_challenge<a class="headerlink" href="#arc_challenge" title="Permanent link">&para;</a></h2>
+<p>The ARC dataset contains 7,787 genuine grade-school level, multiple-choice science questions,
+assembled to encourage research in advanced question-answering.
+The dataset is partitioned into a Challenge Set and an Easy Set, and this is the Challenge Set.</p>
+<p>References:</p>
+<ul>
+<li><a href="https://huggingface.co/datasets/allenai/ai2_arc">Hugging Face Dataset</a></li>
+<li><a href="https://arxiv.org/abs/1803.05457">Think you have Solved Question Answering? Try ARC, the AI2 Reasoning Challenge</a>
+<div class="highlight"><pre><span></span><code>local dataset_base_args = {
+  path: &#39;allenai/ai2_arc&#39;,
+  subset: &#39;ARC-Challenge&#39;,
+  choices_templates: [
+    &#39;{% if choices.text | length &gt; 0 %}{{ choices.text[0] }}{% endif %}&#39;,
+    &#39;{% if choices.text | length &gt; 1 %}{{ choices.text[1] }}{% endif %}&#39;,
+    &#39;{% if choices.text | length &gt; 2 %}{{ choices.text[2] }}{% endif %}&#39;,
+    &#39;{% if choices.text | length &gt; 3 %}{{ choices.text[3] }}{% endif %}&#39;,
+    &#39;{% if choices.text | length &gt; 4 %}{{ choices.text[4] }}{% endif %}&#39;,
+  ],
+  # answerKey is one of A, B, C, D, E, 1, 2, 3, 4
+  answer_index_template: &#39;{% if answerKey == &quot;A&quot; %}0{% elif answerKey == &quot;B&quot; %}1{% elif answerKey == &quot;C&quot; %}2{% elif answerKey == &quot;D&quot; %}3{% elif answerKey == &quot;E&quot; %}3{% else %}{{ answerKey | int - 1 }}{% endif %}&#39;,
+  whitespace_before_choices: true,
+};
+
+{
+  class_path: &#39;MultipleChoice&#39;,
+  init_args: {
+    eval_dataset: {
+      class_path: &#39;HFMultipleChoiceDataset&#39;,
+      init_args: dataset_base_args { split: &#39;test&#39; },
+    },
+    few_shot_generator: {
+      class_path: &#39;RandomFewShotGenerator&#39;,
+      init_args: {
+        dataset: {
+          class_path: &#39;HFMultipleChoiceDataset&#39;,
+          init_args: dataset_base_args { split: &#39;train&#39; },
+        },
+        num_shots: 4,
+      },
+    },
+    prompt_template: {
+      class_path: &#39;Jinja2PromptTemplate&#39;,
+      init_args: {
+
+        template: |||
+          {% for item in few_shot_data %}
+          Question: {{ item.question }}
+          Answer:{{ item.choices[item.answer_index] }}
+          {% endfor %}
+          Question: {{ question }}
+        ||| + &#39;Answer:&#39;,
+      },
+    },
+  },
+}
+</code></pre></div></li>
+</ul>
+<h2 id="arc_easy">arc_easy<a class="headerlink" href="#arc_easy" title="Permanent link">&para;</a></h2>
+<p>The ARC dataset contains 7,787 genuine grade-school level, multiple-choice science questions,
+assembled to encourage research in advanced question-answering.
+The dataset is partitioned into a Challenge Set and an Easy Set, and this is the Easy Set.</p>
+<p>References:</p>
+<ul>
+<li><a href="https://huggingface.co/datasets/allenai/ai2_arc">Hugging Face Dataset</a></li>
+<li><a href="https://arxiv.org/abs/1803.05457">Think you have Solved Question Answering? Try ARC, the AI2 Reasoning Challenge</a>
+<div class="highlight"><pre><span></span><code>local dataset_base_args = {
+  path: &#39;allenai/ai2_arc&#39;,
+  subset: &#39;ARC-Easy&#39;,
+  choices_templates: [
+    &#39;{% if choices.text | length &gt; 0 %}{{ choices.text[0] }}{% endif %}&#39;,
+    &#39;{% if choices.text | length &gt; 1 %}{{ choices.text[1] }}{% endif %}&#39;,
+    &#39;{% if choices.text | length &gt; 2 %}{{ choices.text[2] }}{% endif %}&#39;,
+    &#39;{% if choices.text | length &gt; 3 %}{{ choices.text[3] }}{% endif %}&#39;,
+    &#39;{% if choices.text | length &gt; 4 %}{{ choices.text[4] }}{% endif %}&#39;,
+  ],
+  # answerKey is one of A, B, C, D, E, 1, 2, 3, 4
+  answer_index_template: &#39;{% if answerKey == &quot;A&quot; %}0{% elif answerKey == &quot;B&quot; %}1{% elif answerKey == &quot;C&quot; %}2{% elif answerKey == &quot;D&quot; %}3{% elif answerKey == &quot;E&quot; %}3{% else %}{{ answerKey | int - 1 }}{% endif %}&#39;,
+  whitespace_before_choices: true,
+};
+
+{
+  class_path: &#39;MultipleChoice&#39;,
+  init_args: {
+    eval_dataset: {
+      class_path: &#39;HFMultipleChoiceDataset&#39;,
+      init_args: dataset_base_args { split: &#39;test&#39; },
+    },
+    few_shot_generator: {
+      class_path: &#39;RandomFewShotGenerator&#39;,
+      init_args: {
+        dataset: {
+          class_path: &#39;HFMultipleChoiceDataset&#39;,
+          init_args: dataset_base_args { split: &#39;train&#39; },
+        },
+        num_shots: 4,
+      },
+    },
+    prompt_template: {
+      class_path: &#39;Jinja2PromptTemplate&#39;,
+      init_args: {
+
+        template: |||
+          {% for item in few_shot_data %}
+          Question: {{ item.question }}
+          Answer:{{ item.choices[item.answer_index] }}
+          {% endfor %}
+          Question: {{ question }}
+        ||| + &#39;Answer:&#39;,
+      },
+    },
+  },
+}
+</code></pre></div></li>
+</ul>
 <h2 id="commonsense_qa_mc">commonsense_qa_mc<a class="headerlink" href="#commonsense_qa_mc" title="Permanent link">&para;</a></h2>
 <p>CommonsenseQA is a multiple-choice question answering dataset that requires different types of commonsense knowledge to predict the correct answers.
 This is a setup for multiple choice where the model chooses the correct answer based on the log-probabilities of the choices.</p>
@@ -1446,7 +1614,7 @@ The dataset is constructed through adversarial filtering to make it challenging 
       init_args: {
         template: |||
           {% for item in few_shot_data %}
-          {{ item.ctx }} {{ item.choices[item.answer_index] }}
+          {{ item.ctx }}{{ item.choices[item.answer_index] }}
           {% endfor %}
         ||| + &#39;{{ ctx }}&#39;,
       },
@@ -1497,6 +1665,51 @@ The dataset is constructed through adversarial filtering to make it challenging 
           {% endfor %}
           Question: {{ question_stem }}
         ||| + &#39;Answer:&#39;,
+      },
+    },
+  },
+}
+</code></pre></div></li>
+</ul>
+<h2 id="piqa">piqa<a class="headerlink" href="#piqa" title="Permanent link">&para;</a></h2>
+<p>The PIQA dataset introduces the task of physical commonsense reasoning and a corresponding benchmark dataset</p>
+<p>References:</p>
+<ul>
+<li><a href="https://huggingface.co/datasets/ybisk/piqa">Hugging Face Dataset</a></li>
+<li><a href="https://ojs.aaai.org/index.php/AAAI/article/view/6239">PIQA: Reasoning about Physical Commonsense in Natural Language</a>
+<div class="highlight"><pre><span></span><code>local dataset_base_args = {
+  path: &#39;ybisk/piqa&#39;,
+  choices_templates: [&#39;{{ sol1 }}&#39;, &#39;{{ sol2 }}&#39;],
+  answer_index_template: &#39;{{ label }}&#39;,
+  whitespace_before_choices: true,
+  dataset_kwargs: { trust_remote_code: true },
+};
+
+{
+  class_path: &#39;MultipleChoice&#39;,
+  init_args: {
+    eval_dataset: {
+      class_path: &#39;HFMultipleChoiceDataset&#39;,
+      init_args: dataset_base_args { split: &#39;validation&#39; },
+    },
+    few_shot_generator: {
+      class_path: &#39;RandomFewShotGenerator&#39;,
+      init_args: {
+        dataset: {
+          class_path: &#39;HFMultipleChoiceDataset&#39;,
+          init_args: dataset_base_args { split: &#39;train&#39; },
+        },
+        num_shots: 4,
+      },
+    },
+    prompt_template: {
+      class_path: &#39;Jinja2PromptTemplate&#39;,
+      init_args: {
+        template: |||
+          {% for item in few_shot_data %}
+          {{ item.goal }}{{ item.choices[item.answer_index] }}
+          {% endfor %}
+        ||| + &#39;{{ goal }}&#39;,
       },
     },
   },
