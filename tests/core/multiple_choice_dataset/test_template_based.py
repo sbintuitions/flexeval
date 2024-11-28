@@ -38,7 +38,11 @@ def test_template_multiple_choice_dataset(
     dataset = dataset_class(
         **kwargs,
         input_templates={"test_additional_input": "additional: {{ question }}"},
-        choices_templates=["{{ answers[0] }}"],
+        choices_templates=[
+            "{% if answers | length > 0 %}{{ answers[0] }}{% endif %}",
+            "{% if answers | length > 1 %}{{ answers[1] }}{% endif %}",
+            "{% if answers | length > 2 %}{{ answers[2] }}{% endif %}",
+        ],
         answer_index_template="0",
     )
 
@@ -50,9 +54,24 @@ def test_template_multiple_choice_dataset(
         "answers": ["Mount Everest", "Everest"],
         "test_additional_input": "additional: What is the highest mountain in the world.",
     }
-    assert item.choices == ["Mount Everest"]
+    assert item.choices == ["Mount Everest", "Everest"]
     assert item.answer_index == 0
 
+    item = dataset[1]
+    assert item.inputs == {
+        "id": 1,
+        "question": "What is the chemical symbol for water?",
+        "answers": ["H2O"],
+        "test_additional_input": "additional: What is the chemical symbol for water?",
+    }
+
+    item = dataset[4]
+    assert item.inputs == {
+        "id": 4,
+        "question": "Who wrote 'Romeo and Juliet'?",
+        "answers": ["William Shakespeare", "Shakespeare"],
+        "test_additional_input": "additional: Who wrote 'Romeo and Juliet'?",
+    }
 
 @pytest.mark.parametrize(
     ("dataset_class", "kwargs"),

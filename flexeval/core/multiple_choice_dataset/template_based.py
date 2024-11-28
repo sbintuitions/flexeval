@@ -72,13 +72,14 @@ class TemplateMultipleChoiceDataset(MultipleChoiceDataset):
         inputs.update({k: v.render(**item) for k, v in self.input_templates.items()})
 
         choices = [t.render(**item) for t in self.choices_templates]
-        if any(len(c) == 0 for c in choices):
-            msg = f"choices must be non-empty, but got {choices}"
-            raise ValueError(msg)
+        choices = list(filter(lambda x: len(x) > 0, choices))
         if self.whitespace_before_choices:
             choices = [" " + c for c in choices]
 
         answer_index = int(self.answer_index_template.render(**item))
+        if not (0 <= answer_index and answer_index < len(choices)):
+            msg = f"at least {answer_idx+1} choices required, but got {choices}"
+            raise ValueError(msg)
 
         return MultipleChoiceInstance(
             inputs=inputs,

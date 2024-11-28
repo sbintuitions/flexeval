@@ -11,15 +11,16 @@ References:
 local dataset_base_args = {
   path: 'allenai/ai2_arc',
   subset: 'ARC-Easy',
-  choices_templates: ['{{ choices.text[0] }}', '{{ choices.text[1] }}', '{{ choices.text[2] }}', '{{ choices.text[3] }}'],
-  # answerKey is one of A, B, C, D, 1, 2, 3, 4
-  answer_index_template: '{% if answerKey == "A" %}0{% elif answerKey == "B" %}1{% elif answerKey == "C" %}2{% elif answerKey == "D" %}3{% else %}{{ answerKey | int - 1 }}{% endif %}',
+  choices_templates: [
+    '{% if choices.text | length > 0 %}{{ choices.text[0] }}{% endif %}',
+    '{% if choices.text | length > 1 %}{{ choices.text[1] }}{% endif %}',
+    '{% if choices.text | length > 2 %}{{ choices.text[2] }}{% endif %}',
+    '{% if choices.text | length > 3 %}{{ choices.text[3] }}{% endif %}',
+    '{% if choices.text | length > 4 %}{{ choices.text[4] }}{% endif %}',
+  ],
+  # answerKey is one of A, B, C, D, E, 1, 2, 3, 4
+  answer_index_template: '{% if answerKey == "A" %}0{% elif answerKey == "B" %}1{% elif answerKey == "C" %}2{% elif answerKey == "D" %}3{% elif answerKey == "E" %}3{% else %}{{ answerKey | int - 1 }}{% endif %}',
   whitespace_before_choices: true,
-  remove_conditions: {
-    # Remove questions with 3 or 5 choices because the size of choices_template is fixed to 4.
-    '{{ choices.text | length }}': '3',
-    '{{ choices.label | length }}': '5',
-  },
 };
 
 {
