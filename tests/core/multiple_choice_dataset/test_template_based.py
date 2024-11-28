@@ -73,6 +73,7 @@ def test_template_multiple_choice_dataset(
         "test_additional_input": "additional: Who wrote 'Romeo and Juliet'?",
     }
 
+
 @pytest.mark.parametrize(
     ("dataset_class", "kwargs"),
     DATASETS_TO_TEST,
