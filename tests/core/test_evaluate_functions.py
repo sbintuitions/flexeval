@@ -202,6 +202,7 @@ def test_evaluate_reward_model() -> None:
         ],
         "llm_outputs": ["[[A]]", "[[A]]"],
         "evaluation_results": [True, False],
+        "id": 0,
     }
 
     # Check DummyRewardLanguageModel generate prefix-text
@@ -240,4 +241,5 @@ def test_evaluate_reward_model() -> None:
         ],
         "llm_outputs": ["Results: [[B]]", "Results: [[B]]"],
         "evaluation_results": [False, True],
+        "id": 0,
     }

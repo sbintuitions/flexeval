@@ -20,7 +20,7 @@ def evaluate_reward_model(
     if max_instances is not None:
         reward_bench_instances = [eval_dataset[i] for i in range(min(max_instances, len(eval_dataset)))]
 
-    outputs: list[str] = []
+    outputs: list[dict[str, Any]] = []
     chosen_is_better_list: list[bool] = []
     with tqdm(total=len(reward_bench_instances)) as pbar:
         for i, batch_reward_bench_instances in enumerate(batch_iter(reward_bench_instances, batch_size)):
@@ -39,6 +39,7 @@ def evaluate_reward_model(
 
     # Add the datasets information to the outputs
     for i in range(len(outputs)):
+        outputs[i].update(reward_bench_instances[i].extra_info)
         outputs[i]["prompt"] = reward_bench_instances[i].prompt
         outputs[i]["chosen"] = reward_bench_instances[i].chosen
         outputs[i]["rejected"] = reward_bench_instances[i].rejected

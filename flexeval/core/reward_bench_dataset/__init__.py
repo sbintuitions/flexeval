@@ -1,2 +1,2 @@
 from .base import RewardBenchDataset, RewardBenchInstance
-from .hf import HFRewardBenchDataset
+from .template_based import HFRewardBenchDataset, JsonlRewardBenchDataset

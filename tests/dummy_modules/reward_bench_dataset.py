@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from flexeval.core.reward_bench_dataset.hf import RewardBenchDataset, RewardBenchInstance
+from flexeval.core.reward_bench_dataset import RewardBenchDataset, RewardBenchInstance
 
 
 class DummyRewardBenchDataset(RewardBenchDataset):
@@ -10,6 +10,7 @@ class DummyRewardBenchDataset(RewardBenchDataset):
                 prompt=f"prompt_text_{i}",
                 chosen=f"chosen_text_{i}",
                 rejected=f"rejected_text_{i}",
+                extra_info={"id": i},
             )
             for i in range(100)
         ]

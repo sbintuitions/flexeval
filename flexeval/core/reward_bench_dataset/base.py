@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import Sequence
+from typing import Any, Sequence
 
 
 @dataclass
@@ -11,8 +11,21 @@ class RewardBenchInstance:
     reward bench task."""
 
     prompt: str
+    """
+    The prompt for chosen/rejected responses.
+    """
     chosen: str
+    """
+    The chosen response to the prompt.
+    """
     rejected: str
+    """
+    The rejected response to the prompt.
+    """
+    extra_info: dict[str, Any]
+    """
+    Extra information that can be used by passing to `Metric`.
+    """
 
 
 class RewardBenchDataset(Sequence[RewardBenchInstance], ABC):
