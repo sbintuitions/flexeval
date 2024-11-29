@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from dataclasses import dataclass
-from typing import Sequence
+from dataclasses import dataclass, field
+from typing import Any, Sequence
 
 
 @dataclass
@@ -11,12 +11,12 @@ class GenerationInstance:
     A dataclass representing a single input-output pair of a generation task.
     """
 
-    inputs: dict[str, str]
+    inputs: dict[str, Any]
     """
     Inputs of the generation task.
     This will be embedded into the prompt for the language model in `PromptTemplate`.
     """
-    references: list[str]
+    references: list[str] = field(default_factory=list)
     """
     Reference outputs for the generation task.
     The model's output will be evaluated against these references in `Metric`.
