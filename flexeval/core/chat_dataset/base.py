@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import warnings
 from abc import ABC, abstractmethod
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any, Sequence
 
 
@@ -29,12 +29,12 @@ class ChatInstance:
     ]
     ```
     """
-    references: list[str]
+    references: list[str] = field(default_factory=list)
     """
     A list of reference responses to the user's last message.
     The model's response will be evaluated against these references.
     """
-    extra_info: dict[str, Any]
+    extra_info: dict[str, Any] = field(default_factory=dict)
     """
     Extra information that can be used by passing to `Metric`.
     """
