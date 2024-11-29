@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
-from typing import Sequence
+from typing import Any, Sequence
 
 
 @dataclass
@@ -11,7 +11,7 @@ class GenerationInstance:
     A dataclass representing a single input-output pair of a generation task.
     """
 
-    inputs: dict[str, str]
+    inputs: dict[str, Any]
     """
     Inputs of the generation task.
     This will be embedded into the prompt for the language model in `PromptTemplate`.
