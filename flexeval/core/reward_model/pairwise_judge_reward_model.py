@@ -6,7 +6,7 @@ from typing import Any
 
 from flexeval.core.language_model.base import LanguageModel
 from flexeval.core.prompt_template.base import PromptTemplate
-from flexeval.core.reward_bench_dataset.hf import RewardBenchInstance
+from flexeval.core.reward_bench_dataset import RewardBenchInstance
 from flexeval.core.reward_model.base import RewardModel
 
 

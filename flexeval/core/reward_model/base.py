@@ -3,7 +3,7 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import Any
 
-from flexeval.core.reward_bench_dataset.hf import RewardBenchInstance
+from flexeval.core.reward_bench_dataset import RewardBenchInstance
 
 
 class RewardModel(ABC):
