@@ -8,6 +8,7 @@ from transformers import AutoTokenizer, PreTrainedTokenizer
 from flexeval.core.language_model.hf_lm import (
     HuggingFaceLM,
     LanguageModel,
+    get_prefix_and_completion_from_chat,
     tokenize_text_for_lm_continuation,
     tokenize_text_for_lm_prefix,
 )
@@ -275,3 +276,47 @@ def test_if_gen_kwargs_work_as_expected() -> None:
     # check if the gen_kwargs will be overwritten by the given gen_kwargs
     text = lm.complete_text("000000", max_new_tokens=10)
     assert len(text) > 1
+
+
+def test_get_prefix_and_completion_from_chat() -> None:
+    tokenizer = AutoTokenizer.from_pretrained("sbintuitions/tiny-lm-chat", padding_side="left")
+    prefix, completion = get_prefix_and_completion_from_chat(
+        [{"role": "user", "content": "Hello."}], {"role": "assistant", "content": "Hi."}, tokenizer=tokenizer
+    )
+    assert prefix == "<|user|>Hello.</s><|assistant|>"
+    assert completion == "Hi.</s>"
+
+    prefix, completion = get_prefix_and_completion_from_chat(
+        [{"role": "user", "content": "Hello."}],
+        {"role": "assistant", "content": "Hi."},
+        tokenizer=tokenizer,
+        custom_chat_template="CUSTOM_TEMPLATE",
+    )
+    assert prefix == "CUSTOM_TEMPLATE"
+    assert completion == ""
+
+
+def test_batch_compute_chat_log_probs(chat_lm: HuggingFaceLM) -> None:
+    log_probs_natural = chat_lm.batch_compute_chat_log_probs(
+        [[{"role": "user", "content": "Hello, how are you?"}]],
+        [{"role": "assistant", "content": "Good."}],
+    )
+    log_probs_unnatural = chat_lm.batch_compute_chat_log_probs(
+        [[{"role": "user", "content": "Hello, how are you?"}]],
+        [{"role": "assistant", "content": "!?本日は晴天ナリ."}],
+    )
+
+    assert len(log_probs_natural) == 1
+    assert isinstance(log_probs_natural[0], float)
+    assert len(log_probs_unnatural) == 1
+    assert isinstance(log_probs_unnatural[0], float)
+    assert log_probs_natural[0] > log_probs_unnatural[0]
+
+
+def test_compute_chat_log_probs(chat_lm: HuggingFaceLM) -> None:
+    prompt = [{"role": "user", "content": "Hello, how are you?"}]
+    response = {"role": "assistant", "content": "Good."}
+    log_prob = chat_lm.compute_chat_log_probs(prompt, response)
+    assert isinstance(log_prob, float)
+    batch_log_prob = chat_lm.batch_compute_chat_log_probs([prompt], [response])
+    assert log_prob == batch_log_prob[0]
