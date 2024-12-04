@@ -192,7 +192,7 @@ def test_if_gen_kwargs_work_as_expected() -> None:
 
 
 @pytest.mark.skipif(not is_vllm_enabled(), reason="vllm library is not installed")
-def test_batch_compute_chat_log_probs(chat_lm: HuggingFaceLM) -> None:
+def test_batch_compute_chat_log_probs(chat_lm: VLLM) -> None:
     log_probs_natural = chat_lm.batch_compute_chat_log_probs(
         [[{"role": "user", "content": "Hello, how are you?"}]],
         [{"role": "assistant", "content": "Good."}],
@@ -210,7 +210,7 @@ def test_batch_compute_chat_log_probs(chat_lm: HuggingFaceLM) -> None:
 
 
 @pytest.mark.skipif(not is_vllm_enabled(), reason="vllm library is not installed")
-def test_compute_chat_log_probs(chat_lm: HuggingFaceLM) -> None:
+def test_compute_chat_log_probs(chat_lm: VLLM) -> None:
     prompt = [{"role": "user", "content": "Hello, how are you?"}]
     response = {"role": "assistant", "content": "Good."}
     log_prob = chat_lm.compute_chat_log_probs(prompt, response)
