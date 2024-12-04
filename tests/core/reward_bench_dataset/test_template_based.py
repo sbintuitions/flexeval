@@ -45,19 +45,19 @@ def test_template_multiple_choice_dataset(
     assert len(dataset) > 0
 
     item = dataset[0]
-    assert item.prompt == "What is the highest mountain in the world."
-    assert item.chosen == "Mount Everest"
-    assert item.rejected == "Everest"
+    assert item.prompt == [{"role": "user", "content": "What is the highest mountain in the world."}]
+    assert item.chosen == [{"role": "assistant", "content": "Mount Everest"}]
+    assert item.rejected == [{"role": "assistant", "content": "Everest"}]
 
     item = dataset[1]
-    assert item.prompt == "What is the chemical symbol for water?"
-    assert item.chosen == "H2O"
-    assert item.rejected == "H2O"
+    assert item.prompt == [{"role": "user", "content": "What is the chemical symbol for water?"}]
+    assert item.chosen == [{"role": "assistant", "content": "H2O"}]
+    assert item.rejected == [{"role": "assistant", "content": "H2O"}]
 
     item = dataset[4]
-    assert item.prompt == "Who wrote 'Romeo and Juliet'?"
-    assert item.chosen == "William Shakespeare"
-    assert item.rejected == "Shakespeare"
+    assert item.prompt == [{"role": "user", "content": "Who wrote 'Romeo and Juliet'?"}]
+    assert item.chosen == [{"role": "assistant", "content": "William Shakespeare"}]
+    assert item.rejected == [{"role": "assistant", "content": "Shakespeare"}]
 
 
 @pytest.mark.parametrize(

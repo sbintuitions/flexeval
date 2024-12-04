@@ -81,9 +81,9 @@ class TemplateRewardBenchDataset(RewardBenchDataset):
         extra_info.update(extra_info_from_templates)
 
         return RewardBenchInstance(
-            prompt=prompt,
-            chosen=chosen,
-            rejected=rejected,
+            prompt=[{"role": "user", "content": prompt}],
+            chosen=[{"role": "assistant", "content": chosen}],
+            rejected=[{"role": "assistant", "content": rejected}],
             extra_info=extra_info,
         )
 

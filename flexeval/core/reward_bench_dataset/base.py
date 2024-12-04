@@ -10,17 +10,21 @@ class RewardBenchInstance:
     """A dataclass representing a triplet (prompt, chosen, rejected) of a
     reward bench task."""
 
-    prompt: str
+    prompt: list[dict[str, str]]
     """
     The prompt for chosen/rejected responses.
+    The format is a list of dictionaries, where each dictionary represents an OpenAI-format chat message,
+    such as `{"role": "user", "content": "Hello!"}`.
     """
-    chosen: str
+    chosen: list[dict[str, str]]
     """
     The chosen response to the prompt.
+    The format is the same as `prompt`.
     """
-    rejected: str
+    rejected: list[dict[str, str]]
     """
     The rejected response to the prompt.
+    The format is the same as `prompt`.
     """
     extra_info: dict[str, Any]
     """
