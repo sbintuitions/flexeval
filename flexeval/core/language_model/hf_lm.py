@@ -423,6 +423,10 @@ def get_prefix_and_completion_from_chat(
     tokenizer: PreTrainedTokenizer,
     custom_chat_template: str | None = None,
 ) -> tuple[str, str]:
+    """
+    Convert a list of message dictionaries to the string representation.
+    The output is a tuple of the prompt string and the response string.
+    """
     prompt_as_string = tokenizer.apply_chat_template(
         prompt,
         tokenize=False,
