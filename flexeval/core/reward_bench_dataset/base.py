@@ -13,7 +13,7 @@ class RewardBenchInstance:
     prompt: list[dict[str, str]]
     """
     The prompt for chosen/rejected responses.
-    The format is a list of dictionaries, where each dictionary represents a OpenAI-format chat message,
+    The format is a list of dictionaries, where each dictionary represents an OpenAI-format chat message,
     such as `{"role": "user", "content": "Hello!"}`.
     """
     chosen: list[dict[str, str]]
