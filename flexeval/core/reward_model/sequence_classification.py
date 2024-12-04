@@ -30,8 +30,6 @@ class SequenceClassificationRewardModel(RewardModel):
         self.model = AutoModelForSequenceClassification.from_pretrained(model, **model_kwargs)
         self.model.eval()
 
-        self.tokenizer = AutoTokenizer.from_pretrained(model)
-
     @torch.inference_mode()
     def batch_judge(
         self,
