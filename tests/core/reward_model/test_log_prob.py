@@ -1,8 +1,8 @@
 import pytest
 
+from flexeval.core.language_model import HuggingFaceLM
 from flexeval.core.reward_bench_dataset import RewardBenchInstance
 from flexeval.core.reward_model import LogProbRewardModel
-from flexeval.core.language_model import HuggingFaceLM
 
 
 @pytest.fixture(scope="module")
