@@ -9,6 +9,8 @@ import transformers
 from loguru import logger
 from transformers import AutoModelForCausalLM, AutoTokenizer, BatchEncoding, PreTrainedModel, PreTrainedTokenizer
 
+from flexeval.utils.hf_utils import get_default_model_kwargs
+
 from .base import LanguageModel, normalize_stop_sequences
 
 T = TypeVar("T")
@@ -145,25 +147,7 @@ class HuggingFaceLM(LanguageModel):
         self.add_special_tokens = add_special_tokens
         self.default_gen_kwargs = default_gen_kwargs or {}
 
-        model_kwargs = model_kwargs or {}
-        model_kwargs = {**model_kwargs}  # copy kwargs to avoid modifying the original dict
-        if "device_map" not in model_kwargs:
-            model_kwargs["device_map"] = "auto"
-        if "torch_dtype" not in model_kwargs:
-            # You need to set torch_dtype to use the optimal dtype for the model.
-            # https://huggingface.co/docs/transformers/main/main_classes/model#model-instantiation-dtype
-            model_kwargs["torch_dtype"] = "auto"
-        elif model_kwargs["torch_dtype"] != "auto":
-            # Convert string to torch.dtype
-            # We allow either "bfloat16" or "torch.bfloat16"
-            torch_dtype_str = model_kwargs["torch_dtype"]
-            if torch_dtype_str.startswith("torch."):
-                torch_dtype_str = torch_dtype_str[len("torch.") :]
-            model_kwargs["torch_dtype"] = getattr(torch, torch_dtype_str)
-            if not isinstance(model_kwargs["torch_dtype"], torch.dtype):
-                msg = f"Invalid torch_dtype: {model_kwargs['torch_dtype']}"
-                raise ValueError(msg)
-
+        model_kwargs = get_default_model_kwargs(model_kwargs)
         if not load_peft:
             self.model: PreTrainedModel = AutoModelForCausalLM.from_pretrained(
                 model,
