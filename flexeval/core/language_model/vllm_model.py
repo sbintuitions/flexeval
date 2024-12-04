@@ -6,6 +6,7 @@ import torch
 from transformers import AutoTokenizer, PreTrainedTokenizer
 
 from .base import LanguageModel, normalize_stop_sequences
+from .hf_lm import get_prefix_and_completion_from_chat
 
 
 def tokenize_text_for_lm_prefix(
@@ -253,6 +254,22 @@ class VLLM(LanguageModel):
             last_computed_index = chunk_end
 
         return batch_logprobs
+
+    def batch_compute_chat_log_probs(
+        self, prompt_list: list[list[dict[str, str]]], response_list: list[dict[str, str]]
+    ) -> list[float]:
+        prompt_as_string: list[str] = []
+        response_as_string: list[str] = []
+        for prompt, response in zip(prompt_list, response_list):
+            prompt_as_string_i, response_as_string_i = get_prefix_and_completion_from_chat(
+                prompt,
+                response,
+                self.tokenizer,
+                custom_chat_template=self.custom_chat_template,
+            )
+            prompt_as_string.append(prompt_as_string_i)
+            response_as_string.append(response_as_string_i)
+        return self.batch_compute_log_probs(prompt_as_string, prefix_list=response_as_string)
 
     def __repr__(self) -> str:
         return f"VLLM(model_name={self.model_name})"

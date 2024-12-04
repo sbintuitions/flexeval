@@ -397,5 +397,51 @@ class HuggingFaceLM(LanguageModel):
             total_log_probs = (log_prob_of_next * log_prob_mask).sum(dim=-1)
         return total_log_probs.tolist()
 
+    def batch_compute_chat_log_probs(
+        self, prompt_list: list[list[dict[str, str]]], response_list: list[dict[str, str]]
+    ) -> list[float]:
+        prompt_as_string: list[str] = []
+        response_as_string: list[str] = []
+        for prompt, response in zip(prompt_list, response_list):
+            prompt_as_string_i, response_as_string_i = get_prefix_and_completion_from_chat(
+                prompt,
+                response,
+                self.tokenizer,
+                custom_chat_template=self.custom_chat_template,
+            )
+            prompt_as_string.append(prompt_as_string_i)
+            response_as_string.append(response_as_string_i)
+        return self.batch_compute_log_probs(prompt_as_string, prefix_list=response_as_string)
+
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(model={self._model_name_or_path!r})"
+
+
+def get_prefix_and_completion_from_chat(
+    prompt: list[dict[str, Any]],
+    response: dict[str, Any],
+    tokenizer: PreTrainedTokenizer,
+    custom_chat_template: str | None = None,
+) -> tuple[str, str]:
+    """
+    Convert a list of message dictionaries to the string representation.
+    The output is a tuple of the prompt string and the response string.
+    """
+    prompt_as_string = tokenizer.apply_chat_template(
+        prompt,
+        tokenize=False,
+        add_generation_prompt=True,
+        chat_template=custom_chat_template,
+    )
+    prompt_and_response = tokenizer.apply_chat_template(
+        [*prompt, response],
+        tokenize=False,
+        add_generation_prompt=False,
+        chat_template=custom_chat_template,
+    )
+
+    if not prompt_and_response.startswith(prompt_as_string):
+        msg = f"prompt_and_response does not start with prompt: {prompt_and_response} vs {prompt_as_string}"
+        raise ValueError(msg)
+    completion = prompt_and_response[len(prompt_as_string) :]
+    return prompt_as_string, completion
