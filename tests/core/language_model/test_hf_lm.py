@@ -112,7 +112,7 @@ def test_batch_complete_text(lm: HuggingFaceLM) -> None:
     assert isinstance(completions[0], str)
 
 
-def test_compete_text(lm: HuggingFaceLM) -> None:
+def test_complete_text(lm: HuggingFaceLM) -> None:
     completion = lm.complete_text("こんにちは、")
     assert isinstance(completion, str)
 
@@ -211,17 +211,22 @@ def test_if_random_seed_fixes_the_lm_outputs(lm_init_func: Callable[..., Hugging
     assert len(completions) > 1
 
 
-def test_batch_generate_chat_response(lm: LanguageModel) -> None:
-    responses = lm.batch_generate_chat_response([[{"role": "user", "content": "こんにちは。"}]], max_length=40)
+@pytest.fixture(scope="module")
+def chat_lm(model_name: str = "sbintuitions/tiny-lm-chat") -> HuggingFaceLM:
+    return HuggingFaceLM(model=model_name, model_kwargs={"torch_dtype": "float32"})
+
+
+def test_batch_generate_chat_response(chat_lm: LanguageModel) -> None:
+    responses = chat_lm.batch_generate_chat_response([[{"role": "user", "content": "こんにちは。"}]], max_length=40)
     assert len(responses) == 1
     assert isinstance(responses[0], str)
 
 
-def test_generate_chat_response(lm: LanguageModel) -> None:
-    response = lm.generate_chat_response([{"role": "user", "content": "こんにちは。"}], max_length=40)
+def test_generate_chat_response(chat_lm: LanguageModel) -> None:
+    response = chat_lm.generate_chat_response([{"role": "user", "content": "こんにちは。"}], max_length=40)
     assert isinstance(response, str)
 
-    responses = lm.generate_chat_response(
+    responses = chat_lm.generate_chat_response(
         [
             [{"role": "user", "content": "こんにちは。"}],
             [{"role": "user", "content": "こんばんわ"}],
@@ -243,11 +248,6 @@ def test_if_custom_chat_template_is_given(lm_init_func: Callable[..., HuggingFac
     responses = lm.batch_generate_chat_response([[{"role": "user", "content": "こんにちは。"}]], max_length=40)
     assert len(responses) == 1
     assert responses[0].strip().startswith("0 0")
-
-
-@pytest.fixture(scope="module")
-def chat_lm(model_name: str = "sbintuitions/tiny-lm-chat") -> HuggingFaceLM:
-    return HuggingFaceLM(model=model_name, model_kwargs={"torch_dtype": "float32"})
 
 
 def test_if_stop_sequences_work_as_expected(chat_lm: HuggingFaceLM) -> None:
