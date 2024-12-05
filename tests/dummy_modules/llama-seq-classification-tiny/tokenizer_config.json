@@ -138,5 +138,6 @@
   "sep_token": "<sep>",
   "sp_model_kwargs": {},
   "tokenizer_class": "T5Tokenizer",
-  "unk_token": "<unk>"
+  "unk_token": "<unk>",
+  "chat_template": "{%- for message in messages %}\n    {%- if message['role'] == 'user' %}\n        {{- '<|user|>' + message['content'] + eos_token -}}\n    {%- elif message['role'] == 'system' %}\n        {{- '<|system|>' + message['content'] + eos_token -}}\n    {%- elif message['role'] == 'assistant' %}\n        {{- '<|assistant|>' + message['content'] + eos_token }}\n    {%- endif %}\n{%- if loop.last and add_generation_prompt -%}\n  {{- '<|assistant|>' -}}\n{%- endif -%}\n{%- endfor %}"
 }
