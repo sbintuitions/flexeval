@@ -1,6 +1,3 @@
-import pytest
-
-
 def is_vllm_enabled() -> bool:
     try:
         import torch

@@ -75,13 +75,3 @@ def test_batch_generate_chat_response(chat_lm: LanguageModel) -> None:
     )
     assert len(responses) == 1
     assert isinstance(responses[0], str)
-
-
-@pytest.mark.skipif(not is_vllm_enabled(), reason="vllm library is not installed")
-def test_batch_generate_chat_response(chat_lm: LanguageModel) -> None:
-    responses = chat_lm.batch_generate_chat_response(
-        [[{"role": "user", "content": "こんにちは。"}]],
-        max_new_tokens=40,
-    )
-    assert len(responses) == 1
-    assert isinstance(responses[0], str)
