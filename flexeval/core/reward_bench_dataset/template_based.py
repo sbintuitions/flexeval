@@ -35,6 +35,7 @@ class TemplateRewardBenchDataset(RewardBenchDataset):
         prompt_template: str,
         chosen_template: str,
         rejected_template: str,
+        category_template: str | None = None,
         extra_info_templates: dict[str, str] | None = None,
         data_range: tuple[int, int] | None = None,
         keep_conditions: dict[str, str] | None = None,
@@ -58,6 +59,9 @@ class TemplateRewardBenchDataset(RewardBenchDataset):
         self.prompt_template = JINJA2_ENV.from_string(prompt_template)
         self.chosen_template = JINJA2_ENV.from_string(chosen_template)
         self.rejected_template = JINJA2_ENV.from_string(rejected_template)
+        self.category_template = None
+        if category_template:
+            self.category_template = JINJA2_ENV.from_string(category_template)
 
         extra_info_templates = extra_info_templates or {}
         self._extra_info_templates: dict[str, Template] = {
@@ -84,6 +88,7 @@ class TemplateRewardBenchDataset(RewardBenchDataset):
             prompt=[{"role": "user", "content": prompt}],
             chosen=[{"role": "assistant", "content": chosen}],
             rejected=[{"role": "assistant", "content": rejected}],
+            category_key=self.category_template.render(**item) if self.category_template else None,
             extra_info=extra_info,
         )
 
@@ -108,6 +113,7 @@ class HFRewardBenchDataset(TemplateRewardBenchDataset):
         prompt_template: str = "{{ prompt }}",
         chosen_template: str = "{{ chosen }}",
         rejected_template: str = "{{ rejected }}",
+        category_template: str | None = None,
         extra_info_templates: dict[str, str] | None = None,
         data_range: tuple[int, int] | None = None,
         keep_conditions: dict[str, str] | None = None,
@@ -122,6 +128,7 @@ class HFRewardBenchDataset(TemplateRewardBenchDataset):
             prompt_template=prompt_template,
             chosen_template=chosen_template,
             rejected_template=rejected_template,
+            category_template=category_template,
             extra_info_templates=extra_info_templates,
             data_range=data_range,
             keep_conditions=keep_conditions,
@@ -143,6 +150,7 @@ class JsonlRewardBenchDataset(TemplateRewardBenchDataset):
         prompt_template: str = "{{ prompt }}",
         chosen_template: str = "{{ chosen }}",
         rejected_template: str = "{{ rejected }}",
+        category_template: str | None = None,
         extra_info_templates: dict[str, str] | None = None,
         data_range: tuple[int, int] | None = None,
         keep_conditions: dict[str, str] | None = None,
@@ -156,6 +164,7 @@ class JsonlRewardBenchDataset(TemplateRewardBenchDataset):
             prompt_template=prompt_template,
             chosen_template=chosen_template,
             rejected_template=rejected_template,
+            category_template=category_template,
             extra_info_templates=extra_info_templates,
             data_range=data_range,
             keep_conditions=keep_conditions,

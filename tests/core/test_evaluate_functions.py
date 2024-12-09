@@ -187,6 +187,7 @@ def test_evaluate_reward_model() -> None:
     )
 
     assert metrics["accuracy"] == 0.5
+    assert metrics["accuracy-dummy"] == 0.5  # the score computed with the category key
     assert outputs[0] == {
         "prompt": [{"role": "user", "content": "prompt_text_0"}],
         "chosen": [{"role": "user", "content": "chosen_text_0"}],
