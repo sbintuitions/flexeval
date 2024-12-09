@@ -36,13 +36,17 @@ class SequenceClassificationRewardModel(RewardModel):
         batch_reward_bench_instances: list[RewardBenchInstance],
     ) -> tuple[list[bool], list[dict[str, Any]]]:
         chosen_messages = [instance.prompt + instance.chosen for instance in batch_reward_bench_instances]
-        chosen_input_ids = self.tokenizer.apply_chat_template(chosen_messages, return_tensors="pt")
-        chosen_outputs = self.model(input_ids=chosen_input_ids.to(self.model.device))
+        chosen_inputs = self.tokenizer.apply_chat_template(
+            chosen_messages, return_tensors="pt", padding=True, return_dict=True
+        )
+        chosen_outputs = self.model(**{k: v.to(self.model.device) for k, v in chosen_inputs.items()})
         chosen_rewards = chosen_outputs.logits[:, 0]
 
         rejected_messages = [instance.prompt + instance.rejected for instance in batch_reward_bench_instances]
-        rejected_input_ids = self.tokenizer.apply_chat_template(rejected_messages, return_tensors="pt")
-        rejected_outputs = self.model(input_ids=rejected_input_ids.to(self.model.device))
+        rejected_inputs = self.tokenizer.apply_chat_template(
+            rejected_messages, return_tensors="pt", padding=True, return_dict=True
+        )
+        rejected_outputs = self.model(**{k: v.to(self.model.device) for k, v in rejected_inputs.items()})
         rejected_rewards = rejected_outputs.logits[:, 0]
 
         chosen_is_better = (chosen_rewards > rejected_rewards).tolist()
