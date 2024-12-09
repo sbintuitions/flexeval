@@ -1,5 +1,4 @@
 import pytest
-from vllm.distributed.parallel_state import cleanup_dist_env_and_memory
 
 from flexeval.core.language_model.vllm_model import VLLM
 from tests.conftest import is_vllm_enabled
@@ -31,6 +30,8 @@ def chat_lm_with_custom_chat_template() -> VLLM:
         custom_chat_template=custom_chat_template,
     )
     yield llm
+    from vllm.distributed.parallel_state import cleanup_dist_env_and_memory
+
     cleanup_dist_env_and_memory()
 
 
