@@ -14,13 +14,13 @@ def test_batch_judge(reward_model: SequenceClassificationRewardModel) -> None:
         RewardBenchInstance(
             prompt=[{"role": "user", "content": "Hello!"}],
             chosen=[{"role": "assistant", "content": "Hi!"}],
-            rejected=[{"role": "assistant", "content": "Hello!"}],
+            rejected=[{"role": "assistant", "content": "Colorless green sleeps furiously."}],
             extra_info={"id": 1},
         ),
         RewardBenchInstance(
-            prompt=[{"role": "user", "content": "1 + 1 = ?"}],
-            chosen=[{"role": "assistant", "content": "2"}],
-            rejected=[{"role": "assistant", "content": "3"}],
+            prompt=[{"role": "user", "content": "Hello! How are you?"}],
+            chosen=[{"role": "assistant", "content": "Hi! I am good."}],
+            rejected=[{"role": "assistant", "content": "Colorless green sleeps furiously."}],
             extra_info={"id": 2},
         ),
     ]
