@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any, Sequence
 
 
@@ -26,7 +26,11 @@ class RewardBenchInstance:
     The rejected response to the prompt.
     The format is the same as `prompt`.
     """
-    extra_info: dict[str, Any]
+    category_key: str | None = None
+    """
+    A key to compute category-wise average accuracies.
+    """
+    extra_info: dict[str, Any] = field(default_factory=dict)
     """
     Extra information that can be used by passing to `Metric`.
     """

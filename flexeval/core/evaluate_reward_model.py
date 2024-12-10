@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from collections import defaultdict
 from typing import Any, Sequence
 
 from loguru import logger
@@ -22,11 +23,13 @@ def evaluate_reward_model(
 
     outputs: list[dict[str, Any]] = []
     chosen_is_better_list: list[bool] = []
+    category_keys: list[str | None] = []
     with tqdm(total=len(reward_bench_instances)) as pbar:
         for i, batch_reward_bench_instances in enumerate(batch_iter(reward_bench_instances, batch_size)):
             chosen_is_better_list_i, outputs_i = reward_model.batch_judge(batch_reward_bench_instances)
             chosen_is_better_list += chosen_is_better_list_i
             outputs += outputs_i
+            category_keys += [instance.category_key for instance in batch_reward_bench_instances]
 
             if i == 0:
                 logger.info("Example of the model inputs and outputs:")
@@ -44,5 +47,20 @@ def evaluate_reward_model(
         outputs[i]["chosen"] = reward_bench_instances[i].chosen
         outputs[i]["rejected"] = reward_bench_instances[i].rejected
 
-    accuracy = sum(chosen_is_better_list) / len(chosen_is_better_list)
-    return {"accuracy": accuracy}, outputs
+    overall_accuracy = sum(chosen_is_better_list) / len(chosen_is_better_list)
+    # compute category-wise accuracy
+    num_totals = defaultdict(int)
+    num_hits = defaultdict(int)
+    for chosen_is_better, category_key in zip(chosen_is_better_list, category_keys):
+        num_totals[category_key] += 1
+        if chosen_is_better:
+            num_hits[category_key] += 1
+    category_wise_accuracy = {
+        f"accuracy-{category_key}": num_hits[category_key] / num_totals[category_key]
+        for category_key in num_totals
+        if category_key is not None
+    }
+    metrics = {"accuracy": overall_accuracy, **category_wise_accuracy}
+    logger.info(metrics)
+
+    return metrics, outputs

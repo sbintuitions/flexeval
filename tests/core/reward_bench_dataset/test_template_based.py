@@ -131,3 +131,20 @@ def test_remove_conditions(dataset_class: type[TemplateRewardBenchDataset], kwar
     assert 0 < len(filtered_dataset) < len(original_dataset)
     for item in filtered_dataset:
         assert len(item.extra_info["answers"]) > 1
+
+
+@pytest.mark.parametrize(
+    ("dataset_class", "kwargs"),
+    DATASETS_TO_TEST,
+)
+def test_category_key(dataset_class: type[TemplateRewardBenchDataset], kwargs: dict[str, Any]) -> None:
+    original_dataset = dataset_class(
+        **kwargs,
+        prompt_template="{{ question }}",
+        chosen_template="{{ answers[0] }}",
+        rejected_template="{{ answers[-1] }}",
+        category_template="{{ id }}",
+    )
+
+    for item in original_dataset:
+        assert item.category_key == str(item.extra_info["id"])
