@@ -1,5 +1,4 @@
 import pytest
-from vllm.distributed.parallel_state import cleanup_dist_env_and_memory
 
 from flexeval.core.language_model.hf_lm import HuggingFaceLM
 from flexeval.core.language_model.vllm_model import VLLM, LanguageModel
@@ -19,6 +18,8 @@ def lm() -> VLLM:
         tokenizer_kwargs={"use_fast": False},
     )
     yield llm
+    from vllm.distributed.parallel_state import cleanup_dist_env_and_memory
+
     cleanup_dist_env_and_memory()
 
 
