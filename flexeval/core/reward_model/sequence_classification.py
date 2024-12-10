@@ -28,6 +28,10 @@ class SequenceClassificationRewardModel(RewardModel):
 
         model_kwargs = get_default_model_kwargs(model_kwargs)
         self.model = AutoModelForSequenceClassification.from_pretrained(model, **model_kwargs)
+        # Set pad_token_id if not set
+        # to avoid "ValueError: Cannot handle batch sizes > 1 if no padding token is defined." in self.model()
+        if self.model.config.pad_token_id is None:
+            self.model.config.pad_token_id = self.tokenizer.pad_token_id
         self.model.eval()
 
     @torch.inference_mode()
