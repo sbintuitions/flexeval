@@ -4,3 +4,5 @@ from .last_line import LastLineExtractor
 from .noop import NoopNormalizer
 from .regex import RegexExtractor
 from .string_strip import StringStrip
+from .nfkc import NFKCNormalizer
+from .lower import StringLower
