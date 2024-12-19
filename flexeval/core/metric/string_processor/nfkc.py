@@ -17,7 +17,4 @@ class NFKCNormalizer(StringProcessor):
 
     def __call__(self, text: str) -> str:
 
-        # unicode normalization
-        text = unicodedata.normalize("NFKC", text)
-
-        return text
+        return unicodedata.normalize("NFKC", text)
