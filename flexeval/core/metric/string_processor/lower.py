@@ -16,4 +16,3 @@ class StringLower(StringProcessor):
     def __call__(self, text: str) -> str:
 
         return text.lower()
-        
