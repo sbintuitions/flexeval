@@ -1,5 +1,3 @@
-import unicodedata
-
 from .base import StringProcessor
 
 
