@@ -17,7 +17,5 @@ class StringLower(StringProcessor):
 
     def __call__(self, text: str) -> str:
 
-        # lowercase alphabetical characters
-        text = text.lower()
-
-        return text
+        return text.lower()
+        
