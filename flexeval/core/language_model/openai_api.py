@@ -81,7 +81,7 @@ class OpenAIChatAPI(LanguageModel):
         self.default_gen_kwargs = default_gen_kwargs or {}
         # convert the flexeval-specific argument name to the OpenAI-specific name
         if "max_new_tokens" in self.default_gen_kwargs:
-            self.default_gen_kwargs["max_tokens"] = self.default_gen_kwargs.pop("max_new_tokens")
+            self.default_gen_kwargs["max_completion_tokens"] = self.default_gen_kwargs.pop("max_new_tokens")
 
     async def _async_batch_run_chatgpt(
         self,
@@ -95,7 +95,7 @@ class OpenAIChatAPI(LanguageModel):
         gen_kwargs = self.default_gen_kwargs.copy()
         gen_kwargs.update(kwargs)
         if max_new_tokens is not None:
-            gen_kwargs["max_tokens"] = max_new_tokens
+            gen_kwargs["max_completion_tokens"] = max_new_tokens
 
         stop_sequences = normalize_stop_sequences(
             stop_sequences_list=[
