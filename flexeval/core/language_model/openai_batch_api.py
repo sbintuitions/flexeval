@@ -90,14 +90,14 @@ class OpenAIChatBatchAPI(LanguageModel):
             kwargs["stop"] = stop_sequences
 
         if max_new_tokens is not None:
-            if "max_tokens" in kwargs:
+            if "max_completion_tokens" in kwargs:
                 msg = (
-                    "You specified both `max_new_tokens` and `max_tokens` in generation kwargs. "
-                    "However, `max_new_tokens` will be normalized into `max_tokens`. "
+                    "You specified both `max_new_tokens` and `max_completion_tokens` in generation kwargs. "
+                    "However, `max_new_tokens` will be normalized into `max_completion_tokens`. "
                     "Please specify only one of them."
                 )
                 raise ValueError(msg)
-            kwargs["max_tokens"] = max_new_tokens
+            kwargs["max_completion_tokens"] = max_new_tokens
 
         self.create_batch_file(custom_id_2_message, **kwargs)
 
