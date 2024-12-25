@@ -30,8 +30,10 @@ class Jinja2PromptTemplate(PromptTemplate):
         else:
             self.template = template
 
+        self.compiled_template = JINJA2_ENV.from_string(self.template)
+
     def embed_inputs(self, input_dict: dict[str, Any]) -> str:
-        return JINJA2_ENV.from_string(self.template).render(input_dict)
+        return self.compiled_template.render(input_dict)
 
     def __repr__(self) -> str:
         return f"Jinja2PromptTemplate(template={self.template!r})"
