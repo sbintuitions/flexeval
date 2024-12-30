@@ -30,6 +30,7 @@ class HFTextDataset(TextDataset):
         path: str,
         split: str,
         text_template: str,
+        prefix_template: str | None = None,
         subset: str | None = None,
         keep_conditions: dict[str, str] | None = None,
         remove_conditions: dict[str, str] | None = None,
@@ -48,10 +49,17 @@ class HFTextDataset(TextDataset):
             self.dataset = self.dataset.filter(lambda x, t=filter_template, v=value_to_remove: t.render(**x) != v)
 
         self.text_template = JINJA2_ENV.from_string(text_template)
+        self.prefix_template = None
+        if prefix_template:
+            self.prefix_template = JINJA2_ENV.from_string(prefix_template)
 
     def __len__(self) -> int:
         return len(self.dataset)
 
     def __getitem__(self, i: int) -> TextInstance:
         item = self.dataset[i]
-        return TextInstance(self.text_template.render(**item))
+        text = self.text_template.render(**item)
+        prefix = ""
+        if self.prefix_template:
+            prefix = self.prefix_template.render(**item)
+        return TextInstance(text=text, prefix=prefix)

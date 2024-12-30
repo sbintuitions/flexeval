@@ -6,11 +6,13 @@ def test_hf_text_dataset() -> None:
         path="tests/dummy_modules/hf_dataset",
         split="train",
         text_template="{{ question }}",
+        prefix_template="THIS IS PREFIX\n",
     )
 
     texts = list(dataset)
     assert len(texts) == 10
     assert isinstance(texts[0].text, str)
+    assert texts[0].prefix == "THIS IS PREFIX\n"
 
 
 def test_keep_conditions() -> None:
