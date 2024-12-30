@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from flexeval.core.text_dataset import TextDataset
+from flexeval.core.text_dataset import TextDataset, TextInstance
 
 
 class DummyTextDataset(TextDataset):
@@ -13,5 +13,5 @@ class DummyTextDataset(TextDataset):
     def __len__(self) -> int:
         return len(self._text_list)
 
-    def __getitem__(self, item: int) -> str:
-        return self._text_list[item]
+    def __getitem__(self, item: int) -> TextInstance:
+        return TextInstance(self._text_list[item])

@@ -10,7 +10,7 @@ def test_hf_text_dataset() -> None:
 
     texts = list(dataset)
     assert len(texts) == 10
-    assert isinstance(texts[0], str)
+    assert isinstance(texts[0].text, str)
 
 
 def test_keep_conditions() -> None:

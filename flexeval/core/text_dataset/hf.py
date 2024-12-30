@@ -6,7 +6,7 @@ import datasets
 
 from flexeval.core.utils.jinja2_utils import JINJA2_ENV
 
-from .base import TextDataset
+from .base import TextDataset, TextInstance
 
 
 class HFTextDataset(TextDataset):
@@ -52,6 +52,6 @@ class HFTextDataset(TextDataset):
     def __len__(self) -> int:
         return len(self.dataset)
 
-    def __getitem__(self, i: int) -> str:
+    def __getitem__(self, i: int) -> TextInstance:
         item = self.dataset[i]
-        return self.text_template.render(**item)
+        return TextInstance(self.text_template.render(**item))

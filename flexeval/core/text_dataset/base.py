@@ -1,10 +1,17 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
+from dataclasses import dataclass
 from typing import Sequence
 
 
-class TextDataset(Sequence[str], ABC):
+@dataclass
+class TextInstance:
+    text: str
+    prefix: str = ""
+
+
+class TextDataset(Sequence[TextInstance], ABC):
     """
     This class represents a dataset of text examples.
     """
@@ -14,7 +21,7 @@ class TextDataset(Sequence[str], ABC):
         pass
 
     @abstractmethod
-    def __getitem__(self, item: int) -> str:
+    def __getitem__(self, item: int) -> TextInstance:
         pass
 
     def __repr__(self) -> str:
