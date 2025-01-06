@@ -31,14 +31,14 @@ local template_ = '{{ question }}答えは「';
       {
         class_path: 'CharF1',
         init_args: {
-          processor: { class_path: 'AIONormalizer' },
+          lm_output_processor: { class_path: 'AIONormalizer' },
           reference_processor: { class_path: 'AIONormalizer' },
         },
       },
       {
         class_path: 'ExactMatch',
         init_args: {
-          processor: { class_path: 'AIONormalizer' },
+          lm_output_processor: { class_path: 'AIONormalizer' },
           reference_processor: { class_path: 'AIONormalizer' },
         },
       },

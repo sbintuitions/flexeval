@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import functools
 import os
 from typing import Any
 
@@ -21,7 +22,7 @@ class CodeEval(Metric):
         code_template: A Jinja2 template string to make the generated code.
             The template can contain variables from task inputs.
             If `None`, the code prompt will be the generated text itself.
-        processor: A processor applied to model outputs before evaluation.
+        lm_output_processor: String processors applied to model outputs before evaluation.
         evaluate_module: An evaluate module to use.
 
     Examples:
@@ -43,7 +44,7 @@ class CodeEval(Metric):
     def __init__(
         self,
         code_template: str | None = None,
-        processor: StringProcessor | None = None,
+        lm_output_processor: StringProcessor | list[StringProcessor] | None = None,
         evaluate_module: str = "code_eval",
     ) -> None:
         if code_template is None:
@@ -51,7 +52,10 @@ class CodeEval(Metric):
 
         self.code_template = JINJA2_ENV.from_string(code_template)
         self.code_eval = evaluate.load(evaluate_module)
-        self.processor = processor
+
+        if isinstance(lm_output_processor, StringProcessor):
+            lm_output_processor = [lm_output_processor]
+        self.lm_output_processors = lm_output_processor
 
     def evaluate(
         self,
@@ -62,6 +66,11 @@ class CodeEval(Metric):
         if task_inputs_list is None:
             task_inputs_list = [{} for _ in lm_outputs]
 
+        if self.lm_output_processors:
+            lm_outputs = [
+                functools.reduce(lambda x, norm: norm(x), self.lm_output_processors, output) for output in lm_outputs
+            ]
+
         generated_code_list: list[str] = []
         test_case_list: list[str] = []
         # in code generation tasks, references_list contains the test cases
@@ -70,11 +79,7 @@ class CodeEval(Metric):
             task_inputs_list,
             references_list,
         ):
-            if self.processor is not None:
-                lm_output = self.processor(lm_output)  # noqa: PLW2901
-
             generated_code = self.code_template.render(lm_output=lm_output, **task_inputs)
-
             generated_code_list.append(generated_code)
             test_case_list.append("\n".join(test_cases))
         pass_at_k, results = self.code_eval.compute(
