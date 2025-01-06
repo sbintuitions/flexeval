@@ -33,6 +33,7 @@ vllm = {version = "^0.6.4.post1", optional = true }
 loguru = "^0.7.2"
 wandb = {version = "^0.17.2", optional = true}
 pyarrow = "16.1.0"  # set the version because we get "Unable to find installation candidates" with 17.0.0
+scipy = "1.13.0"
 
 [tool.poetry.extras]
 vllm = ["vllm"]
