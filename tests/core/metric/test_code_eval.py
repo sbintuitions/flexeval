@@ -19,7 +19,7 @@ def test_correct_code(code: str, test_case: str) -> None:
 
 
 @pytest.mark.parametrize(
-    ("code", "test_case", "processor"),
+    ("code", "test_case", "lm_output_processor"),
     [
         (
             "```python\ndef add(a, b):\n    return a + b\n```",
@@ -28,8 +28,8 @@ def test_correct_code(code: str, test_case: str) -> None:
         ),
     ],
 )
-def test_correct_code_with_processor(code: str, test_case: str, processor: StringProcessor) -> None:
-    code_eval = CodeEval(processor=processor)
+def test_correct_code_with_processor(code: str, test_case: str, lm_output_processor: StringProcessor) -> None:
+    code_eval = CodeEval(lm_output_processor=lm_output_processor)
     metric_result = code_eval.evaluate([code], references_list=[[test_case]])
     assert metric_result.summary == {"pass@1": 1.0}
 
