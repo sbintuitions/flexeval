@@ -9,7 +9,7 @@ from tqdm import tqdm
 
 from .language_model import LanguageModel
 from .metric.tokenizer import Tokenizer
-from .text_dataset import TextDataset
+from .text_dataset import TextDataset, TextInstance
 from .utils.data_util import batch_iter
 
 
@@ -22,21 +22,23 @@ def evaluate_perplexity(
 ) -> dict[str, float]:
     total_log_prob = 0.0
 
-    eval_instances: Sequence[str] = eval_dataset
+    eval_instances: Sequence[TextInstance] = eval_dataset
     if max_instances is not None:
         eval_instances = [eval_dataset[i] for i in range(min(max_instances, len(eval_dataset)))]
 
     token_counts: dict[str, int] = defaultdict(int)
     with tqdm(total=len(eval_instances)) as pbar:
         for batch in batch_iter(eval_instances, batch_size):
-            log_probs = language_model.batch_compute_log_probs(batch)
+            log_probs = language_model.batch_compute_log_probs(
+                text_list=[i.text for i in batch], prefix_list=[i.prefix for i in batch]
+            )
             total_log_prob += sum(log_probs)
 
-            for text in batch:
-                token_counts["byte"] += len(text.encode("utf-8"))
-                token_counts["character"] += len(text)
+            for instance in batch:
+                token_counts["byte"] += len(instance.text.encode("utf-8"))
+                token_counts["character"] += len(instance.text)
                 if tokenizer:
-                    token_counts["token"] += len(tokenizer.tokenize(text))
+                    token_counts["token"] += len(tokenizer.tokenize(instance.text))
 
             pbar.update(len(batch))
 

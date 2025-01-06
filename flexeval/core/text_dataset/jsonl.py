@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 from os import PathLike
 
-from .base import TextDataset
+from .base import TextDataset, TextInstance
 
 
 class JsonlTextDataset(TextDataset):
@@ -25,5 +25,5 @@ class JsonlTextDataset(TextDataset):
     def __len__(self) -> int:
         return len(self._text_list)
 
-    def __getitem__(self, item: int) -> str:
-        return self._text_list[item]
+    def __getitem__(self, item: int) -> TextInstance:
+        return TextInstance(self._text_list[item])
