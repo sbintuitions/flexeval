@@ -1106,6 +1106,15 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#flexeval.core.metric.correlation.Correlation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Correlation
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#flexeval.core.metric.exact_match.ExactMatch" class="md-nav__link">
     <span class="md-ellipsis">
       ExactMatch
@@ -1482,6 +1491,15 @@
   <a href="#flexeval.core.metric.common_string_length.CommonStringLength" class="md-nav__link">
     <span class="md-ellipsis">
       CommonStringLength
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#flexeval.core.metric.correlation.Correlation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Correlation
     </span>
   </a>
   
@@ -2259,14 +2277,13 @@ If there are multiple expected outputs, the highest score is adopted.</p>
 <p><span class="doc-section-title">Parameters:</span></p>
     <ul>
         <li class="doc-section-item field-body">
-          <b><code>processor</code></b>
+          <b><code>lm_output_processor</code></b>
               (<code><a class="autorefs autorefs-internal" title="flexeval.core.metric.string_processor.StringProcessor" href="../StringProcessor/#flexeval.core.metric.string_processor.base.StringProcessor">StringProcessor</a> | list[<a class="autorefs autorefs-internal" title="flexeval.core.metric.string_processor.StringProcessor" href="../StringProcessor/#flexeval.core.metric.string_processor.base.StringProcessor">StringProcessor</a>] | None</code>, default:
                   <code>None</code>
 )
           –
           <div class="doc-md-description">
-            <p>StringProcessor or list of Normalizers to apply to the model outputs before comparison.
-Unless reference_processor is specified, this processor will be applied to the references as well.</p>
+            <p>StringProcessor or list of Normalizers to apply to the model outputs before comparison.</p>
           </div>
         </li>
         <li class="doc-section-item field-body">
@@ -2351,15 +2368,15 @@ Unless reference_processor is specified, this processor will be applied to the r
 <span class="normal">65</span>
 <span class="normal">66</span>
 <span class="normal">67</span>
-<span class="normal">68</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">CharF1</span><span class="p">(</span><span class="n">Metric</span><span class="p">):</span>
+<span class="normal">68</span>
+<span class="normal">69</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">CharF1</span><span class="p">(</span><span class="n">Metric</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A metric that calculates how many characters in the output string are included</span>
 <span class="sd">    in the characters of the expected output.</span>
 <span class="sd">    If there are multiple expected outputs, the highest score is adopted.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        processor: StringProcessor or list of Normalizers to apply to the model outputs before comparison.</span>
-<span class="sd">            Unless reference_processor is specified, this processor will be applied to the references as well.</span>
+<span class="sd">        lm_output_processor: StringProcessor or list of Normalizers to apply to the model outputs before comparison.</span>
 <span class="sd">        reference_processor: StringProcessor or list of Normalizers to apply to the references before comparison.</span>
 
 
@@ -2375,16 +2392,16 @@ Unless reference_processor is specified, this processor will be applied to the r
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">processor</span><span class="p">:</span> <span class="n">StringProcessor</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="n">StringProcessor</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">lm_output_processor</span><span class="p">:</span> <span class="n">StringProcessor</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="n">StringProcessor</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">reference_processor</span><span class="p">:</span> <span class="n">StringProcessor</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="n">StringProcessor</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">processor</span><span class="p">,</span> <span class="n">StringProcessor</span><span class="p">):</span>
-            <span class="n">processor</span> <span class="o">=</span> <span class="p">[</span><span class="n">processor</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">lm_output_processor</span><span class="p">,</span> <span class="n">StringProcessor</span><span class="p">):</span>
+            <span class="n">lm_output_processor</span> <span class="o">=</span> <span class="p">[</span><span class="n">lm_output_processor</span><span class="p">]</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">reference_processor</span><span class="p">,</span> <span class="n">StringProcessor</span><span class="p">):</span>
             <span class="n">reference_processor</span> <span class="o">=</span> <span class="p">[</span><span class="n">reference_processor</span><span class="p">]</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">processors</span> <span class="o">=</span> <span class="n">processor</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">reference_processors</span> <span class="o">=</span> <span class="n">reference_processor</span> <span class="ow">or</span> <span class="n">processor</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lm_output_processors</span> <span class="o">=</span> <span class="n">lm_output_processor</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reference_processors</span> <span class="o">=</span> <span class="n">reference_processor</span>
 
     <span class="k">def</span> <span class="nf">evaluate</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -2392,8 +2409,10 @@ Unless reference_processor is specified, this processor will be applied to the r
         <span class="n">references_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span>
         <span class="n">task_inputs_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MetricResult</span><span class="p">:</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">processors</span><span class="p">:</span>
-            <span class="n">lm_outputs</span> <span class="o">=</span> <span class="p">[</span><span class="n">functools</span><span class="o">.</span><span class="n">reduce</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">norm</span><span class="p">:</span> <span class="n">norm</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">processors</span><span class="p">,</span> <span class="n">output</span><span class="p">)</span> <span class="k">for</span> <span class="n">output</span> <span class="ow">in</span> <span class="n">lm_outputs</span><span class="p">]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">lm_output_processors</span><span class="p">:</span>
+            <span class="n">lm_outputs</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">functools</span><span class="o">.</span><span class="n">reduce</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">norm</span><span class="p">:</span> <span class="n">norm</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">lm_output_processors</span><span class="p">,</span> <span class="n">output</span><span class="p">)</span> <span class="k">for</span> <span class="n">output</span> <span class="ow">in</span> <span class="n">lm_outputs</span>
+            <span class="p">]</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">reference_processors</span><span class="p">:</span>
             <span class="n">references_list</span> <span class="o">=</span> <span class="p">[</span>
@@ -2426,16 +2445,16 @@ Unless reference_processor is specified, this processor will be applied to the r
 
 
 
-<h3 id="flexeval.core.metric.char_f1.CharF1.processors" class="doc doc-heading">
-            <span class="doc doc-object-name doc-attribute-name">processors</span>
+<h3 id="flexeval.core.metric.char_f1.CharF1.lm_output_processors" class="doc doc-heading">
+            <span class="doc doc-object-name doc-attribute-name">lm_output_processors</span>
 
 
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
   </span>
 
-<a href="#flexeval.core.metric.char_f1.CharF1.processors" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="n">processors</span> <span class="o">=</span> <span class="n">processor</span>
+<a href="#flexeval.core.metric.char_f1.CharF1.lm_output_processors" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">lm_output_processors</span> <span class="o">=</span> <span class="n">lm_output_processor</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -2456,7 +2475,7 @@ Unless reference_processor is specified, this processor will be applied to the r
   </span>
 
 <a href="#flexeval.core.metric.char_f1.CharF1.reference_processors" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="n">reference_processors</span> <span class="o">=</span> <span class="n">reference_processor</span> <span class="ow">or</span> <span class="n">processor</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">reference_processors</span> <span class="o">=</span> <span class="n">reference_processor</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -2474,14 +2493,15 @@ Unless reference_processor is specified, this processor will be applied to the r
 
 
 <a href="#flexeval.core.metric.char_f1.CharF1.__init__" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="fm">__init__</span><span class="p">(</span><span class="nf">processor</span><span class="p">:</span> <span class="n">StringProcessor</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="n">StringProcessor</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">reference_processor</span><span class="p">:</span> <span class="n">StringProcessor</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="n">StringProcessor</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="fm">__init__</span><span class="p">(</span><span class="nf">lm_output_processor</span><span class="p">:</span> <span class="n">StringProcessor</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="n">StringProcessor</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">reference_processor</span><span class="p">:</span> <span class="n">StringProcessor</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="n">StringProcessor</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
 
             <details class="quote">
               <summary>Source code in <code>flexeval/core/metric/char_f1.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">33</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">32</span>
+<span class="normal">33</span>
 <span class="normal">34</span>
 <span class="normal">35</span>
 <span class="normal">36</span>
@@ -2491,19 +2511,18 @@ Unless reference_processor is specified, this processor will be applied to the r
 <span class="normal">40</span>
 <span class="normal">41</span>
 <span class="normal">42</span>
-<span class="normal">43</span>
-<span class="normal">44</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<span class="normal">43</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
-    <span class="n">processor</span><span class="p">:</span> <span class="n">StringProcessor</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="n">StringProcessor</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">lm_output_processor</span><span class="p">:</span> <span class="n">StringProcessor</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="n">StringProcessor</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">reference_processor</span><span class="p">:</span> <span class="n">StringProcessor</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="n">StringProcessor</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">processor</span><span class="p">,</span> <span class="n">StringProcessor</span><span class="p">):</span>
-        <span class="n">processor</span> <span class="o">=</span> <span class="p">[</span><span class="n">processor</span><span class="p">]</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">lm_output_processor</span><span class="p">,</span> <span class="n">StringProcessor</span><span class="p">):</span>
+        <span class="n">lm_output_processor</span> <span class="o">=</span> <span class="p">[</span><span class="n">lm_output_processor</span><span class="p">]</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">reference_processor</span><span class="p">,</span> <span class="n">StringProcessor</span><span class="p">):</span>
         <span class="n">reference_processor</span> <span class="o">=</span> <span class="p">[</span><span class="n">reference_processor</span><span class="p">]</span>
 
-    <span class="bp">self</span><span class="o">.</span><span class="n">processors</span> <span class="o">=</span> <span class="n">processor</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">reference_processors</span> <span class="o">=</span> <span class="n">reference_processor</span> <span class="ow">or</span> <span class="n">processor</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">lm_output_processors</span> <span class="o">=</span> <span class="n">lm_output_processor</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">reference_processors</span> <span class="o">=</span> <span class="n">reference_processor</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -2525,7 +2544,8 @@ Unless reference_processor is specified, this processor will be applied to the r
 
             <details class="quote">
               <summary>Source code in <code>flexeval/core/metric/char_f1.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">46</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">45</span>
+<span class="normal">46</span>
 <span class="normal">47</span>
 <span class="normal">48</span>
 <span class="normal">49</span>
@@ -2547,14 +2567,17 @@ Unless reference_processor is specified, this processor will be applied to the r
 <span class="normal">65</span>
 <span class="normal">66</span>
 <span class="normal">67</span>
-<span class="normal">68</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">evaluate</span><span class="p">(</span>
+<span class="normal">68</span>
+<span class="normal">69</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">evaluate</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">lm_outputs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
     <span class="n">references_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span>
     <span class="n">task_inputs_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MetricResult</span><span class="p">:</span>
-    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">processors</span><span class="p">:</span>
-        <span class="n">lm_outputs</span> <span class="o">=</span> <span class="p">[</span><span class="n">functools</span><span class="o">.</span><span class="n">reduce</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">norm</span><span class="p">:</span> <span class="n">norm</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">processors</span><span class="p">,</span> <span class="n">output</span><span class="p">)</span> <span class="k">for</span> <span class="n">output</span> <span class="ow">in</span> <span class="n">lm_outputs</span><span class="p">]</span>
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">lm_output_processors</span><span class="p">:</span>
+        <span class="n">lm_outputs</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">functools</span><span class="o">.</span><span class="n">reduce</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">norm</span><span class="p">:</span> <span class="n">norm</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">lm_output_processors</span><span class="p">,</span> <span class="n">output</span><span class="p">)</span> <span class="k">for</span> <span class="n">output</span> <span class="ow">in</span> <span class="n">lm_outputs</span>
+        <span class="p">]</span>
 
     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">reference_processors</span><span class="p">:</span>
         <span class="n">references_list</span> <span class="o">=</span> <span class="p">[</span>
@@ -2616,13 +2639,13 @@ If <code>None</code>, the code prompt will be the generated text itself.</p>
           </div>
         </li>
         <li class="doc-section-item field-body">
-          <b><code>processor</code></b>
-              (<code><a class="autorefs autorefs-internal" title="flexeval.core.metric.string_processor.StringProcessor" href="../StringProcessor/#flexeval.core.metric.string_processor.base.StringProcessor">StringProcessor</a> | None</code>, default:
+          <b><code>lm_output_processor</code></b>
+              (<code><a class="autorefs autorefs-internal" title="flexeval.core.metric.string_processor.StringProcessor" href="../StringProcessor/#flexeval.core.metric.string_processor.base.StringProcessor">StringProcessor</a> | list[<a class="autorefs autorefs-internal" title="flexeval.core.metric.string_processor.StringProcessor" href="../StringProcessor/#flexeval.core.metric.string_processor.base.StringProcessor">StringProcessor</a>] | None</code>, default:
                   <code>None</code>
 )
           –
           <div class="doc-md-description">
-            <p>A processor applied to model outputs before evaluation.</p>
+            <p>String processors applied to model outputs before evaluation.</p>
           </div>
         </li>
         <li class="doc-section-item field-body">
@@ -2656,90 +2679,94 @@ If <code>None</code>, the code prompt will be the generated text itself.</p>
 
               <details class="quote">
                 <summary>Source code in <code>flexeval/core/metric/code_eval.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">16</span>
-<span class="normal">17</span>
-<span class="normal">18</span>
-<span class="normal">19</span>
-<span class="normal">20</span>
-<span class="normal">21</span>
-<span class="normal">22</span>
-<span class="normal">23</span>
-<span class="normal">24</span>
-<span class="normal">25</span>
-<span class="normal">26</span>
-<span class="normal">27</span>
-<span class="normal">28</span>
-<span class="normal">29</span>
-<span class="normal">30</span>
-<span class="normal">31</span>
-<span class="normal">32</span>
-<span class="normal">33</span>
-<span class="normal">34</span>
-<span class="normal">35</span>
-<span class="normal">36</span>
-<span class="normal">37</span>
-<span class="normal">38</span>
-<span class="normal">39</span>
-<span class="normal">40</span>
-<span class="normal">41</span>
-<span class="normal">42</span>
-<span class="normal">43</span>
-<span class="normal">44</span>
-<span class="normal">45</span>
-<span class="normal">46</span>
-<span class="normal">47</span>
-<span class="normal">48</span>
-<span class="normal">49</span>
-<span class="normal">50</span>
-<span class="normal">51</span>
-<span class="normal">52</span>
-<span class="normal">53</span>
-<span class="normal">54</span>
-<span class="normal">55</span>
-<span class="normal">56</span>
-<span class="normal">57</span>
-<span class="normal">58</span>
-<span class="normal">59</span>
-<span class="normal">60</span>
-<span class="normal">61</span>
-<span class="normal">62</span>
-<span class="normal">63</span>
-<span class="normal">64</span>
-<span class="normal">65</span>
-<span class="normal">66</span>
-<span class="normal">67</span>
-<span class="normal">68</span>
-<span class="normal">69</span>
-<span class="normal">70</span>
-<span class="normal">71</span>
-<span class="normal">72</span>
-<span class="normal">73</span>
-<span class="normal">74</span>
-<span class="normal">75</span>
-<span class="normal">76</span>
-<span class="normal">77</span>
-<span class="normal">78</span>
-<span class="normal">79</span>
-<span class="normal">80</span>
-<span class="normal">81</span>
-<span class="normal">82</span>
-<span class="normal">83</span>
-<span class="normal">84</span>
-<span class="normal">85</span>
-<span class="normal">86</span>
-<span class="normal">87</span>
-<span class="normal">88</span>
-<span class="normal">89</span>
-<span class="normal">90</span>
-<span class="normal">91</span>
-<span class="normal">92</span>
-<span class="normal">93</span>
-<span class="normal">94</span>
-<span class="normal">95</span>
-<span class="normal">96</span>
-<span class="normal">97</span>
-<span class="normal">98</span>
-<span class="normal">99</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">CodeEval</span><span class="p">(</span><span class="n">Metric</span><span class="p">):</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 17</span>
+<span class="normal"> 18</span>
+<span class="normal"> 19</span>
+<span class="normal"> 20</span>
+<span class="normal"> 21</span>
+<span class="normal"> 22</span>
+<span class="normal"> 23</span>
+<span class="normal"> 24</span>
+<span class="normal"> 25</span>
+<span class="normal"> 26</span>
+<span class="normal"> 27</span>
+<span class="normal"> 28</span>
+<span class="normal"> 29</span>
+<span class="normal"> 30</span>
+<span class="normal"> 31</span>
+<span class="normal"> 32</span>
+<span class="normal"> 33</span>
+<span class="normal"> 34</span>
+<span class="normal"> 35</span>
+<span class="normal"> 36</span>
+<span class="normal"> 37</span>
+<span class="normal"> 38</span>
+<span class="normal"> 39</span>
+<span class="normal"> 40</span>
+<span class="normal"> 41</span>
+<span class="normal"> 42</span>
+<span class="normal"> 43</span>
+<span class="normal"> 44</span>
+<span class="normal"> 45</span>
+<span class="normal"> 46</span>
+<span class="normal"> 47</span>
+<span class="normal"> 48</span>
+<span class="normal"> 49</span>
+<span class="normal"> 50</span>
+<span class="normal"> 51</span>
+<span class="normal"> 52</span>
+<span class="normal"> 53</span>
+<span class="normal"> 54</span>
+<span class="normal"> 55</span>
+<span class="normal"> 56</span>
+<span class="normal"> 57</span>
+<span class="normal"> 58</span>
+<span class="normal"> 59</span>
+<span class="normal"> 60</span>
+<span class="normal"> 61</span>
+<span class="normal"> 62</span>
+<span class="normal"> 63</span>
+<span class="normal"> 64</span>
+<span class="normal"> 65</span>
+<span class="normal"> 66</span>
+<span class="normal"> 67</span>
+<span class="normal"> 68</span>
+<span class="normal"> 69</span>
+<span class="normal"> 70</span>
+<span class="normal"> 71</span>
+<span class="normal"> 72</span>
+<span class="normal"> 73</span>
+<span class="normal"> 74</span>
+<span class="normal"> 75</span>
+<span class="normal"> 76</span>
+<span class="normal"> 77</span>
+<span class="normal"> 78</span>
+<span class="normal"> 79</span>
+<span class="normal"> 80</span>
+<span class="normal"> 81</span>
+<span class="normal"> 82</span>
+<span class="normal"> 83</span>
+<span class="normal"> 84</span>
+<span class="normal"> 85</span>
+<span class="normal"> 86</span>
+<span class="normal"> 87</span>
+<span class="normal"> 88</span>
+<span class="normal"> 89</span>
+<span class="normal"> 90</span>
+<span class="normal"> 91</span>
+<span class="normal"> 92</span>
+<span class="normal"> 93</span>
+<span class="normal"> 94</span>
+<span class="normal"> 95</span>
+<span class="normal"> 96</span>
+<span class="normal"> 97</span>
+<span class="normal"> 98</span>
+<span class="normal"> 99</span>
+<span class="normal">100</span>
+<span class="normal">101</span>
+<span class="normal">102</span>
+<span class="normal">103</span>
+<span class="normal">104</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">CodeEval</span><span class="p">(</span><span class="n">Metric</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A metric that evaluates generated code with test cases.</span>
 
@@ -2747,7 +2774,7 @@ If <code>None</code>, the code prompt will be the generated text itself.</p>
 <span class="sd">        code_template: A Jinja2 template string to make the generated code.</span>
 <span class="sd">            The template can contain variables from task inputs.</span>
 <span class="sd">            If `None`, the code prompt will be the generated text itself.</span>
-<span class="sd">        processor: A processor applied to model outputs before evaluation.</span>
+<span class="sd">        lm_output_processor: String processors applied to model outputs before evaluation.</span>
 <span class="sd">        evaluate_module: An evaluate module to use.</span>
 
 <span class="sd">    Examples:</span>
@@ -2769,7 +2796,7 @@ If <code>None</code>, the code prompt will be the generated text itself.</p>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">code_template</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">processor</span><span class="p">:</span> <span class="n">StringProcessor</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">lm_output_processor</span><span class="p">:</span> <span class="n">StringProcessor</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="n">StringProcessor</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">evaluate_module</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;code_eval&quot;</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">code_template</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -2777,7 +2804,10 @@ If <code>None</code>, the code prompt will be the generated text itself.</p>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">code_template</span> <span class="o">=</span> <span class="n">JINJA2_ENV</span><span class="o">.</span><span class="n">from_string</span><span class="p">(</span><span class="n">code_template</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">code_eval</span> <span class="o">=</span> <span class="n">evaluate</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">evaluate_module</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">processor</span> <span class="o">=</span> <span class="n">processor</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">lm_output_processor</span><span class="p">,</span> <span class="n">StringProcessor</span><span class="p">):</span>
+            <span class="n">lm_output_processor</span> <span class="o">=</span> <span class="p">[</span><span class="n">lm_output_processor</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lm_output_processors</span> <span class="o">=</span> <span class="n">lm_output_processor</span>
 
     <span class="k">def</span> <span class="nf">evaluate</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -2788,6 +2818,11 @@ If <code>None</code>, the code prompt will be the generated text itself.</p>
         <span class="k">if</span> <span class="n">task_inputs_list</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">task_inputs_list</span> <span class="o">=</span> <span class="p">[{}</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">lm_outputs</span><span class="p">]</span>
 
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">lm_output_processors</span><span class="p">:</span>
+            <span class="n">lm_outputs</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">functools</span><span class="o">.</span><span class="n">reduce</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">norm</span><span class="p">:</span> <span class="n">norm</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">lm_output_processors</span><span class="p">,</span> <span class="n">output</span><span class="p">)</span> <span class="k">for</span> <span class="n">output</span> <span class="ow">in</span> <span class="n">lm_outputs</span>
+            <span class="p">]</span>
+
         <span class="n">generated_code_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">test_case_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="c1"># in code generation tasks, references_list contains the test cases</span>
@@ -2796,11 +2831,7 @@ If <code>None</code>, the code prompt will be the generated text itself.</p>
             <span class="n">task_inputs_list</span><span class="p">,</span>
             <span class="n">references_list</span><span class="p">,</span>
         <span class="p">):</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">processor</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">lm_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">processor</span><span class="p">(</span><span class="n">lm_output</span><span class="p">)</span>  <span class="c1"># noqa: PLW2901</span>
-
             <span class="n">generated_code</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">code_template</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">lm_output</span><span class="o">=</span><span class="n">lm_output</span><span class="p">,</span> <span class="o">**</span><span class="n">task_inputs</span><span class="p">)</span>
-
             <span class="n">generated_code_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">generated_code</span><span class="p">)</span>
             <span class="n">test_case_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">test_cases</span><span class="p">))</span>
         <span class="n">pass_at_k</span><span class="p">,</span> <span class="n">results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">code_eval</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span>
@@ -2882,16 +2913,16 @@ If <code>None</code>, the code prompt will be the generated text itself.</p>
 
 
 
-<h3 id="flexeval.core.metric.code_eval.CodeEval.processor" class="doc doc-heading">
-            <span class="doc doc-object-name doc-attribute-name">processor</span>
+<h3 id="flexeval.core.metric.code_eval.CodeEval.lm_output_processors" class="doc doc-heading">
+            <span class="doc doc-object-name doc-attribute-name">lm_output_processors</span>
 
 
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
   </span>
 
-<a href="#flexeval.core.metric.code_eval.CodeEval.processor" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="n">processor</span> <span class="o">=</span> <span class="n">processor</span>
+<a href="#flexeval.core.metric.code_eval.CodeEval.lm_output_processors" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">lm_output_processors</span> <span class="o">=</span> <span class="n">lm_output_processor</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -2909,15 +2940,14 @@ If <code>None</code>, the code prompt will be the generated text itself.</p>
 
 
 <a href="#flexeval.core.metric.code_eval.CodeEval.__init__" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="fm">__init__</span><span class="p">(</span><span class="nf">code_template</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">processor</span><span class="p">:</span> <span class="n">StringProcessor</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">evaluate_module</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;code_eval&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="fm">__init__</span><span class="p">(</span><span class="nf">code_template</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">lm_output_processor</span><span class="p">:</span> <span class="n">StringProcessor</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="n">StringProcessor</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">evaluate_module</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;code_eval&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
 
             <details class="quote">
               <summary>Source code in <code>flexeval/core/metric/code_eval.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">43</span>
-<span class="normal">44</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">44</span>
 <span class="normal">45</span>
 <span class="normal">46</span>
 <span class="normal">47</span>
@@ -2927,10 +2957,14 @@ If <code>None</code>, the code prompt will be the generated text itself.</p>
 <span class="normal">51</span>
 <span class="normal">52</span>
 <span class="normal">53</span>
-<span class="normal">54</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<span class="normal">54</span>
+<span class="normal">55</span>
+<span class="normal">56</span>
+<span class="normal">57</span>
+<span class="normal">58</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">code_template</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">processor</span><span class="p">:</span> <span class="n">StringProcessor</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">lm_output_processor</span><span class="p">:</span> <span class="n">StringProcessor</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="n">StringProcessor</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">evaluate_module</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;code_eval&quot;</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="k">if</span> <span class="n">code_template</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -2938,7 +2972,10 @@ If <code>None</code>, the code prompt will be the generated text itself.</p>
 
     <span class="bp">self</span><span class="o">.</span><span class="n">code_template</span> <span class="o">=</span> <span class="n">JINJA2_ENV</span><span class="o">.</span><span class="n">from_string</span><span class="p">(</span><span class="n">code_template</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">code_eval</span> <span class="o">=</span> <span class="n">evaluate</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">evaluate_module</span><span class="p">)</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">processor</span> <span class="o">=</span> <span class="n">processor</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">lm_output_processor</span><span class="p">,</span> <span class="n">StringProcessor</span><span class="p">):</span>
+        <span class="n">lm_output_processor</span> <span class="o">=</span> <span class="p">[</span><span class="n">lm_output_processor</span><span class="p">]</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">lm_output_processors</span> <span class="o">=</span> <span class="n">lm_output_processor</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -2960,50 +2997,51 @@ If <code>None</code>, the code prompt will be the generated text itself.</p>
 
             <details class="quote">
               <summary>Source code in <code>flexeval/core/metric/code_eval.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">56</span>
-<span class="normal">57</span>
-<span class="normal">58</span>
-<span class="normal">59</span>
-<span class="normal">60</span>
-<span class="normal">61</span>
-<span class="normal">62</span>
-<span class="normal">63</span>
-<span class="normal">64</span>
-<span class="normal">65</span>
-<span class="normal">66</span>
-<span class="normal">67</span>
-<span class="normal">68</span>
-<span class="normal">69</span>
-<span class="normal">70</span>
-<span class="normal">71</span>
-<span class="normal">72</span>
-<span class="normal">73</span>
-<span class="normal">74</span>
-<span class="normal">75</span>
-<span class="normal">76</span>
-<span class="normal">77</span>
-<span class="normal">78</span>
-<span class="normal">79</span>
-<span class="normal">80</span>
-<span class="normal">81</span>
-<span class="normal">82</span>
-<span class="normal">83</span>
-<span class="normal">84</span>
-<span class="normal">85</span>
-<span class="normal">86</span>
-<span class="normal">87</span>
-<span class="normal">88</span>
-<span class="normal">89</span>
-<span class="normal">90</span>
-<span class="normal">91</span>
-<span class="normal">92</span>
-<span class="normal">93</span>
-<span class="normal">94</span>
-<span class="normal">95</span>
-<span class="normal">96</span>
-<span class="normal">97</span>
-<span class="normal">98</span>
-<span class="normal">99</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">evaluate</span><span class="p">(</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 60</span>
+<span class="normal"> 61</span>
+<span class="normal"> 62</span>
+<span class="normal"> 63</span>
+<span class="normal"> 64</span>
+<span class="normal"> 65</span>
+<span class="normal"> 66</span>
+<span class="normal"> 67</span>
+<span class="normal"> 68</span>
+<span class="normal"> 69</span>
+<span class="normal"> 70</span>
+<span class="normal"> 71</span>
+<span class="normal"> 72</span>
+<span class="normal"> 73</span>
+<span class="normal"> 74</span>
+<span class="normal"> 75</span>
+<span class="normal"> 76</span>
+<span class="normal"> 77</span>
+<span class="normal"> 78</span>
+<span class="normal"> 79</span>
+<span class="normal"> 80</span>
+<span class="normal"> 81</span>
+<span class="normal"> 82</span>
+<span class="normal"> 83</span>
+<span class="normal"> 84</span>
+<span class="normal"> 85</span>
+<span class="normal"> 86</span>
+<span class="normal"> 87</span>
+<span class="normal"> 88</span>
+<span class="normal"> 89</span>
+<span class="normal"> 90</span>
+<span class="normal"> 91</span>
+<span class="normal"> 92</span>
+<span class="normal"> 93</span>
+<span class="normal"> 94</span>
+<span class="normal"> 95</span>
+<span class="normal"> 96</span>
+<span class="normal"> 97</span>
+<span class="normal"> 98</span>
+<span class="normal"> 99</span>
+<span class="normal">100</span>
+<span class="normal">101</span>
+<span class="normal">102</span>
+<span class="normal">103</span>
+<span class="normal">104</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">evaluate</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">lm_outputs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
     <span class="n">references_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span>
@@ -3011,6 +3049,11 @@ If <code>None</code>, the code prompt will be the generated text itself.</p>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MetricResult</span><span class="p">:</span>
     <span class="k">if</span> <span class="n">task_inputs_list</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">task_inputs_list</span> <span class="o">=</span> <span class="p">[{}</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">lm_outputs</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">lm_output_processors</span><span class="p">:</span>
+        <span class="n">lm_outputs</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">functools</span><span class="o">.</span><span class="n">reduce</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">norm</span><span class="p">:</span> <span class="n">norm</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">lm_output_processors</span><span class="p">,</span> <span class="n">output</span><span class="p">)</span> <span class="k">for</span> <span class="n">output</span> <span class="ow">in</span> <span class="n">lm_outputs</span>
+        <span class="p">]</span>
 
     <span class="n">generated_code_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">test_case_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
@@ -3020,11 +3063,7 @@ If <code>None</code>, the code prompt will be the generated text itself.</p>
         <span class="n">task_inputs_list</span><span class="p">,</span>
         <span class="n">references_list</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">processor</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">lm_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">processor</span><span class="p">(</span><span class="n">lm_output</span><span class="p">)</span>  <span class="c1"># noqa: PLW2901</span>
-
         <span class="n">generated_code</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">code_template</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">lm_output</span><span class="o">=</span><span class="n">lm_output</span><span class="p">,</span> <span class="o">**</span><span class="n">task_inputs</span><span class="p">)</span>
-
         <span class="n">generated_code_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">generated_code</span><span class="p">)</span>
         <span class="n">test_case_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">test_cases</span><span class="p">))</span>
     <span class="n">pass_at_k</span><span class="p">,</span> <span class="n">results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">code_eval</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span>
@@ -3425,6 +3464,533 @@ If <code>None</code>, the code prompt will be the generated text itself.</p>
 
 
 
+<h2 id="flexeval.core.metric.correlation.Correlation" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">Correlation</span>
+
+
+<a href="#flexeval.core.metric.correlation.Correlation" class="headerlink" title="Permanent link">&para;</a></h2>
+
+
+    <div class="doc doc-contents first">
+
+
+      <p>Correlation metric to compute Pearson, Spearman, or Kendall correlation coefficients.
+The lm_outputs and references should be numeric values, optionally preprocessed by StringProcessor.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+          <b><code>method</code></b>
+              (<code><span title="typing.Literal">Literal</span>[&#39;pearson&#39;, &#39;spearman&#39;, &#39;kendall&#39;]</code>, default:
+                  <code>&#39;pearson&#39;</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>The correlation method to use ('pearson', 'spearman', 'kendall').</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+          <b><code>lm_output_processor</code></b>
+              (<code><a class="autorefs autorefs-internal" title="flexeval.core.metric.string_processor.StringProcessor" href="../StringProcessor/#flexeval.core.metric.string_processor.base.StringProcessor">StringProcessor</a> | list[<a class="autorefs autorefs-internal" title="flexeval.core.metric.string_processor.StringProcessor" href="../StringProcessor/#flexeval.core.metric.string_processor.base.StringProcessor">StringProcessor</a>] | None</code>, default:
+                  <code>None</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>StringProcessor or a list of StringProcessor to be applied to the model outputs before
+computing the correlation. If a list is provided, the processors will be applied in order.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+          <b><code>reference_processor</code></b>
+              (<code><a class="autorefs autorefs-internal" title="flexeval.core.metric.string_processor.StringProcessor" href="../StringProcessor/#flexeval.core.metric.string_processor.base.StringProcessor">StringProcessor</a> | list[<a class="autorefs autorefs-internal" title="flexeval.core.metric.string_processor.StringProcessor" href="../StringProcessor/#flexeval.core.metric.string_processor.base.StringProcessor">StringProcessor</a>] | None</code>, default:
+                  <code>None</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>StringProcessor or a list of StringProcessor to be applied to the references before
+computing the correlation. If a list is provided, the processors will be applied in order.</p>
+          </div>
+        </li>
+    </ul>
+
+
+<p><span class="doc-section-title">Examples:</span></p>
+    <div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">flexeval</span> <span class="kn">import</span> <span class="n">Correlation</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">correlation</span> <span class="o">=</span> <span class="n">Correlation</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s1">&#39;pearson&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lm_outputs</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;1&quot;</span><span class="p">,</span> <span class="s2">&quot;2&quot;</span><span class="p">,</span> <span class="s2">&quot;3&quot;</span><span class="p">,</span> <span class="s2">&quot;4&quot;</span><span class="p">,</span> <span class="s2">&quot;5&quot;</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">references</span> <span class="o">=</span> <span class="p">[[</span><span class="s2">&quot;5&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;4&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;3&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;2&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;1&quot;</span><span class="p">]]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">result</span> <span class="o">=</span> <span class="n">correlation</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">lm_outputs</span><span class="p">,</span> <span class="n">references</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+<span class="go">MetricResult(</span>
+<span class="go">    summary={&quot;pearson_correlation&quot;: -1.0, &quot;pearson_pvalue&quot;: 0.0},</span>
+<span class="go">    instance_details=[],</span>
+<span class="go">)</span>
+</code></pre></div>
+
+              <details class="quote">
+                <summary>Source code in <code>flexeval/core/metric/correlation.py</code></summary>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 13</span>
+<span class="normal"> 14</span>
+<span class="normal"> 15</span>
+<span class="normal"> 16</span>
+<span class="normal"> 17</span>
+<span class="normal"> 18</span>
+<span class="normal"> 19</span>
+<span class="normal"> 20</span>
+<span class="normal"> 21</span>
+<span class="normal"> 22</span>
+<span class="normal"> 23</span>
+<span class="normal"> 24</span>
+<span class="normal"> 25</span>
+<span class="normal"> 26</span>
+<span class="normal"> 27</span>
+<span class="normal"> 28</span>
+<span class="normal"> 29</span>
+<span class="normal"> 30</span>
+<span class="normal"> 31</span>
+<span class="normal"> 32</span>
+<span class="normal"> 33</span>
+<span class="normal"> 34</span>
+<span class="normal"> 35</span>
+<span class="normal"> 36</span>
+<span class="normal"> 37</span>
+<span class="normal"> 38</span>
+<span class="normal"> 39</span>
+<span class="normal"> 40</span>
+<span class="normal"> 41</span>
+<span class="normal"> 42</span>
+<span class="normal"> 43</span>
+<span class="normal"> 44</span>
+<span class="normal"> 45</span>
+<span class="normal"> 46</span>
+<span class="normal"> 47</span>
+<span class="normal"> 48</span>
+<span class="normal"> 49</span>
+<span class="normal"> 50</span>
+<span class="normal"> 51</span>
+<span class="normal"> 52</span>
+<span class="normal"> 53</span>
+<span class="normal"> 54</span>
+<span class="normal"> 55</span>
+<span class="normal"> 56</span>
+<span class="normal"> 57</span>
+<span class="normal"> 58</span>
+<span class="normal"> 59</span>
+<span class="normal"> 60</span>
+<span class="normal"> 61</span>
+<span class="normal"> 62</span>
+<span class="normal"> 63</span>
+<span class="normal"> 64</span>
+<span class="normal"> 65</span>
+<span class="normal"> 66</span>
+<span class="normal"> 67</span>
+<span class="normal"> 68</span>
+<span class="normal"> 69</span>
+<span class="normal"> 70</span>
+<span class="normal"> 71</span>
+<span class="normal"> 72</span>
+<span class="normal"> 73</span>
+<span class="normal"> 74</span>
+<span class="normal"> 75</span>
+<span class="normal"> 76</span>
+<span class="normal"> 77</span>
+<span class="normal"> 78</span>
+<span class="normal"> 79</span>
+<span class="normal"> 80</span>
+<span class="normal"> 81</span>
+<span class="normal"> 82</span>
+<span class="normal"> 83</span>
+<span class="normal"> 84</span>
+<span class="normal"> 85</span>
+<span class="normal"> 86</span>
+<span class="normal"> 87</span>
+<span class="normal"> 88</span>
+<span class="normal"> 89</span>
+<span class="normal"> 90</span>
+<span class="normal"> 91</span>
+<span class="normal"> 92</span>
+<span class="normal"> 93</span>
+<span class="normal"> 94</span>
+<span class="normal"> 95</span>
+<span class="normal"> 96</span>
+<span class="normal"> 97</span>
+<span class="normal"> 98</span>
+<span class="normal"> 99</span>
+<span class="normal">100</span>
+<span class="normal">101</span>
+<span class="normal">102</span>
+<span class="normal">103</span>
+<span class="normal">104</span>
+<span class="normal">105</span>
+<span class="normal">106</span>
+<span class="normal">107</span>
+<span class="normal">108</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">Correlation</span><span class="p">(</span><span class="n">Metric</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Correlation metric to compute Pearson, Spearman, or Kendall correlation coefficients.</span>
+<span class="sd">    The lm_outputs and references should be numeric values, optionally preprocessed by StringProcessor.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        method: The correlation method to use (&#39;pearson&#39;, &#39;spearman&#39;, &#39;kendall&#39;).</span>
+<span class="sd">        lm_output_processor: StringProcessor or a list of StringProcessor to be applied to the model outputs before</span>
+<span class="sd">            computing the correlation. If a list is provided, the processors will be applied in order.</span>
+<span class="sd">        reference_processor: StringProcessor or a list of StringProcessor to be applied to the references before</span>
+<span class="sd">            computing the correlation. If a list is provided, the processors will be applied in order.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; from flexeval import Correlation</span>
+<span class="sd">        &gt;&gt;&gt; correlation = Correlation(method=&#39;pearson&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; lm_outputs = [&quot;1&quot;, &quot;2&quot;, &quot;3&quot;, &quot;4&quot;, &quot;5&quot;]</span>
+<span class="sd">        &gt;&gt;&gt; references = [[&quot;5&quot;], [&quot;4&quot;], [&quot;3&quot;], [&quot;2&quot;], [&quot;1&quot;]]</span>
+<span class="sd">        &gt;&gt;&gt; result = correlation.evaluate(lm_outputs, references)</span>
+<span class="sd">        &gt;&gt;&gt; print(result)</span>
+<span class="sd">        MetricResult(</span>
+<span class="sd">            summary={&quot;pearson_correlation&quot;: -1.0, &quot;pearson_pvalue&quot;: 0.0},</span>
+<span class="sd">            instance_details=[],</span>
+<span class="sd">        )</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">method</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;pearson&quot;</span><span class="p">,</span> <span class="s2">&quot;spearman&quot;</span><span class="p">,</span> <span class="s2">&quot;kendall&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;pearson&quot;</span><span class="p">,</span>
+        <span class="n">lm_output_processor</span><span class="p">:</span> <span class="n">StringProcessor</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="n">StringProcessor</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">reference_processor</span><span class="p">:</span> <span class="n">StringProcessor</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="n">StringProcessor</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">method</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">{</span><span class="s2">&quot;pearson&quot;</span><span class="p">,</span> <span class="s2">&quot;spearman&quot;</span><span class="p">,</span> <span class="s2">&quot;kendall&quot;</span><span class="p">}:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Invalid method &#39;</span><span class="si">{</span><span class="n">method</span><span class="si">}</span><span class="s2">&#39;. Choose from &#39;pearson&#39;, &#39;spearman&#39;, &#39;kendall&#39;.&quot;</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">method</span> <span class="o">=</span> <span class="n">method</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">lm_output_processor</span><span class="p">,</span> <span class="n">StringProcessor</span><span class="p">):</span>
+            <span class="n">lm_output_processor</span> <span class="o">=</span> <span class="p">[</span><span class="n">lm_output_processor</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">reference_processor</span><span class="p">,</span> <span class="n">StringProcessor</span><span class="p">):</span>
+            <span class="n">reference_processor</span> <span class="o">=</span> <span class="p">[</span><span class="n">reference_processor</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lm_output_processors</span> <span class="o">=</span> <span class="n">lm_output_processor</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reference_processors</span> <span class="o">=</span> <span class="n">reference_processor</span>
+
+    <span class="k">def</span> <span class="nf">evaluate</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">lm_outputs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+        <span class="n">references_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span>
+        <span class="n">task_inputs_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MetricResult</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">lm_outputs</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">references_list</span><span class="p">):</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Number of model outputs (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">lm_outputs</span><span class="p">)</span><span class="si">}</span><span class="s2">) and number of references (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">references_list</span><span class="p">)</span><span class="si">}</span><span class="s2">) &quot;</span>
+                <span class="s2">&quot;should be the same.&quot;</span>
+            <span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+        <span class="c1"># We only use the first reference here</span>
+        <span class="n">references</span> <span class="o">=</span> <span class="p">[</span><span class="n">refs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">refs</span> <span class="ow">in</span> <span class="n">references_list</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">lm_output_processors</span><span class="p">:</span>
+            <span class="n">lm_outputs</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">functools</span><span class="o">.</span><span class="n">reduce</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">norm</span><span class="p">:</span> <span class="n">norm</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">lm_output_processors</span><span class="p">,</span> <span class="n">output</span><span class="p">)</span> <span class="k">for</span> <span class="n">output</span> <span class="ow">in</span> <span class="n">lm_outputs</span>
+            <span class="p">]</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">reference_processors</span><span class="p">:</span>
+            <span class="n">references</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">functools</span><span class="o">.</span><span class="n">reduce</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">norm</span><span class="p">:</span> <span class="n">norm</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">reference_processors</span><span class="p">,</span> <span class="n">ref</span><span class="p">)</span> <span class="k">for</span> <span class="n">ref</span> <span class="ow">in</span> <span class="n">references</span>
+            <span class="p">]</span>
+
+        <span class="c1"># The model output should be converted to float, if fails it will be treated as 0</span>
+        <span class="n">lm_outputs_as_float</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">output</span> <span class="ow">in</span> <span class="n">lm_outputs</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">lm_outputs_as_float</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">output</span><span class="p">))</span>
+            <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>  <span class="c1"># noqa:PERF203</span>
+                <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to convert model output &#39;</span><span class="si">{</span><span class="n">output</span><span class="si">}</span><span class="s2">&#39; to float. Treating it as 0.&quot;</span><span class="p">,</span> <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+                <span class="n">lm_outputs_as_float</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mf">0.0</span><span class="p">)</span>
+
+        <span class="c1"># The reference should be converted to float</span>
+        <span class="n">references_as_float</span> <span class="o">=</span> <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">ref</span><span class="p">)</span> <span class="k">for</span> <span class="n">ref</span> <span class="ow">in</span> <span class="n">references</span><span class="p">]</span>
+
+        <span class="c1"># Compute correlation</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;pearson&quot;</span><span class="p">:</span>
+            <span class="n">correlation</span><span class="p">,</span> <span class="n">pvalue</span> <span class="o">=</span> <span class="n">pearsonr</span><span class="p">(</span><span class="n">lm_outputs_as_float</span><span class="p">,</span> <span class="n">references_as_float</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;spearman&quot;</span><span class="p">:</span>
+            <span class="n">correlation</span><span class="p">,</span> <span class="n">pvalue</span> <span class="o">=</span> <span class="n">spearmanr</span><span class="p">(</span><span class="n">lm_outputs_as_float</span><span class="p">,</span> <span class="n">references_as_float</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;kendall&quot;</span><span class="p">:</span>
+            <span class="n">correlation</span><span class="p">,</span> <span class="n">pvalue</span> <span class="o">=</span> <span class="n">kendalltau</span><span class="p">(</span><span class="n">lm_outputs_as_float</span><span class="p">,</span> <span class="n">references_as_float</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Unsupported method: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">method</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">MetricResult</span><span class="p">(</span>
+            <span class="p">{</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">method</span><span class="si">}</span><span class="s2">_correlation&quot;</span><span class="p">:</span> <span class="n">correlation</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">method</span><span class="si">}</span><span class="s2">_pvalue&quot;</span><span class="p">:</span> <span class="n">pvalue</span><span class="p">},</span>
+            <span class="n">instance_details</span><span class="o">=</span><span class="p">[],</span>
+        <span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+              </details>
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h3 id="flexeval.core.metric.correlation.Correlation.method" class="doc doc-heading">
+            <span class="doc doc-object-name doc-attribute-name">method</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+<a href="#flexeval.core.metric.correlation.Correlation.method" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">method</span> <span class="o">=</span> <span class="n">method</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h3 id="flexeval.core.metric.correlation.Correlation.lm_output_processors" class="doc doc-heading">
+            <span class="doc doc-object-name doc-attribute-name">lm_output_processors</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+<a href="#flexeval.core.metric.correlation.Correlation.lm_output_processors" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">lm_output_processors</span> <span class="o">=</span> <span class="n">lm_output_processor</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h3 id="flexeval.core.metric.correlation.Correlation.reference_processors" class="doc doc-heading">
+            <span class="doc doc-object-name doc-attribute-name">reference_processors</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+<a href="#flexeval.core.metric.correlation.Correlation.reference_processors" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">reference_processors</span> <span class="o">=</span> <span class="n">reference_processor</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+    </div>
+
+</div>
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="flexeval.core.metric.correlation.Correlation.__init__" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">__init__</span>
+
+
+<a href="#flexeval.core.metric.correlation.Correlation.__init__" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="fm">__init__</span><span class="p">(</span><span class="nf">method</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;pearson&#39;</span><span class="p">,</span> <span class="s1">&#39;spearman&#39;</span><span class="p">,</span> <span class="s1">&#39;kendall&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;pearson&#39;</span><span class="p">,</span> <span class="n">lm_output_processor</span><span class="p">:</span> <span class="n">StringProcessor</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="n">StringProcessor</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">reference_processor</span><span class="p">:</span> <span class="n">StringProcessor</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="n">StringProcessor</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+            <details class="quote">
+              <summary>Source code in <code>flexeval/core/metric/correlation.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">method</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;pearson&quot;</span><span class="p">,</span> <span class="s2">&quot;spearman&quot;</span><span class="p">,</span> <span class="s2">&quot;kendall&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;pearson&quot;</span><span class="p">,</span>
+    <span class="n">lm_output_processor</span><span class="p">:</span> <span class="n">StringProcessor</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="n">StringProcessor</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">reference_processor</span><span class="p">:</span> <span class="n">StringProcessor</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="n">StringProcessor</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">method</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">{</span><span class="s2">&quot;pearson&quot;</span><span class="p">,</span> <span class="s2">&quot;spearman&quot;</span><span class="p">,</span> <span class="s2">&quot;kendall&quot;</span><span class="p">}:</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Invalid method &#39;</span><span class="si">{</span><span class="n">method</span><span class="si">}</span><span class="s2">&#39;. Choose from &#39;pearson&#39;, &#39;spearman&#39;, &#39;kendall&#39;.&quot;</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">method</span> <span class="o">=</span> <span class="n">method</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">lm_output_processor</span><span class="p">,</span> <span class="n">StringProcessor</span><span class="p">):</span>
+        <span class="n">lm_output_processor</span> <span class="o">=</span> <span class="p">[</span><span class="n">lm_output_processor</span><span class="p">]</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">reference_processor</span><span class="p">,</span> <span class="n">StringProcessor</span><span class="p">):</span>
+        <span class="n">reference_processor</span> <span class="o">=</span> <span class="p">[</span><span class="n">reference_processor</span><span class="p">]</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">lm_output_processors</span> <span class="o">=</span> <span class="n">lm_output_processor</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">reference_processors</span> <span class="o">=</span> <span class="n">reference_processor</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="flexeval.core.metric.correlation.Correlation.evaluate" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">evaluate</span>
+
+
+<a href="#flexeval.core.metric.correlation.Correlation.evaluate" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">evaluate</span><span class="p">(</span><span class="n">lm_outputs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">references_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span> <span class="n">task_inputs_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MetricResult</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+            <details class="quote">
+              <summary>Source code in <code>flexeval/core/metric/correlation.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 56</span>
+<span class="normal"> 57</span>
+<span class="normal"> 58</span>
+<span class="normal"> 59</span>
+<span class="normal"> 60</span>
+<span class="normal"> 61</span>
+<span class="normal"> 62</span>
+<span class="normal"> 63</span>
+<span class="normal"> 64</span>
+<span class="normal"> 65</span>
+<span class="normal"> 66</span>
+<span class="normal"> 67</span>
+<span class="normal"> 68</span>
+<span class="normal"> 69</span>
+<span class="normal"> 70</span>
+<span class="normal"> 71</span>
+<span class="normal"> 72</span>
+<span class="normal"> 73</span>
+<span class="normal"> 74</span>
+<span class="normal"> 75</span>
+<span class="normal"> 76</span>
+<span class="normal"> 77</span>
+<span class="normal"> 78</span>
+<span class="normal"> 79</span>
+<span class="normal"> 80</span>
+<span class="normal"> 81</span>
+<span class="normal"> 82</span>
+<span class="normal"> 83</span>
+<span class="normal"> 84</span>
+<span class="normal"> 85</span>
+<span class="normal"> 86</span>
+<span class="normal"> 87</span>
+<span class="normal"> 88</span>
+<span class="normal"> 89</span>
+<span class="normal"> 90</span>
+<span class="normal"> 91</span>
+<span class="normal"> 92</span>
+<span class="normal"> 93</span>
+<span class="normal"> 94</span>
+<span class="normal"> 95</span>
+<span class="normal"> 96</span>
+<span class="normal"> 97</span>
+<span class="normal"> 98</span>
+<span class="normal"> 99</span>
+<span class="normal">100</span>
+<span class="normal">101</span>
+<span class="normal">102</span>
+<span class="normal">103</span>
+<span class="normal">104</span>
+<span class="normal">105</span>
+<span class="normal">106</span>
+<span class="normal">107</span>
+<span class="normal">108</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">evaluate</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">lm_outputs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+    <span class="n">references_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span>
+    <span class="n">task_inputs_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MetricResult</span><span class="p">:</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">lm_outputs</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">references_list</span><span class="p">):</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Number of model outputs (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">lm_outputs</span><span class="p">)</span><span class="si">}</span><span class="s2">) and number of references (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">references_list</span><span class="p">)</span><span class="si">}</span><span class="s2">) &quot;</span>
+            <span class="s2">&quot;should be the same.&quot;</span>
+        <span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+    <span class="c1"># We only use the first reference here</span>
+    <span class="n">references</span> <span class="o">=</span> <span class="p">[</span><span class="n">refs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">refs</span> <span class="ow">in</span> <span class="n">references_list</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">lm_output_processors</span><span class="p">:</span>
+        <span class="n">lm_outputs</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">functools</span><span class="o">.</span><span class="n">reduce</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">norm</span><span class="p">:</span> <span class="n">norm</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">lm_output_processors</span><span class="p">,</span> <span class="n">output</span><span class="p">)</span> <span class="k">for</span> <span class="n">output</span> <span class="ow">in</span> <span class="n">lm_outputs</span>
+        <span class="p">]</span>
+
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">reference_processors</span><span class="p">:</span>
+        <span class="n">references</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">functools</span><span class="o">.</span><span class="n">reduce</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">norm</span><span class="p">:</span> <span class="n">norm</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">reference_processors</span><span class="p">,</span> <span class="n">ref</span><span class="p">)</span> <span class="k">for</span> <span class="n">ref</span> <span class="ow">in</span> <span class="n">references</span>
+        <span class="p">]</span>
+
+    <span class="c1"># The model output should be converted to float, if fails it will be treated as 0</span>
+    <span class="n">lm_outputs_as_float</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">output</span> <span class="ow">in</span> <span class="n">lm_outputs</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">lm_outputs_as_float</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">output</span><span class="p">))</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>  <span class="c1"># noqa:PERF203</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to convert model output &#39;</span><span class="si">{</span><span class="n">output</span><span class="si">}</span><span class="s2">&#39; to float. Treating it as 0.&quot;</span><span class="p">,</span> <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+            <span class="n">lm_outputs_as_float</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mf">0.0</span><span class="p">)</span>
+
+    <span class="c1"># The reference should be converted to float</span>
+    <span class="n">references_as_float</span> <span class="o">=</span> <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">ref</span><span class="p">)</span> <span class="k">for</span> <span class="n">ref</span> <span class="ow">in</span> <span class="n">references</span><span class="p">]</span>
+
+    <span class="c1"># Compute correlation</span>
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;pearson&quot;</span><span class="p">:</span>
+        <span class="n">correlation</span><span class="p">,</span> <span class="n">pvalue</span> <span class="o">=</span> <span class="n">pearsonr</span><span class="p">(</span><span class="n">lm_outputs_as_float</span><span class="p">,</span> <span class="n">references_as_float</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;spearman&quot;</span><span class="p">:</span>
+        <span class="n">correlation</span><span class="p">,</span> <span class="n">pvalue</span> <span class="o">=</span> <span class="n">spearmanr</span><span class="p">(</span><span class="n">lm_outputs_as_float</span><span class="p">,</span> <span class="n">references_as_float</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;kendall&quot;</span><span class="p">:</span>
+        <span class="n">correlation</span><span class="p">,</span> <span class="n">pvalue</span> <span class="o">=</span> <span class="n">kendalltau</span><span class="p">(</span><span class="n">lm_outputs_as_float</span><span class="p">,</span> <span class="n">references_as_float</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Unsupported method: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">method</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">MetricResult</span><span class="p">(</span>
+        <span class="p">{</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">method</span><span class="si">}</span><span class="s2">_correlation&quot;</span><span class="p">:</span> <span class="n">correlation</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">method</span><span class="si">}</span><span class="s2">_pvalue&quot;</span><span class="p">:</span> <span class="n">pvalue</span><span class="p">},</span>
+        <span class="n">instance_details</span><span class="o">=</span><span class="p">[],</span>
+    <span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
 <h2 id="flexeval.core.metric.exact_match.ExactMatch" class="doc doc-heading">
             <span class="doc doc-object-name doc-class-name">ExactMatch</span>
 
@@ -3442,14 +4008,13 @@ If there are multiple references, the output is considered correct if it matches
 <p><span class="doc-section-title">Parameters:</span></p>
     <ul>
         <li class="doc-section-item field-body">
-          <b><code>processor</code></b>
+          <b><code>lm_output_processor</code></b>
               (<code><a class="autorefs autorefs-internal" title="flexeval.core.metric.string_processor.StringProcessor" href="../StringProcessor/#flexeval.core.metric.string_processor.base.StringProcessor">StringProcessor</a> | list[<a class="autorefs autorefs-internal" title="flexeval.core.metric.string_processor.StringProcessor" href="../StringProcessor/#flexeval.core.metric.string_processor.base.StringProcessor">StringProcessor</a>] | None</code>, default:
                   <code>None</code>
 )
           –
           <div class="doc-md-description">
-            <p>StringProcessor or a list of StringProcessor to be applied to the model outputs before comparison.
-Unless reference_processor is specified, this processor will be applied to the references as well.</p>
+            <p>StringProcessor or a list of StringProcessor to be applied to the model outputs before comparison.</p>
           </div>
         </li>
         <li class="doc-section-item field-body">
@@ -3545,14 +4110,16 @@ Unless reference_processor is specified, this processor will be applied to the r
 <span class="normal">71</span>
 <span class="normal">72</span>
 <span class="normal">73</span>
-<span class="normal">74</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">ExactMatch</span><span class="p">(</span><span class="n">Metric</span><span class="p">):</span>
+<span class="normal">74</span>
+<span class="normal">75</span>
+<span class="normal">76</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">ExactMatch</span><span class="p">(</span><span class="n">Metric</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Exact match metric.</span>
 <span class="sd">    If there are multiple references, the output is considered correct if it matches any of the references.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        processor: StringProcessor or a list of StringProcessor to be applied to the model outputs before comparison.</span>
-<span class="sd">            Unless reference_processor is specified, this processor will be applied to the references as well.</span>
+<span class="sd">        lm_output_processor:</span>
+<span class="sd">            StringProcessor or a list of StringProcessor to be applied to the model outputs before comparison.</span>
 <span class="sd">        reference_processor: StringProcessor or list of Normalizers to apply to the references before comparison.</span>
 
 <span class="sd">    Examples:</span>
@@ -3570,16 +4137,16 @@ Unless reference_processor is specified, this processor will be applied to the r
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">processor</span><span class="p">:</span> <span class="n">StringProcessor</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="n">StringProcessor</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">lm_output_processor</span><span class="p">:</span> <span class="n">StringProcessor</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="n">StringProcessor</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">reference_processor</span><span class="p">:</span> <span class="n">StringProcessor</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="n">StringProcessor</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">processor</span><span class="p">,</span> <span class="n">StringProcessor</span><span class="p">):</span>
-            <span class="n">processor</span> <span class="o">=</span> <span class="p">[</span><span class="n">processor</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">lm_output_processor</span><span class="p">,</span> <span class="n">StringProcessor</span><span class="p">):</span>
+            <span class="n">lm_output_processor</span> <span class="o">=</span> <span class="p">[</span><span class="n">lm_output_processor</span><span class="p">]</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">reference_processor</span><span class="p">,</span> <span class="n">StringProcessor</span><span class="p">):</span>
             <span class="n">reference_processor</span> <span class="o">=</span> <span class="p">[</span><span class="n">reference_processor</span><span class="p">]</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">processors</span> <span class="o">=</span> <span class="n">processor</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">reference_processors</span> <span class="o">=</span> <span class="n">reference_processor</span> <span class="ow">or</span> <span class="n">processor</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lm_output_processors</span> <span class="o">=</span> <span class="n">lm_output_processor</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reference_processors</span> <span class="o">=</span> <span class="n">reference_processor</span>
 
     <span class="k">def</span> <span class="nf">evaluate</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -3594,8 +4161,10 @@ Unless reference_processor is specified, this processor will be applied to the r
             <span class="p">)</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">processors</span><span class="p">:</span>
-            <span class="n">lm_outputs</span> <span class="o">=</span> <span class="p">[</span><span class="n">functools</span><span class="o">.</span><span class="n">reduce</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">norm</span><span class="p">:</span> <span class="n">norm</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">processors</span><span class="p">,</span> <span class="n">output</span><span class="p">)</span> <span class="k">for</span> <span class="n">output</span> <span class="ow">in</span> <span class="n">lm_outputs</span><span class="p">]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">lm_output_processors</span><span class="p">:</span>
+            <span class="n">lm_outputs</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">functools</span><span class="o">.</span><span class="n">reduce</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">norm</span><span class="p">:</span> <span class="n">norm</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">lm_output_processors</span><span class="p">,</span> <span class="n">output</span><span class="p">)</span> <span class="k">for</span> <span class="n">output</span> <span class="ow">in</span> <span class="n">lm_outputs</span>
+            <span class="p">]</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">reference_processors</span><span class="p">:</span>
             <span class="n">references_list</span> <span class="o">=</span> <span class="p">[</span>
@@ -3628,16 +4197,16 @@ Unless reference_processor is specified, this processor will be applied to the r
 
 
 
-<h3 id="flexeval.core.metric.exact_match.ExactMatch.processors" class="doc doc-heading">
-            <span class="doc doc-object-name doc-attribute-name">processors</span>
+<h3 id="flexeval.core.metric.exact_match.ExactMatch.lm_output_processors" class="doc doc-heading">
+            <span class="doc doc-object-name doc-attribute-name">lm_output_processors</span>
 
 
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
   </span>
 
-<a href="#flexeval.core.metric.exact_match.ExactMatch.processors" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="n">processors</span> <span class="o">=</span> <span class="n">processor</span>
+<a href="#flexeval.core.metric.exact_match.ExactMatch.lm_output_processors" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">lm_output_processors</span> <span class="o">=</span> <span class="n">lm_output_processor</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -3658,7 +4227,7 @@ Unless reference_processor is specified, this processor will be applied to the r
   </span>
 
 <a href="#flexeval.core.metric.exact_match.ExactMatch.reference_processors" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="n">reference_processors</span> <span class="o">=</span> <span class="n">reference_processor</span> <span class="ow">or</span> <span class="n">processor</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">reference_processors</span> <span class="o">=</span> <span class="n">reference_processor</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -3676,7 +4245,7 @@ Unless reference_processor is specified, this processor will be applied to the r
 
 
 <a href="#flexeval.core.metric.exact_match.ExactMatch.__init__" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="fm">__init__</span><span class="p">(</span><span class="nf">processor</span><span class="p">:</span> <span class="n">StringProcessor</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="n">StringProcessor</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">reference_processor</span><span class="p">:</span> <span class="n">StringProcessor</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="n">StringProcessor</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="fm">__init__</span><span class="p">(</span><span class="nf">lm_output_processor</span><span class="p">:</span> <span class="n">StringProcessor</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="n">StringProcessor</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">reference_processor</span><span class="p">:</span> <span class="n">StringProcessor</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="n">StringProcessor</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -3696,16 +4265,16 @@ Unless reference_processor is specified, this processor will be applied to the r
 <span class="normal">42</span>
 <span class="normal">43</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
-    <span class="n">processor</span><span class="p">:</span> <span class="n">StringProcessor</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="n">StringProcessor</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">lm_output_processor</span><span class="p">:</span> <span class="n">StringProcessor</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="n">StringProcessor</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">reference_processor</span><span class="p">:</span> <span class="n">StringProcessor</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="n">StringProcessor</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">processor</span><span class="p">,</span> <span class="n">StringProcessor</span><span class="p">):</span>
-        <span class="n">processor</span> <span class="o">=</span> <span class="p">[</span><span class="n">processor</span><span class="p">]</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">lm_output_processor</span><span class="p">,</span> <span class="n">StringProcessor</span><span class="p">):</span>
+        <span class="n">lm_output_processor</span> <span class="o">=</span> <span class="p">[</span><span class="n">lm_output_processor</span><span class="p">]</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">reference_processor</span><span class="p">,</span> <span class="n">StringProcessor</span><span class="p">):</span>
         <span class="n">reference_processor</span> <span class="o">=</span> <span class="p">[</span><span class="n">reference_processor</span><span class="p">]</span>
 
-    <span class="bp">self</span><span class="o">.</span><span class="n">processors</span> <span class="o">=</span> <span class="n">processor</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">reference_processors</span> <span class="o">=</span> <span class="n">reference_processor</span> <span class="ow">or</span> <span class="n">processor</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">lm_output_processors</span> <span class="o">=</span> <span class="n">lm_output_processor</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">reference_processors</span> <span class="o">=</span> <span class="n">reference_processor</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -3756,7 +4325,9 @@ Unless reference_processor is specified, this processor will be applied to the r
 <span class="normal">71</span>
 <span class="normal">72</span>
 <span class="normal">73</span>
-<span class="normal">74</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">evaluate</span><span class="p">(</span>
+<span class="normal">74</span>
+<span class="normal">75</span>
+<span class="normal">76</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">evaluate</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">lm_outputs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
     <span class="n">references_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span>
@@ -3769,8 +4340,10 @@ Unless reference_processor is specified, this processor will be applied to the r
         <span class="p">)</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">processors</span><span class="p">:</span>
-        <span class="n">lm_outputs</span> <span class="o">=</span> <span class="p">[</span><span class="n">functools</span><span class="o">.</span><span class="n">reduce</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">norm</span><span class="p">:</span> <span class="n">norm</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">processors</span><span class="p">,</span> <span class="n">output</span><span class="p">)</span> <span class="k">for</span> <span class="n">output</span> <span class="ow">in</span> <span class="n">lm_outputs</span><span class="p">]</span>
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">lm_output_processors</span><span class="p">:</span>
+        <span class="n">lm_outputs</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">functools</span><span class="o">.</span><span class="n">reduce</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">norm</span><span class="p">:</span> <span class="n">norm</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">lm_output_processors</span><span class="p">,</span> <span class="n">output</span><span class="p">)</span> <span class="k">for</span> <span class="n">output</span> <span class="ow">in</span> <span class="n">lm_outputs</span>
+        <span class="p">]</span>
 
     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">reference_processors</span><span class="p">:</span>
         <span class="n">references_list</span> <span class="o">=</span> <span class="p">[</span>

@@ -1344,7 +1344,7 @@ This is a evaluation setup for chat LLMs.</p>
       },
     },
     metrics: [
-      { class_path: &#39;CodeEval&#39;, init_args: { processor: { class_path: &#39;RegexExtractor&#39;, init_args: { pattern: &#39;```python\n(.*?)\n```&#39; } } } },
+      { class_path: &#39;CodeEval&#39;, init_args: { lm_output_processor: { class_path: &#39;RegexExtractor&#39;, init_args: { pattern: &#39;```python\n(.*?)\n```&#39; } } } },
     ],
     gen_kwargs: { max_new_tokens: 512 },
     batch_size: 4,

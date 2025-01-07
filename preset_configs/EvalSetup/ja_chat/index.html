@@ -1428,8 +1428,20 @@ This is a evaluation setup for chat LLMs.</p>
       },
     },
     metrics: [
-      { class_path: &#39;CharF1&#39;, init_args: { processor: { class_path: &#39;AIONormalizer&#39; } } },
-      { class_path: &#39;ExactMatch&#39;, init_args: { processor: { class_path: &#39;AIONormalizer&#39; } } },
+      {
+        class_path: &#39;CharF1&#39;,
+        init_args: {
+          lm_output_processor: { class_path: &#39;AIONormalizer&#39; },
+          reference_processor: { class_path: &#39;AIONormalizer&#39; },
+        },
+      },
+      {
+        class_path: &#39;ExactMatch&#39;,
+        init_args: {
+          lm_output_processor: { class_path: &#39;AIONormalizer&#39; },
+          reference_processor: { class_path: &#39;AIONormalizer&#39; },
+        },
+      },
     ],
     gen_kwargs: { max_new_tokens: 32 },
     batch_size: 4,
@@ -1494,7 +1506,7 @@ This is a evaluation setup for chat LLMs.</p>
       },
     },
     metrics: [
-      { class_path: &#39;ExactMatch&#39;, init_args: { processor: { class_path: &#39;RegexExtractor&#39;, init_args: { pattern: &#39;-?[0-9.,]+&#39; } } } },
+      { class_path: &#39;ExactMatch&#39;, init_args: { lm_output_processor: { class_path: &#39;RegexExtractor&#39;, init_args: { pattern: &#39;-?[0-9.,]+&#39; } } } },
     ],
     gen_kwargs: { max_new_tokens: 256 },
   },

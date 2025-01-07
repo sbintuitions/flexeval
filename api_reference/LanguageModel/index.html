@@ -3929,7 +3929,7 @@ If specified, this overrides the default chat template of the tokenizer.</p>
         <span class="bp">self</span><span class="o">.</span><span class="n">default_gen_kwargs</span> <span class="o">=</span> <span class="n">default_gen_kwargs</span> <span class="ow">or</span> <span class="p">{}</span>
         <span class="c1"># convert the flexeval-specific argument name to the OpenAI-specific name</span>
         <span class="k">if</span> <span class="s2">&quot;max_new_tokens&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_gen_kwargs</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">default_gen_kwargs</span><span class="p">[</span><span class="s2">&quot;max_tokens&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_gen_kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;max_new_tokens&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">default_gen_kwargs</span><span class="p">[</span><span class="s2">&quot;max_completion_tokens&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_gen_kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;max_new_tokens&quot;</span><span class="p">)</span>
 
     <span class="k">async</span> <span class="k">def</span> <span class="nf">_async_batch_run_chatgpt</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -3943,7 +3943,7 @@ If specified, this overrides the default chat template of the tokenizer.</p>
         <span class="n">gen_kwargs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_gen_kwargs</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
         <span class="n">gen_kwargs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">max_new_tokens</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">gen_kwargs</span><span class="p">[</span><span class="s2">&quot;max_tokens&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">max_new_tokens</span>
+            <span class="n">gen_kwargs</span><span class="p">[</span><span class="s2">&quot;max_completion_tokens&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">max_new_tokens</span>
 
         <span class="n">stop_sequences</span> <span class="o">=</span> <span class="n">normalize_stop_sequences</span><span class="p">(</span>
             <span class="n">stop_sequences_list</span><span class="o">=</span><span class="p">[</span>
@@ -4102,7 +4102,7 @@ If specified, this overrides the default chat template of the tokenizer.</p>
     <span class="bp">self</span><span class="o">.</span><span class="n">default_gen_kwargs</span> <span class="o">=</span> <span class="n">default_gen_kwargs</span> <span class="ow">or</span> <span class="p">{}</span>
     <span class="c1"># convert the flexeval-specific argument name to the OpenAI-specific name</span>
     <span class="k">if</span> <span class="s2">&quot;max_new_tokens&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_gen_kwargs</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">default_gen_kwargs</span><span class="p">[</span><span class="s2">&quot;max_tokens&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_gen_kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;max_new_tokens&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">default_gen_kwargs</span><span class="p">[</span><span class="s2">&quot;max_completion_tokens&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_gen_kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;max_new_tokens&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -4956,14 +4956,14 @@ NOTE: Batch size should be more than or equal to the size of the given dataset f
             <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;stop&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">stop_sequences</span>
 
         <span class="k">if</span> <span class="n">max_new_tokens</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">if</span> <span class="s2">&quot;max_tokens&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s2">&quot;max_completion_tokens&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
                 <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
-                    <span class="s2">&quot;You specified both `max_new_tokens` and `max_tokens` in generation kwargs. &quot;</span>
-                    <span class="s2">&quot;However, `max_new_tokens` will be normalized into `max_tokens`. &quot;</span>
+                    <span class="s2">&quot;You specified both `max_new_tokens` and `max_completion_tokens` in generation kwargs. &quot;</span>
+                    <span class="s2">&quot;However, `max_new_tokens` will be normalized into `max_completion_tokens`. &quot;</span>
                     <span class="s2">&quot;Please specify only one of them.&quot;</span>
                 <span class="p">)</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
-            <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;max_tokens&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">max_new_tokens</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;max_completion_tokens&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">max_new_tokens</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">create_batch_file</span><span class="p">(</span><span class="n">custom_id_2_message</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 

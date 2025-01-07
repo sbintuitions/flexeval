@@ -1446,14 +1446,14 @@ local template_ = &#39;{{ question }}答えは「&#39;;
       {
         class_path: &#39;CharF1&#39;,
         init_args: {
-          processor: { class_path: &#39;AIONormalizer&#39; },
+          lm_output_processor: { class_path: &#39;AIONormalizer&#39; },
           reference_processor: { class_path: &#39;AIONormalizer&#39; },
         },
       },
       {
         class_path: &#39;ExactMatch&#39;,
         init_args: {
-          processor: { class_path: &#39;AIONormalizer&#39; },
+          lm_output_processor: { class_path: &#39;AIONormalizer&#39; },
           reference_processor: { class_path: &#39;AIONormalizer&#39; },
         },
       },
@@ -1699,7 +1699,7 @@ This is a Japanese subset of the benchmark.</p>
       },
     },
     metrics: [
-      { class_path: &#39;ExactMatch&#39;, init_args: { processor: { class_path: &#39;RegexExtractor&#39;, init_args: { pattern: &#39;-?[0-9.,]+&#39; } } } },
+      { class_path: &#39;ExactMatch&#39;, init_args: { lm_output_processor: { class_path: &#39;RegexExtractor&#39;, init_args: { pattern: &#39;-?[0-9.,]+&#39; } } } },
     ],
     gen_kwargs: { max_new_tokens: 256, stop_sequences: [&#39;問題:&#39;] },
   },
