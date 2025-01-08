@@ -14,7 +14,6 @@ from .base import ChatDataset, ChatInstance
 
 class TemplateChatDataset(ChatDataset):
     """
-    A chat dataset using Hugging Face datasets.
     This class only supports single-turn chat.
 
     Args:
