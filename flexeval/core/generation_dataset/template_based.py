@@ -6,6 +6,7 @@ from typing import Any
 
 import datasets
 from jinja2 import Template
+from smart_open import open
 
 from flexeval.core.utils.jinja2_utils import JINJA2_ENV
 
