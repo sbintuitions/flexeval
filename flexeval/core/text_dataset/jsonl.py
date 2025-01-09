@@ -3,6 +3,8 @@ from __future__ import annotations
 import json
 from os import PathLike
 
+from smart_open import open
+
 from .base import TextDataset, TextInstance
 
 
