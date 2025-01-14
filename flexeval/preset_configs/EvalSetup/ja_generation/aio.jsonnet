@@ -17,16 +17,11 @@ local dataset_base_args = {
   },
 };
 
-local template_ = '{{ question }}答えは「';
-
 {
   class_path: 'Generation',
   init_args: {
     eval_dataset: dataset_base_args,
-    prompt_template: {
-      class_path: 'Jinja2PromptTemplate',
-      init_args: { template: template_, },
-    },
+    prompt_template: '{{ question }}答えは「',
     metrics: [
       {
         class_path: 'CharF1',
@@ -43,7 +38,7 @@ local template_ = '{{ question }}答えは「';
         },
       },
     ],
-    gen_kwargs: { max_new_tokens: 64, stop_sequences: ['」'], },
+    gen_kwargs: { max_new_tokens: 64, stop_sequences: ['」'] },
     batch_size: 1,
   },
 }

@@ -26,34 +26,29 @@ local dataset_base_args = {
         num_shots: 2,
       },
     },
-    prompt_template: {
-      class_path: 'Jinja2PromptTemplate',
-      init_args: {
-        template: |||
-          Choose the correct answer from the choices.
-          {% for item in few_shot_data %}
-          Choices:
-          0. "{{ item.choices.text[0] }}"
-          1. "{{ item.choices.text[1] }}"
-          2. "{{ item.choices.text[2] }}"
-          3. "{{ item.choices.text[3] }}"
-          4. "{{ item.choices.text[4] }}"
-          Question: {{ item.question }}
-          Answer: "{{ item.references[0] }}"
-          {% endfor %}
-          Choices:
-          0. "{{ choices.text[0] }}"
-          1. "{{ choices.text[1] }}"
-          2. "{{ choices.text[2] }}"
-          3. "{{ choices.text[3] }}"
-          4. "{{ choices.text[4] }}"
-          Question: {{question}}
-        ||| + 'Answer: "',
-      },
-    },
-    metrics: [
-      { class_path: 'ExactMatch' },
-    ],
-    gen_kwargs: { max_new_tokens: 40, stop_sequences: ['"'] },
+    prompt_template: |||
+      Choose the correct answer from the choices.
+      {% for item in few_shot_data %}
+      Choices:
+      0. "{{ item.choices.text[0] }}"
+      1. "{{ item.choices.text[1] }}"
+      2. "{{ item.choices.text[2] }}"
+      3. "{{ item.choices.text[3] }}"
+      4. "{{ item.choices.text[4] }}"
+      Question: {{ item.question }}
+      Answer: "{{ item.references[0] }}"
+      {% endfor %}
+      Choices:
+      0. "{{ choices.text[0] }}"
+      1. "{{ choices.text[1] }}"
+      2. "{{ choices.text[2] }}"
+      3. "{{ choices.text[3] }}"
+      4. "{{ choices.text[4] }}"
+      Question: {{question}}
+    ||| + 'Answer: "',
   },
+  metrics: [
+    { class_path: 'ExactMatch' },
+  ],
+  gen_kwargs: { max_new_tokens: 40, stop_sequences: ['"'] },
 }

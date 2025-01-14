@@ -17,12 +17,7 @@ References:
         reference_template: '{{ test }}\n\ncheck({{ entry_point }})\n',
       },
     },
-    prompt_template: {
-      class_path: 'Jinja2PromptTemplate',
-      init_args: {
-        template: '{{ prompt }}',
-      },
-    },
+    prompt_template: '{{ prompt }}',
     metrics: [
       { class_path: 'CodeEval', init_args: { code_template: '{{ prompt }}{{ lm_output }}' } },
     ],
