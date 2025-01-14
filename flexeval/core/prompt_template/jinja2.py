@@ -1,10 +1,17 @@
 from __future__ import annotations
 
+from pathlib import Path
 from typing import Any
 
 from flexeval.core.utils.jinja2_utils import JINJA2_ENV
 
 from .base import PromptTemplate
+
+
+def instantiate_prompt_template_from_string(template_or_path: str) -> Jinja2PromptTemplate:
+    if Path(template_or_path).exists():
+        return Jinja2PromptTemplate(template_path=template_or_path)
+    return Jinja2PromptTemplate(template=template_or_path)
 
 
 class Jinja2PromptTemplate(PromptTemplate):
