@@ -1360,18 +1360,13 @@ This is a setup for multiple choice where the model chooses the correct answer b
         num_shots: 0,
       },
     },
-    prompt_template: {
-      class_path: &#39;Jinja2PromptTemplate&#39;,
-      init_args: {
-        template: |||
-          {% for item in few_shot_data %}
-          問題：{{ item.question }}
-          回答：「{{ item.choices[item.answer_index] }}」
-          {% endfor %}
-          問題：{{question}}
-        ||| + &#39;回答：「&#39;,
-      },
-    },
+    prompt_template: |||
+      {% for item in few_shot_data %}
+      問題：{{ item.question }}
+      回答：「{{ item.choices[item.answer_index] }}」
+      {% endfor %}
+      問題：{{question}}
+    ||| + &#39;回答：「&#39;,
   },
 }
 </code></pre></div></li>
@@ -1400,12 +1395,7 @@ This is an Japanese subset of the dataset.</p>
         input_templates: { context: &#39;{{ sentence.split(&quot;_&quot;)[0] }}&#39; },
       },
     },
-    prompt_template: {
-      class_path: &#39;Jinja2PromptTemplate&#39;,
-      init_args: {
-        template: &#39;{{ context }}&#39;,
-      },
-    },
+    prompt_template: &#39;{{ context }}&#39;,
   },
 }
 </code></pre></div></li>

@@ -1434,7 +1434,7 @@ The dataset is partitioned into a Challenge Set and an Easy Set, and this is the
     &#39;{% if choices.text | length &gt; 3 %}{{ choices.text[3] }}{% endif %}&#39;,
     &#39;{% if choices.text | length &gt; 4 %}{{ choices.text[4] }}{% endif %}&#39;,
   ],
-  # answerKey is one of A, B, C, D, E, 1, 2, 3, 4
+  // answerKey is one of A, B, C, D, E, 1, 2, 3, 4
   answer_index_template: &#39;{% if answerKey == &quot;A&quot; %}0{% elif answerKey == &quot;B&quot; %}1{% elif answerKey == &quot;C&quot; %}2{% elif answerKey == &quot;D&quot; %}3{% elif answerKey == &quot;E&quot; %}3{% else %}{{ answerKey | int - 1 }}{% endif %}&#39;,
   whitespace_before_choices: true,
 };
@@ -1456,19 +1456,13 @@ The dataset is partitioned into a Challenge Set and an Easy Set, and this is the
         num_shots: 4,
       },
     },
-    prompt_template: {
-      class_path: &#39;Jinja2PromptTemplate&#39;,
-      init_args: {
-
-        template: |||
-          {% for item in few_shot_data %}
-          Question: {{ item.question }}
-          Answer:{{ item.choices[item.answer_index] }}
-          {% endfor %}
-          Question: {{ question }}
-        ||| + &#39;Answer:&#39;,
-      },
-    },
+    prompt_template: |||
+      {% for item in few_shot_data %}
+      Question: {{ item.question }}
+      Answer:{{ item.choices[item.answer_index] }}
+      {% endfor %}
+      Question: {{ question }}
+    ||| + &#39;Answer:&#39;,
   },
 }
 </code></pre></div></li>
@@ -1491,7 +1485,7 @@ The dataset is partitioned into a Challenge Set and an Easy Set, and this is the
     &#39;{% if choices.text | length &gt; 3 %}{{ choices.text[3] }}{% endif %}&#39;,
     &#39;{% if choices.text | length &gt; 4 %}{{ choices.text[4] }}{% endif %}&#39;,
   ],
-  # answerKey is one of A, B, C, D, E, 1, 2, 3, 4
+  // answerKey is one of A, B, C, D, E, 1, 2, 3, 4
   answer_index_template: &#39;{% if answerKey == &quot;A&quot; %}0{% elif answerKey == &quot;B&quot; %}1{% elif answerKey == &quot;C&quot; %}2{% elif answerKey == &quot;D&quot; %}3{% elif answerKey == &quot;E&quot; %}3{% else %}{{ answerKey | int - 1 }}{% endif %}&#39;,
   whitespace_before_choices: true,
 };
@@ -1513,19 +1507,13 @@ The dataset is partitioned into a Challenge Set and an Easy Set, and this is the
         num_shots: 4,
       },
     },
-    prompt_template: {
-      class_path: &#39;Jinja2PromptTemplate&#39;,
-      init_args: {
-
-        template: |||
-          {% for item in few_shot_data %}
-          Question: {{ item.question }}
-          Answer:{{ item.choices[item.answer_index] }}
-          {% endfor %}
-          Question: {{ question }}
-        ||| + &#39;Answer:&#39;,
-      },
-    },
+    prompt_template: |||
+      {% for item in few_shot_data %}
+      Question: {{ item.question }}
+      Answer:{{ item.choices[item.answer_index] }}
+      {% endfor %}
+      Question: {{ question }}
+    ||| + &#39;Answer:&#39;,
   },
 }
 </code></pre></div></li>
@@ -1561,19 +1549,13 @@ This is a setup for multiple choice where the model chooses the correct answer b
         num_shots: 4,
       },
     },
-    prompt_template: {
-      class_path: &#39;Jinja2PromptTemplate&#39;,
-      init_args: {
-
-        template: |||
-          {% for item in few_shot_data %}
-          Question: {{ item.question }}
-          Answer:{{ item.choices[item.answer_index] }}
-          {% endfor %}
-          Question: {{ question }}
-        ||| + &#39;Answer:&#39;,
-      },
-    },
+    prompt_template: |||
+      {% for item in few_shot_data %}
+      Question: {{ item.question }}
+      Answer:{{ item.choices[item.answer_index] }}
+      {% endfor %}
+      Question: {{ question }}
+    ||| + &#39;Answer:&#39;,
   },
 }
 </code></pre></div></li>
@@ -1609,16 +1591,11 @@ The dataset is constructed through adversarial filtering to make it challenging 
         num_shots: 4,
       },
     },
-    prompt_template: {
-      class_path: &#39;Jinja2PromptTemplate&#39;,
-      init_args: {
-        template: |||
-          {% for item in few_shot_data %}
-          {{ item.ctx }}{{ item.choices[item.answer_index] }}
-          {% endfor %}
-        ||| + &#39;{{ ctx }}&#39;,
-      },
-    },
+    prompt_template: |||
+      {% for item in few_shot_data %}
+      {{ item.ctx }}{{ item.choices[item.answer_index] }}
+      {% endfor %}
+    ||| + &#39;{{ ctx }}&#39;,
   },
 }
 </code></pre></div></li>
@@ -1654,19 +1631,13 @@ The dataset is constructed through adversarial filtering to make it challenging 
         num_shots: 4,
       },
     },
-    prompt_template: {
-      class_path: &#39;Jinja2PromptTemplate&#39;,
-      init_args: {
-
-        template: |||
-          {% for item in few_shot_data %}
-          Question: {{ item.question_stem }}
-          Answer:{{ item.choices[item.answer_index] }}
-          {% endfor %}
-          Question: {{ question_stem }}
-        ||| + &#39;Answer:&#39;,
-      },
-    },
+    prompt_template: |||
+      {% for item in few_shot_data %}
+      Question: {{ item.question_stem }}
+      Answer:{{ item.choices[item.answer_index] }}
+      {% endfor %}
+      Question: {{ question_stem }}
+    ||| + &#39;Answer:&#39;,
   },
 }
 </code></pre></div></li>
@@ -1702,16 +1673,11 @@ The dataset is constructed through adversarial filtering to make it challenging 
         num_shots: 4,
       },
     },
-    prompt_template: {
-      class_path: &#39;Jinja2PromptTemplate&#39;,
-      init_args: {
-        template: |||
-          {% for item in few_shot_data %}
-          {{ item.goal }}{{ item.choices[item.answer_index] }}
-          {% endfor %}
-        ||| + &#39;{{ goal }}&#39;,
-      },
-    },
+    prompt_template: |||
+      {% for item in few_shot_data %}
+      {{ item.goal }}{{ item.choices[item.answer_index] }}
+      {% endfor %}
+    ||| + &#39;{{ goal }}&#39;,
   },
 }
 </code></pre></div></li>
@@ -1740,12 +1706,7 @@ This is an English subset of the dataset.</p>
         input_templates: { context: &#39;{{ sentence.split(&quot;_&quot;)[0] }}&#39; },
       },
     },
-    prompt_template: {
-      class_path: &#39;Jinja2PromptTemplate&#39;,
-      init_args: {
-        template: &#39;{{ context }}&#39;,
-      },
-    },
+    prompt_template: &#39;{{ context }}&#39;,
   },
 }
 </code></pre></div></li>

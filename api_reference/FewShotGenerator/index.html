@@ -935,6 +935,15 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#flexeval.core.few_shot_generator.fixed.FixedFewShotGenerator" class="md-nav__link">
+    <span class="md-ellipsis">
+      FixedFewShotGenerator
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#flexeval.core.few_shot_generator.rand.RandomFewShotGenerator" class="md-nav__link">
     <span class="md-ellipsis">
       RandomFewShotGenerator
@@ -1311,6 +1320,15 @@
   <a href="#flexeval.core.few_shot_generator.balanced.BalancedFewShotGenerator" class="md-nav__link">
     <span class="md-ellipsis">
       BalancedFewShotGenerator
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#flexeval.core.few_shot_generator.fixed.FixedFewShotGenerator" class="md-nav__link">
+    <span class="md-ellipsis">
+      FixedFewShotGenerator
     </span>
   </a>
   
@@ -1893,6 +1911,179 @@ by checking if the sampled instances have the same inputs as the evaluation inst
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">66</span>
 <span class="normal">67</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">(dataset=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="si">}</span><span class="s2">, num_shots=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">num_shots</span><span class="si">}</span><span class="s2">)&quot;</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="flexeval.core.few_shot_generator.fixed.FixedFewShotGenerator" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">FixedFewShotGenerator</span>
+
+
+<a href="#flexeval.core.few_shot_generator.fixed.FixedFewShotGenerator" class="headerlink" title="Permanent link">&para;</a></h2>
+
+
+    <div class="doc doc-contents first">
+
+
+              <details class="quote">
+                <summary>Source code in <code>flexeval/core/few_shot_generator/fixed.py</code></summary>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">FixedFewShotGenerator</span><span class="p">(</span><span class="n">FewShotGenerator</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance_class</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">instance_params</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">num_trials_to_avoid_leak</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">instance_class</span> <span class="o">==</span> <span class="s2">&quot;GenerationInstance&quot;</span><span class="p">:</span>
+            <span class="n">instance_init</span> <span class="o">=</span> <span class="n">GenerationInstance</span>
+        <span class="k">elif</span> <span class="n">instance_class</span> <span class="o">==</span> <span class="s2">&quot;MultipleChoiceInstance&quot;</span><span class="p">:</span>
+            <span class="n">instance_init</span> <span class="o">=</span> <span class="n">MultipleChoiceInstance</span>
+        <span class="k">elif</span> <span class="n">instance_class</span> <span class="o">==</span> <span class="s2">&quot;ChatInstance&quot;</span><span class="p">:</span>
+            <span class="n">instance_init</span> <span class="o">=</span> <span class="n">ChatInstance</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Unknown instance class: </span><span class="si">{</span><span class="n">instance_class</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">instances</span> <span class="o">=</span> <span class="p">[</span><span class="n">instance_init</span><span class="p">(</span><span class="o">**</span><span class="n">params</span><span class="p">)</span> <span class="k">for</span> <span class="n">params</span> <span class="ow">in</span> <span class="n">instance_params</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">_sample_instances</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">eval_inputs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">|</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Instance</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">instances</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">(instances=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">instances</span><span class="si">}</span><span class="s2">)&quot;</span>
+</code></pre></div></td></tr></table></div>
+              </details>
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h3 id="flexeval.core.few_shot_generator.fixed.FixedFewShotGenerator.instances" class="doc doc-heading">
+            <span class="doc doc-object-name doc-attribute-name">instances</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+<a href="#flexeval.core.few_shot_generator.fixed.FixedFewShotGenerator.instances" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">instances</span> <span class="o">=</span> <span class="p">[</span><span class="n">instance_init</span><span class="p">(</span><span class="o">**</span><span class="n">params</span><span class="p">)</span> <span class="k">for</span> <span class="n">params</span> <span class="ow">in</span> <span class="n">instance_params</span><span class="p">]</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+    </div>
+
+</div>
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="flexeval.core.few_shot_generator.fixed.FixedFewShotGenerator.__init__" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">__init__</span>
+
+
+<a href="#flexeval.core.few_shot_generator.fixed.FixedFewShotGenerator.__init__" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="fm">__init__</span><span class="p">(</span><span class="nf">instance_class</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">instance_params</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+            <details class="quote">
+              <summary>Source code in <code>flexeval/core/few_shot_generator/fixed.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance_class</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">instance_params</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">num_trials_to_avoid_leak</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">instance_class</span> <span class="o">==</span> <span class="s2">&quot;GenerationInstance&quot;</span><span class="p">:</span>
+        <span class="n">instance_init</span> <span class="o">=</span> <span class="n">GenerationInstance</span>
+    <span class="k">elif</span> <span class="n">instance_class</span> <span class="o">==</span> <span class="s2">&quot;MultipleChoiceInstance&quot;</span><span class="p">:</span>
+        <span class="n">instance_init</span> <span class="o">=</span> <span class="n">MultipleChoiceInstance</span>
+    <span class="k">elif</span> <span class="n">instance_class</span> <span class="o">==</span> <span class="s2">&quot;ChatInstance&quot;</span><span class="p">:</span>
+        <span class="n">instance_init</span> <span class="o">=</span> <span class="n">ChatInstance</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Unknown instance class: </span><span class="si">{</span><span class="n">instance_class</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">instances</span> <span class="o">=</span> <span class="p">[</span><span class="n">instance_init</span><span class="p">(</span><span class="o">**</span><span class="n">params</span><span class="p">)</span> <span class="k">for</span> <span class="n">params</span> <span class="ow">in</span> <span class="n">instance_params</span><span class="p">]</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="flexeval.core.few_shot_generator.fixed.FixedFewShotGenerator.__repr__" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">__repr__</span>
+
+
+<a href="#flexeval.core.few_shot_generator.fixed.FixedFewShotGenerator.__repr__" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="fm">__repr__</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+            <details class="quote">
+              <summary>Source code in <code>flexeval/core/few_shot_generator/fixed.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">27</span>
+<span class="normal">28</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">(instances=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">instances</span><span class="si">}</span><span class="s2">)&quot;</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>

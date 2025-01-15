@@ -1351,18 +1351,13 @@ This is English to Japanese translation.</p>
         num_shots: 4,
       },
     },
-    prompt_template: {
-      class_path: &#39;Jinja2PromptTemplate&#39;,
-      init_args: {
-        template: |||
-          {% for item in few_shot_data %}
-          En: `{{ item.source }}`
-          Ja: `{{ item.references[0] }}`
-          {% endfor %}
-          En: `{{ source }}`
-        ||| + &#39;Ja: `&#39;,
-      },
-    },
+    prompt_template: |||
+      {% for item in few_shot_data %}
+      En: `{{ item.source }}`
+      Ja: `{{ item.references[0] }}`
+      {% endfor %}
+      En: `{{ source }}`
+    ||| + &#39;Ja: `&#39;,
     metrics: [
       { class_path: &#39;BLEU&#39;, init_args: { tokenize_option: &#39;ja-mecab&#39; } },
     ],
@@ -1397,18 +1392,13 @@ This is Japanese to English translation.</p>
         num_shots: 4,
       },
     },
-    prompt_template: {
-      class_path: &#39;Jinja2PromptTemplate&#39;,
-      init_args: {
-        template: |||
-          {% for item in few_shot_data %}
-          Ja: `{{ item.source }}`
-          En: `{{ item.references[0] }}`
-          {% endfor %}
-          Ja: `{{ source }}`
-        ||| + &#39;En: `&#39;,
-      },
-    },
+    prompt_template: |||
+      {% for item in few_shot_data %}
+      Ja: `{{ item.source }}`
+      En: `{{ item.references[0] }}`
+      {% endfor %}
+      Ja: `{{ source }}`
+    ||| + &#39;En: `&#39;,
     metrics: [
       { class_path: &#39;BLEU&#39;, init_args: { tokenize_option: &#39;intl&#39; } },
     ],

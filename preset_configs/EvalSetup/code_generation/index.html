@@ -1415,12 +1415,7 @@
         reference_template: &#39;{{ test }}\n\ncheck({{ entry_point }})\n&#39;,
       },
     },
-    prompt_template: {
-      class_path: &#39;Jinja2PromptTemplate&#39;,
-      init_args: {
-        template: &#39;{{ prompt }}&#39;,
-      },
-    },
+    prompt_template: &#39;{{ prompt }}&#39;,
     metrics: [
       { class_path: &#39;CodeEval&#39;, init_args: { code_template: &#39;{{ prompt }}{{ lm_output }}&#39; } },
     ],
@@ -1443,11 +1438,7 @@ original_config {
         reference_template: &#39;{{ test | replace(&quot;    &quot;, &quot;\t&quot;) }}\n\ncheck({{ entry_point }})\n&#39;,
       },
     },
-    prompt_template+: {
-      init_args+: {
-        template: &quot;{{ prompt | replace(&#39;    &#39;, &#39;\t&#39;) }}&quot;,
-      },
-    },
+    prompt_template: &quot;{{ prompt | replace(&#39;    &#39;, &#39;\t&#39;) }}&quot;,
     metrics: [
       { class_path: &#39;CodeEval&#39;, init_args: { code_template: &#39;{{ prompt | replace(&quot;    &quot;, &quot;\t&quot;) }}{{ lm_output }}&#39; } },
     ],
@@ -1480,33 +1471,28 @@ original_config {
         num_shots: 3,
       },
     },
-    prompt_template: {
-      class_path: &#39;Jinja2PromptTemplate&#39;,
-      init_args: {
-        template: |||
-          {% for item in few_shot_data %}
-          ## Question
-          {{ item.prompt }}
-          ## Test cases
-          ```python
-          {{ item.test_list | join(&#39;\n&#39;) }}
-          ```
-          ## Code
-          ```python
-          {{ item.code }}
-          ```
-          {% endfor %}
-          ## Question
-          {{ prompt }}
-          ## Test cases
-          ```python
-          {{ test_list | join(&#39;\n&#39;) }}
-          ```
-          ## Code
-          ```python
-        |||,
-      },
-    },
+    prompt_template: |||
+      {% for item in few_shot_data %}
+      ## Question
+      {{ item.prompt }}
+      ## Test cases
+      ```python
+      {{ item.test_list | join(&#39;\n&#39;) }}
+      ```
+      ## Code
+      ```python
+      {{ item.code }}
+      ```
+      {% endfor %}
+      ## Question
+      {{ prompt }}
+      ## Test cases
+      ```python
+      {{ test_list | join(&#39;\n&#39;) }}
+      ```
+      ## Code
+      ```python
+    |||,
     metrics: [
       { class_path: &#39;CodeEval&#39; },
     ],
@@ -1524,32 +1510,28 @@ Some models (e.g., Llama) seems to have trouble with spaces in the prompt.
 
 original_config {
   init_args+: {
-    prompt_template+: {
-      init_args+: {
-        template: |||
-          {% for item in few_shot_data %}
-          ## Question
-          {{ item.prompt }}
-          ## Test cases
-          ```python
-          {{ item.test_list | join(&#39;\n&#39;) }}
-          ```
-          ## Code
-          ```python
-          {{ item.code | replace(&#39;    &#39;, &#39;\t&#39;) }}
-          ```
-          {% endfor %}
-          ## Question
-          {{ prompt }}
-          ## Test cases
-          ```python
-          {{ test_list | join(&#39;\n&#39;) }}
-          ```
-          ## Code
-          ```python
-        |||,
-      },
-    },
+    prompt_template: |||
+      {% for item in few_shot_data %}
+      ## Question
+      {{ item.prompt }}
+      ## Test cases
+      ```python
+      {{ item.test_list | join(&#39;\n&#39;) }}
+      ```
+      ## Code
+      ```python
+      {{ item.code | replace(&#39;    &#39;, &#39;\t&#39;) }}
+      ```
+      {% endfor %}
+      ## Question
+      {{ prompt }}
+      ## Test cases
+      ```python
+      {{ test_list | join(&#39;\n&#39;) }}
+      ```
+      ## Code
+      ```python
+    |||,
   },
 }
 </code></pre></div></p>
@@ -1570,12 +1552,7 @@ original_config {
         reference_template: &#39;{{ test }}\n\ncheck({{ entry_point }})\n&#39;,
       },
     },
-    prompt_template: {
-      class_path: &#39;Jinja2PromptTemplate&#39;,
-      init_args: {
-        template: &#39;{{ prompt }}&#39;,
-      },
-    },
+    prompt_template: &#39;{{ prompt }}&#39;,
     metrics: [
       { class_path: &#39;CodeEval&#39;, init_args: { code_template: &#39;{{ prompt }}{{ lm_output }}&#39; } },
     ],
@@ -1598,11 +1575,7 @@ original_config {
         reference_template: &#39;{{ test | replace(&quot;    &quot;, &quot;\t&quot;) }}\n\ncheck({{ entry_point }})\n&#39;,
       },
     },
-    prompt_template+: {
-      init_args+: {
-        template: &#39;{{ prompt | replace(&quot;    &quot;, &quot;\t&quot;) }}&#39;,
-      },
-    },
+    prompt_template: &#39;{{ prompt | replace(&quot;    &quot;, &quot;\t&quot;) }}&#39;,
     metrics: [
       { class_path: &#39;CodeEval&#39;, init_args: { code_template: &#39;{{ prompt | replace(&quot;    &quot;, &quot;\t&quot;) }}{{ lm_output }}&#39; } },
     ],

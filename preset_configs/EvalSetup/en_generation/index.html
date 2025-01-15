@@ -1423,20 +1423,15 @@
         num_shots: 3,
       },
     },
-    prompt_template: {
-      class_path: &#39;Jinja2PromptTemplate&#39;,
-      init_args: {
-        template: |||
-          {% for item in few_shot_data %}
-          Passage: {{ item.passage | trim }}
-          Question: {{ item.question }}
-          Answer: &quot;{{ item.references[0] }}&quot;
-          {% endfor %}
-          Passage: {{ passage | trim }}
-          Question: {{ question }}
-        ||| + &#39;Answer: &quot;&#39;,
-      },
-    },
+    prompt_template: |||
+      {% for item in few_shot_data %}
+      Passage: {{ item.passage | trim }}
+      Question: {{ item.question }}
+      Answer: &quot;{{ item.references[0] }}&quot;
+      {% endfor %}
+      Passage: {{ passage | trim }}
+      Question: {{ question }}
+    ||| + &#39;Answer: &quot;&#39;,
     metrics: [
       { class_path: &#39;CharF1&#39; },
       { class_path: &#39;ExactMatch&#39; },
@@ -1472,31 +1467,26 @@ This is a setup for generating answers based on the choices provided.</p>
         num_shots: 2,
       },
     },
-    prompt_template: {
-      class_path: &#39;Jinja2PromptTemplate&#39;,
-      init_args: {
-        template: |||
-          Choose the correct answer from the choices.
-          {% for item in few_shot_data %}
-          Choices:
-          0. &quot;{{ item.choices.text[0] }}&quot;
-          1. &quot;{{ item.choices.text[1] }}&quot;
-          2. &quot;{{ item.choices.text[2] }}&quot;
-          3. &quot;{{ item.choices.text[3] }}&quot;
-          4. &quot;{{ item.choices.text[4] }}&quot;
-          Question: {{ item.question }}
-          Answer: &quot;{{ item.references[0] }}&quot;
-          {% endfor %}
-          Choices:
-          0. &quot;{{ choices.text[0] }}&quot;
-          1. &quot;{{ choices.text[1] }}&quot;
-          2. &quot;{{ choices.text[2] }}&quot;
-          3. &quot;{{ choices.text[3] }}&quot;
-          4. &quot;{{ choices.text[4] }}&quot;
-          Question: {{question}}
-        ||| + &#39;Answer: &quot;&#39;,
-      },
-    },
+    prompt_template: |||
+      Choose the correct answer from the choices.
+      {% for item in few_shot_data %}
+      Choices:
+      0. &quot;{{ item.choices.text[0] }}&quot;
+      1. &quot;{{ item.choices.text[1] }}&quot;
+      2. &quot;{{ item.choices.text[2] }}&quot;
+      3. &quot;{{ item.choices.text[3] }}&quot;
+      4. &quot;{{ item.choices.text[4] }}&quot;
+      Question: {{ item.question }}
+      Answer: &quot;{{ item.references[0] }}&quot;
+      {% endfor %}
+      Choices:
+      0. &quot;{{ choices.text[0] }}&quot;
+      1. &quot;{{ choices.text[1] }}&quot;
+      2. &quot;{{ choices.text[2] }}&quot;
+      3. &quot;{{ choices.text[3] }}&quot;
+      4. &quot;{{ choices.text[4] }}&quot;
+      Question: {{question}}
+    ||| + &#39;Answer: &quot;&#39;,
     metrics: [
       { class_path: &#39;ExactMatch&#39; },
     ],
@@ -1532,18 +1522,13 @@ The dataset was created to support the task of question answering on basic mathe
         num_shots: 4,
       },
     },
-    prompt_template: {
-      class_path: &#39;Jinja2PromptTemplate&#39;,
-      init_args: {
-        template: |||
-          {% for item in few_shot_data %}
-          Q: {{ item.question }}
-          A: {{ item.references[0] }}
-          {% endfor %}
-          Q: {{ question }}
-        ||| + &#39;A:&#39;,
-      },
-    },
+    prompt_template: |||
+      {% for item in few_shot_data %}
+      Q: {{ item.question }}
+      A: {{ item.references[0] }}
+      {% endfor %}
+      Q: {{ question }}
+    ||| + &#39;A:&#39;,
     metrics: [
       {
         class_path: &#39;ExactMatch&#39;,
@@ -1583,21 +1568,15 @@ The dataset was created to support the task of question answering on basic mathe
         num_shots: 2,
       },
     },
-    prompt_template: {
-      class_path: &#39;Jinja2PromptTemplate&#39;,
-      init_args: {
-
-        template: |||
-          {% for item in few_shot_data %}
-          Context: {{ item.context | trim }}
-          Question: {{ item.question }}
-          Answer: &quot;{{ item.references[0] }}&quot;
-          {% endfor %}
-          Context: {{ context | trim }}
-          Question: {{ question }}
-        ||| + &#39;Answer: &quot;&#39;,
-      },
-    },
+    prompt_template: |||
+      {% for item in few_shot_data %}
+      Context: {{ item.context | trim }}
+      Question: {{ item.question }}
+      Answer: &quot;{{ item.references[0] }}&quot;
+      {% endfor %}
+      Context: {{ context | trim }}
+      Question: {{ question }}
+    ||| + &#39;Answer: &quot;&#39;,
     metrics: [
       { class_path: &#39;CharF1&#39; },
       { class_path: &#39;ExactMatch&#39; },
@@ -1635,19 +1614,13 @@ TriviaqQA includes 95K question-answer pairs authored by trivia enthusiasts and 
         num_shots: 0,
       },
     },
-    prompt_template: {
-      class_path: &#39;Jinja2PromptTemplate&#39;,
-      init_args: {
-
-        template: |||
-          {% for item in few_shot_data %}
-          Question: {{ item.question }}
-          Answer: &quot;{{ item.references[0] }}&quot;
-          {% endfor %}
-          Question: {{ question }}
-        ||| + &#39;Answer: &quot;&#39;,
-      },
-    },
+    prompt_template: |||
+      {% for item in few_shot_data %}
+      Question: {{ item.question }}
+      Answer: &quot;{{ item.references[0] }}&quot;
+      {% endfor %}
+      Question: {{ question }}
+    ||| + &#39;Answer: &quot;&#39;,
     metrics: [
       { class_path: &#39;CharF1&#39; },
       { class_path: &#39;ExactMatch&#39; },
@@ -1684,19 +1657,14 @@ See the hugging face dataset page for more information.</p>
         num_shots: 4,
       },
     },
-    prompt_template: {
-      class_path: &#39;Jinja2PromptTemplate&#39;,
-      init_args: {
-        template: |||
-          Classify the sentiment of the following tweet.
-          {% for item in few_shot_data %}
-          Tweet: {{ item.text }}
-          Sentiment: `{{ item.references[0] }}`
-          {% endfor %}
-          Tweet: {{ text }}
-        ||| + &#39;Sentiment: `&#39;,
-      },
-    },
+    prompt_template: |||
+      Classify the sentiment of the following tweet.
+      {% for item in few_shot_data %}
+      Tweet: {{ item.text }}
+      Sentiment: `{{ item.references[0] }}`
+      {% endfor %}
+      Tweet: {{ text }}
+    ||| + &#39;Sentiment: `&#39;,
     metrics: [
       { class_path: &#39;ExactMatch&#39; },
     ],
