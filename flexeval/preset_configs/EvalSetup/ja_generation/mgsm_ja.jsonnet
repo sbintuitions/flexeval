@@ -27,18 +27,13 @@ local dataset_base_args = {
         num_shots: 4,
       },
     },
-    prompt_template: {
-      class_path: 'Jinja2PromptTemplate',
-      init_args: {
-        template: |||
-          {% for item in few_shot_data %}
-          {{ item.question }}
-          {{ item.answer }}
-          {% endfor %}
-          問題: {{ question }}
-        ||| + 'ステップごとの答え:',
-      },
-    },
+    prompt_template: |||
+      {% for item in few_shot_data %}
+      {{ item.question }}
+      {{ item.answer }}
+      {% endfor %}
+      問題: {{ question }}
+    ||| + 'ステップごとの答え:',
     metrics: [
       { class_path: 'ExactMatch', init_args: { lm_output_processor: { class_path: 'RegexExtractor', init_args: { pattern: '-?[0-9.,]+' } } } },
     ],

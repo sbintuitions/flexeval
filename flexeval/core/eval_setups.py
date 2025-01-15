@@ -15,7 +15,7 @@ from .language_model import LanguageModel
 from .metric import Metric
 from .metric.tokenizer import Tokenizer
 from .multiple_choice_dataset import MultipleChoiceDataset
-from .prompt_template import PromptTemplate
+from .prompt_template import PromptTemplate, instantiate_prompt_template_from_string
 from .text_dataset import TextDataset
 
 
@@ -78,12 +78,16 @@ class Generation(EvalSetup):
     """
 
     eval_dataset: GenerationDataset
-    prompt_template: PromptTemplate
+    prompt_template: PromptTemplate | str
     gen_kwargs: dict[str, Any]
     few_shot_generator: FewShotGenerator | None = None
     metrics: list[Metric] | Metric | None = None
     batch_size: int = 4
     max_instances: int | None = None
+
+    def __post_init__(self) -> None:
+        if isinstance(self.prompt_template, str):
+            self.prompt_template = instantiate_prompt_template_from_string(self.prompt_template)
 
     def evaluate_lm(
         self,
@@ -113,10 +117,14 @@ class MultipleChoice(EvalSetup):
     """
 
     eval_dataset: MultipleChoiceDataset
-    prompt_template: PromptTemplate
+    prompt_template: PromptTemplate | str
     few_shot_generator: FewShotGenerator | None = None
     batch_size: int = 4
     max_instances: int | None = None
+
+    def __post_init__(self) -> None:
+        if isinstance(self.prompt_template, str):
+            self.prompt_template = instantiate_prompt_template_from_string(self.prompt_template)
 
     def evaluate_lm(
         self,

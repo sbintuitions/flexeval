@@ -13,11 +13,7 @@ original_config {
         reference_template: '{{ test | replace("    ", "\t") }}\n\ncheck({{ entry_point }})\n',
       },
     },
-    prompt_template+: {
-      init_args+: {
-        template: "{{ prompt | replace('    ', '\t') }}",
-      },
-    },
+    prompt_template: "{{ prompt | replace('    ', '\t') }}",
     metrics: [
       { class_path: 'CodeEval', init_args: { code_template: '{{ prompt | replace("    ", "\t") }}{{ lm_output }}' } },
     ],

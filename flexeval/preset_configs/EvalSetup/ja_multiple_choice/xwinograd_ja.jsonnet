@@ -24,11 +24,6 @@ References:
         input_templates: { context: '{{ sentence.split("_")[0] }}' },
       },
     },
-    prompt_template: {
-      class_path: 'Jinja2PromptTemplate',
-      init_args: {
-        template: '{{ context }}',
-      },
-    },
+    prompt_template: '{{ context }}',
   },
 }

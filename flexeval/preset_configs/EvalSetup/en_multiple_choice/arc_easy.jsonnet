@@ -18,7 +18,7 @@ local dataset_base_args = {
     '{% if choices.text | length > 3 %}{{ choices.text[3] }}{% endif %}',
     '{% if choices.text | length > 4 %}{{ choices.text[4] }}{% endif %}',
   ],
-  # answerKey is one of A, B, C, D, E, 1, 2, 3, 4
+  // answerKey is one of A, B, C, D, E, 1, 2, 3, 4
   answer_index_template: '{% if answerKey == "A" %}0{% elif answerKey == "B" %}1{% elif answerKey == "C" %}2{% elif answerKey == "D" %}3{% elif answerKey == "E" %}3{% else %}{{ answerKey | int - 1 }}{% endif %}',
   whitespace_before_choices: true,
 };
@@ -40,18 +40,12 @@ local dataset_base_args = {
         num_shots: 4,
       },
     },
-    prompt_template: {
-      class_path: 'Jinja2PromptTemplate',
-      init_args: {
-
-        template: |||
-          {% for item in few_shot_data %}
-          Question: {{ item.question }}
-          Answer:{{ item.choices[item.answer_index] }}
-          {% endfor %}
-          Question: {{ question }}
-        ||| + 'Answer:',
-      },
-    },
+    prompt_template: |||
+      {% for item in few_shot_data %}
+      Question: {{ item.question }}
+      Answer:{{ item.choices[item.answer_index] }}
+      {% endfor %}
+      Question: {{ question }}
+    ||| + 'Answer:',
   },
 }
