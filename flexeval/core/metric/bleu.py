@@ -71,7 +71,7 @@ class BLEU(Metric):
             {
                 "bleu_score": bleu.score / 100,
                 "bleu_bp": bleu.bp,
-                "bleu_signature": self._bleu.get_signature(),
+                "bleu_signature": self._corpus_bleu.get_signature(),
             },
             instance_details=[{"bleu_score": b.score / 100, "bleu_bp": b.bp} for b in sentence_bleu_list],
         )
