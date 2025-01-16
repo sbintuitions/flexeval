@@ -33,7 +33,9 @@ class BLEU(Metric):
     """
 
     def __init__(self, tokenize_option: str | None = None) -> None:
-        self._bleu = sacrebleu.metrics.BLEU(tokenize=tokenize_option)
+        self._corpus_bleu = sacrebleu.metrics.BLEU(tokenize=tokenize_option)
+        # For sentence BLEU, we need to set `effective_order=True` as recommended by sacrebleu.
+        self._sentence_bleu = sacrebleu.metrics.BLEU(tokenize=tokenize_option, effective_order=True)
 
     def evaluate(
         self,
@@ -60,9 +62,9 @@ class BLEU(Metric):
                     set_of_references.append("")
             references_for_sacrebleu.append(set_of_references)
 
-        bleu = self._bleu.corpus_score([o.strip() for o in lm_outputs], references_for_sacrebleu)
+        bleu = self._corpus_bleu.corpus_score([o.strip() for o in lm_outputs], references_for_sacrebleu)
         sentence_bleu_list = [
-            self._bleu.sentence_score(o.strip(), refs) for o, refs in zip(lm_outputs, references_list)
+            self._sentence_bleu.sentence_score(o.strip(), refs) for o, refs in zip(lm_outputs, references_list)
         ]
 
         return MetricResult(
