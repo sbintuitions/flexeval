@@ -10,6 +10,7 @@ from .llm_label import ChatLLMLabel, LLMLabel
 from .llm_score import ChatLLMScore, LLMScore
 from .output_length_stats import OutputLengthStats
 from .perspective_api import PerspectiveAPI
+from .repetition_count import RepetitionCount
 from .rouge import ROUGE
 from .substring_match import SubstringMatch
 from .xer import XER
