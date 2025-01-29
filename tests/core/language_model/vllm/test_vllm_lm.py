@@ -109,12 +109,13 @@ def test_batch_compute_log_probs_approximates_hf_lm(lm: LanguageModel, hf_lm: Hu
     hf_log_probs = hf_lm.batch_compute_log_probs(text_list, prefix_list=prefix_list)
     assert vllm_log_probs == pytest.approx(hf_log_probs, abs=1e-2)
 
+
 @pytest.mark.skipif(not is_vllm_enabled(), reason="vllm library is not installed")
 def test_remove_extra_text(lm: LanguageModel) -> None:
     generated_texts = [
         "<think>ええと</think>それは正しい日本語ですか？",
         "これは正しい日本語です！",
-        "<think>へえ</think>ありがとうございます！！！"
+        "<think>へえ</think>ありがとうございます！！！",
     ]
     stop_sequences = ["!"]
     generated_texts = lm._remove_extra_texts(generated_texts, stop_sequences)
