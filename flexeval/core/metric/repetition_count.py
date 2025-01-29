@@ -35,11 +35,8 @@ class RepetitionCount(Metric):
         >>> result = repetition_count.evaluate(lm_outputs, references_list)
         >>> print(result)
         MetricResult(
-            summary={'avg_repetition_count': 2.5},
-            instance_details=[
-                {'most_repeated_pattern': 'abcabc', 'repetition_count': 3},
-                {'most_repeated_pattern': 'defgdefg', 'repetition_count': 2}
-            ]
+            summary={'repetition_ratio': 1.0},
+            instance_details=[{'most_repeated_pattern': 'hello hell', 'repetition_count': 9, 'is_repetition': True}]
         )
     """
 
