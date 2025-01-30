@@ -150,9 +150,8 @@ class VLLM(LanguageModel):
             use_tqdm=False,
         )
         generated_texts = [
-            separate_reasoning_and_content(
-                self.tokenizer.decode(outputs.outputs[0].token_ids)
-            )["content"] for outputs in vllm_outputs
+            separate_reasoning_and_content(self.tokenizer.decode(outputs.outputs[0].token_ids))["content"]
+            for outputs in vllm_outputs
         ]
 
         # The `include_stop_str_in_output` option does not work, because we let llm generate tokens, not strings.
