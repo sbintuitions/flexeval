@@ -7,5 +7,5 @@ def test_separate_reasoning_and_content() -> None:
     assert result["content"] == "それは正しい日本語ですか？"
 
     result = separate_reasoning_and_content("これは正しい日本語です")
-    assert results[1]["reasoning"] == ""
-    assert results[1]["content"] == "これは正しい日本語です"
+    assert result["reasoning"] == ""
+    assert result["content"] == "これは正しい日本語です"
