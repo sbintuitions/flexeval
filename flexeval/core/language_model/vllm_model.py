@@ -1,20 +1,14 @@
 from __future__ import annotations
 
-import re
 from typing import Any
 
 import torch
 from transformers import AutoTokenizer, PreTrainedTokenizer
-from loguru import logger
 
 from flexeval.core.language_model.base import LanguageModel, normalize_stop_sequences
 from flexeval.core.language_model.hf_lm import get_prefix_and_completion_from_chat
 from flexeval.core.utils.inference_util import separate_reasoning_and_content
 
-THINK_SEP_PATTERN = re.compile(
-    r'(<think>(?P<reasoning_content>.*)</think>)?\s*(?P<main_content>.*)',
-    re.DOTALL | re.IGNORECASE
-)
 
 def tokenize_text_for_lm_prefix(
     text_list: list[str],
