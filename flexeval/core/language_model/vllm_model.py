@@ -1,4 +1,4 @@
-tfrom __future__ import annotations
+from __future__ import annotations
 
 import re
 from typing import Any
@@ -7,8 +7,9 @@ import torch
 from transformers import AutoTokenizer, PreTrainedTokenizer
 from loguru import logger
 
-from .base import LanguageModel, normalize_stop_sequences
-from .hf_lm import get_prefix_and_completion_from_chat
+from flexeval.core.language_model.base import LanguageModel, normalize_stop_sequences
+from flexeval.core.language_model.hf_lm import get_prefix_and_completion_from_chat
+from flexeval.core.utils.inference_util import separate_reasoning_and_content
 
 THINK_SEP_PATTERN = re.compile(
     r'(<think>(?P<reasoning_content>.*)</think>)?\s*(?P<main_content>.*)',
@@ -154,31 +155,20 @@ class VLLM(LanguageModel):
             sampling_params=SamplingParams(**gen_kwargs, stop=stop_sequences),
             use_tqdm=False,
         )
-        generated_texts = [self.tokenizer.decode(outputs.outputs[0].token_ids) for outputs in vllm_outputs]
+        generated_texts = [
+            separate_reasoning_and_content(
+                self.tokenizer.decode(outputs.outputs[0].token_ids)
+            )["content"] for outputs in vllm_outputs
+        ]
 
         # The `include_stop_str_in_output` option does not work, because we let llm generate tokens, not strings.
         # We manually remove the stop sequences from the generated texts.
         if not gen_kwargs.get("include_stop_str_in_output", False):
-            generated_texts = self._remove_extra_texts(generated_texts, stop_sequences)
-
-        return generated_texts
-
-    def _remove_extra_texts(
-            self,
-            generated_texts: list[str],
-            stop_sequences: str | list[str] | None,
-        ) -> list[str]:
-        for stop in stop_sequences:
-            for i, gen_text in enumerate(generated_texts):
-                match = THINK_SEP_PATTERN.search(gen_text)
-                reasoning_content = match.group('reasoning_content')
-                main_content = match.group('main_content').strip()
-                if reasoning_content:
-                    logger.info(f"reasoning content: {reasoning_content.strip()}")
-                    logger.info(f"main content: {main_content}")
-                stop_index = main_content.find(stop)
-                if stop_index != -1:
-                    generated_texts[i] = main_content[:stop_index]
+            for stop in stop_sequences:
+                for i, gen_text in enumerate(generated_texts):
+                    stop_index = gen_text.find(stop)
+                    if stop_index != -1:
+                        generated_texts[i] = gen_text[:stop_index]
         return generated_texts
 
     def batch_generate_chat_response(
