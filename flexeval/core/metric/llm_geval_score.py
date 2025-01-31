@@ -16,7 +16,7 @@ from .llm_score import prepare_chat_input_for_evaluator, prepare_text_input_for_
 
 
 def calculate_weighted_average(
-    evaluator_logprobs: dict[str, float], valid_score_range: tuple[int, int] | None, prob_threshold: float = 0
+    evaluator_logprobs: dict[str, float | None], valid_score_range: tuple[int, int] | None, prob_threshold: float = 0
 ) -> float | None:
     """For each token and its logprob, check whether the token in valid_score_range
     and calculate weighted score among valid scores and their logprobs.
@@ -32,6 +32,9 @@ def calculate_weighted_average(
     score_list: list[int] = []
     prob_list: list[float] = []
     for token, logprob in evaluator_logprobs.items():
+        if logprob is None:
+            continue
+
         matched = re.match(r"(\d)+", token)
         if not matched:
             continue

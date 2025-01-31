@@ -134,7 +134,7 @@ def test_chat_llm_geval_score() -> None:
     assert metric_output.summary == {"llm_geval_score": 3.0, "num_failed_score_parses": 1}
 
     for lm_output, instance_detail in zip(lm_outputs, metric_output.instance_details):
-        assert instance_detail["llm_score_input"] == [{"role": "user", "content": lm_output}]
+        assert instance_detail["llm_geval_score_input"] == [{"role": "user", "content": lm_output}]
 
 
 def test_chat_llm_geval_score_with_category() -> None:
@@ -167,4 +167,4 @@ def test_chat_llm_geval_score_with_category() -> None:
     }
 
     for lm_output, instance_detail in zip(lm_outputs, metric_output.instance_details):
-        assert instance_detail["llm_score_input"] == [{"role": "user", "content": lm_output}]
+        assert instance_detail["llm_geval_score_input"] == [{"role": "user", "content": lm_output}]
