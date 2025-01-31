@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import re
+from collections import defaultdict
 from math import exp
 
 import tqdm
@@ -11,7 +12,7 @@ from flexeval.core.language_model import LanguageModel
 from flexeval.core.prompt_template import PromptTemplate
 
 from .base import Metric, MetricResult
-from .llm_score import prepare_chat_input_for_evaluator, prepare_text_input_for_evaluator, summarize_evaluator_scores
+from .llm_score import prepare_chat_input_for_evaluator, prepare_text_input_for_evaluator
 
 
 def calculate_weighted_average(
@@ -49,6 +50,38 @@ def calculate_weighted_average(
         return None
 
     return average(score_list, weights=prob_list)
+
+
+def summarize_evaluator_geval_scores(
+    evaluator_score_list: list[float | None],
+    task_inputs_list: list[dict[str, str]],
+    category_key: str | None = None,
+) -> dict[str, float]:
+    """Summarize evaluator_score_list. If category_key is given, return
+    category-wise mean score as well as overall mean score.
+    """
+
+    # compute overall mean score
+    all_valid_scores: list[int] = [s for s in evaluator_score_list if s is not None]
+    llm_score = sum(all_valid_scores) / len(all_valid_scores)
+    num_failed_score_parses = len(evaluator_score_list) - len(all_valid_scores)
+    summary = {"llm_geval_score": llm_score, "num_failed_score_parses": num_failed_score_parses}
+
+    # compute category-wise mean score if category_key is given
+    category2valid_scores: dict[str, list[int]] = defaultdict(list)
+    for score, task_inputs in zip(evaluator_score_list, task_inputs_list):
+        if score is None or category_key is None:
+            continue
+        if category_key in task_inputs:
+            category2valid_scores[task_inputs[category_key]].append(score)
+
+    category2mean_score: dict[str, float] = {}
+    for category, valid_scores in category2valid_scores.items():
+        category2mean_score[category] = sum(valid_scores) / len(valid_scores)
+
+    for category, mean_score in category2mean_score.items():
+        summary[f"llm_geval_score/{category}"] = mean_score
+    return summary
 
 
 def generate_evaluation_logprobs(
@@ -198,12 +231,11 @@ class LLMGEvalScore(Metric):
                 logger.warning(f"Failed to parse score from evaluator logprobs: {evaluator_logprobs}")
             evaluator_score_list.append(evaluator_score)
 
-        summary = summarize_evaluator_scores(
+        summary = summarize_evaluator_geval_scores(
             evaluator_score_list,
             task_inputs_list,
             self.category_key,
         )
-        summary["llm_geval_score"] = summary.pop("llm_score")
 
         return MetricResult(
             summary,
@@ -342,12 +374,11 @@ class ChatLLMGEvalScore(Metric):
                 logger.warning(f"Failed to parse score from evaluator logprobs: {evaluator_logprobs}")
             evaluator_score_list.append(evaluator_score)
 
-        summary = summarize_evaluator_scores(
+        summary = summarize_evaluator_geval_scores(
             evaluator_score_list,
             task_inputs_list,
             self.category_key,
         )
-        summary["llm_geval_score"] = summary.pop("llm_score")
 
         return MetricResult(
             summary,
