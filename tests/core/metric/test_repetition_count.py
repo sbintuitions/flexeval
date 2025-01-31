@@ -21,7 +21,7 @@ def test_get_most_repeated_pattern(
     assert result.summary["repetition_ratio"] == expected_ratio
 
 
-def test_get_most_repeated_pattern_with_empty_input():
+def test_get_most_repeated_pattern_with_empty_input() -> None:
     subtext, count = get_most_repeated_pattern(" ")
     assert subtext == ""
     assert count == 0
