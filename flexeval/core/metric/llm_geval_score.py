@@ -119,7 +119,7 @@ class LLMGEvalScore(Metric):
         >>> lm_outputs = ["Hello, world!", "Good morning!"]
         >>> llm_score.evaluate(lm_outputs)
         MetricResult(
-            summary={'llm_score': 3.9109915840526117, 'num_failed_score_parses': 0},
+            summary={'llm_geval_score': 3.9109915840526117, 'num_failed_score_parses': 0},
             instance_details=[
                 {
                     'llm_geval_score': 3.580269080315562,
@@ -167,7 +167,7 @@ class LLMGEvalScore(Metric):
 
     def evaluate(
         self,
-        lm_outputs: list[str],  # 評価対象
+        lm_outputs: list[str],
         references_list: list[list[str]] | None = None,
         task_inputs_list: list[dict[str, str]] | None = None,
     ) -> MetricResult:
@@ -203,6 +203,7 @@ class LLMGEvalScore(Metric):
             task_inputs_list,
             self.category_key,
         )
+        summary["llm_geval_score"] = summary.pop("llm_score")
 
         return MetricResult(
             summary,
@@ -255,7 +256,7 @@ class ChatLLMGEvalScore(Metric):
         >>> lm_outputs = ["Hello, world!", "Good morning!"]
         >>> llm_score.evaluate(lm_outputs)
         MetricResult(
-            summary={'llm_score': 4.252030918369018, 'num_failed_score_parses': 0},
+            summary={'llm_geval_score': 4.252030918369018, 'num_failed_score_parses': 0},
             instance_details=[
                 {
                     'llm_geval_score': 4.220479925250702,
@@ -346,6 +347,7 @@ class ChatLLMGEvalScore(Metric):
             task_inputs_list,
             self.category_key,
         )
+        summary["llm_geval_score"] = summary.pop("llm_score")
 
         return MetricResult(
             summary,
