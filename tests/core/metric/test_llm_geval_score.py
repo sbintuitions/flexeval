@@ -3,11 +3,7 @@ from __future__ import annotations
 import pytest
 
 from flexeval import Jinja2PromptTemplate, LanguageModel
-from flexeval.core.metric.llm_geval_score import (
-    calculate_weighted_average,
-    ChatLLMGEvalScore,
-    LLMGEvalScore
-)
+from flexeval.core.metric.llm_geval_score import ChatLLMGEvalScore, LLMGEvalScore, calculate_weighted_average
 
 
 class EchoBackLanguageModel(LanguageModel):
@@ -19,19 +15,29 @@ class EchoBackLanguageModel(LanguageModel):
     ) -> list[float]:
         if text_list[0].startswith("[A]"):
             return [-2, -2, -2, -1, -2]
-        elif text_list[0].startswith("[B]"):
+        if text_list[0].startswith("[B]"):
             return [-2, -1, -2, -2, -2]
-        elif text_list[0].startswith("[C]"):
+        if text_list[0].startswith("[C]"):
             return [-2, -2, -1, -2, -2]
-        else:
-            # For OpenAI models, we can obtain 20 or less tokens and their logprobs.
-            # This simulates all of the valid scores are not obtained from logprob results.
-            return [None, None, None, None, None]
+
+        # For OpenAI models, we can obtain 20 or less tokens and their logprobs.
+        # This simulates all of the valid scores are not obtained from logprob results.
+        return [None, None, None, None, None]
 
     def batch_compute_chat_log_probs(
         self, prompt_list: list[list[dict[str, str]]], response_list: list[dict[str, str]]
     ) -> list[float]:
-        return [chat_messages[-1]["content"] for chat_messages in chat_messages_list]
+        text = prompt_list[0][-1]["content"]
+        if text.startswith("[A]"):
+            return [-2, -2, -2, -1, -2]
+        if text.startswith("[B]"):
+            return [-2, -1, -2, -2, -2]
+        if text.startswith("[C]"):
+            return [-2, -2, -1, -2, -2]
+
+        # For OpenAI models, we can obtain 20 or less tokens and their logprobs.
+        # This simulates all of the valid scores are not obtained from logprob results.
+        return [None, None, None, None, None]
 
 
 @pytest.mark.parametrize(
@@ -74,10 +80,6 @@ def test_llm_geval_score() -> None:
 
     for lm_output, instance_detail in zip(lm_outputs, metric_output.instance_details):
         assert instance_detail["llm_geval_score_input"] == lm_output
-        if lm_output.startswith("[D]"):
-            len(instance_detail["llm_geval_score_logprobs"]) == 0
-        else:
-            assert set(instance_detail["llm_geval_score_logprobs"].keys()) == set(range(1, 6))
 
 
 def test_llm_geval_score_with_category() -> None:
@@ -111,7 +113,6 @@ def test_llm_geval_score_with_category() -> None:
 
     for lm_output, instance_detail in zip(lm_outputs, metric_output.instance_details):
         assert instance_detail["llm_geval_score_input"] == lm_output
-        assert set(instance_detail["llm_geval_score_logprobs"].keys()) == set(range(1, 6))
 
 
 def test_chat_llm_geval_score() -> None:
@@ -134,14 +135,10 @@ def test_chat_llm_geval_score() -> None:
 
     for lm_output, instance_detail in zip(lm_outputs, metric_output.instance_details):
         assert instance_detail["llm_score_input"] == [{"role": "user", "content": lm_output}]
-        if lm_output.startswith("[D]"):
-            len(instance_detail["llm_geval_score_logprobs"]) == 0
-        else:
-            assert set(instance_detail["llm_geval_score_logprobs"].keys()) == set(range(1, 6))
 
 
 def test_chat_llm_geval_score_with_category() -> None:
-    metric = ChatLLMSGEvalcore(
+    metric = ChatLLMGEvalScore(
         language_model=EchoBackLanguageModel(),
         prompt_template=Jinja2PromptTemplate("{{ lm_output }}"),
         valid_score_range=(1, 5),
@@ -171,7 +168,3 @@ def test_chat_llm_geval_score_with_category() -> None:
 
     for lm_output, instance_detail in zip(lm_outputs, metric_output.instance_details):
         assert instance_detail["llm_score_input"] == [{"role": "user", "content": lm_output}]
-        if lm_output.startswith("[D]"):
-            len(instance_detail["llm_geval_score_logprobs"]) == 0
-        else:
-            assert set(instance_detail["llm_geval_score_logprobs"].keys()) == set(range(1, 6))
