@@ -5,9 +5,8 @@ from typing import Any
 import torch
 from transformers import AutoTokenizer, PreTrainedTokenizer
 
-from flexeval.core.language_model.base import LanguageModel, normalize_stop_sequences
-from flexeval.core.language_model.hf_lm import get_prefix_and_completion_from_chat
-from flexeval.core.utils.inference_util import separate_reasoning_and_content
+from .base import LanguageModel, normalize_stop_sequences
+from .hf_lm import get_prefix_and_completion_from_chat
 
 
 def tokenize_text_for_lm_prefix(
@@ -149,10 +148,7 @@ class VLLM(LanguageModel):
             sampling_params=SamplingParams(**gen_kwargs, stop=stop_sequences),
             use_tqdm=False,
         )
-        generated_texts = [
-            separate_reasoning_and_content(self.tokenizer.decode(outputs.outputs[0].token_ids))["content"]
-            for outputs in vllm_outputs
-        ]
+        generated_texts = [self.tokenizer.decode(outputs.outputs[0].token_ids) for outputs in vllm_outputs]
 
         # The `include_stop_str_in_output` option does not work, because we let llm generate tokens, not strings.
         # We manually remove the stop sequences from the generated texts.

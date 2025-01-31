@@ -49,7 +49,13 @@ local dataset_base_args = {
       ```python
     |||,
     metrics: [
-      { class_path: 'CodeEval' },
+      {
+        class_path: 'CodeEval',
+        init_args: {
+          code_template: '{{ prompt | replace("    ", "\t") }}{{ lm_output }}',
+          lm_output_processor: { class_path: 'RegexExtractor', init_args: { pattern: '^(?:.*</think>\s*)?(.*)$' } },
+        },
+      },
     ],
     gen_kwargs: { max_new_tokens: 512, stop_sequences: ['```'] },
     batch_size: 4,
