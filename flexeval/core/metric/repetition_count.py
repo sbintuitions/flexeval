@@ -16,7 +16,10 @@ def get_most_repeated_pattern(text: str, threshold_length: int = 10) -> tuple[st
         if any(subtext.startswith(c) or subtext.endswith(c) for c in special_chars):
             continue
         counter[subtext] += 1
-    subtext, count = counter.most_common(1)[0]
+    if len(counter) > 0:
+        subtext, count = counter.most_common(1)[0]
+    else:
+        subtext, count = "", 0
     return subtext, count
 
 
