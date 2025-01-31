@@ -1,8 +1,7 @@
 from __future__ import annotations
 
-from functools import reduce
-from math import exp
 import re
+from math import exp
 
 import tqdm
 from loguru import logger
@@ -10,7 +9,6 @@ from numpy import average
 
 from flexeval.core.language_model import LanguageModel
 from flexeval.core.prompt_template import PromptTemplate
-from flexeval.core.utils.data_util import batch_iter
 
 from .base import Metric, MetricResult
 from .llm_score import prepare_chat_input_for_evaluator, prepare_text_input_for_evaluator, summarize_evaluator_scores
@@ -49,7 +47,6 @@ def generate_evaluation_logprobs(
     evaluator_input_list: list[str] | list[list[dict[str, str]]],
     language_model: LanguageModel,
     valid_labels: list[str],
-    batch_size: int,
     disable_tqdm: bool = False,
     desc_for_tqdm: str | None = None,
 ) -> list[dict[str, float]]:
@@ -71,7 +68,8 @@ def generate_evaluation_logprobs(
         for evaluator_input in evaluator_input_list:
             if isinstance(evaluator_input, str):
                 evaluator_logprobs = language_model.batch_compute_log_probs(
-                    [evaluator_input] * len(valid_labels),  # we have to provide len(valid_labels) same inputs for generate logprob
+                    [evaluator_input]
+                    * len(valid_labels),  # we have to provide len(valid_labels) same inputs for generate logprob
                     valid_labels,  # for openai models, len(valid_labels) <= 20 due to constraint
                 )
             else:
@@ -86,7 +84,8 @@ def generate_evaluation_logprobs(
 
 class LLMGEvalScore(Metric):
     """Let LanguageModel evaluate the output of another LanguageModel.
-    Unlike LLMScore, this metric let the model output logprobs for all valid scores and calculate weighted score among them.
+    Unlike LLMScore, this metric let the model output logprobs for all valid scores and
+    calculate weighted score among them.
     Note that due to constraint for OpenAI models, the number of valid scores must not exceed 20.
     For detail, see https://aclanthology.org/2023.emnlp-main.153/
 
@@ -216,7 +215,8 @@ class LLMGEvalScore(Metric):
 
 class ChatLLMGEvalScore(Metric):
     """A metric that evaluates the output of `LanguageModel.batch_generate_chat_response`.
-    Unlike ChatLLMScore, this metric let the model output logprobs for all valid scores and calculate weighted score among them.
+    Unlike ChatLLMScore, this metric let the model output logprobs for all valid scores and
+    calculate weighted score among them.
     Note that due to constraint for OpenAI models, the number of valid scores must not exceed 20.
 
     Args:
@@ -245,7 +245,7 @@ class ChatLLMGEvalScore(Metric):
                     'llm_geval_score': 4.220479925250702,
                     'llm_geval_score_input': [
                         {'role': 'system', 'content': 'This is the system message.'},
-                        {'role': 'user', 'content': 'Evaluate the quality of this text.\\n`Hello, world!`\\nOutput only a number from 1 to 5.'}
+                        {'role': 'user', 'content': 'Evaluate the quality of this text...'}
                     ],
                     'llm_geval_score_logprobs': {
                         '1': -165.50238037109375,
@@ -259,7 +259,7 @@ class ChatLLMGEvalScore(Metric):
                     'llm_geval_score': 4.283581911487334,
                     'llm_geval_score_input': [
                         {'role': 'system', 'content': 'This is the system message.'},
-                        {'role': 'user', 'content': 'Evaluate the quality of this text.\\n`Good morning!`\\nOutput only a number from 1 to 5.'}
+                        {'role': 'user', 'content': 'Evaluate the quality of this text...'}
                     ],
                     'llm_geval_score_logprobs': {
                         '1': -173.6418914794922,
