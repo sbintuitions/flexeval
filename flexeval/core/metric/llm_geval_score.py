@@ -15,10 +15,16 @@ from .llm_score import prepare_chat_input_for_evaluator, prepare_text_input_for_
 
 
 def calculate_weighted_average(
-    evaluator_logprobs: dict[str, float], valid_score_range: tuple[int, int] | None
+    evaluator_logprobs: dict[str, float], valid_score_range: tuple[int, int] | None, prob_threshold: float = 0
 ) -> float | None:
     """For each token and its logprob, check whether the token in valid_score_range
     and calculate weighted score among valid scores and their logprobs.
+
+    Args:
+        evaluator_logprobs: Keys are valid tokens, and values are their logprobs.
+        valid_score_range: The scope of scores. If None, any of the score is accepted.
+        prob_threshold: For considering low probability among all of valid scores,
+            return None (invalid) if sum of the all probability among vaild scores is less than this value.
 
     Return None if all of the tokens are not valid as score.
     """
@@ -38,6 +44,8 @@ def calculate_weighted_average(
         prob_list.append(probability)
 
     if len(score_list) == 0:
+        return None
+    if sum(prob_list) < prob_threshold:
         return None
 
     return average(score_list, weights=prob_list)
@@ -99,6 +107,8 @@ class LLMGEvalScore(Metric):
         disable_tqdm: Whether to disable the progress bar.
         category_key: A key to create category-wise mean score.
             The category key is expected to be in task inputs.
+        prob_threshold: For considering low probability among all of valid scores,
+            return None (invalid) if sum of the all probability among vaild scores is less than this value.
 
     Examples:
         >>> from flexeval import LLMGEvalScore, HuggingFaceLM, Jinja2PromptTemplate
@@ -144,12 +154,14 @@ class LLMGEvalScore(Metric):
         valid_score_range: tuple[int, int],
         disable_tqdm: bool = False,
         category_key: str | None = None,
+        prob_threshold: float = 0,
     ) -> None:
         self.language_model = language_model
         self.prompt_template = prompt_template
         self.disable_tqdm = disable_tqdm
         self.valid_score_range = valid_score_range
         self.category_key = category_key
+        self.prob_threshold = prob_threshold
 
         self.valid_labels = [str(score) for score in range(valid_score_range[0], valid_score_range[1] + 1)]
 
@@ -179,7 +191,8 @@ class LLMGEvalScore(Metric):
         for evaluator_logprobs in evaluator_logprobs_list:
             evaluator_score = calculate_weighted_average(
                 evaluator_logprobs,
-                valid_score_range=self.valid_score_range,
+                self.valid_score_range,
+                self.prob_threshold,
             )
             if evaluator_score is None:
                 logger.warning(f"Failed to parse score from evaluator logprobs: {evaluator_logprobs}")
@@ -228,6 +241,9 @@ class ChatLLMGEvalScore(Metric):
         disable_tqdm: Whether to disable the progress bar.
         category_key: A key to create category-wise mean score.
             The category key is expected to be in task inputs.
+        prob_threshold: For considering low probability among all of valid scores,
+            return None (invalid) if sum of the all probability among vaild scores is less than this value.
+
 
     Examples:
         >>> from flexeval import ChatLLMGEvalScore, HuggingFaceLM, Jinja2PromptTemplate
@@ -280,6 +296,7 @@ class ChatLLMGEvalScore(Metric):
         system_message: str | PromptTemplate | None = None,
         disable_tqdm: bool = False,
         category_key: str | None = None,
+        prob_threshold: float = 0,
     ) -> None:
         self.language_model = language_model
         self.prompt_template = prompt_template
@@ -287,6 +304,7 @@ class ChatLLMGEvalScore(Metric):
         self.disable_tqdm = disable_tqdm
         self.valid_score_range = valid_score_range
         self.category_key = category_key
+        self.prob_threshold = prob_threshold
 
         self.valid_labels = [str(score) for score in range(valid_score_range[0], valid_score_range[1] + 1)]
 
@@ -316,7 +334,8 @@ class ChatLLMGEvalScore(Metric):
         for evaluator_logprobs in evaluator_logprobs_list:
             evaluator_score = calculate_weighted_average(
                 evaluator_logprobs,
-                valid_score_range=self.valid_score_range,
+                self.valid_score_range,
+                self.prob_threshold,
             )
             if evaluator_score is None:
                 logger.warning(f"Failed to parse score from evaluator logprobs: {evaluator_logprobs}")
