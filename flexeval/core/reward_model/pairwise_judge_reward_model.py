@@ -6,7 +6,7 @@ from typing import Any
 
 from flexeval.core.language_model.base import LanguageModel
 from flexeval.core.prompt_template.base import PromptTemplate
-from flexeval.core.reward_bench_dataset.hf import RewardBenchInstance
+from flexeval.core.reward_bench_dataset import RewardBenchInstance
 from flexeval.core.reward_model.base import RewardModel
 
 
@@ -17,9 +17,15 @@ class PairwiseChoice(str, Enum):
 
 @dataclass
 class PairwiseInstance:
-    prompt: str
-    answer_a: str
-    answer_b: str
+    """
+    A dataclass representing a pairwise instance for a reward bench task.
+    Unlike RewardBenchInstance, this class represents the chosen instance (answer) by answer label,
+    in order to make the order insensitive input for the language model.
+    """
+
+    prompt: list[dict[str, str]]
+    answer_a: list[dict[str, str]]
+    answer_b: list[dict[str, str]]
     answer_label: PairwiseChoice
 
 
@@ -57,8 +63,11 @@ class PairwiseJudgeRewardModel(RewardModel):
         if self.system_message:
             if isinstance(self.system_message, str):
                 system_message = self.system_message
-            else:
+            elif isinstance(self.system_message, PromptTemplate):
                 system_message = self.system_message.embed_inputs(pairwise_instance_asdict)
+            else:
+                msg = "system_message should be str or PromptTemplate."
+                raise ValueError(msg)
             input_chat_messages.insert(
                 0,
                 {"role": "system", "content": system_message},

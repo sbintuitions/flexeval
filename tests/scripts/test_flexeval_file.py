@@ -26,7 +26,7 @@ from .test_flexeval_lm import CHAT_RESPONSE_CMD, GENERATION_CMD, check_if_eval_r
 )
 @pytest.mark.parametrize(
     "override_args",
-    [[], ["--metrics.processor", "AIONormalizer"]],
+    [[], ["--metrics.lm_output_processor", "AIONormalizer"]],
 )
 def test_if_outputs_from_flexval_lm_can_be_passed_to_flexeval_file(
     flexeval_lm_command: list[str],

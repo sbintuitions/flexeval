@@ -9,6 +9,8 @@ import transformers
 from loguru import logger
 from transformers import AutoModelForCausalLM, AutoTokenizer, BatchEncoding, PreTrainedModel, PreTrainedTokenizer
 
+from flexeval.utils.hf_utils import get_default_model_kwargs
+
 from .base import LanguageModel, normalize_stop_sequences
 
 T = TypeVar("T")
@@ -145,25 +147,7 @@ class HuggingFaceLM(LanguageModel):
         self.add_special_tokens = add_special_tokens
         self.default_gen_kwargs = default_gen_kwargs or {}
 
-        model_kwargs = model_kwargs or {}
-        model_kwargs = {**model_kwargs}  # copy kwargs to avoid modifying the original dict
-        if "device_map" not in model_kwargs:
-            model_kwargs["device_map"] = "auto"
-        if "torch_dtype" not in model_kwargs:
-            # You need to set torch_dtype to use the optimal dtype for the model.
-            # https://huggingface.co/docs/transformers/main/main_classes/model#model-instantiation-dtype
-            model_kwargs["torch_dtype"] = "auto"
-        elif model_kwargs["torch_dtype"] != "auto":
-            # Convert string to torch.dtype
-            # We allow either "bfloat16" or "torch.bfloat16"
-            torch_dtype_str = model_kwargs["torch_dtype"]
-            if torch_dtype_str.startswith("torch."):
-                torch_dtype_str = torch_dtype_str[len("torch.") :]
-            model_kwargs["torch_dtype"] = getattr(torch, torch_dtype_str)
-            if not isinstance(model_kwargs["torch_dtype"], torch.dtype):
-                msg = f"Invalid torch_dtype: {model_kwargs['torch_dtype']}"
-                raise ValueError(msg)
-
+        model_kwargs = get_default_model_kwargs(model_kwargs)
         if not load_peft:
             self.model: PreTrainedModel = AutoModelForCausalLM.from_pretrained(
                 model,
@@ -413,5 +397,51 @@ class HuggingFaceLM(LanguageModel):
             total_log_probs = (log_prob_of_next * log_prob_mask).sum(dim=-1)
         return total_log_probs.tolist()
 
+    def batch_compute_chat_log_probs(
+        self, prompt_list: list[list[dict[str, str]]], response_list: list[dict[str, str]]
+    ) -> list[float]:
+        prompt_as_string: list[str] = []
+        response_as_string: list[str] = []
+        for prompt, response in zip(prompt_list, response_list):
+            prompt_as_string_i, response_as_string_i = get_prefix_and_completion_from_chat(
+                prompt,
+                response,
+                self.tokenizer,
+                custom_chat_template=self.custom_chat_template,
+            )
+            prompt_as_string.append(prompt_as_string_i)
+            response_as_string.append(response_as_string_i)
+        return self.batch_compute_log_probs(prompt_as_string, prefix_list=response_as_string)
+
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(model={self._model_name_or_path!r})"
+
+
+def get_prefix_and_completion_from_chat(
+    prompt: list[dict[str, Any]],
+    response: dict[str, Any],
+    tokenizer: PreTrainedTokenizer,
+    custom_chat_template: str | None = None,
+) -> tuple[str, str]:
+    """
+    Convert a list of message dictionaries to the string representation.
+    The output is a tuple of the prompt string and the response string.
+    """
+    prompt_as_string = tokenizer.apply_chat_template(
+        prompt,
+        tokenize=False,
+        add_generation_prompt=True,
+        chat_template=custom_chat_template,
+    )
+    prompt_and_response = tokenizer.apply_chat_template(
+        [*prompt, response],
+        tokenize=False,
+        add_generation_prompt=False,
+        chat_template=custom_chat_template,
+    )
+
+    if not prompt_and_response.startswith(prompt_as_string):
+        msg = f"prompt_and_response does not start with prompt: {prompt_and_response} vs {prompt_as_string}"
+        raise ValueError(msg)
+    completion = prompt_and_response[len(prompt_as_string) :]
+    return prompt_as_string, completion

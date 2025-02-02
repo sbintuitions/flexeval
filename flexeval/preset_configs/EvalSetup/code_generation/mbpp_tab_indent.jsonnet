@@ -8,31 +8,27 @@ local original_config = import './mbpp.jsonnet';
 
 original_config {
   init_args+: {
-    prompt_template+: {
-      init_args+: {
-        template: |||
-          {% for item in few_shot_data %}
-          ## Question
-          {{ item.prompt }}
-          ## Test cases
-          ```python
-          {{ item.test_list | join('\n') }}
-          ```
-          ## Code
-          ```python
-          {{ item.code | replace('    ', '\t') }}
-          ```
-          {% endfor %}
-          ## Question
-          {{ prompt }}
-          ## Test cases
-          ```python
-          {{ test_list | join('\n') }}
-          ```
-          ## Code
-          ```python
-        |||,
-      },
-    },
+    prompt_template: |||
+      {% for item in few_shot_data %}
+      ## Question
+      {{ item.prompt }}
+      ## Test cases
+      ```python
+      {{ item.test_list | join('\n') }}
+      ```
+      ## Code
+      ```python
+      {{ item.code | replace('    ', '\t') }}
+      ```
+      {% endfor %}
+      ## Question
+      {{ prompt }}
+      ## Test cases
+      ```python
+      {{ test_list | join('\n') }}
+      ```
+      ## Code
+      ```python
+    |||,
   },
 }

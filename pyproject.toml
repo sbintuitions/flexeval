@@ -15,7 +15,7 @@ flexeval_presets = "flexeval.scripts.flexeval_presets:main"
 
 
 [tool.poetry.dependencies]
-python = "^3.8.1,!=3.9.7"
+python = "^3.9,!=3.9.7"
 transformers = {extras = ["ja", "sentencepiece", "torch"], version = "^4.34.1"}
 datasets = "^2.14.6"
 evaluate = "^0.4.1"
@@ -29,11 +29,13 @@ sacrebleu = {extras = ["ja"], version = "^2.4.1"}
 jiwer = "^3.0.4"
 openai = "^1.52.2"
 google-api-python-client = "^2.131.0"
-vllm = {version = "^0.5.5", optional = true }
+vllm = {version = "^0.6.4.post1", optional = true }
 loguru = "^0.7.2"
 wandb = {version = "^0.17.2", optional = true}
 pyarrow = "16.1.0"  # set the version because we get "Unable to find installation candidates" with 17.0.0
 litellm = "^1.52.9"
+scipy = "1.13.0"
+smart-open = "^7.1.0"
 
 [tool.poetry.extras]
 vllm = ["vllm"]

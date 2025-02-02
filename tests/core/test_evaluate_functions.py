@@ -165,7 +165,14 @@ def test_evaluate_pairwise(cached_matches: list[Match] | None) -> None:
 
 
 def test_evaluate_reward_model() -> None:
-    template = "## prompt\n{{ prompt }}\n\n## answer A\n{{ answer_a }}\n\n## answer B\n{{ answer_b }}"
+    template = (
+        "## prompt\n"
+        "{{ prompt[0].content }}\n\n"
+        "## answer A\n"
+        "{{ answer_a[0].content }}\n\n"
+        "## answer B\n"
+        "{{ answer_b[0].content }}"
+    )
 
     reward_model = PairwiseJudgeRewardModel(
         language_model=DummyRewardLanguageModel(),
@@ -180,10 +187,11 @@ def test_evaluate_reward_model() -> None:
     )
 
     assert metrics["accuracy"] == 0.5
+    assert metrics["accuracy-dummy"] == 0.5  # the score computed with the category key
     assert outputs[0] == {
-        "prompt": "prompt_text_0",
-        "chosen": "chosen_text_0",
-        "rejected": "rejected_text_0",
+        "prompt": [{"role": "user", "content": "prompt_text_0"}],
+        "chosen": [{"role": "user", "content": "chosen_text_0"}],
+        "rejected": [{"role": "user", "content": "rejected_text_0"}],
         "llm_inputs": [
             # A is chosen text
             [
@@ -202,6 +210,7 @@ def test_evaluate_reward_model() -> None:
         ],
         "llm_outputs": ["[[A]]", "[[A]]"],
         "evaluation_results": [True, False],
+        "id": 0,
     }
 
     # Check DummyRewardLanguageModel generate prefix-text
@@ -219,9 +228,9 @@ def test_evaluate_reward_model() -> None:
 
     assert metrics["accuracy"] == 0.5
     assert outputs[0] == {
-        "prompt": "prompt_text_0",
-        "chosen": "chosen_text_0",
-        "rejected": "rejected_text_0",
+        "prompt": [{"role": "user", "content": "prompt_text_0"}],
+        "chosen": [{"role": "user", "content": "chosen_text_0"}],
+        "rejected": [{"role": "user", "content": "rejected_text_0"}],
         "llm_inputs": [
             [
                 # A is chosen text
@@ -240,4 +249,5 @@ def test_evaluate_reward_model() -> None:
         ],
         "llm_outputs": ["Results: [[B]]", "Results: [[B]]"],
         "evaluation_results": [False, True],
+        "id": 0,
     }

@@ -29,7 +29,7 @@ local dataset_base_args = {
       },
     },
     metrics: [
-      { class_path: 'ExactMatch', init_args: { processor: { class_path: 'RegexExtractor', init_args: { pattern: '-?[0-9.,]+' } } } },
+      { class_path: 'ExactMatch', init_args: { lm_output_processor: { class_path: 'RegexExtractor', init_args: { pattern: '-?[0-9.,]+' } } } },
     ],
     gen_kwargs: { max_new_tokens: 256 },
   },

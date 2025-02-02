@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import warnings
 from abc import ABC, abstractmethod
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any, Sequence
 
 
@@ -29,12 +29,12 @@ class ChatInstance:
     ]
     ```
     """
-    references: list[str]
+    references: list[str] = field(default_factory=list)
     """
     A list of reference responses to the user's last message.
     The model's response will be evaluated against these references.
     """
-    extra_info: dict[str, Any]
+    extra_info: dict[str, Any] = field(default_factory=dict)
     """
     Extra information that can be used by passing to `Metric`.
     """
@@ -76,14 +76,13 @@ class ChatDataset(Sequence[ChatInstance], ABC):
         """
         raise NotImplementedError
 
-    @abstractmethod
     def require_incremental_response(self) -> bool:
         """If true, the inputs consist of multiple user utterances and the
         model should generate responses for each utterance incrementally.
 
         Otherwise, the model just has to continue the conversation from the last user utterance.
         """
-        raise NotImplementedError
+        return False
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(num_instances={len(self)})"

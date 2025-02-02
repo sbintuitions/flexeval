@@ -1,10 +1,18 @@
 from __future__ import annotations
 
+import os
 from typing import Any
 
 from flexeval.core.utils.jinja2_utils import JINJA2_ENV
 
 from .base import PromptTemplate
+
+
+def instantiate_prompt_template_from_string(template_or_path: str) -> Jinja2PromptTemplate:
+    # Use `os.path.isfile` instead of `Path.is_file()` to avoid "OSError: [Errno 36] File name too long"
+    if os.path.isfile(template_or_path):  # noqa: PTH113
+        return Jinja2PromptTemplate(template_path=template_or_path)
+    return Jinja2PromptTemplate(template=template_or_path)
 
 
 class Jinja2PromptTemplate(PromptTemplate):
@@ -30,8 +38,10 @@ class Jinja2PromptTemplate(PromptTemplate):
         else:
             self.template = template
 
+        self.compiled_template = JINJA2_ENV.from_string(self.template)
+
     def embed_inputs(self, input_dict: dict[str, Any]) -> str:
-        return JINJA2_ENV.from_string(self.template).render(input_dict)
+        return self.compiled_template.render(input_dict)
 
     def __repr__(self) -> str:
         return f"Jinja2PromptTemplate(template={self.template!r})"

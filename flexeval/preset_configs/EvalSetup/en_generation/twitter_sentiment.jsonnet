@@ -27,19 +27,14 @@ local dataset_base_args = {
         num_shots: 4,
       },
     },
-    prompt_template: {
-      class_path: 'Jinja2PromptTemplate',
-      init_args: {
-        template: |||
-          Classify the sentiment of the following tweet.
-          {% for item in few_shot_data %}
-          Tweet: {{ item.text }}
-          Sentiment: `{{ item.references[0] }}`
-          {% endfor %}
-          Tweet: {{ text }}
-        ||| + 'Sentiment: `',
-      },
-    },
+    prompt_template: |||
+      Classify the sentiment of the following tweet.
+      {% for item in few_shot_data %}
+      Tweet: {{ item.text }}
+      Sentiment: `{{ item.references[0] }}`
+      {% endfor %}
+      Tweet: {{ text }}
+    ||| + 'Sentiment: `',
     metrics: [
       { class_path: 'ExactMatch' },
     ],

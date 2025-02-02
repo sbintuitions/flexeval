@@ -67,6 +67,19 @@ class LanguageModel:
         msg = f"{self.__class__.__name__} cannot compute perplexity."
         raise NotImplementedError(msg)
 
+    def batch_compute_chat_log_probs(
+        self, prompt_list: list[list[dict[str, str]]], response_list: list[dict[str, str]]
+    ) -> list[float]:
+        """
+        Compute log probabilities of the chat responses given the chat history.
+
+        Args:
+            prompt_list: A list of chat histories.
+            response_list: A list of chat responses.
+        """
+        msg = f"{self.__class__.__name__} cannot compute chat log probabilities."
+        raise NotImplementedError(msg)
+
     @final
     def complete_text(
         self,
@@ -117,6 +130,20 @@ class LanguageModel:
         if isinstance(text_list, str):
             return self.batch_compute_log_probs([text_list], prefix_list, stride)[0]
         return self.batch_compute_log_probs(text_list, prefix_list, stride)
+
+    @final
+    def compute_chat_log_probs(
+        self, prompt: list[dict[str, str]] | list[list[dict[str, str]]], response: dict[str, str] | list[dict[str, str]]
+    ) -> float | list[float]:
+        """
+        A wrapper for `batch_compute_chat_log_probs` that accepts a single chat prompt or a list of chat prompts.
+        This is a convenient method for end-users.
+        To implement computation logic, you should override `batch_compute_chat_log_probs` method.
+        """
+
+        if isinstance(prompt[0], dict):
+            return self.batch_compute_chat_log_probs([prompt], [response])[0]
+        return self.batch_compute_chat_log_probs(prompt, response)
 
 
 def normalize_stop_sequences(

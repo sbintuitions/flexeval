@@ -27,20 +27,21 @@ local dataset_base_args = {
         num_shots: 4,
       },
     },
-    prompt_template: {
-      class_path: 'Jinja2PromptTemplate',
-      init_args: {
-        template: |||
-          {% for item in few_shot_data %}
-          Q: {{ item.question }}
-          A: {{ item.references[0] }}
-          {% endfor %}
-          Q: {{ question }}
-        ||| + 'A:',
-      },
-    },
+    prompt_template: |||
+      {% for item in few_shot_data %}
+      Q: {{ item.question }}
+      A: {{ item.references[0] }}
+      {% endfor %}
+      Q: {{ question }}
+    ||| + 'A:',
     metrics: [
-      { class_path: 'ExactMatch', init_args: { processor: { class_path: 'RegexExtractor', init_args: { pattern: '-?[0-9.,]+' } } } },
+      {
+        class_path: 'ExactMatch',
+        init_args: {
+          lm_output_processor: { class_path: 'RegexExtractor', init_args: { pattern: '-?[0-9.,]+' } },
+          reference_processor: { class_path: 'RegexExtractor', init_args: { pattern: '-?[0-9.,]+' } },
+        },
+      },
     ],
     gen_kwargs: { max_new_tokens: 256, stop_sequences: ['Q:'] },
   },

@@ -26,21 +26,15 @@ local dataset_base_args = {
         num_shots: 2,
       },
     },
-    prompt_template: {
-      class_path: 'Jinja2PromptTemplate',
-      init_args: {
-
-        template: |||
-          {% for item in few_shot_data %}
-          Context: {{ item.context | trim }}
-          Question: {{ item.question }}
-          Answer: "{{ item.references[0] }}"
-          {% endfor %}
-          Context: {{ context | trim }}
-          Question: {{ question }}
-        ||| + 'Answer: "',
-      },
-    },
+    prompt_template: |||
+      {% for item in few_shot_data %}
+      Context: {{ item.context | trim }}
+      Question: {{ item.question }}
+      Answer: "{{ item.references[0] }}"
+      {% endfor %}
+      Context: {{ context | trim }}
+      Question: {{ question }}
+    ||| + 'Answer: "',
     metrics: [
       { class_path: 'CharF1' },
       { class_path: 'ExactMatch' },

@@ -6,6 +6,7 @@ from typing import Any
 
 import datasets
 from jinja2 import Template
+from smart_open import open
 
 from flexeval.core.utils.jinja2_utils import JINJA2_ENV
 
@@ -14,7 +15,6 @@ from .base import ChatDataset, ChatInstance
 
 class TemplateChatDataset(ChatDataset):
     """
-    A chat dataset using Hugging Face datasets.
     This class only supports single-turn chat.
 
     Args:

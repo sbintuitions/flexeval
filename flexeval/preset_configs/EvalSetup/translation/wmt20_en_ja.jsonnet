@@ -25,18 +25,13 @@ local dataset = {
         num_shots: 4,
       },
     },
-    prompt_template: {
-      class_path: 'Jinja2PromptTemplate',
-      init_args: {
-        template: |||
-          {% for item in few_shot_data %}
-          En: `{{ item.source }}`
-          Ja: `{{ item.references[0] }}`
-          {% endfor %}
-          En: `{{ source }}`
-        ||| + 'Ja: `',
-      },
-    },
+    prompt_template: |||
+      {% for item in few_shot_data %}
+      En: `{{ item.source }}`
+      Ja: `{{ item.references[0] }}`
+      {% endfor %}
+      En: `{{ source }}`
+    ||| + 'Ja: `',
     metrics: [
       { class_path: 'BLEU', init_args: { tokenize_option: 'ja-mecab' } },
     ],

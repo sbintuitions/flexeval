@@ -16,8 +16,20 @@
       },
     },
     metrics: [
-      { class_path: 'CharF1', init_args: { processor: { class_path: 'AIONormalizer' } } },
-      { class_path: 'ExactMatch', init_args: { processor: { class_path: 'AIONormalizer' } } },
+      {
+        class_path: 'CharF1',
+        init_args: {
+          lm_output_processor: { class_path: 'AIONormalizer' },
+          reference_processor: { class_path: 'AIONormalizer' },
+        },
+      },
+      {
+        class_path: 'ExactMatch',
+        init_args: {
+          lm_output_processor: { class_path: 'AIONormalizer' },
+          reference_processor: { class_path: 'AIONormalizer' },
+        },
+      },
     ],
     gen_kwargs: { max_new_tokens: 64, stop_sequences: ['」'], do_sample: false },
     batch_size: 1,
