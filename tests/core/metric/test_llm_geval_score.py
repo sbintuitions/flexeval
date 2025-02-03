@@ -28,24 +28,15 @@ class EchoBackLanguageModel(LanguageModel):
         self, prompt_list: list[list[dict[str, str]]], response_list: list[dict[str, str]]
     ) -> list[float]:
         text = prompt_list[0][-1]["content"]
-        if text.startswith("[A]"):
-            return [-2, -2, -2, -1, -2]
-        if text.startswith("[B]"):
-            return [-2, -1, -2, -2, -2]
-        if text.startswith("[C]"):
-            return [-2, -2, -1, -2, -2]
-
-        # For OpenAI models, we can obtain 20 or less tokens and their logprobs.
-        # This simulates all of the valid scores are not obtained from logprob results.
-        return [None, None, None, None, None]
+        return self.batch_compute_log_probs([text])
 
 
 @pytest.mark.parametrize(
     ("evaluator_logprobs", "valid_score_range", "expected_score"),
     [
-        ({"5": 0}, None, 0, 5),
-        ({"5": 0}, (0, 3), 0, None),
-        ({}, None, 0, None),
+        ({"5": 0}, None, 5),
+        ({"5": 0}, (0, 3), None),
+        ({}, None, None),
         ({"0": -0.5, "1": -1.2, "2": -2.8, "3": -6.6}, (0, 3), 0.44014590056102276),
     ],
 )
