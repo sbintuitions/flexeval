@@ -13,6 +13,7 @@ def is_openai_enabled() -> bool:
 def completion_lm() -> OpenAICompletionAPI:
     return OpenAICompletionAPI(model="gpt-3.5-turbo-instruct")
 
+
 @pytest.fixture(scope="module")
 def chat_lm() -> OpenAIChatAPI:
     return OpenAIChatAPI(model="gpt-3.5-turbo")

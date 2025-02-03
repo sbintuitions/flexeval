@@ -18,7 +18,7 @@ class LiteLLMChatAPI(OpenAIChatAPI):
     See also: https://docs.litellm.ai/docs/providers
 
     Args:
-        model: The name of the model to use. e.g. 'openai/gpt-3.5-turbo', 
+        model: The name of the model to use. e.g. 'openai/gpt-3.5-turbo',
         default_gen_kwargs: Default generation kwargs to use when calling the API.
     """
 

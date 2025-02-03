@@ -119,7 +119,7 @@ class OpenAIChatAPI(LanguageModel):
                     stop=stop_sequences,
                     **gen_kwargs,
                 ),
-                empty_response=self.empty_response
+                empty_response=self.empty_response,
             )
             for ms in messages_list
         ]
@@ -225,7 +225,7 @@ class OpenAICompletionAPI(LanguageModel):
                     stop=stop_sequences,
                     **gen_kwargs,
                 ),
-                empty_response=self.empty_response
+                empty_response=self.empty_response,
             )
             for ms in prompt_list
         ]
