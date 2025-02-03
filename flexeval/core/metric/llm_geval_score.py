@@ -16,7 +16,7 @@ from .llm_score import prepare_chat_input_for_evaluator, prepare_text_input_for_
 
 
 def calculate_weighted_average(
-    evaluator_logprobs: dict[str, float | None], valid_score_range: tuple[int, int] | None
+    evaluator_logprobs: dict[str, float | None], valid_score_range: tuple[int, int] | None, prob_threshold: float = 0
 ) -> tuple[float | None, dict[int, float]]:
     """For each token and its logprob, check whether the token in valid_score_range
     and calculate weighted score among valid scores and their logprobs.
@@ -24,6 +24,8 @@ def calculate_weighted_average(
     Args:
         evaluator_logprobs: Keys are valid tokens, and values are their logprobs.
         valid_score_range: The scope of scores. If None, any of the score is accepted.
+        prob_threshold: For considering low probability among all of valid scores,
+            return None (invalid) if sum of the all probability among vaild scores is less than this value.
 
     Return None if all of the tokens are not valid as score.
     """
@@ -44,6 +46,8 @@ def calculate_weighted_average(
 
     if len(score_prob_dict) == 0:
         return None, score_prob_dict
+    if sum(score_prob_dict.values()) < prob_threshold:
+        return None
 
     return average(list(score_prob_dict.keys()), weights=list(score_prob_dict.values())), score_prob_dict
 
@@ -136,38 +140,54 @@ class LLMGEvalScore(Metric):
         disable_tqdm: Whether to disable the progress bar.
         category_key: A key to create category-wise mean score.
             The category key is expected to be in task inputs.
+        prob_threshold: For considering low probability among all of valid scores,
+            return None (invalid) if sum of the all probability among vaild scores is less than this value.
 
     Examples:
         >>> from flexeval import LLMGEvalScore, HuggingFaceLM, Jinja2PromptTemplate
         >>> language_model = HuggingFaceLM("Qwen/Qwen2.5-0.5B-Instruct")
         >>> template = "Evaluate the quality of this text.\\n`{{ lm_output }}`\\nOutput only a number from 1 to 5."
         >>> prompt_template = Jinja2PromptTemplate(template)
-        >>> llm_score = LLMGEvalScore(language_model, prompt_template, [1,5])
+        >>> llm_score = LLMGEvalScore(language_model, prompt_template, [1, 5])
         >>> lm_outputs = ["Hello, world!", "Good morning!"]
         >>> llm_score.evaluate(lm_outputs)
         MetricResult(
-            summary={'llm_geval_score': 3.9109915840526117, 'num_failed_score_parses': 0},
+            summary={'llm_geval_score': 1.4399980931290486, 'num_failed_score_parses': 0},
             instance_details=[
                 {
-                    'llm_geval_score': 3.580269080315562,
+                    'llm_geval_score': 1.418920817254956,
                     'llm_geval_score_input': 'Evaluate the quality of this text...',
                     'llm_geval_score_logprobs': {
-                        '1': -95.71658325195312,
-                        '2': -94.330322265625,
-                        '3': -94.506103515625,
-                        '4': -94.219970703125,
-                        '5': -93.872802734375
+                        '1': -4.0625,
+                        '2': -7.75,
+                        '3': -8.25,
+                        '4': -8.0625,
+                        '5': -6.4375
+                    },
+                    'llm_geval_score_probs': {
+                        1: 0.017205950425851383,
+                        2: 0.00043074254057568753,
+                        3: 0.00026125855730166754,
+                        4: 0.000315137974737356,
+                        5: 0.0016004026902445643
                     }
                 },
                 {
-                    'llm_geval_score': 4.241714087789661,
+                    'llm_geval_score': 1.461075369003141
                     'llm_geval_score_input': 'Evaluate the quality of this text...',
                     'llm_geval_score_logprobs': {
-                        '1': -99.65960693359375,
-                        '2': -97.5340576171875,
-                        '3': -97.42755126953125,
-                        '4': -97.17465209960938,
-                        '5': -95.7857666015625
+                        '1': -4.25,
+                        '2': -8.1875,
+                        '3': -8.375,
+                        '4': -8.125,
+                        '5': -6.5
+                    },
+                    'llm_geval_score_probs': {
+                        1: 0.014264233908999256,
+                        2: 0.00027810828659249914,
+                        3: 0.00023055986759244163,
+                        4: 0.0002960447300568554,
+                        5: 0.0015034391929775724
                     }
                 }
             ]
@@ -181,14 +201,16 @@ class LLMGEvalScore(Metric):
         valid_score_range: tuple[int, int],
         disable_tqdm: bool = False,
         category_key: str | None = None,
+        prob_threshold: float = 0,
     ) -> None:
         self.language_model = language_model
         self.prompt_template = prompt_template
         self.disable_tqdm = disable_tqdm
         self.valid_score_range = valid_score_range
         self.category_key = category_key
+        self.prob_threshold = prob_threshold
 
-        self.valid_labels = [str(score) for score in range(valid_score_range[0], valid_score_range[1] + 2)]
+        self.valid_labels = [str(score) for score in range(valid_score_range[0], valid_score_range[1] + 1)]
 
     def evaluate(
         self,
@@ -218,6 +240,7 @@ class LLMGEvalScore(Metric):
             evaluator_score, evaluator_probs = calculate_weighted_average(
                 evaluator_logprobs,
                 self.valid_score_range,
+                self.prob_threshold,
             )
             if evaluator_score is None:
                 logger.warning(f"Failed to parse score from evaluator logprobs: {evaluator_logprobs}")
@@ -270,6 +293,8 @@ class ChatLLMGEvalScore(Metric):
         disable_tqdm: Whether to disable the progress bar.
         category_key: A key to create category-wise mean score.
             The category key is expected to be in task inputs.
+        prob_threshold: For considering low probability among all of valid scores,
+            return None (invalid) if sum of the all probability among vaild scores is less than this value.
 
 
     Examples:
@@ -278,38 +303,52 @@ class ChatLLMGEvalScore(Metric):
         >>> template = "Evaluate the quality of this text.\\n`{{ lm_output }}`\\nOutput only a number from 1 to 5."
         >>> prompt_template = Jinja2PromptTemplate(template)
         >>> system_message = "This is the system message."
-        >>> llm_score = ChatLLMGEvalScore(language_model, prompt_template, [1,5], system_message)
+        >>> llm_score = ChatLLMGEvalScore(language_model, prompt_template, [1, 5], system_message)
         >>> lm_outputs = ["Hello, world!", "Good morning!"]
         >>> llm_score.evaluate(lm_outputs)
         MetricResult(
-            summary={'llm_geval_score': 4.252030918369018, 'num_failed_score_parses': 0},
+            summary={'llm_geval_score': 1.179980414173022, 'num_failed_score_parses': 0},
             instance_details=[
                 {
-                    'llm_geval_score': 4.220479925250702,
+                    'llm_geval_score': 1.1509989197179789,
                     'llm_geval_score_input': [
                         {'role': 'system', 'content': 'This is the system message.'},
                         {'role': 'user', 'content': 'Evaluate the quality of this text...'}
                     ],
                     'llm_geval_score_logprobs': {
-                        '1': -165.50238037109375,
-                        '2': -165.77108764648438,
-                        '3': -163.51712036132812,
-                        '4': -164.01840209960938,
-                        '5': -162.56027221679688
+                        '1': -0.06977498531341553,
+                        '2': -3.687819004058838,
+                        '3': -3.937819480895996,
+                        '4': -5.812800884246826,
+                        '5': -3.937807083129883
+                    },
+                    'llm_geval_score_probs': {
+                        1: 0.932603645815178,
+                        2: 0.02502652531327666,
+                        3: 0.01949066821765914,
+                        4: 0.002989046364034347,
+                        5: 0.019490909859903
                     }
                 },
                 {
-                    'llm_geval_score': 4.283581911487334,
+                    'llm_geval_score': 1.208961908628065,
                     'llm_geval_score_input': [
                         {'role': 'system', 'content': 'This is the system message.'},
                         {'role': 'user', 'content': 'Evaluate the quality of this text...'}
                     ],
                     'llm_geval_score_logprobs': {
-                        '1': -173.6418914794922,
-                        '2': -173.9242706298828,
-                        '3': -172.4905242919922,
-                        '4': -172.95521545410156,
-                        '5': -171.043701171875
+                        '1': -0.13043057918548584,
+                        '2': -2.8754935264587402,
+                        '3': -3.000467538833618,
+                        '4': -4.750283241271973,
+                        '5': -5.000345706939697
+                    },
+                    'llm_geval_score_probs': {
+                        1: 0.8777174226922144,
+                        2: 0.05638830351569556,
+                        3: 0.04976379642068341,
+                        4: 0.008649245032977617,
+                        5: 0.006735618046639277
                     }
                 }
             ])
@@ -323,6 +362,7 @@ class ChatLLMGEvalScore(Metric):
         system_message: str | PromptTemplate | None = None,
         disable_tqdm: bool = False,
         category_key: str | None = None,
+        prob_threshold: float = 0,
     ) -> None:
         self.language_model = language_model
         self.prompt_template = prompt_template
@@ -362,6 +402,7 @@ class ChatLLMGEvalScore(Metric):
             evaluator_score, evaluator_probs = calculate_weighted_average(
                 evaluator_logprobs,
                 self.valid_score_range,
+                self.prob_threshold,
             )
             if evaluator_score is None:
                 logger.warning(f"Failed to parse score from evaluator logprobs: {evaluator_logprobs}")
