@@ -47,7 +47,7 @@ def calculate_weighted_average(
     if len(score_prob_dict) == 0:
         return None, score_prob_dict
     if sum(score_prob_dict.values()) < prob_threshold:
-        return None
+        return None, score_prob_dict
 
     return average(list(score_prob_dict.keys()), weights=list(score_prob_dict.values())), score_prob_dict
 
@@ -63,7 +63,7 @@ def summarize_evaluator_geval_scores(
 
     # compute overall mean score
     all_valid_scores: list[int] = [s for s in evaluator_score_list if s is not None]
-    llm_score = sum(all_valid_scores) / len(all_valid_scores)
+    llm_score = None if len(all_valid_scores) == 0 else sum(all_valid_scores) / len(all_valid_scores)
     num_failed_score_parses = len(evaluator_score_list) - len(all_valid_scores)
     summary = {"llm_geval_score": llm_score, "num_failed_score_parses": num_failed_score_parses}
 
@@ -77,7 +77,7 @@ def summarize_evaluator_geval_scores(
 
     category2mean_score: dict[str, float] = {}
     for category, valid_scores in category2valid_scores.items():
-        category2mean_score[category] = sum(valid_scores) / len(valid_scores)
+        category2mean_score[category] = None if len(valid_scores) == 0 else sum(valid_scores) / len(valid_scores)
 
     for category, mean_score in category2mean_score.items():
         summary[f"llm_geval_score/{category}"] = mean_score
@@ -261,7 +261,6 @@ class LLMGEvalScore(Metric):
                     "llm_geval_score_input": eval_in,
                     "llm_geval_score_logprobs": eval_logprobs,
                     "llm_geval_score_probs": eval_probs,
-
                 }
                 for eval_score, eval_in, eval_logprobs, eval_probs in zip(
                     evaluator_score_list,
@@ -423,7 +422,6 @@ class ChatLLMGEvalScore(Metric):
                     "llm_geval_score_input": eval_in,
                     "llm_geval_score_logprobs": eval_logprobs,
                     "llm_geval_score_probs": eval_probs,
-
                 }
                 for eval_score, eval_in, eval_logprobs, eval_probs in zip(
                     evaluator_score_list,

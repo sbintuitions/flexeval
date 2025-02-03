@@ -13,11 +13,11 @@ class EchoBackLanguageModel(LanguageModel):
         prefix_list: list[str] | None = None,
         stride: int | None = None,
     ) -> list[float]:
-        if text_list[0].startswith("[A]"):
+        if prefix_list[0].startswith("[A]"):
             return [-2, -2, -2, -1, -2]
-        if text_list[0].startswith("[B]"):
+        if prefix_list[0].startswith("[B]"):
             return [-2, -1, -2, -2, -2]
-        if text_list[0].startswith("[C]"):
+        if prefix_list[0].startswith("[C]"):
             return [-2, -2, -1, -2, -2]
 
         # For OpenAI models, we can obtain 20 or less tokens and their logprobs.
@@ -28,7 +28,7 @@ class EchoBackLanguageModel(LanguageModel):
         self, prompt_list: list[list[dict[str, str]]], response_list: list[dict[str, str]]
     ) -> list[float]:
         text = prompt_list[0][-1]["content"]
-        return self.batch_compute_log_probs([text])
+        return self.batch_compute_log_probs([], [text])
 
 
 @pytest.mark.parametrize(
@@ -47,7 +47,7 @@ def test_calculate_weighted_average(
     prob_threshold: float,
     expected_score: float | None,
 ) -> None:
-    score = calculate_weighted_average(evaluator_logprobs, valid_score_range, prob_threshold)
+    score, _ = calculate_weighted_average(evaluator_logprobs, valid_score_range, prob_threshold)
     assert score == expected_score
 
 
