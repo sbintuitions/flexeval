@@ -16,7 +16,7 @@ from .llm_score import prepare_chat_input_for_evaluator, prepare_text_input_for_
 
 
 def calculate_weighted_average(
-    evaluator_logprobs: dict[str, float | None], valid_score_range: tuple[int, int] | None, prob_threshold: float = 0
+    evaluator_logprobs: dict[str, float | None], valid_score_range: tuple[int, int] | None
 ) -> tuple[float | None, dict[int, float]]:
     """For each token and its logprob, check whether the token in valid_score_range
     and calculate weighted score among valid scores and their logprobs.
@@ -24,8 +24,6 @@ def calculate_weighted_average(
     Args:
         evaluator_logprobs: Keys are valid tokens, and values are their logprobs.
         valid_score_range: The scope of scores. If None, any of the score is accepted.
-        prob_threshold: For considering low probability among all of valid scores,
-            return None (invalid) if sum of the all probability among vaild scores is less than this value.
 
     Return None if all of the tokens are not valid as score.
     """
@@ -45,9 +43,7 @@ def calculate_weighted_average(
         score_prob_dict[parsed_score] = exp(logprob)
 
     if len(score_prob_dict) == 0:
-        return None
-    if sum(score_prob_dict.values()) < prob_threshold:
-        return None
+        return None, score_prob_dict
 
     return average(list(score_prob_dict.keys()), weights=list(score_prob_dict.values())), score_prob_dict
 
@@ -140,8 +136,6 @@ class LLMGEvalScore(Metric):
         disable_tqdm: Whether to disable the progress bar.
         category_key: A key to create category-wise mean score.
             The category key is expected to be in task inputs.
-        prob_threshold: For considering low probability among all of valid scores,
-            return None (invalid) if sum of the all probability among vaild scores is less than this value.
 
     Examples:
         >>> from flexeval import LLMGEvalScore, HuggingFaceLM, Jinja2PromptTemplate
@@ -187,14 +181,12 @@ class LLMGEvalScore(Metric):
         valid_score_range: tuple[int, int],
         disable_tqdm: bool = False,
         category_key: str | None = None,
-        prob_threshold: float = 0,
     ) -> None:
         self.language_model = language_model
         self.prompt_template = prompt_template
         self.disable_tqdm = disable_tqdm
         self.valid_score_range = valid_score_range
         self.category_key = category_key
-        self.prob_threshold = prob_threshold
 
         self.valid_labels = [str(score) for score in range(valid_score_range[0], valid_score_range[1] + 2)]
 
@@ -226,7 +218,6 @@ class LLMGEvalScore(Metric):
             evaluator_score, evaluator_probs = calculate_weighted_average(
                 evaluator_logprobs,
                 self.valid_score_range,
-                self.prob_threshold,
             )
             if evaluator_score is None:
                 logger.warning(f"Failed to parse score from evaluator logprobs: {evaluator_logprobs}")
@@ -279,8 +270,6 @@ class ChatLLMGEvalScore(Metric):
         disable_tqdm: Whether to disable the progress bar.
         category_key: A key to create category-wise mean score.
             The category key is expected to be in task inputs.
-        prob_threshold: For considering low probability among all of valid scores,
-            return None (invalid) if sum of the all probability among vaild scores is less than this value.
 
 
     Examples:
@@ -334,7 +323,6 @@ class ChatLLMGEvalScore(Metric):
         system_message: str | PromptTemplate | None = None,
         disable_tqdm: bool = False,
         category_key: str | None = None,
-        prob_threshold: float = 0,
     ) -> None:
         self.language_model = language_model
         self.prompt_template = prompt_template
@@ -374,7 +362,6 @@ class ChatLLMGEvalScore(Metric):
             evaluator_score, evaluator_probs = calculate_weighted_average(
                 evaluator_logprobs,
                 self.valid_score_range,
-                self.prob_threshold,
             )
             if evaluator_score is None:
                 logger.warning(f"Failed to parse score from evaluator logprobs: {evaluator_logprobs}")
