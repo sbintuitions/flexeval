@@ -17,7 +17,7 @@ from .llm_score import prepare_chat_input_for_evaluator, prepare_text_input_for_
 
 def calculate_weighted_average(
     evaluator_logprobs: dict[str, float | None], valid_score_range: tuple[int, int] | None, prob_threshold: float = 0
-) -> float | None:
+) -> tuple[float | None, dict[int, float]]:
     """For each token and its logprob, check whether the token in valid_score_range
     and calculate weighted score among valid scores and their logprobs.
 
@@ -29,8 +29,7 @@ def calculate_weighted_average(
 
     Return None if all of the tokens are not valid as score.
     """
-    score_list: list[int] = []
-    prob_list: list[float] = []
+    score_prob_dict: dict[int, float] = {}
     for token, logprob in evaluator_logprobs.items():
         if logprob is None:
             continue
@@ -43,16 +42,14 @@ def calculate_weighted_average(
         if valid_score_range and not valid_score_range[0] <= parsed_score <= valid_score_range[1]:
             continue
 
-        probability = exp(logprob)
-        score_list.append(parsed_score)
-        prob_list.append(probability)
+        score_prob_dict[parsed_score] = exp(logprob)
 
-    if len(score_list) == 0:
+    if len(score_prob_dict) == 0:
         return None
-    if sum(prob_list) < prob_threshold:
+    if sum(score_prob_dict.values()) < prob_threshold:
         return None
 
-    return average(score_list, weights=prob_list)
+    return average(list(score_prob_dict.keys()), weights=list(score_prob_dict.values())), score_prob_dict
 
 
 def summarize_evaluator_geval_scores(
@@ -112,9 +109,9 @@ def generate_evaluation_logprobs(
         for evaluator_input in evaluator_input_list:
             if isinstance(evaluator_input, str):
                 evaluator_logprobs = language_model.batch_compute_log_probs(
+                    valid_labels,  # for openai models, len(valid_labels) <= 20 due to constraint
                     [evaluator_input]
                     * len(valid_labels),  # we have to provide len(valid_labels) same inputs for generate logprob
-                    valid_labels,  # for openai models, len(valid_labels) <= 20 due to constraint
                 )
             else:
                 evaluator_logprobs = language_model.batch_compute_chat_log_probs(
@@ -199,7 +196,7 @@ class LLMGEvalScore(Metric):
         self.category_key = category_key
         self.prob_threshold = prob_threshold
 
-        self.valid_labels = [str(score) for score in range(valid_score_range[0], valid_score_range[1] + 1)]
+        self.valid_labels = [str(score) for score in range(valid_score_range[0], valid_score_range[1] + 2)]
 
     def evaluate(
         self,
@@ -224,8 +221,9 @@ class LLMGEvalScore(Metric):
         )
 
         evaluator_score_list: list[int | None] = []
+        evaluator_probs_list: list[dict[int, float]] = []
         for evaluator_logprobs in evaluator_logprobs_list:
-            evaluator_score = calculate_weighted_average(
+            evaluator_score, evaluator_probs = calculate_weighted_average(
                 evaluator_logprobs,
                 self.valid_score_range,
                 self.prob_threshold,
@@ -233,6 +231,7 @@ class LLMGEvalScore(Metric):
             if evaluator_score is None:
                 logger.warning(f"Failed to parse score from evaluator logprobs: {evaluator_logprobs}")
             evaluator_score_list.append(evaluator_score)
+            evaluator_probs_list.append(evaluator_probs)
 
         summary = summarize_evaluator_geval_scores(
             evaluator_score_list,
@@ -247,11 +246,14 @@ class LLMGEvalScore(Metric):
                     "llm_geval_score": eval_score,
                     "llm_geval_score_input": eval_in,
                     "llm_geval_score_logprobs": eval_logprobs,
+                    "llm_geval_score_probs": eval_probs,
+
                 }
-                for eval_score, eval_in, eval_logprobs in zip(
+                for eval_score, eval_in, eval_logprobs, eval_probs in zip(
                     evaluator_score_list,
                     evaluator_input_list,
                     evaluator_logprobs_list,
+                    evaluator_probs_list,
                 )
             ],
         )
@@ -367,8 +369,9 @@ class ChatLLMGEvalScore(Metric):
         )
 
         evaluator_score_list: list[int | None] = []
+        evaluator_probs_list: list[dict[int, float]] = []
         for evaluator_logprobs in evaluator_logprobs_list:
-            evaluator_score = calculate_weighted_average(
+            evaluator_score, evaluator_probs = calculate_weighted_average(
                 evaluator_logprobs,
                 self.valid_score_range,
                 self.prob_threshold,
@@ -376,6 +379,7 @@ class ChatLLMGEvalScore(Metric):
             if evaluator_score is None:
                 logger.warning(f"Failed to parse score from evaluator logprobs: {evaluator_logprobs}")
             evaluator_score_list.append(evaluator_score)
+            evaluator_probs_list.append(evaluator_probs)
 
         summary = summarize_evaluator_geval_scores(
             evaluator_score_list,
@@ -390,11 +394,14 @@ class ChatLLMGEvalScore(Metric):
                     "llm_geval_score": eval_score,
                     "llm_geval_score_input": eval_in,
                     "llm_geval_score_logprobs": eval_logprobs,
+                    "llm_geval_score_probs": eval_probs,
+
                 }
-                for eval_score, eval_in, eval_logprobs in zip(
+                for eval_score, eval_in, eval_logprobs, eval_probs in zip(
                     evaluator_score_list,
                     evaluator_input_list,
                     evaluator_logprobs_list,
+                    evaluator_probs_list,
                 )
             ],
         )
