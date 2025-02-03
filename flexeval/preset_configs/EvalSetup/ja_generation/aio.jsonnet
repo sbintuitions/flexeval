@@ -27,7 +27,7 @@ local dataset_base_args = {
         class_path: 'CharF1',
         init_args: {
           lm_output_processor: [
-            { class_path: 'RegexExtractor', init_args: { pattern: '^(?:.*</think>\s*)?(.*)$' } },
+            { class_path: 'RegexExtractor', init_args: { pattern: '^(?:.*</think>\\s*)?(.*)$' } },
             { class_path: 'AIONormalizer' }
           ],
           reference_processor: { class_path: 'AIONormalizer' },
@@ -37,7 +37,7 @@ local dataset_base_args = {
         class_path: 'ExactMatch',
         init_args: {
           lm_output_processor: [
-            { class_path: 'RegexExtractor', init_args: { pattern: '^(?:.*</think>\s*)?(.*)$' } },
+            { class_path: 'RegexExtractor', init_args: { pattern: '^(?:.*</think>\\s*)?(.*)$' } },
             { class_path: 'AIONormalizer' },
           ],
           reference_processor: { class_path: 'AIONormalizer' },

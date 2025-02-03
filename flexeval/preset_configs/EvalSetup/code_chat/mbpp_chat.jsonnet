@@ -40,7 +40,7 @@ local dataset_base_args = {
         class_path: 'CodeEval',
         init_args: {
           lm_output_processor: [
-            { class_path: 'RegexExtractor', init_args: { pattern: '^(?:.*</think>\s*)?(.*)$ } },
+            { class_path: 'RegexExtractor', init_args: { pattern: '^(?:.*</think>\\s*)?(.*)$' } },
             { class_path: 'RegexExtractor', init_args: { pattern: '```python\n(.*?)\n```' } },
           ],
         },

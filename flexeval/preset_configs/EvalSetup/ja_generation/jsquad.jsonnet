@@ -63,13 +63,13 @@ local template_ = |||
       {
         class_path: 'CharF1',
         init_args: {
-          lm_output_processor: { class_path: 'RegexExtractor', init_args: { pattern: '<think>.*?</think>|(?<=</think>).*|^.*' } },
+          lm_output_processor: { class_path: 'RegexExtractor', init_args: { pattern: '^(?:.*</think>\\s*)?(.*)$' } },
         },
       },
       {
         class_path: 'ExactMatch',
         init_args: {
-          lm_output_processor: { class_path: 'RegexExtractor', init_args: { pattern: '^(?:.*</think>\s*)?(.*)$' } },
+          lm_output_processor: { class_path: 'RegexExtractor', init_args: { pattern: '^(?:.*</think>\\s*)?(.*)$' } },
         },
       },
     ],

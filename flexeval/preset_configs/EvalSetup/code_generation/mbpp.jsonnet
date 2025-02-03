@@ -53,7 +53,7 @@ local dataset_base_args = {
         class_path: 'CodeEval',
         init_args: {
           code_template: '{{ prompt | replace("    ", "\t") }}{{ lm_output }}',
-          lm_output_processor: { class_path: 'RegexExtractor', init_args: { pattern: '^(?:.*</think>\s*)?(.*)$' } },
+          lm_output_processor: { class_path: 'RegexExtractor', init_args: { pattern: '^(?:.*</think>\\s*)?(.*)$' } },
         },
       },
     ],
