@@ -46,16 +46,23 @@ def test_batch_compute_chat_log_probs(chat_lm: VLLM) -> None:
         [[{"role": "user", "content": "Hello, how are you?"}]],
         [{"role": "assistant", "content": "Good."}],
     )
-    log_probs_unnatural = chat_lm.batch_compute_chat_log_probs(
+    log_probs_unnatural_lang = chat_lm.batch_compute_chat_log_probs(
         [[{"role": "user", "content": "Hello, how are you?"}]],
         [{"role": "assistant", "content": "!?本日は晴天ナリ."}],
+    )
+    log_probs_unnatural_ord = chat_lm.batch_compute_chat_log_probs(
+        [[{"role": "user", "content": "Good."}]],
+        [{"role": "assistant", "content": "Hello, how are you?"}],
     )
 
     assert len(log_probs_natural) == 1
     assert isinstance(log_probs_natural[0], float)
-    assert len(log_probs_unnatural) == 1
-    assert isinstance(log_probs_unnatural[0], float)
-    assert log_probs_natural[0] > log_probs_unnatural[0]
+    assert len(log_probs_unnatural_lang) == 1
+    assert isinstance(log_probs_unnatural_lang[0], float)
+    assert len(log_probs_unnatural_ord) == 1
+    assert isinstance(log_probs_unnatural_ord[0], float)
+    assert log_probs_natural[0] > log_probs_unnatural_lang[0]
+    assert log_probs_natural[0] > log_probs_unnatural_ord[0]
 
 
 @pytest.mark.skipif(not is_vllm_enabled(), reason="vllm library is not installed")
