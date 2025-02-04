@@ -41,7 +41,7 @@ local dataset_base_args = {
       仮説：「{{ sentence2 }}」
     ||| + '関係：「',
     metrics: [
-      { class_path: 'ExactMatch' }
+      { class_path: 'ExactMatch' },
     ],
     gen_kwargs: { max_new_tokens: 6, stop_sequences: ['前提', '」'] },
   },
