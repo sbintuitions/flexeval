@@ -32,17 +32,19 @@ class EchoBackLanguageModel(LanguageModel):
 
 
 @pytest.mark.parametrize(
-    ("evaluator_logprobs", "valid_score_range", "expected_score"),
+    ("evaluator_logprobs", "valid_score_range", "prob_threshold", "expected_score"),
     [
-        ({"5": 0}, None, 5),
-        ({"5": 0}, (0, 3), None),
-        ({}, None, None),
-        ({"0": -0.5, "1": -1.2, "2": -2.8, "3": -6.6}, (0, 3), 0.44014590056102276),
+        ({"5": 0}, None, 0, 5),
+        ({"5": 0}, (0, 3), 0, None),
+        ({}, None, 0, None),
+        ({"0": -0.5, "1": -1.2, "2": -2.8, "3": -6.6}, (0, 3), 0, 0.44014590056102276),
+        ({"0": -0.5, "1": -1.2, "2": -2.8, "3": -6.6}, (0, 3), 0.99, None),  # sum of probs = 0.9698...
     ],
 )
 def test_calculate_weighted_average(
     evaluator_logprobs: dict[str, float],
     valid_score_range: tuple[int, int] | None,
+    prob_threshold: float,
     expected_score: float | None,
 ) -> None:
     score = calculate_weighted_average(evaluator_logprobs, valid_score_range, prob_threshold)
