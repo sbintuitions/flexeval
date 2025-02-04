@@ -7,8 +7,9 @@ from flexeval.core.metric.string_processor import RegexExtractor
     ("before", "after"),
     [
         ("<think>reasoning</think>answer", "answer"),
-        ("<think>\nOkay, so let's think...\nThis question is...\n...\n</think>\nanswer", "answer"),
         ("<think>Okay, so let's think...\nThis question is...\n...</think>answer", "answer"),
+        ("<think>\nOkay, so let's think...\nThis question is...\n...\n</think>\nanswer", "answer"),
+        ("<think>\n\nOkay, so let's think...\nThis question is...\n...\n</think>\n\nanswer", "answer"),
         ("Okay, so let's think...\nThis question is...\n...\n</think>\nanswer", "answer"),
         ("answer", "answer"),
         ("", ""),

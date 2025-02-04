@@ -35,15 +35,7 @@ local dataset_base_args = {
       問題: {{ question }}
     ||| + 'ステップごとの答え:',
     metrics: [
-      {
-        class_path: 'ExactMatch',
-        init_args: {
-          lm_output_processor: [
-            { class_path: 'RegexExtractor', init_args: { pattern: '^(?:.*</think>\\s*)?(.*)$' } },
-            { class_path: 'RegexExtractor', init_args: { pattern: '-?[0-9.,]+' } },
-          ],
-        },
-      },
+      { class_path: 'ExactMatch', init_args: { lm_output_processor: { class_path: 'RegexExtractor', init_args: { pattern: '-?[0-9.,]+' } } } },
     ],
     gen_kwargs: { max_new_tokens: 256, stop_sequences: ['問題:'] },
   },

@@ -19,13 +19,7 @@ References:
     },
     prompt_template: '{{ prompt }}',
     metrics: [
-      {
-        class_path: 'CodeEval',
-        init_args: {
-          code_template: '{{ prompt }}{{ lm_output }}',
-          lm_output_processor: { class_path: 'RegexExtractor', init_args: { pattern: '^(?:.*</think>\\s*)?(.*)$' } },
-        },
-      },
+      { class_path: 'CodeEval', init_args: { code_template: '{{ prompt }}{{ lm_output }}' } },
     ],
     gen_kwargs: { max_new_tokens: 512, stop_sequences: ['\nclass', '\ndef', '\n#', '\n@', '\nprint', '\nif', '\n```'] },
     batch_size: 4,

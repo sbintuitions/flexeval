@@ -61,12 +61,7 @@ local template_ = |||
     eval_dataset: dataset_base_args,
     prompt_template: template_,
     metrics: [
-      {
-        class_path: 'ExactMatch',
-        init_args: {
-          lm_output_processor: { class_path: 'RegexExtractor', init_args: { pattern: '^(?:.*</think>\\s*)?(.*)$' }},
-        },
-      },
+      { class_path: 'ExactMatch' },
     ],
     gen_kwargs: { max_new_tokens: 64, stop_sequences: ['\n\n'] },
     batch_size: 1,

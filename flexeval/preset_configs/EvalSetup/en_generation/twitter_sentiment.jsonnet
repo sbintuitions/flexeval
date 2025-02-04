@@ -36,12 +36,7 @@ local dataset_base_args = {
       Tweet: {{ text }}
     ||| + 'Sentiment: `',
     metrics: [
-      {
-        class_path: 'ExactMatch',
-        init_args: {
-          lm_output_processor: { class_path: 'RegexExtractor', init_args: { pattern: '^(?:.*</think>\\s*)?(.*)$' } },
-        },
-      },
+      { class_path: 'ExactMatch' },
     ],
     gen_kwargs: { max_new_tokens: 8, stop_sequences: ['`'] },
   },
