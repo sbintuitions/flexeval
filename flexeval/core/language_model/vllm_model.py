@@ -269,7 +269,7 @@ class VLLM(LanguageModel):
             )
             prompt_as_string.append(prompt_as_string_i)
             response_as_string.append(response_as_string_i)
-        return self.batch_compute_log_probs(response_as_string, prefix_list=prompt_as_string)
+        return self.batch_compute_log_probs(prompt_as_string, prefix_list=response_as_string)
 
     def __repr__(self) -> str:
         return f"VLLM(model_name={self.model_name})"
