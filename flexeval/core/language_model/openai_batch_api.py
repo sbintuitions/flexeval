@@ -14,6 +14,7 @@ from openai import AsyncOpenAI
 from openai.types import Batch
 
 from .base import LanguageModel
+from .openai_api import remove_duplicates_from_prompt_list
 
 MAX_NUM_TRIALS = 3
 
@@ -145,12 +146,14 @@ class OpenAIChatBatchAPI(LanguageModel):
         self,
         messages_list: list[list[dict[str, str]]],
         **kwargs,
-    ) -> list[str]:
+    ) -> list[str, Any]:
         custom_id_2_message: dict[str, list[dict[str, str]]] = {
             str(uuid.uuid4()): messages for messages in messages_list
         }
         # The response will be an empty string if the API produces an error.
-        custom_id_2_response: dict[str, str] = {custom_id: "" for custom_id in custom_id_2_message}
+        custom_id_2_response: dict[str, str | list[dict[str, str]]] = {
+            custom_id: "" for custom_id in custom_id_2_message
+        }
         exec_cnt = 1
 
         while len(custom_id_2_message) > 0:
@@ -192,7 +195,7 @@ class OpenAIChatBatchAPI(LanguageModel):
 
                 custom_id = data_i["custom_id"]
                 custom_id_2_message.pop(custom_id)
-                custom_id_2_response[custom_id] = data_i["response"]["body"]["choices"][0]["message"]["content"]
+                custom_id_2_response[custom_id] = data_i["response"]["body"]
 
         # The remaining elements are all those that failed to complete request.
         if custom_id_2_message:
@@ -209,19 +212,24 @@ class OpenAIChatBatchAPI(LanguageModel):
         **kwargs,
     ) -> list[str]:
         messages_list = [[{"role": "user", "content": text}] for text in text_list]
-        return self._execute_batch_requests(
+        api_responses = self._execute_batch_requests(
             messages_list,
             stop_sequences=stop_sequences,
             max_new_tokens=max_new_tokens,
             **kwargs,
         )
+        return [res["choices"][0]["message"]["content"] for res in api_responses]
 
     def batch_generate_chat_response(
         self,
         chat_messages_list: list[list[dict[str, str]]],
         **kwargs,
     ) -> list[str]:
-        return self._execute_batch_requests(chat_messages_list, **kwargs)
+        api_responses = self._execute_batch_requests(
+            chat_messages_list,
+            **kwargs,
+        )
+        return [res["choices"][0]["message"]["content"] for res in api_responses]
 
     def close(self) -> None:
         # in case that the program fails before the file is initialized in __init__
@@ -234,6 +242,86 @@ class OpenAIChatBatchAPI(LanguageModel):
             logger.info(f"Temporary file deleted: {self.temp_jsonl_file.name}")
         except OSError as e:
             logger.error(f"Error: {e.filename} - {e.strerror}.")
+
+    def batch_compute_log_probs(
+        self,
+        text_list: list[str],
+        prefix_list: list[str] | None = None,
+        stride: int | None = None,
+        temperature: float = 0,
+        seed: int = 42,
+        top_logprobs: int = 20,  # maximum number
+    ) -> list[float | None]:
+        if stride:
+            logger.warning(
+                "stride is ignored in batch_compute_log_probs of OpenAIChatBatchAPI due to its specification."
+            )
+
+        batch_size = len(text_list)
+        prefix_list = prefix_list if prefix_list else ["" for _ in range(batch_size)]
+
+        # For saving cost, remove duplication from message_list for an API request.
+        prefix_unique_list = list(set(prefix_list))
+        messages_list = [[{"role": "user", "content": prefix}] for prefix in prefix_unique_list]
+        api_responses = self._execute_batch_requests(
+            messages_list,
+            max_new_tokens=1,
+            seed=seed,
+            logprobs=True,
+            top_logprobs=top_logprobs,
+        )
+
+        log_probs = []
+        top_logprobs_list = [res["choices"][0]["logprobs"]["content"][0]["top_logprobs"] for res in api_responses]
+        for index, prefix in enumerate(prefix_list):
+            target_token = text_list[index]
+            index_in_unique = prefix_unique_list.index(prefix)
+
+            log_prob = None  # if target token not in top_logprobs, return None for log_prob of the token
+            top_logprobs = top_logprobs_list[index_in_unique]
+            for token_logprob in top_logprobs:
+                if token_logprob["token"] == target_token:
+                    log_prob = token_logprob["logprob"]
+                    break
+            log_probs.append(log_prob)
+
+        return log_probs
+
+    def batch_compute_chat_log_probs(
+        self,
+        prompt_list: list[list[dict[str, str]]],
+        response_list: list[dict[str, str]],
+        temperature: float = 0,
+        seed: int = 42,
+        top_logprobs: int = 20,
+    ) -> list[float]:
+        response_tokens = [resp["content"] for resp in response_list]
+
+        # For saving cost, remove duplication from message_list for an API request.
+        unique_prompt_list = remove_duplicates_from_prompt_list(prompt_list)
+        api_responses = self._execute_batch_requests(
+            unique_prompt_list,
+            max_new_tokens=1,
+            seed=seed,
+            logprobs=True,
+            top_logprobs=top_logprobs,
+        )
+
+        log_probs = []
+        top_logprobs_list = [res["choices"][0]["logprobs"]["content"][0]["top_logprobs"] for res in api_responses]
+        for index, prompt_list in enumerate(unique_prompt_list):
+            target_token = response_tokens[index]
+            index_in_unique = unique_prompt_list.index(prompt_list)
+
+            log_prob = None  # if target token not in top_logprobs, return None for log_prob of the token
+            top_logprobs = top_logprobs_list[index_in_unique]
+            for token_logprob in top_logprobs:
+                if token_logprob["token"] == target_token:
+                    log_prob = token_logprob["logprob"]
+                    break
+            log_probs.append(log_prob)
+
+        return log_probs
 
     def __del__(self) -> None:
         self.close()

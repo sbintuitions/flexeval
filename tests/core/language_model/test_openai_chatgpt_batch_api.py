@@ -37,3 +37,22 @@ def test_batch_generate_chat_response(lm: OpenAIChatBatchAPI) -> None:
 
     assert len(responses) == 1
     assert isinstance(responses[0], str)
+
+
+@pytest.mark.skipif(not is_openai_enabled(), reason="OpenAI is not installed")
+def test_batch_compute_chat_log_probs(lm: OpenAIChatBatchAPI) -> None:
+    responses = lm.batch_compute_chat_log_probs(
+        [
+            [{"role": "user", "content": "こんにちは。"}],
+            [{"role": "user", "content": "こんにちは。"}],
+            [{"role": "user", "content": "こんばんは。"}],
+        ],
+        [
+            {"role": "user", "content": "こんにちは。"},
+            {"role": "user", "content": "こんばんは。"},
+            {"role": "user", "content": "こんばんは。"},
+        ],
+    )
+
+    assert len(responses) == 3
+    assert isinstance(responses[0], float)
