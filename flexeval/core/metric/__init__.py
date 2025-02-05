@@ -6,6 +6,7 @@ from .common_prefix_length import CommonPrefixLength
 from .common_string_length import CommonStringLength
 from .correlation import Correlation
 from .exact_match import ExactMatch
+from .llm_geval_score import ChatLLMGEvalScore, LLMGEvalScore
 from .llm_label import ChatLLMLabel, LLMLabel
 from .llm_score import ChatLLMScore, LLMScore
 from .output_length_stats import OutputLengthStats
