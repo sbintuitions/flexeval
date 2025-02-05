@@ -164,7 +164,7 @@ class LLMGEvalScore(Metric):
                         '4': -8.0625,
                         '5': -6.4375
                     },
-                    'llm_geval_score_probs': {
+                    'llm_geval_score_generation_probs': {
                         1: 0.017205950425851383,
                         2: 0.00043074254057568753,
                         3: 0.00026125855730166754,
@@ -182,7 +182,7 @@ class LLMGEvalScore(Metric):
                         '4': -8.125,
                         '5': -6.5
                     },
-                    'llm_geval_score_probs': {
+                    'llm_geval_score_generation_probs': {
                         1: 0.014264233908999256,
                         2: 0.00027810828659249914,
                         3: 0.00023055986759244163,
@@ -260,7 +260,7 @@ class LLMGEvalScore(Metric):
                     "llm_geval_score": eval_score,
                     "llm_geval_score_input": eval_in,
                     "llm_geval_score_logprobs": eval_logprobs,
-                    "llm_geval_score_probs": eval_probs,
+                    "llm_geval_score_generation_probs": eval_probs,
                 }
                 for eval_score, eval_in, eval_logprobs, eval_probs in zip(
                     evaluator_score_list,
@@ -321,7 +321,7 @@ class ChatLLMGEvalScore(Metric):
                         '4': -5.812800884246826,
                         '5': -3.937807083129883
                     },
-                    'llm_geval_score_probs': {
+                    'llm_geval_score_generation_probs': {
                         1: 0.932603645815178,
                         2: 0.02502652531327666,
                         3: 0.01949066821765914,
@@ -342,7 +342,7 @@ class ChatLLMGEvalScore(Metric):
                         '4': -4.750283241271973,
                         '5': -5.000345706939697
                     },
-                    'llm_geval_score_probs': {
+                    'llm_geval_score_generation_probs': {
                         1: 0.8777174226922144,
                         2: 0.05638830351569556,
                         3: 0.04976379642068341,
@@ -421,7 +421,7 @@ class ChatLLMGEvalScore(Metric):
                     "llm_geval_score": eval_score,
                     "llm_geval_score_input": eval_in,
                     "llm_geval_score_logprobs": eval_logprobs,
-                    "llm_geval_score_probs": eval_probs,
+                    "llm_geval_score_generation_probs": eval_probs,
                 }
                 for eval_score, eval_in, eval_logprobs, eval_probs in zip(
                     evaluator_score_list,
