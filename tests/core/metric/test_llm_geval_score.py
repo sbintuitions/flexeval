@@ -67,7 +67,9 @@ def test_llm_geval_score() -> None:
         lm_outputs=lm_outputs,
     )
 
-    assert metric_output.summary == {"llm_geval_score": 3.0, "num_failed_score_parses": 1}
+    assert len(metric_output.summary) == 2
+    assert metric_output.summary["llm_geval_score"] == pytest.approx(3.0, rel=1e-5)
+    assert metric_output.summary["num_failed_score_parses"] == 1
 
     for lm_output, instance_detail in zip(lm_outputs, metric_output.instance_details):
         assert instance_detail["llm_geval_score_input"] == lm_output
@@ -95,12 +97,11 @@ def test_llm_geval_score_with_category() -> None:
         task_inputs_list=task_inputs_list,
     )
 
-    assert metric_output.summary == {
-        "llm_geval_score": 3.0,
-        "num_failed_score_parses": 0,
-        "llm_geval_score/category-0": 3.1278810469948057,
-        "llm_geval_score/category-1": 2.744237906010388,
-    }
+    assert len(metric_output.summary) == 4
+    assert metric_output.summary["llm_geval_score"] == pytest.approx(3.0, rel=1e-5)
+    assert metric_output.summary["num_failed_score_parses"] == 0
+    assert metric_output.summary["llm_geval_score/category-0"] == pytest.approx(3.1278810469948057, rel=1e-5)
+    assert metric_output.summary["llm_geval_score/category-1"] == pytest.approx(2.744237906010388, rel=1e-5)
 
     for lm_output, instance_detail in zip(lm_outputs, metric_output.instance_details):
         assert instance_detail["llm_geval_score_input"] == lm_output
@@ -122,7 +123,9 @@ def test_chat_llm_geval_score() -> None:
         lm_outputs=lm_outputs,
     )
 
-    assert metric_output.summary == {"llm_geval_score": 3.0, "num_failed_score_parses": 1}
+    assert len(metric_output.summary) == 2
+    assert metric_output.summary["llm_geval_score"] == pytest.approx(3.0, rel=1e-5)
+    assert metric_output.summary["num_failed_score_parses"] == 1
 
     for lm_output, instance_detail in zip(lm_outputs, metric_output.instance_details):
         assert instance_detail["llm_geval_score_input"] == [{"role": "user", "content": lm_output}]
@@ -150,12 +153,11 @@ def test_chat_llm_geval_score_with_category() -> None:
         task_inputs_list=task_inputs_list,
     )
 
-    assert metric_output.summary == {
-        "llm_geval_score": 3.0,
-        "num_failed_score_parses": 0,
-        "llm_geval_score/category-0": 3.1278810469948057,
-        "llm_geval_score/category-1": 2.744237906010388,
-    }
+    assert len(metric_output.summary) == 4
+    assert metric_output.summary["llm_geval_score"] == pytest.approx(3.0, rel=1e-5)
+    assert metric_output.summary["num_failed_score_parses"] == 0
+    assert metric_output.summary["llm_geval_score/category-0"] == pytest.approx(3.1278810469948057, rel=1e-5)
+    assert metric_output.summary["llm_geval_score/category-1"] == pytest.approx(2.744237906010388, rel=1e-5)
 
     for lm_output, instance_detail in zip(lm_outputs, metric_output.instance_details):
         assert instance_detail["llm_geval_score_input"] == [{"role": "user", "content": lm_output}]
