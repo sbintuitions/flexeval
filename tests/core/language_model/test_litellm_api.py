@@ -2,7 +2,7 @@ import os
 
 import pytest
 
-from flexeval.core.language_model import OpenAICompletionAPI
+from flexeval.core.language_model import LiteLLMChatAPI
 
 
 def is_openai_enabled() -> bool:
@@ -10,14 +10,14 @@ def is_openai_enabled() -> bool:
 
 
 @pytest.fixture(scope="module")
-def lm() -> OpenAICompletionAPI:
-    return OpenAICompletionAPI(model="gpt-3.5-turbo-instruct")
+def lm() -> LiteLLMChatAPI:
+    return LiteLLMChatAPI(model="openai/gpt-3.5-turbo")
 
 
 @pytest.mark.skipif(not is_openai_enabled(), reason="OpenAI API Key is not set")
-def test_batch_generate_chat_response(lm: OpenAICompletionAPI) -> None:
-    responses = lm.batch_complete_text(
-        ["質問：Completion APIってlegacyなAPIなの？"],
+def test_batch_generate_chat_response(lm: LiteLLMChatAPI) -> None:
+    responses = lm.batch_generate_chat_response(
+        [[{"role": "user", "content": "こんにちは！"}]],
         max_new_tokens=20,
         stop_sequences=["。"],
     )
