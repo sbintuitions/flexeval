@@ -2997,7 +2997,7 @@ If specified, this overrides the default chat template of the tokenizer.</p>
             <span class="p">)</span>
             <span class="n">prompt_as_string</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">prompt_as_string_i</span><span class="p">)</span>
             <span class="n">response_as_string</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">response_as_string_i</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">batch_compute_log_probs</span><span class="p">(</span><span class="n">prompt_as_string</span><span class="p">,</span> <span class="n">prefix_list</span><span class="o">=</span><span class="n">response_as_string</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">batch_compute_log_probs</span><span class="p">(</span><span class="n">response_as_string</span><span class="p">,</span> <span class="n">prefix_list</span><span class="o">=</span><span class="n">prompt_as_string</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">(model=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_model_name_or_path</span><span class="si">!r}</span><span class="s2">)&quot;</span>
@@ -3717,7 +3717,7 @@ If specified, this overrides the default chat template of the tokenizer.</p>
         <span class="p">)</span>
         <span class="n">prompt_as_string</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">prompt_as_string_i</span><span class="p">)</span>
         <span class="n">response_as_string</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">response_as_string_i</span><span class="p">)</span>
-    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">batch_compute_log_probs</span><span class="p">(</span><span class="n">prompt_as_string</span><span class="p">,</span> <span class="n">prefix_list</span><span class="o">=</span><span class="n">response_as_string</span><span class="p">)</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">batch_compute_log_probs</span><span class="p">(</span><span class="n">response_as_string</span><span class="p">,</span> <span class="n">prefix_list</span><span class="o">=</span><span class="n">prompt_as_string</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -5988,7 +5988,7 @@ If specified, this overrides the default chat template of the tokenizer.</p>
             <span class="p">)</span>
             <span class="n">prompt_as_string</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">prompt_as_string_i</span><span class="p">)</span>
             <span class="n">response_as_string</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">response_as_string_i</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">batch_compute_log_probs</span><span class="p">(</span><span class="n">prompt_as_string</span><span class="p">,</span> <span class="n">prefix_list</span><span class="o">=</span><span class="n">response_as_string</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">batch_compute_log_probs</span><span class="p">(</span><span class="n">response_as_string</span><span class="p">,</span> <span class="n">prefix_list</span><span class="o">=</span><span class="n">prompt_as_string</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;VLLM(model_name=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">model_name</span><span class="si">}</span><span class="s2">)&quot;</span>
@@ -6600,7 +6600,7 @@ If specified, this overrides the default chat template of the tokenizer.</p>
         <span class="p">)</span>
         <span class="n">prompt_as_string</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">prompt_as_string_i</span><span class="p">)</span>
         <span class="n">response_as_string</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">response_as_string_i</span><span class="p">)</span>
-    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">batch_compute_log_probs</span><span class="p">(</span><span class="n">prompt_as_string</span><span class="p">,</span> <span class="n">prefix_list</span><span class="o">=</span><span class="n">response_as_string</span><span class="p">)</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">batch_compute_log_probs</span><span class="p">(</span><span class="n">response_as_string</span><span class="p">,</span> <span class="n">prefix_list</span><span class="o">=</span><span class="n">prompt_as_string</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>

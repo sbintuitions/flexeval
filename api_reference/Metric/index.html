@@ -1124,6 +1124,24 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#flexeval.core.metric.llm_geval_score.ChatLLMGEvalScore" class="md-nav__link">
+    <span class="md-ellipsis">
+      ChatLLMGEvalScore
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#flexeval.core.metric.llm_geval_score.LLMGEvalScore" class="md-nav__link">
+    <span class="md-ellipsis">
+      LLMGEvalScore
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#flexeval.core.metric.llm_label.ChatLLMLabel" class="md-nav__link">
     <span class="md-ellipsis">
       ChatLLMLabel
@@ -1518,6 +1536,24 @@
   <a href="#flexeval.core.metric.exact_match.ExactMatch" class="md-nav__link">
     <span class="md-ellipsis">
       ExactMatch
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#flexeval.core.metric.llm_geval_score.ChatLLMGEvalScore" class="md-nav__link">
+    <span class="md-ellipsis">
+      ChatLLMGEvalScore
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#flexeval.core.metric.llm_geval_score.LLMGEvalScore" class="md-nav__link">
+    <span class="md-ellipsis">
+      LLMGEvalScore
     </span>
   </a>
   
@@ -4384,6 +4420,1715 @@ If there are multiple references, the output is considered correct if it matches
     <span class="k">return</span> <span class="n">MetricResult</span><span class="p">(</span>
         <span class="p">{</span><span class="s2">&quot;exact_match&quot;</span><span class="p">:</span> <span class="nb">sum</span><span class="p">(</span><span class="n">exact_match_list</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">exact_match_list</span><span class="p">)},</span>
         <span class="n">instance_details</span><span class="o">=</span><span class="p">[{</span><span class="s2">&quot;exact_match&quot;</span><span class="p">:</span> <span class="n">s</span><span class="p">}</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">exact_match_list</span><span class="p">],</span>
+    <span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="flexeval.core.metric.llm_geval_score.ChatLLMGEvalScore" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">ChatLLMGEvalScore</span>
+
+
+<a href="#flexeval.core.metric.llm_geval_score.ChatLLMGEvalScore" class="headerlink" title="Permanent link">&para;</a></h2>
+
+
+    <div class="doc doc-contents first">
+
+
+      <p>A metric that evaluates the output of <code>LanguageModel.batch_generate_chat_response</code>.
+Unlike ChatLLMScore, this metric let the model output logprobs for all valid scores and
+calculate weighted score among them.
+Note that due to constraint for OpenAI models, the number of valid scores must not exceed 20.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+          <b><code>language_model</code></b>
+              (<code>required</code>)
+          –
+          <div class="doc-md-description">
+            <p>An instance of <code>LanguageModel</code> to evaluate the output of the model.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+          <b><code>prompt_template</code></b>
+              (<code>required</code>)
+          –
+          <div class="doc-md-description">
+            <p>An instance of <code>PromptTemplate</code> to embed the input for the evaluator.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+          <b><code>valid_score_range</code></b>
+              (<code>required</code>)
+          –
+          <div class="doc-md-description">
+            <p>A tuple of two integers representing the valid score range.
+If the parsed score is out of the range, it will be ignored.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+          <b><code>system_message</code></b>
+              (<code>str | <a class="autorefs autorefs-internal" title="flexeval.core.prompt_template.PromptTemplate" href="../PromptTemplate/#flexeval.core.prompt_template.base.PromptTemplate">PromptTemplate</a> | None</code>, default:
+                  <code>None</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>A system message to be prepended to the input for the evaluator.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+          <b><code>disable_tqdm</code></b>
+              (<code>bool</code>, default:
+                  <code>False</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>Whether to disable the progress bar.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+          <b><code>category_key</code></b>
+              (<code>str | None</code>, default:
+                  <code>None</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>A key to create category-wise mean score.
+The category key is expected to be in task inputs.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+          <b><code>prob_threshold</code></b>
+              (<code>float</code>, default:
+                  <code>0</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>For considering low probability among all of valid scores,
+return None (invalid) if sum of the all probability among vaild scores is less than this value.</p>
+          </div>
+        </li>
+    </ul>
+
+
+<p><span class="doc-section-title">Examples:</span></p>
+    <div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">flexeval</span> <span class="kn">import</span> <span class="n">ChatLLMGEvalScore</span><span class="p">,</span> <span class="n">HuggingFaceLM</span><span class="p">,</span> <span class="n">Jinja2PromptTemplate</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">language_model</span> <span class="o">=</span> <span class="n">HuggingFaceLM</span><span class="p">(</span><span class="s2">&quot;Qwen/Qwen2.5-0.5B-Instruct&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">template</span> <span class="o">=</span> <span class="s2">&quot;Evaluate the quality of this text.</span><span class="se">\n</span><span class="s2">`{{ lm_output }}`</span><span class="se">\n</span><span class="s2">Output only a number from 1 to 5.&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">prompt_template</span> <span class="o">=</span> <span class="n">Jinja2PromptTemplate</span><span class="p">(</span><span class="n">template</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">system_message</span> <span class="o">=</span> <span class="s2">&quot;This is the system message.&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">llm_score</span> <span class="o">=</span> <span class="n">ChatLLMGEvalScore</span><span class="p">(</span><span class="n">language_model</span><span class="p">,</span> <span class="n">prompt_template</span><span class="p">,</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">],</span> <span class="n">system_message</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lm_outputs</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Hello, world!&quot;</span><span class="p">,</span> <span class="s2">&quot;Good morning!&quot;</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">llm_score</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">lm_outputs</span><span class="p">)</span>
+<span class="go">MetricResult(</span>
+<span class="go">    summary={&#39;llm_geval_score&#39;: 1.179980414173022, &#39;num_failed_score_parses&#39;: 0},</span>
+<span class="go">    instance_details=[</span>
+<span class="go">        {</span>
+<span class="go">            &#39;llm_geval_score&#39;: 1.1509989197179789,</span>
+<span class="go">            &#39;llm_geval_score_input&#39;: [</span>
+<span class="go">                {&#39;role&#39;: &#39;system&#39;, &#39;content&#39;: &#39;This is the system message.&#39;},</span>
+<span class="go">                {&#39;role&#39;: &#39;user&#39;, &#39;content&#39;: &#39;Evaluate the quality of this text...&#39;}</span>
+<span class="go">            ],</span>
+<span class="go">            &#39;llm_geval_score_logprobs&#39;: {</span>
+<span class="go">                &#39;1&#39;: -0.06977498531341553,</span>
+<span class="go">                &#39;2&#39;: -3.687819004058838,</span>
+<span class="go">                &#39;3&#39;: -3.937819480895996,</span>
+<span class="go">                &#39;4&#39;: -5.812800884246826,</span>
+<span class="go">                &#39;5&#39;: -3.937807083129883</span>
+<span class="go">            },</span>
+<span class="go">            &#39;llm_geval_score_generation_probs&#39;: {</span>
+<span class="go">                1: 0.932603645815178,</span>
+<span class="go">                2: 0.02502652531327666,</span>
+<span class="go">                3: 0.01949066821765914,</span>
+<span class="go">                4: 0.002989046364034347,</span>
+<span class="go">                5: 0.019490909859903</span>
+<span class="go">            }</span>
+<span class="go">        },</span>
+<span class="go">        {</span>
+<span class="go">            &#39;llm_geval_score&#39;: 1.208961908628065,</span>
+<span class="go">            &#39;llm_geval_score_input&#39;: [</span>
+<span class="go">                {&#39;role&#39;: &#39;system&#39;, &#39;content&#39;: &#39;This is the system message.&#39;},</span>
+<span class="go">                {&#39;role&#39;: &#39;user&#39;, &#39;content&#39;: &#39;Evaluate the quality of this text...&#39;}</span>
+<span class="go">            ],</span>
+<span class="go">            &#39;llm_geval_score_logprobs&#39;: {</span>
+<span class="go">                &#39;1&#39;: -0.13043057918548584,</span>
+<span class="go">                &#39;2&#39;: -2.8754935264587402,</span>
+<span class="go">                &#39;3&#39;: -3.000467538833618,</span>
+<span class="go">                &#39;4&#39;: -4.750283241271973,</span>
+<span class="go">                &#39;5&#39;: -5.000345706939697</span>
+<span class="go">            },</span>
+<span class="go">            &#39;llm_geval_score_generation_probs&#39;: {</span>
+<span class="go">                1: 0.8777174226922144,</span>
+<span class="go">                2: 0.05638830351569556,</span>
+<span class="go">                3: 0.04976379642068341,</span>
+<span class="go">                4: 0.008649245032977617,</span>
+<span class="go">                5: 0.006735618046639277</span>
+<span class="go">            }</span>
+<span class="go">        }</span>
+<span class="go">    ])</span>
+</code></pre></div>
+
+              <details class="quote">
+                <summary>Source code in <code>flexeval/core/metric/llm_geval_score.py</code></summary>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">280</span>
+<span class="normal">281</span>
+<span class="normal">282</span>
+<span class="normal">283</span>
+<span class="normal">284</span>
+<span class="normal">285</span>
+<span class="normal">286</span>
+<span class="normal">287</span>
+<span class="normal">288</span>
+<span class="normal">289</span>
+<span class="normal">290</span>
+<span class="normal">291</span>
+<span class="normal">292</span>
+<span class="normal">293</span>
+<span class="normal">294</span>
+<span class="normal">295</span>
+<span class="normal">296</span>
+<span class="normal">297</span>
+<span class="normal">298</span>
+<span class="normal">299</span>
+<span class="normal">300</span>
+<span class="normal">301</span>
+<span class="normal">302</span>
+<span class="normal">303</span>
+<span class="normal">304</span>
+<span class="normal">305</span>
+<span class="normal">306</span>
+<span class="normal">307</span>
+<span class="normal">308</span>
+<span class="normal">309</span>
+<span class="normal">310</span>
+<span class="normal">311</span>
+<span class="normal">312</span>
+<span class="normal">313</span>
+<span class="normal">314</span>
+<span class="normal">315</span>
+<span class="normal">316</span>
+<span class="normal">317</span>
+<span class="normal">318</span>
+<span class="normal">319</span>
+<span class="normal">320</span>
+<span class="normal">321</span>
+<span class="normal">322</span>
+<span class="normal">323</span>
+<span class="normal">324</span>
+<span class="normal">325</span>
+<span class="normal">326</span>
+<span class="normal">327</span>
+<span class="normal">328</span>
+<span class="normal">329</span>
+<span class="normal">330</span>
+<span class="normal">331</span>
+<span class="normal">332</span>
+<span class="normal">333</span>
+<span class="normal">334</span>
+<span class="normal">335</span>
+<span class="normal">336</span>
+<span class="normal">337</span>
+<span class="normal">338</span>
+<span class="normal">339</span>
+<span class="normal">340</span>
+<span class="normal">341</span>
+<span class="normal">342</span>
+<span class="normal">343</span>
+<span class="normal">344</span>
+<span class="normal">345</span>
+<span class="normal">346</span>
+<span class="normal">347</span>
+<span class="normal">348</span>
+<span class="normal">349</span>
+<span class="normal">350</span>
+<span class="normal">351</span>
+<span class="normal">352</span>
+<span class="normal">353</span>
+<span class="normal">354</span>
+<span class="normal">355</span>
+<span class="normal">356</span>
+<span class="normal">357</span>
+<span class="normal">358</span>
+<span class="normal">359</span>
+<span class="normal">360</span>
+<span class="normal">361</span>
+<span class="normal">362</span>
+<span class="normal">363</span>
+<span class="normal">364</span>
+<span class="normal">365</span>
+<span class="normal">366</span>
+<span class="normal">367</span>
+<span class="normal">368</span>
+<span class="normal">369</span>
+<span class="normal">370</span>
+<span class="normal">371</span>
+<span class="normal">372</span>
+<span class="normal">373</span>
+<span class="normal">374</span>
+<span class="normal">375</span>
+<span class="normal">376</span>
+<span class="normal">377</span>
+<span class="normal">378</span>
+<span class="normal">379</span>
+<span class="normal">380</span>
+<span class="normal">381</span>
+<span class="normal">382</span>
+<span class="normal">383</span>
+<span class="normal">384</span>
+<span class="normal">385</span>
+<span class="normal">386</span>
+<span class="normal">387</span>
+<span class="normal">388</span>
+<span class="normal">389</span>
+<span class="normal">390</span>
+<span class="normal">391</span>
+<span class="normal">392</span>
+<span class="normal">393</span>
+<span class="normal">394</span>
+<span class="normal">395</span>
+<span class="normal">396</span>
+<span class="normal">397</span>
+<span class="normal">398</span>
+<span class="normal">399</span>
+<span class="normal">400</span>
+<span class="normal">401</span>
+<span class="normal">402</span>
+<span class="normal">403</span>
+<span class="normal">404</span>
+<span class="normal">405</span>
+<span class="normal">406</span>
+<span class="normal">407</span>
+<span class="normal">408</span>
+<span class="normal">409</span>
+<span class="normal">410</span>
+<span class="normal">411</span>
+<span class="normal">412</span>
+<span class="normal">413</span>
+<span class="normal">414</span>
+<span class="normal">415</span>
+<span class="normal">416</span>
+<span class="normal">417</span>
+<span class="normal">418</span>
+<span class="normal">419</span>
+<span class="normal">420</span>
+<span class="normal">421</span>
+<span class="normal">422</span>
+<span class="normal">423</span>
+<span class="normal">424</span>
+<span class="normal">425</span>
+<span class="normal">426</span>
+<span class="normal">427</span>
+<span class="normal">428</span>
+<span class="normal">429</span>
+<span class="normal">430</span>
+<span class="normal">431</span>
+<span class="normal">432</span>
+<span class="normal">433</span>
+<span class="normal">434</span>
+<span class="normal">435</span>
+<span class="normal">436</span>
+<span class="normal">437</span>
+<span class="normal">438</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">ChatLLMGEvalScore</span><span class="p">(</span><span class="n">Metric</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A metric that evaluates the output of `LanguageModel.batch_generate_chat_response`.</span>
+<span class="sd">    Unlike ChatLLMScore, this metric let the model output logprobs for all valid scores and</span>
+<span class="sd">    calculate weighted score among them.</span>
+<span class="sd">    Note that due to constraint for OpenAI models, the number of valid scores must not exceed 20.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        language_model (required): An instance of `LanguageModel` to evaluate the output of the model.</span>
+<span class="sd">        prompt_template (required): An instance of `PromptTemplate` to embed the input for the evaluator.</span>
+<span class="sd">        valid_score_range (required): A tuple of two integers representing the valid score range.</span>
+<span class="sd">            If the parsed score is out of the range, it will be ignored.</span>
+<span class="sd">        system_message: A system message to be prepended to the input for the evaluator.</span>
+<span class="sd">        disable_tqdm: Whether to disable the progress bar.</span>
+<span class="sd">        category_key: A key to create category-wise mean score.</span>
+<span class="sd">            The category key is expected to be in task inputs.</span>
+<span class="sd">        prob_threshold: For considering low probability among all of valid scores,</span>
+<span class="sd">            return None (invalid) if sum of the all probability among vaild scores is less than this value.</span>
+
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; from flexeval import ChatLLMGEvalScore, HuggingFaceLM, Jinja2PromptTemplate</span>
+<span class="sd">        &gt;&gt;&gt; language_model = HuggingFaceLM(&quot;Qwen/Qwen2.5-0.5B-Instruct&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; template = &quot;Evaluate the quality of this text.\\n`{{ lm_output }}`\\nOutput only a number from 1 to 5.&quot;</span>
+<span class="sd">        &gt;&gt;&gt; prompt_template = Jinja2PromptTemplate(template)</span>
+<span class="sd">        &gt;&gt;&gt; system_message = &quot;This is the system message.&quot;</span>
+<span class="sd">        &gt;&gt;&gt; llm_score = ChatLLMGEvalScore(language_model, prompt_template, [1, 5], system_message)</span>
+<span class="sd">        &gt;&gt;&gt; lm_outputs = [&quot;Hello, world!&quot;, &quot;Good morning!&quot;]</span>
+<span class="sd">        &gt;&gt;&gt; llm_score.evaluate(lm_outputs)</span>
+<span class="sd">        MetricResult(</span>
+<span class="sd">            summary={&#39;llm_geval_score&#39;: 1.179980414173022, &#39;num_failed_score_parses&#39;: 0},</span>
+<span class="sd">            instance_details=[</span>
+<span class="sd">                {</span>
+<span class="sd">                    &#39;llm_geval_score&#39;: 1.1509989197179789,</span>
+<span class="sd">                    &#39;llm_geval_score_input&#39;: [</span>
+<span class="sd">                        {&#39;role&#39;: &#39;system&#39;, &#39;content&#39;: &#39;This is the system message.&#39;},</span>
+<span class="sd">                        {&#39;role&#39;: &#39;user&#39;, &#39;content&#39;: &#39;Evaluate the quality of this text...&#39;}</span>
+<span class="sd">                    ],</span>
+<span class="sd">                    &#39;llm_geval_score_logprobs&#39;: {</span>
+<span class="sd">                        &#39;1&#39;: -0.06977498531341553,</span>
+<span class="sd">                        &#39;2&#39;: -3.687819004058838,</span>
+<span class="sd">                        &#39;3&#39;: -3.937819480895996,</span>
+<span class="sd">                        &#39;4&#39;: -5.812800884246826,</span>
+<span class="sd">                        &#39;5&#39;: -3.937807083129883</span>
+<span class="sd">                    },</span>
+<span class="sd">                    &#39;llm_geval_score_generation_probs&#39;: {</span>
+<span class="sd">                        1: 0.932603645815178,</span>
+<span class="sd">                        2: 0.02502652531327666,</span>
+<span class="sd">                        3: 0.01949066821765914,</span>
+<span class="sd">                        4: 0.002989046364034347,</span>
+<span class="sd">                        5: 0.019490909859903</span>
+<span class="sd">                    }</span>
+<span class="sd">                },</span>
+<span class="sd">                {</span>
+<span class="sd">                    &#39;llm_geval_score&#39;: 1.208961908628065,</span>
+<span class="sd">                    &#39;llm_geval_score_input&#39;: [</span>
+<span class="sd">                        {&#39;role&#39;: &#39;system&#39;, &#39;content&#39;: &#39;This is the system message.&#39;},</span>
+<span class="sd">                        {&#39;role&#39;: &#39;user&#39;, &#39;content&#39;: &#39;Evaluate the quality of this text...&#39;}</span>
+<span class="sd">                    ],</span>
+<span class="sd">                    &#39;llm_geval_score_logprobs&#39;: {</span>
+<span class="sd">                        &#39;1&#39;: -0.13043057918548584,</span>
+<span class="sd">                        &#39;2&#39;: -2.8754935264587402,</span>
+<span class="sd">                        &#39;3&#39;: -3.000467538833618,</span>
+<span class="sd">                        &#39;4&#39;: -4.750283241271973,</span>
+<span class="sd">                        &#39;5&#39;: -5.000345706939697</span>
+<span class="sd">                    },</span>
+<span class="sd">                    &#39;llm_geval_score_generation_probs&#39;: {</span>
+<span class="sd">                        1: 0.8777174226922144,</span>
+<span class="sd">                        2: 0.05638830351569556,</span>
+<span class="sd">                        3: 0.04976379642068341,</span>
+<span class="sd">                        4: 0.008649245032977617,</span>
+<span class="sd">                        5: 0.006735618046639277</span>
+<span class="sd">                    }</span>
+<span class="sd">                }</span>
+<span class="sd">            ])</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">language_model</span><span class="p">:</span> <span class="n">LanguageModel</span><span class="p">,</span>
+        <span class="n">prompt_template</span><span class="p">:</span> <span class="n">PromptTemplate</span><span class="p">,</span>
+        <span class="n">valid_score_range</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
+        <span class="n">system_message</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">PromptTemplate</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">disable_tqdm</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">category_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">prob_threshold</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">language_model</span> <span class="o">=</span> <span class="n">language_model</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">prompt_template</span> <span class="o">=</span> <span class="n">prompt_template</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">system_message</span> <span class="o">=</span> <span class="n">system_message</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">disable_tqdm</span> <span class="o">=</span> <span class="n">disable_tqdm</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">valid_score_range</span> <span class="o">=</span> <span class="n">valid_score_range</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">category_key</span> <span class="o">=</span> <span class="n">category_key</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">prob_threshold</span> <span class="o">=</span> <span class="n">prob_threshold</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">valid_labels</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">score</span><span class="p">)</span> <span class="k">for</span> <span class="n">score</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">valid_score_range</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">valid_score_range</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)]</span>
+
+    <span class="k">def</span> <span class="nf">evaluate</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">lm_outputs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+        <span class="n">references_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">task_inputs_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MetricResult</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">task_inputs_list</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">task_inputs_list</span> <span class="o">=</span> <span class="p">[{}</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">lm_outputs</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">references_list</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">references_list</span> <span class="o">=</span> <span class="p">[[]</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">lm_outputs</span><span class="p">]</span>
+
+        <span class="n">evaluator_input_list</span> <span class="o">=</span> <span class="n">prepare_chat_input_for_evaluator</span><span class="p">(</span>
+            <span class="n">lm_outputs</span><span class="p">,</span> <span class="n">references_list</span><span class="p">,</span> <span class="n">task_inputs_list</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">prompt_template</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">system_message</span>
+        <span class="p">)</span>
+        <span class="n">evaluator_logprobs_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="n">generate_evaluation_logprobs</span><span class="p">(</span>
+            <span class="n">evaluator_input_list</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">language_model</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">valid_labels</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">disable_tqdm</span><span class="p">,</span>
+            <span class="s2">&quot;Calculating logprobs&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">evaluator_score_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">evaluator_probs_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">evaluator_logprobs</span> <span class="ow">in</span> <span class="n">evaluator_logprobs_list</span><span class="p">:</span>
+            <span class="n">evaluator_score</span><span class="p">,</span> <span class="n">evaluator_probs</span> <span class="o">=</span> <span class="n">calculate_weighted_average</span><span class="p">(</span>
+                <span class="n">evaluator_logprobs</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">valid_score_range</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">prob_threshold</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">evaluator_score</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to parse score from evaluator logprobs: </span><span class="si">{</span><span class="n">evaluator_logprobs</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">evaluator_score_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">evaluator_score</span><span class="p">)</span>
+            <span class="n">evaluator_probs_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">evaluator_probs</span><span class="p">)</span>
+
+        <span class="n">summary</span> <span class="o">=</span> <span class="n">summarize_evaluator_geval_scores</span><span class="p">(</span>
+            <span class="n">evaluator_score_list</span><span class="p">,</span>
+            <span class="n">task_inputs_list</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">category_key</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">MetricResult</span><span class="p">(</span>
+            <span class="n">summary</span><span class="p">,</span>
+            <span class="n">instance_details</span><span class="o">=</span><span class="p">[</span>
+                <span class="p">{</span>
+                    <span class="s2">&quot;llm_geval_score&quot;</span><span class="p">:</span> <span class="n">eval_score</span><span class="p">,</span>
+                    <span class="s2">&quot;llm_geval_score_input&quot;</span><span class="p">:</span> <span class="n">eval_in</span><span class="p">,</span>
+                    <span class="s2">&quot;llm_geval_score_logprobs&quot;</span><span class="p">:</span> <span class="n">eval_logprobs</span><span class="p">,</span>
+                    <span class="s2">&quot;llm_geval_score_generation_probs&quot;</span><span class="p">:</span> <span class="n">eval_probs</span><span class="p">,</span>
+                <span class="p">}</span>
+                <span class="k">for</span> <span class="n">eval_score</span><span class="p">,</span> <span class="n">eval_in</span><span class="p">,</span> <span class="n">eval_logprobs</span><span class="p">,</span> <span class="n">eval_probs</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span>
+                    <span class="n">evaluator_score_list</span><span class="p">,</span>
+                    <span class="n">evaluator_input_list</span><span class="p">,</span>
+                    <span class="n">evaluator_logprobs_list</span><span class="p">,</span>
+                    <span class="n">evaluator_probs_list</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="p">],</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">(language_model=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">language_model</span><span class="si">}</span><span class="s2">, prompt_template=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">prompt_template</span><span class="si">}</span><span class="s2">)&quot;</span>
+        <span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+              </details>
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h3 id="flexeval.core.metric.llm_geval_score.ChatLLMGEvalScore.language_model" class="doc doc-heading">
+            <span class="doc doc-object-name doc-attribute-name">language_model</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+<a href="#flexeval.core.metric.llm_geval_score.ChatLLMGEvalScore.language_model" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">language_model</span> <span class="o">=</span> <span class="n">language_model</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h3 id="flexeval.core.metric.llm_geval_score.ChatLLMGEvalScore.prompt_template" class="doc doc-heading">
+            <span class="doc doc-object-name doc-attribute-name">prompt_template</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+<a href="#flexeval.core.metric.llm_geval_score.ChatLLMGEvalScore.prompt_template" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">prompt_template</span> <span class="o">=</span> <span class="n">prompt_template</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h3 id="flexeval.core.metric.llm_geval_score.ChatLLMGEvalScore.system_message" class="doc doc-heading">
+            <span class="doc doc-object-name doc-attribute-name">system_message</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+<a href="#flexeval.core.metric.llm_geval_score.ChatLLMGEvalScore.system_message" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">system_message</span> <span class="o">=</span> <span class="n">system_message</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h3 id="flexeval.core.metric.llm_geval_score.ChatLLMGEvalScore.disable_tqdm" class="doc doc-heading">
+            <span class="doc doc-object-name doc-attribute-name">disable_tqdm</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+<a href="#flexeval.core.metric.llm_geval_score.ChatLLMGEvalScore.disable_tqdm" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">disable_tqdm</span> <span class="o">=</span> <span class="n">disable_tqdm</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h3 id="flexeval.core.metric.llm_geval_score.ChatLLMGEvalScore.valid_score_range" class="doc doc-heading">
+            <span class="doc doc-object-name doc-attribute-name">valid_score_range</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+<a href="#flexeval.core.metric.llm_geval_score.ChatLLMGEvalScore.valid_score_range" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">valid_score_range</span> <span class="o">=</span> <span class="n">valid_score_range</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h3 id="flexeval.core.metric.llm_geval_score.ChatLLMGEvalScore.category_key" class="doc doc-heading">
+            <span class="doc doc-object-name doc-attribute-name">category_key</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+<a href="#flexeval.core.metric.llm_geval_score.ChatLLMGEvalScore.category_key" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">category_key</span> <span class="o">=</span> <span class="n">category_key</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h3 id="flexeval.core.metric.llm_geval_score.ChatLLMGEvalScore.prob_threshold" class="doc doc-heading">
+            <span class="doc doc-object-name doc-attribute-name">prob_threshold</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+<a href="#flexeval.core.metric.llm_geval_score.ChatLLMGEvalScore.prob_threshold" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">prob_threshold</span> <span class="o">=</span> <span class="n">prob_threshold</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h3 id="flexeval.core.metric.llm_geval_score.ChatLLMGEvalScore.valid_labels" class="doc doc-heading">
+            <span class="doc doc-object-name doc-attribute-name">valid_labels</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+<a href="#flexeval.core.metric.llm_geval_score.ChatLLMGEvalScore.valid_labels" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">valid_labels</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">score</span><span class="p">)</span> <span class="k">for</span> <span class="n">score</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">valid_score_range</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">valid_score_range</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)]</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+    </div>
+
+</div>
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="flexeval.core.metric.llm_geval_score.ChatLLMGEvalScore.__init__" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">__init__</span>
+
+
+<a href="#flexeval.core.metric.llm_geval_score.ChatLLMGEvalScore.__init__" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="fm">__init__</span><span class="p">(</span><span class="nf">language_model</span><span class="p">:</span> <span class="n">LanguageModel</span><span class="p">,</span> <span class="n">prompt_template</span><span class="p">:</span> <span class="n">PromptTemplate</span><span class="p">,</span> <span class="n">valid_score_range</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="n">system_message</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">PromptTemplate</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">disable_tqdm</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">category_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">prob_threshold</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+            <details class="quote">
+              <summary>Source code in <code>flexeval/core/metric/llm_geval_score.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">356</span>
+<span class="normal">357</span>
+<span class="normal">358</span>
+<span class="normal">359</span>
+<span class="normal">360</span>
+<span class="normal">361</span>
+<span class="normal">362</span>
+<span class="normal">363</span>
+<span class="normal">364</span>
+<span class="normal">365</span>
+<span class="normal">366</span>
+<span class="normal">367</span>
+<span class="normal">368</span>
+<span class="normal">369</span>
+<span class="normal">370</span>
+<span class="normal">371</span>
+<span class="normal">372</span>
+<span class="normal">373</span>
+<span class="normal">374</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">language_model</span><span class="p">:</span> <span class="n">LanguageModel</span><span class="p">,</span>
+    <span class="n">prompt_template</span><span class="p">:</span> <span class="n">PromptTemplate</span><span class="p">,</span>
+    <span class="n">valid_score_range</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
+    <span class="n">system_message</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">PromptTemplate</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">disable_tqdm</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">category_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">prob_threshold</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">language_model</span> <span class="o">=</span> <span class="n">language_model</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">prompt_template</span> <span class="o">=</span> <span class="n">prompt_template</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">system_message</span> <span class="o">=</span> <span class="n">system_message</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">disable_tqdm</span> <span class="o">=</span> <span class="n">disable_tqdm</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">valid_score_range</span> <span class="o">=</span> <span class="n">valid_score_range</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">category_key</span> <span class="o">=</span> <span class="n">category_key</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">prob_threshold</span> <span class="o">=</span> <span class="n">prob_threshold</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">valid_labels</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">score</span><span class="p">)</span> <span class="k">for</span> <span class="n">score</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">valid_score_range</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">valid_score_range</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)]</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="flexeval.core.metric.llm_geval_score.ChatLLMGEvalScore.evaluate" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">evaluate</span>
+
+
+<a href="#flexeval.core.metric.llm_geval_score.ChatLLMGEvalScore.evaluate" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">evaluate</span><span class="p">(</span><span class="n">lm_outputs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">references_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">task_inputs_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MetricResult</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+            <details class="quote">
+              <summary>Source code in <code>flexeval/core/metric/llm_geval_score.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">376</span>
+<span class="normal">377</span>
+<span class="normal">378</span>
+<span class="normal">379</span>
+<span class="normal">380</span>
+<span class="normal">381</span>
+<span class="normal">382</span>
+<span class="normal">383</span>
+<span class="normal">384</span>
+<span class="normal">385</span>
+<span class="normal">386</span>
+<span class="normal">387</span>
+<span class="normal">388</span>
+<span class="normal">389</span>
+<span class="normal">390</span>
+<span class="normal">391</span>
+<span class="normal">392</span>
+<span class="normal">393</span>
+<span class="normal">394</span>
+<span class="normal">395</span>
+<span class="normal">396</span>
+<span class="normal">397</span>
+<span class="normal">398</span>
+<span class="normal">399</span>
+<span class="normal">400</span>
+<span class="normal">401</span>
+<span class="normal">402</span>
+<span class="normal">403</span>
+<span class="normal">404</span>
+<span class="normal">405</span>
+<span class="normal">406</span>
+<span class="normal">407</span>
+<span class="normal">408</span>
+<span class="normal">409</span>
+<span class="normal">410</span>
+<span class="normal">411</span>
+<span class="normal">412</span>
+<span class="normal">413</span>
+<span class="normal">414</span>
+<span class="normal">415</span>
+<span class="normal">416</span>
+<span class="normal">417</span>
+<span class="normal">418</span>
+<span class="normal">419</span>
+<span class="normal">420</span>
+<span class="normal">421</span>
+<span class="normal">422</span>
+<span class="normal">423</span>
+<span class="normal">424</span>
+<span class="normal">425</span>
+<span class="normal">426</span>
+<span class="normal">427</span>
+<span class="normal">428</span>
+<span class="normal">429</span>
+<span class="normal">430</span>
+<span class="normal">431</span>
+<span class="normal">432</span>
+<span class="normal">433</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">evaluate</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">lm_outputs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+    <span class="n">references_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">task_inputs_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MetricResult</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">task_inputs_list</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">task_inputs_list</span> <span class="o">=</span> <span class="p">[{}</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">lm_outputs</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">references_list</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">references_list</span> <span class="o">=</span> <span class="p">[[]</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">lm_outputs</span><span class="p">]</span>
+
+    <span class="n">evaluator_input_list</span> <span class="o">=</span> <span class="n">prepare_chat_input_for_evaluator</span><span class="p">(</span>
+        <span class="n">lm_outputs</span><span class="p">,</span> <span class="n">references_list</span><span class="p">,</span> <span class="n">task_inputs_list</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">prompt_template</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">system_message</span>
+    <span class="p">)</span>
+    <span class="n">evaluator_logprobs_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="n">generate_evaluation_logprobs</span><span class="p">(</span>
+        <span class="n">evaluator_input_list</span><span class="p">,</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">language_model</span><span class="p">,</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">valid_labels</span><span class="p">,</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">disable_tqdm</span><span class="p">,</span>
+        <span class="s2">&quot;Calculating logprobs&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">evaluator_score_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">evaluator_probs_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">evaluator_logprobs</span> <span class="ow">in</span> <span class="n">evaluator_logprobs_list</span><span class="p">:</span>
+        <span class="n">evaluator_score</span><span class="p">,</span> <span class="n">evaluator_probs</span> <span class="o">=</span> <span class="n">calculate_weighted_average</span><span class="p">(</span>
+            <span class="n">evaluator_logprobs</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">valid_score_range</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">prob_threshold</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">evaluator_score</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to parse score from evaluator logprobs: </span><span class="si">{</span><span class="n">evaluator_logprobs</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">evaluator_score_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">evaluator_score</span><span class="p">)</span>
+        <span class="n">evaluator_probs_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">evaluator_probs</span><span class="p">)</span>
+
+    <span class="n">summary</span> <span class="o">=</span> <span class="n">summarize_evaluator_geval_scores</span><span class="p">(</span>
+        <span class="n">evaluator_score_list</span><span class="p">,</span>
+        <span class="n">task_inputs_list</span><span class="p">,</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">category_key</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">MetricResult</span><span class="p">(</span>
+        <span class="n">summary</span><span class="p">,</span>
+        <span class="n">instance_details</span><span class="o">=</span><span class="p">[</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;llm_geval_score&quot;</span><span class="p">:</span> <span class="n">eval_score</span><span class="p">,</span>
+                <span class="s2">&quot;llm_geval_score_input&quot;</span><span class="p">:</span> <span class="n">eval_in</span><span class="p">,</span>
+                <span class="s2">&quot;llm_geval_score_logprobs&quot;</span><span class="p">:</span> <span class="n">eval_logprobs</span><span class="p">,</span>
+                <span class="s2">&quot;llm_geval_score_generation_probs&quot;</span><span class="p">:</span> <span class="n">eval_probs</span><span class="p">,</span>
+            <span class="p">}</span>
+            <span class="k">for</span> <span class="n">eval_score</span><span class="p">,</span> <span class="n">eval_in</span><span class="p">,</span> <span class="n">eval_logprobs</span><span class="p">,</span> <span class="n">eval_probs</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span>
+                <span class="n">evaluator_score_list</span><span class="p">,</span>
+                <span class="n">evaluator_input_list</span><span class="p">,</span>
+                <span class="n">evaluator_logprobs_list</span><span class="p">,</span>
+                <span class="n">evaluator_probs_list</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="p">],</span>
+    <span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="flexeval.core.metric.llm_geval_score.ChatLLMGEvalScore.__repr__" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">__repr__</span>
+
+
+<a href="#flexeval.core.metric.llm_geval_score.ChatLLMGEvalScore.__repr__" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="fm">__repr__</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+            <details class="quote">
+              <summary>Source code in <code>flexeval/core/metric/llm_geval_score.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">435</span>
+<span class="normal">436</span>
+<span class="normal">437</span>
+<span class="normal">438</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">return</span> <span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">(language_model=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">language_model</span><span class="si">}</span><span class="s2">, prompt_template=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">prompt_template</span><span class="si">}</span><span class="s2">)&quot;</span>
+    <span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="flexeval.core.metric.llm_geval_score.LLMGEvalScore" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">LLMGEvalScore</span>
+
+
+<a href="#flexeval.core.metric.llm_geval_score.LLMGEvalScore" class="headerlink" title="Permanent link">&para;</a></h2>
+
+
+    <div class="doc doc-contents first">
+
+
+      <p>Let LanguageModel evaluate the output of another LanguageModel.
+Unlike LLMScore, this metric let the model output logprobs for all valid scores and
+calculate weighted score among them.
+Note that due to constraint for OpenAI models, the number of valid scores must not exceed 20.
+For detail, see https://aclanthology.org/2023.emnlp-main.153/</p>
+<p>You can specify the evaluation criteria in <code>PromptTemplate</code>.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+          <b><code>language_model</code></b>
+              (<code>required</code>)
+          –
+          <div class="doc-md-description">
+            <p>An instance of <code>LanguageModel</code> to evaluate the output of the model.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+          <b><code>prompt_template</code></b>
+              (<code>required</code>)
+          –
+          <div class="doc-md-description">
+            <p>An instance of <code>PromptTemplate</code> to embed the input for the evaluator.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+          <b><code>valid_score_range</code></b>
+              (<code>required</code>)
+          –
+          <div class="doc-md-description">
+            <p>A tuple of two integers representing the valid score range.
+If the parsed score is out of the range, it will be ignored.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+          <b><code>disable_tqdm</code></b>
+              (<code>bool</code>, default:
+                  <code>False</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>Whether to disable the progress bar.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+          <b><code>category_key</code></b>
+              (<code>str | None</code>, default:
+                  <code>None</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>A key to create category-wise mean score.
+The category key is expected to be in task inputs.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+          <b><code>prob_threshold</code></b>
+              (<code>float</code>, default:
+                  <code>0</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>For considering low probability among all of valid scores,
+return None (invalid) if sum of the all probability among vaild scores is less than this value.</p>
+          </div>
+        </li>
+    </ul>
+
+
+<p><span class="doc-section-title">Examples:</span></p>
+    <div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">flexeval</span> <span class="kn">import</span> <span class="n">LLMGEvalScore</span><span class="p">,</span> <span class="n">HuggingFaceLM</span><span class="p">,</span> <span class="n">Jinja2PromptTemplate</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">language_model</span> <span class="o">=</span> <span class="n">HuggingFaceLM</span><span class="p">(</span><span class="s2">&quot;Qwen/Qwen2.5-0.5B-Instruct&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">template</span> <span class="o">=</span> <span class="s2">&quot;Evaluate the quality of this text.</span><span class="se">\n</span><span class="s2">`{{ lm_output }}`</span><span class="se">\n</span><span class="s2">Output only a number from 1 to 5.&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">prompt_template</span> <span class="o">=</span> <span class="n">Jinja2PromptTemplate</span><span class="p">(</span><span class="n">template</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">llm_score</span> <span class="o">=</span> <span class="n">LLMGEvalScore</span><span class="p">(</span><span class="n">language_model</span><span class="p">,</span> <span class="n">prompt_template</span><span class="p">,</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lm_outputs</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Hello, world!&quot;</span><span class="p">,</span> <span class="s2">&quot;Good morning!&quot;</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">llm_score</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">lm_outputs</span><span class="p">)</span>
+<span class="go">MetricResult(</span>
+<span class="go">    summary={&#39;llm_geval_score&#39;: 1.4399980931290486, &#39;num_failed_score_parses&#39;: 0},</span>
+<span class="go">    instance_details=[</span>
+<span class="go">        {</span>
+<span class="go">            &#39;llm_geval_score&#39;: 1.418920817254956,</span>
+<span class="go">            &#39;llm_geval_score_input&#39;: &#39;Evaluate the quality of this text...&#39;,</span>
+<span class="go">            &#39;llm_geval_score_logprobs&#39;: {</span>
+<span class="go">                &#39;1&#39;: -4.0625,</span>
+<span class="go">                &#39;2&#39;: -7.75,</span>
+<span class="go">                &#39;3&#39;: -8.25,</span>
+<span class="go">                &#39;4&#39;: -8.0625,</span>
+<span class="go">                &#39;5&#39;: -6.4375</span>
+<span class="go">            },</span>
+<span class="go">            &#39;llm_geval_score_generation_probs&#39;: {</span>
+<span class="go">                1: 0.017205950425851383,</span>
+<span class="go">                2: 0.00043074254057568753,</span>
+<span class="go">                3: 0.00026125855730166754,</span>
+<span class="go">                4: 0.000315137974737356,</span>
+<span class="go">                5: 0.0016004026902445643</span>
+<span class="go">            }</span>
+<span class="go">        },</span>
+<span class="go">        {</span>
+<span class="go">            &#39;llm_geval_score&#39;: 1.461075369003141</span>
+<span class="go">            &#39;llm_geval_score_input&#39;: &#39;Evaluate the quality of this text...&#39;,</span>
+<span class="go">            &#39;llm_geval_score_logprobs&#39;: {</span>
+<span class="go">                &#39;1&#39;: -4.25,</span>
+<span class="go">                &#39;2&#39;: -8.1875,</span>
+<span class="go">                &#39;3&#39;: -8.375,</span>
+<span class="go">                &#39;4&#39;: -8.125,</span>
+<span class="go">                &#39;5&#39;: -6.5</span>
+<span class="go">            },</span>
+<span class="go">            &#39;llm_geval_score_generation_probs&#39;: {</span>
+<span class="go">                1: 0.014264233908999256,</span>
+<span class="go">                2: 0.00027810828659249914,</span>
+<span class="go">                3: 0.00023055986759244163,</span>
+<span class="go">                4: 0.0002960447300568554,</span>
+<span class="go">                5: 0.0015034391929775724</span>
+<span class="go">            }</span>
+<span class="go">        }</span>
+<span class="go">    ]</span>
+<span class="go">)</span>
+</code></pre></div>
+
+              <details class="quote">
+                <summary>Source code in <code>flexeval/core/metric/llm_geval_score.py</code></summary>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">126</span>
+<span class="normal">127</span>
+<span class="normal">128</span>
+<span class="normal">129</span>
+<span class="normal">130</span>
+<span class="normal">131</span>
+<span class="normal">132</span>
+<span class="normal">133</span>
+<span class="normal">134</span>
+<span class="normal">135</span>
+<span class="normal">136</span>
+<span class="normal">137</span>
+<span class="normal">138</span>
+<span class="normal">139</span>
+<span class="normal">140</span>
+<span class="normal">141</span>
+<span class="normal">142</span>
+<span class="normal">143</span>
+<span class="normal">144</span>
+<span class="normal">145</span>
+<span class="normal">146</span>
+<span class="normal">147</span>
+<span class="normal">148</span>
+<span class="normal">149</span>
+<span class="normal">150</span>
+<span class="normal">151</span>
+<span class="normal">152</span>
+<span class="normal">153</span>
+<span class="normal">154</span>
+<span class="normal">155</span>
+<span class="normal">156</span>
+<span class="normal">157</span>
+<span class="normal">158</span>
+<span class="normal">159</span>
+<span class="normal">160</span>
+<span class="normal">161</span>
+<span class="normal">162</span>
+<span class="normal">163</span>
+<span class="normal">164</span>
+<span class="normal">165</span>
+<span class="normal">166</span>
+<span class="normal">167</span>
+<span class="normal">168</span>
+<span class="normal">169</span>
+<span class="normal">170</span>
+<span class="normal">171</span>
+<span class="normal">172</span>
+<span class="normal">173</span>
+<span class="normal">174</span>
+<span class="normal">175</span>
+<span class="normal">176</span>
+<span class="normal">177</span>
+<span class="normal">178</span>
+<span class="normal">179</span>
+<span class="normal">180</span>
+<span class="normal">181</span>
+<span class="normal">182</span>
+<span class="normal">183</span>
+<span class="normal">184</span>
+<span class="normal">185</span>
+<span class="normal">186</span>
+<span class="normal">187</span>
+<span class="normal">188</span>
+<span class="normal">189</span>
+<span class="normal">190</span>
+<span class="normal">191</span>
+<span class="normal">192</span>
+<span class="normal">193</span>
+<span class="normal">194</span>
+<span class="normal">195</span>
+<span class="normal">196</span>
+<span class="normal">197</span>
+<span class="normal">198</span>
+<span class="normal">199</span>
+<span class="normal">200</span>
+<span class="normal">201</span>
+<span class="normal">202</span>
+<span class="normal">203</span>
+<span class="normal">204</span>
+<span class="normal">205</span>
+<span class="normal">206</span>
+<span class="normal">207</span>
+<span class="normal">208</span>
+<span class="normal">209</span>
+<span class="normal">210</span>
+<span class="normal">211</span>
+<span class="normal">212</span>
+<span class="normal">213</span>
+<span class="normal">214</span>
+<span class="normal">215</span>
+<span class="normal">216</span>
+<span class="normal">217</span>
+<span class="normal">218</span>
+<span class="normal">219</span>
+<span class="normal">220</span>
+<span class="normal">221</span>
+<span class="normal">222</span>
+<span class="normal">223</span>
+<span class="normal">224</span>
+<span class="normal">225</span>
+<span class="normal">226</span>
+<span class="normal">227</span>
+<span class="normal">228</span>
+<span class="normal">229</span>
+<span class="normal">230</span>
+<span class="normal">231</span>
+<span class="normal">232</span>
+<span class="normal">233</span>
+<span class="normal">234</span>
+<span class="normal">235</span>
+<span class="normal">236</span>
+<span class="normal">237</span>
+<span class="normal">238</span>
+<span class="normal">239</span>
+<span class="normal">240</span>
+<span class="normal">241</span>
+<span class="normal">242</span>
+<span class="normal">243</span>
+<span class="normal">244</span>
+<span class="normal">245</span>
+<span class="normal">246</span>
+<span class="normal">247</span>
+<span class="normal">248</span>
+<span class="normal">249</span>
+<span class="normal">250</span>
+<span class="normal">251</span>
+<span class="normal">252</span>
+<span class="normal">253</span>
+<span class="normal">254</span>
+<span class="normal">255</span>
+<span class="normal">256</span>
+<span class="normal">257</span>
+<span class="normal">258</span>
+<span class="normal">259</span>
+<span class="normal">260</span>
+<span class="normal">261</span>
+<span class="normal">262</span>
+<span class="normal">263</span>
+<span class="normal">264</span>
+<span class="normal">265</span>
+<span class="normal">266</span>
+<span class="normal">267</span>
+<span class="normal">268</span>
+<span class="normal">269</span>
+<span class="normal">270</span>
+<span class="normal">271</span>
+<span class="normal">272</span>
+<span class="normal">273</span>
+<span class="normal">274</span>
+<span class="normal">275</span>
+<span class="normal">276</span>
+<span class="normal">277</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">LLMGEvalScore</span><span class="p">(</span><span class="n">Metric</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Let LanguageModel evaluate the output of another LanguageModel.</span>
+<span class="sd">    Unlike LLMScore, this metric let the model output logprobs for all valid scores and</span>
+<span class="sd">    calculate weighted score among them.</span>
+<span class="sd">    Note that due to constraint for OpenAI models, the number of valid scores must not exceed 20.</span>
+<span class="sd">    For detail, see https://aclanthology.org/2023.emnlp-main.153/</span>
+
+<span class="sd">    You can specify the evaluation criteria in `PromptTemplate`.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        language_model (required): An instance of `LanguageModel` to evaluate the output of the model.</span>
+<span class="sd">        prompt_template (required): An instance of `PromptTemplate` to embed the input for the evaluator.</span>
+<span class="sd">        valid_score_range (required): A tuple of two integers representing the valid score range.</span>
+<span class="sd">            If the parsed score is out of the range, it will be ignored.</span>
+<span class="sd">        disable_tqdm: Whether to disable the progress bar.</span>
+<span class="sd">        category_key: A key to create category-wise mean score.</span>
+<span class="sd">            The category key is expected to be in task inputs.</span>
+<span class="sd">        prob_threshold: For considering low probability among all of valid scores,</span>
+<span class="sd">            return None (invalid) if sum of the all probability among vaild scores is less than this value.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; from flexeval import LLMGEvalScore, HuggingFaceLM, Jinja2PromptTemplate</span>
+<span class="sd">        &gt;&gt;&gt; language_model = HuggingFaceLM(&quot;Qwen/Qwen2.5-0.5B-Instruct&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; template = &quot;Evaluate the quality of this text.\\n`{{ lm_output }}`\\nOutput only a number from 1 to 5.&quot;</span>
+<span class="sd">        &gt;&gt;&gt; prompt_template = Jinja2PromptTemplate(template)</span>
+<span class="sd">        &gt;&gt;&gt; llm_score = LLMGEvalScore(language_model, prompt_template, [1, 5])</span>
+<span class="sd">        &gt;&gt;&gt; lm_outputs = [&quot;Hello, world!&quot;, &quot;Good morning!&quot;]</span>
+<span class="sd">        &gt;&gt;&gt; llm_score.evaluate(lm_outputs)</span>
+<span class="sd">        MetricResult(</span>
+<span class="sd">            summary={&#39;llm_geval_score&#39;: 1.4399980931290486, &#39;num_failed_score_parses&#39;: 0},</span>
+<span class="sd">            instance_details=[</span>
+<span class="sd">                {</span>
+<span class="sd">                    &#39;llm_geval_score&#39;: 1.418920817254956,</span>
+<span class="sd">                    &#39;llm_geval_score_input&#39;: &#39;Evaluate the quality of this text...&#39;,</span>
+<span class="sd">                    &#39;llm_geval_score_logprobs&#39;: {</span>
+<span class="sd">                        &#39;1&#39;: -4.0625,</span>
+<span class="sd">                        &#39;2&#39;: -7.75,</span>
+<span class="sd">                        &#39;3&#39;: -8.25,</span>
+<span class="sd">                        &#39;4&#39;: -8.0625,</span>
+<span class="sd">                        &#39;5&#39;: -6.4375</span>
+<span class="sd">                    },</span>
+<span class="sd">                    &#39;llm_geval_score_generation_probs&#39;: {</span>
+<span class="sd">                        1: 0.017205950425851383,</span>
+<span class="sd">                        2: 0.00043074254057568753,</span>
+<span class="sd">                        3: 0.00026125855730166754,</span>
+<span class="sd">                        4: 0.000315137974737356,</span>
+<span class="sd">                        5: 0.0016004026902445643</span>
+<span class="sd">                    }</span>
+<span class="sd">                },</span>
+<span class="sd">                {</span>
+<span class="sd">                    &#39;llm_geval_score&#39;: 1.461075369003141</span>
+<span class="sd">                    &#39;llm_geval_score_input&#39;: &#39;Evaluate the quality of this text...&#39;,</span>
+<span class="sd">                    &#39;llm_geval_score_logprobs&#39;: {</span>
+<span class="sd">                        &#39;1&#39;: -4.25,</span>
+<span class="sd">                        &#39;2&#39;: -8.1875,</span>
+<span class="sd">                        &#39;3&#39;: -8.375,</span>
+<span class="sd">                        &#39;4&#39;: -8.125,</span>
+<span class="sd">                        &#39;5&#39;: -6.5</span>
+<span class="sd">                    },</span>
+<span class="sd">                    &#39;llm_geval_score_generation_probs&#39;: {</span>
+<span class="sd">                        1: 0.014264233908999256,</span>
+<span class="sd">                        2: 0.00027810828659249914,</span>
+<span class="sd">                        3: 0.00023055986759244163,</span>
+<span class="sd">                        4: 0.0002960447300568554,</span>
+<span class="sd">                        5: 0.0015034391929775724</span>
+<span class="sd">                    }</span>
+<span class="sd">                }</span>
+<span class="sd">            ]</span>
+<span class="sd">        )</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">language_model</span><span class="p">:</span> <span class="n">LanguageModel</span><span class="p">,</span>
+        <span class="n">prompt_template</span><span class="p">:</span> <span class="n">PromptTemplate</span><span class="p">,</span>
+        <span class="n">valid_score_range</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
+        <span class="n">disable_tqdm</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">category_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">prob_threshold</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">language_model</span> <span class="o">=</span> <span class="n">language_model</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">prompt_template</span> <span class="o">=</span> <span class="n">prompt_template</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">disable_tqdm</span> <span class="o">=</span> <span class="n">disable_tqdm</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">valid_score_range</span> <span class="o">=</span> <span class="n">valid_score_range</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">category_key</span> <span class="o">=</span> <span class="n">category_key</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">prob_threshold</span> <span class="o">=</span> <span class="n">prob_threshold</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">valid_labels</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">score</span><span class="p">)</span> <span class="k">for</span> <span class="n">score</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">valid_score_range</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">valid_score_range</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)]</span>
+
+    <span class="k">def</span> <span class="nf">evaluate</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">lm_outputs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+        <span class="n">references_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">task_inputs_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MetricResult</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">task_inputs_list</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">task_inputs_list</span> <span class="o">=</span> <span class="p">[{}</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">lm_outputs</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">references_list</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">references_list</span> <span class="o">=</span> <span class="p">[[]</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">lm_outputs</span><span class="p">]</span>
+
+        <span class="n">evaluator_input_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">prepare_text_input_for_evaluator</span><span class="p">(</span>
+            <span class="n">lm_outputs</span><span class="p">,</span> <span class="n">references_list</span><span class="p">,</span> <span class="n">task_inputs_list</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">prompt_template</span>
+        <span class="p">)</span>
+        <span class="n">evaluator_logprobs_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="n">generate_evaluation_logprobs</span><span class="p">(</span>
+            <span class="n">evaluator_input_list</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">language_model</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">valid_labels</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">disable_tqdm</span><span class="p">,</span>
+            <span class="s2">&quot;Calculating logprobs&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">evaluator_score_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">evaluator_probs_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">evaluator_logprobs</span> <span class="ow">in</span> <span class="n">evaluator_logprobs_list</span><span class="p">:</span>
+            <span class="n">evaluator_score</span><span class="p">,</span> <span class="n">evaluator_probs</span> <span class="o">=</span> <span class="n">calculate_weighted_average</span><span class="p">(</span>
+                <span class="n">evaluator_logprobs</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">valid_score_range</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">prob_threshold</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">evaluator_score</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to parse score from evaluator logprobs: </span><span class="si">{</span><span class="n">evaluator_logprobs</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">evaluator_score_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">evaluator_score</span><span class="p">)</span>
+            <span class="n">evaluator_probs_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">evaluator_probs</span><span class="p">)</span>
+
+        <span class="n">summary</span> <span class="o">=</span> <span class="n">summarize_evaluator_geval_scores</span><span class="p">(</span>
+            <span class="n">evaluator_score_list</span><span class="p">,</span>
+            <span class="n">task_inputs_list</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">category_key</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">MetricResult</span><span class="p">(</span>
+            <span class="n">summary</span><span class="p">,</span>
+            <span class="n">instance_details</span><span class="o">=</span><span class="p">[</span>
+                <span class="p">{</span>
+                    <span class="s2">&quot;llm_geval_score&quot;</span><span class="p">:</span> <span class="n">eval_score</span><span class="p">,</span>
+                    <span class="s2">&quot;llm_geval_score_input&quot;</span><span class="p">:</span> <span class="n">eval_in</span><span class="p">,</span>
+                    <span class="s2">&quot;llm_geval_score_logprobs&quot;</span><span class="p">:</span> <span class="n">eval_logprobs</span><span class="p">,</span>
+                    <span class="s2">&quot;llm_geval_score_generation_probs&quot;</span><span class="p">:</span> <span class="n">eval_probs</span><span class="p">,</span>
+                <span class="p">}</span>
+                <span class="k">for</span> <span class="n">eval_score</span><span class="p">,</span> <span class="n">eval_in</span><span class="p">,</span> <span class="n">eval_logprobs</span><span class="p">,</span> <span class="n">eval_probs</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span>
+                    <span class="n">evaluator_score_list</span><span class="p">,</span>
+                    <span class="n">evaluator_input_list</span><span class="p">,</span>
+                    <span class="n">evaluator_logprobs_list</span><span class="p">,</span>
+                    <span class="n">evaluator_probs_list</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="p">],</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">(language_model=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">language_model</span><span class="si">}</span><span class="s2">, prompt_template=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">prompt_template</span><span class="si">}</span><span class="s2">)&quot;</span>
+        <span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+              </details>
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h3 id="flexeval.core.metric.llm_geval_score.LLMGEvalScore.language_model" class="doc doc-heading">
+            <span class="doc doc-object-name doc-attribute-name">language_model</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+<a href="#flexeval.core.metric.llm_geval_score.LLMGEvalScore.language_model" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">language_model</span> <span class="o">=</span> <span class="n">language_model</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h3 id="flexeval.core.metric.llm_geval_score.LLMGEvalScore.prompt_template" class="doc doc-heading">
+            <span class="doc doc-object-name doc-attribute-name">prompt_template</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+<a href="#flexeval.core.metric.llm_geval_score.LLMGEvalScore.prompt_template" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">prompt_template</span> <span class="o">=</span> <span class="n">prompt_template</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h3 id="flexeval.core.metric.llm_geval_score.LLMGEvalScore.disable_tqdm" class="doc doc-heading">
+            <span class="doc doc-object-name doc-attribute-name">disable_tqdm</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+<a href="#flexeval.core.metric.llm_geval_score.LLMGEvalScore.disable_tqdm" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">disable_tqdm</span> <span class="o">=</span> <span class="n">disable_tqdm</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h3 id="flexeval.core.metric.llm_geval_score.LLMGEvalScore.valid_score_range" class="doc doc-heading">
+            <span class="doc doc-object-name doc-attribute-name">valid_score_range</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+<a href="#flexeval.core.metric.llm_geval_score.LLMGEvalScore.valid_score_range" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">valid_score_range</span> <span class="o">=</span> <span class="n">valid_score_range</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h3 id="flexeval.core.metric.llm_geval_score.LLMGEvalScore.category_key" class="doc doc-heading">
+            <span class="doc doc-object-name doc-attribute-name">category_key</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+<a href="#flexeval.core.metric.llm_geval_score.LLMGEvalScore.category_key" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">category_key</span> <span class="o">=</span> <span class="n">category_key</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h3 id="flexeval.core.metric.llm_geval_score.LLMGEvalScore.prob_threshold" class="doc doc-heading">
+            <span class="doc doc-object-name doc-attribute-name">prob_threshold</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+<a href="#flexeval.core.metric.llm_geval_score.LLMGEvalScore.prob_threshold" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">prob_threshold</span> <span class="o">=</span> <span class="n">prob_threshold</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h3 id="flexeval.core.metric.llm_geval_score.LLMGEvalScore.valid_labels" class="doc doc-heading">
+            <span class="doc doc-object-name doc-attribute-name">valid_labels</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+<a href="#flexeval.core.metric.llm_geval_score.LLMGEvalScore.valid_labels" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">valid_labels</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">score</span><span class="p">)</span> <span class="k">for</span> <span class="n">score</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">valid_score_range</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">valid_score_range</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)]</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+    </div>
+
+</div>
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="flexeval.core.metric.llm_geval_score.LLMGEvalScore.__init__" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">__init__</span>
+
+
+<a href="#flexeval.core.metric.llm_geval_score.LLMGEvalScore.__init__" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="fm">__init__</span><span class="p">(</span><span class="nf">language_model</span><span class="p">:</span> <span class="n">LanguageModel</span><span class="p">,</span> <span class="n">prompt_template</span><span class="p">:</span> <span class="n">PromptTemplate</span><span class="p">,</span> <span class="n">valid_score_range</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="n">disable_tqdm</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">category_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">prob_threshold</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+            <details class="quote">
+              <summary>Source code in <code>flexeval/core/metric/llm_geval_score.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">197</span>
+<span class="normal">198</span>
+<span class="normal">199</span>
+<span class="normal">200</span>
+<span class="normal">201</span>
+<span class="normal">202</span>
+<span class="normal">203</span>
+<span class="normal">204</span>
+<span class="normal">205</span>
+<span class="normal">206</span>
+<span class="normal">207</span>
+<span class="normal">208</span>
+<span class="normal">209</span>
+<span class="normal">210</span>
+<span class="normal">211</span>
+<span class="normal">212</span>
+<span class="normal">213</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">language_model</span><span class="p">:</span> <span class="n">LanguageModel</span><span class="p">,</span>
+    <span class="n">prompt_template</span><span class="p">:</span> <span class="n">PromptTemplate</span><span class="p">,</span>
+    <span class="n">valid_score_range</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
+    <span class="n">disable_tqdm</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">category_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">prob_threshold</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">language_model</span> <span class="o">=</span> <span class="n">language_model</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">prompt_template</span> <span class="o">=</span> <span class="n">prompt_template</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">disable_tqdm</span> <span class="o">=</span> <span class="n">disable_tqdm</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">valid_score_range</span> <span class="o">=</span> <span class="n">valid_score_range</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">category_key</span> <span class="o">=</span> <span class="n">category_key</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">prob_threshold</span> <span class="o">=</span> <span class="n">prob_threshold</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">valid_labels</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">score</span><span class="p">)</span> <span class="k">for</span> <span class="n">score</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">valid_score_range</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">valid_score_range</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)]</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="flexeval.core.metric.llm_geval_score.LLMGEvalScore.evaluate" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">evaluate</span>
+
+
+<a href="#flexeval.core.metric.llm_geval_score.LLMGEvalScore.evaluate" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">evaluate</span><span class="p">(</span><span class="n">lm_outputs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">references_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">task_inputs_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MetricResult</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+            <details class="quote">
+              <summary>Source code in <code>flexeval/core/metric/llm_geval_score.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">215</span>
+<span class="normal">216</span>
+<span class="normal">217</span>
+<span class="normal">218</span>
+<span class="normal">219</span>
+<span class="normal">220</span>
+<span class="normal">221</span>
+<span class="normal">222</span>
+<span class="normal">223</span>
+<span class="normal">224</span>
+<span class="normal">225</span>
+<span class="normal">226</span>
+<span class="normal">227</span>
+<span class="normal">228</span>
+<span class="normal">229</span>
+<span class="normal">230</span>
+<span class="normal">231</span>
+<span class="normal">232</span>
+<span class="normal">233</span>
+<span class="normal">234</span>
+<span class="normal">235</span>
+<span class="normal">236</span>
+<span class="normal">237</span>
+<span class="normal">238</span>
+<span class="normal">239</span>
+<span class="normal">240</span>
+<span class="normal">241</span>
+<span class="normal">242</span>
+<span class="normal">243</span>
+<span class="normal">244</span>
+<span class="normal">245</span>
+<span class="normal">246</span>
+<span class="normal">247</span>
+<span class="normal">248</span>
+<span class="normal">249</span>
+<span class="normal">250</span>
+<span class="normal">251</span>
+<span class="normal">252</span>
+<span class="normal">253</span>
+<span class="normal">254</span>
+<span class="normal">255</span>
+<span class="normal">256</span>
+<span class="normal">257</span>
+<span class="normal">258</span>
+<span class="normal">259</span>
+<span class="normal">260</span>
+<span class="normal">261</span>
+<span class="normal">262</span>
+<span class="normal">263</span>
+<span class="normal">264</span>
+<span class="normal">265</span>
+<span class="normal">266</span>
+<span class="normal">267</span>
+<span class="normal">268</span>
+<span class="normal">269</span>
+<span class="normal">270</span>
+<span class="normal">271</span>
+<span class="normal">272</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">evaluate</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">lm_outputs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+    <span class="n">references_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">task_inputs_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MetricResult</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">task_inputs_list</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">task_inputs_list</span> <span class="o">=</span> <span class="p">[{}</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">lm_outputs</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">references_list</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">references_list</span> <span class="o">=</span> <span class="p">[[]</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">lm_outputs</span><span class="p">]</span>
+
+    <span class="n">evaluator_input_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">prepare_text_input_for_evaluator</span><span class="p">(</span>
+        <span class="n">lm_outputs</span><span class="p">,</span> <span class="n">references_list</span><span class="p">,</span> <span class="n">task_inputs_list</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">prompt_template</span>
+    <span class="p">)</span>
+    <span class="n">evaluator_logprobs_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="n">generate_evaluation_logprobs</span><span class="p">(</span>
+        <span class="n">evaluator_input_list</span><span class="p">,</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">language_model</span><span class="p">,</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">valid_labels</span><span class="p">,</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">disable_tqdm</span><span class="p">,</span>
+        <span class="s2">&quot;Calculating logprobs&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">evaluator_score_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">evaluator_probs_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">evaluator_logprobs</span> <span class="ow">in</span> <span class="n">evaluator_logprobs_list</span><span class="p">:</span>
+        <span class="n">evaluator_score</span><span class="p">,</span> <span class="n">evaluator_probs</span> <span class="o">=</span> <span class="n">calculate_weighted_average</span><span class="p">(</span>
+            <span class="n">evaluator_logprobs</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">valid_score_range</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">prob_threshold</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">evaluator_score</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to parse score from evaluator logprobs: </span><span class="si">{</span><span class="n">evaluator_logprobs</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">evaluator_score_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">evaluator_score</span><span class="p">)</span>
+        <span class="n">evaluator_probs_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">evaluator_probs</span><span class="p">)</span>
+
+    <span class="n">summary</span> <span class="o">=</span> <span class="n">summarize_evaluator_geval_scores</span><span class="p">(</span>
+        <span class="n">evaluator_score_list</span><span class="p">,</span>
+        <span class="n">task_inputs_list</span><span class="p">,</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">category_key</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">MetricResult</span><span class="p">(</span>
+        <span class="n">summary</span><span class="p">,</span>
+        <span class="n">instance_details</span><span class="o">=</span><span class="p">[</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;llm_geval_score&quot;</span><span class="p">:</span> <span class="n">eval_score</span><span class="p">,</span>
+                <span class="s2">&quot;llm_geval_score_input&quot;</span><span class="p">:</span> <span class="n">eval_in</span><span class="p">,</span>
+                <span class="s2">&quot;llm_geval_score_logprobs&quot;</span><span class="p">:</span> <span class="n">eval_logprobs</span><span class="p">,</span>
+                <span class="s2">&quot;llm_geval_score_generation_probs&quot;</span><span class="p">:</span> <span class="n">eval_probs</span><span class="p">,</span>
+            <span class="p">}</span>
+            <span class="k">for</span> <span class="n">eval_score</span><span class="p">,</span> <span class="n">eval_in</span><span class="p">,</span> <span class="n">eval_logprobs</span><span class="p">,</span> <span class="n">eval_probs</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span>
+                <span class="n">evaluator_score_list</span><span class="p">,</span>
+                <span class="n">evaluator_input_list</span><span class="p">,</span>
+                <span class="n">evaluator_logprobs_list</span><span class="p">,</span>
+                <span class="n">evaluator_probs_list</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="p">],</span>
+    <span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="flexeval.core.metric.llm_geval_score.LLMGEvalScore.__repr__" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">__repr__</span>
+
+
+<a href="#flexeval.core.metric.llm_geval_score.LLMGEvalScore.__repr__" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="fm">__repr__</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+            <details class="quote">
+              <summary>Source code in <code>flexeval/core/metric/llm_geval_score.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">274</span>
+<span class="normal">275</span>
+<span class="normal">276</span>
+<span class="normal">277</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">return</span> <span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">(language_model=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">language_model</span><span class="si">}</span><span class="s2">, prompt_template=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">prompt_template</span><span class="si">}</span><span class="s2">)&quot;</span>
     <span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -7989,10 +9734,7 @@ Please set <code>PERSPECTIVE_API_KEY</code> in the environment variable.</p>
 
               <details class="quote">
                 <summary>Source code in <code>flexeval/core/metric/repetition_count.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">23</span>
-<span class="normal">24</span>
-<span class="normal">25</span>
-<span class="normal">26</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">26</span>
 <span class="normal">27</span>
 <span class="normal">28</span>
 <span class="normal">29</span>
@@ -8052,7 +9794,10 @@ Please set <code>PERSPECTIVE_API_KEY</code> in the environment variable.</p>
 <span class="normal">83</span>
 <span class="normal">84</span>
 <span class="normal">85</span>
-<span class="normal">86</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">RepetitionCount</span><span class="p">(</span><span class="n">Metric</span><span class="p">):</span>
+<span class="normal">86</span>
+<span class="normal">87</span>
+<span class="normal">88</span>
+<span class="normal">89</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">RepetitionCount</span><span class="p">(</span><span class="n">Metric</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A metric that counts the number of repetitions of the most repeated pattern in the model&#39;s output.</span>
 
@@ -8209,10 +9954,7 @@ Please set <code>PERSPECTIVE_API_KEY</code> in the environment variable.</p>
 
             <details class="quote">
               <summary>Source code in <code>flexeval/core/metric/repetition_count.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">43</span>
-<span class="normal">44</span>
-<span class="normal">45</span>
-<span class="normal">46</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">46</span>
 <span class="normal">47</span>
 <span class="normal">48</span>
 <span class="normal">49</span>
@@ -8220,7 +9962,10 @@ Please set <code>PERSPECTIVE_API_KEY</code> in the environment variable.</p>
 <span class="normal">51</span>
 <span class="normal">52</span>
 <span class="normal">53</span>
-<span class="normal">54</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<span class="normal">54</span>
+<span class="normal">55</span>
+<span class="normal">56</span>
+<span class="normal">57</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">count_threshold</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">30</span><span class="p">,</span>
     <span class="n">threshold_length</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
@@ -8253,10 +9998,7 @@ Please set <code>PERSPECTIVE_API_KEY</code> in the environment variable.</p>
 
             <details class="quote">
               <summary>Source code in <code>flexeval/core/metric/repetition_count.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">56</span>
-<span class="normal">57</span>
-<span class="normal">58</span>
-<span class="normal">59</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">59</span>
 <span class="normal">60</span>
 <span class="normal">61</span>
 <span class="normal">62</span>
@@ -8283,7 +10025,10 @@ Please set <code>PERSPECTIVE_API_KEY</code> in the environment variable.</p>
 <span class="normal">83</span>
 <span class="normal">84</span>
 <span class="normal">85</span>
-<span class="normal">86</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">evaluate</span><span class="p">(</span>
+<span class="normal">86</span>
+<span class="normal">87</span>
+<span class="normal">88</span>
+<span class="normal">89</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">evaluate</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">lm_outputs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
     <span class="n">references_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span>  <span class="c1"># Not used in this metric</span>
