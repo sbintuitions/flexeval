@@ -80,6 +80,21 @@ class LanguageModel:
         msg = f"{self.__class__.__name__} cannot compute chat log probabilities."
         raise NotImplementedError(msg)
 
+    def batch_compute_chat_single_token_log_probs(
+        self, prompt_list: list[list[dict[str, str]]], choice_list: list[str]
+    ) -> list[float]:
+        """
+        Compute log probabilities of the chat responses comprising exaclty one token given the chat history.
+        This function is useful to obtain probabilities of possible choices for multiple QA
+        or scoring requests for closed chat AI models such as ChatGPT.
+
+        Args:
+            prompt_list: A list of chat histories.
+            choice_list: A list of choices (must be comprised of single token) whose probabilities you want.
+        """
+        msg = f"{self.__class__.__name__} cannot compute chat single token log probabilities."
+        raise NotImplementedError(msg)
+
     @final
     def complete_text(
         self,
@@ -144,6 +159,20 @@ class LanguageModel:
         if isinstance(prompt[0], dict):
             return self.batch_compute_chat_log_probs([prompt], [response])[0]
         return self.batch_compute_chat_log_probs(prompt, response)
+
+    @final
+    def compute_chat_single_token_log_probs(
+        self, prompt: list[dict[str, str]] | list[list[dict[str, str]]], choice_list: list[str]
+    ) -> list[float]:
+        """
+        A wrapper for `batch_compute_chat_single_token_log_probs` that accepts a single chat prompt or a list of chat prompts.
+        This is a convenient method for end-users.
+        To implement computation logic, you should override `batch_compute_chat_single_token_log_probs` method.
+        """
+
+        if isinstance(prompt[0], dict):
+            return self.batch_compute_chat_log_probs([prompt], choice_list)[0]
+        return self.batch_compute_chat_log_probs(prompt, choice_list)
 
 
 def normalize_stop_sequences(
