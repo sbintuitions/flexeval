@@ -82,7 +82,7 @@ class LanguageModel:
 
     def batch_compute_chat_single_token_log_probs(
         self, prompt_list: list[list[dict[str, str]]], choice_list: list[str]
-    ) -> list[float]:
+    ) -> list[dict[str, float | None]]:
         """
         Compute log probabilities of the chat responses comprising exaclty one token given the chat history.
         This function is useful to obtain probabilities of possible choices for multiple QA
@@ -163,7 +163,7 @@ class LanguageModel:
     @final
     def compute_chat_single_token_log_probs(
         self, prompt: list[dict[str, str]] | list[list[dict[str, str]]], choice_list: list[str]
-    ) -> list[float]:
+    ) -> dict[str, float | None] | list[dict[str, float | None]]:
         """
         A wrapper for `batch_compute_chat_single_token_log_probs` that accepts a single chat prompt
         or a list of chat prompts.

@@ -162,7 +162,7 @@ class OpenAIChatAPI(LanguageModel):
         temperature: float = 0,
         seed: int = 42,
         top_logprobs: int = 20,  # maximum number for OpenAI API
-    ) -> list[float | None]:
+    ) -> list[dict[str, float | None]]:
         # For saving cost, remove duplication from message_list for an API request.
         unique_prompt_list = remove_duplicates_from_prompt_list(prompt_list)
         api_responses = asyncio.run(
@@ -177,17 +177,19 @@ class OpenAIChatAPI(LanguageModel):
 
         log_probs = []
         top_logprobs_list = [res.choices[0].logprobs.content[0].top_logprobs for res in api_responses]
-        for index, prompt_list in enumerate(unique_prompt_list):
-            target_token = choice_list[index]
-            index_in_unique = unique_prompt_list.index(prompt_list)
+        for prompt in prompt_list:
+            log_probs_of_choices = {
+                # if target token not in top_logprobs, return None for log_prob of the token
+                choice: None
+                for choice in choice_list
+            }
+            index_in_unique = unique_prompt_list.index(prompt)
 
-            log_prob = None  # if target token not in top_logprobs, return None for log_prob of the token
             top_logprobs = top_logprobs_list[index_in_unique]
             for token_logprob in top_logprobs:
-                if token_logprob.token == target_token:
-                    log_prob = token_logprob.logprob
-                    break
-            log_probs.append(log_prob)
+                if token_logprob.token in log_probs_of_choices:
+                    log_probs_of_choices[token_logprob.token] = token_logprob.logprob
+            log_probs.append(log_probs_of_choices)
 
         return log_probs
 
