@@ -23,10 +23,10 @@ def chat_lm() -> OpenAIChatAPI:
 def test_compute_chat_single_token_log_probs(chat_lm: OpenAIChatAPI) -> None:
     prompt = [{"role": "user", "content": "Output a number from 1 to 3."}]
     choice_list = ["1", "2", "3", "4"]
-    log_prob = chat_lm.compute_chat_log_probs(prompt, choice_list)
+    log_prob = chat_lm.compute_chat_single_token_log_probs(prompt, choice_list)
     assert isinstance(log_prob, dict)
     assert log_prob["1"] > log_prob["4"] or 0
-    batch_log_prob = chat_lm.batch_compute_chat_log_probs([prompt], choice_list)
+    batch_log_prob = chat_lm.batch_compute_chat_single_token_log_probs([prompt], choice_list)
     assert isinstance(batch_log_prob[0], dict)
     assert batch_log_prob[0]["1"] > batch_log_prob[0]["4"] or 0
 

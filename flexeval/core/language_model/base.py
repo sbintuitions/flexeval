@@ -172,8 +172,8 @@ class LanguageModel:
         """
 
         if isinstance(prompt[0], dict):
-            return self.batch_compute_chat_log_probs([prompt], choice_list)[0]
-        return self.batch_compute_chat_log_probs(prompt, choice_list)
+            return self.batch_compute_chat_single_token_log_probs([prompt], choice_list)[0]
+        return self.batch_compute_chat_single_token_log_probs(prompt, choice_list)
 
 
 def normalize_stop_sequences(
