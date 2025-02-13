@@ -155,60 +155,14 @@ class OpenAIChatAPI(LanguageModel):
             logger.warning("All generated texts are empty string. Something may go wrong.")
         return completions
 
-    def batch_compute_log_probs(
-        self,
-        text_list: list[str],
-        prefix_list: list[str] | None = None,
-        stride: int | None = None,
-        temperature: float = 0,
-        seed: int = 42,
-        top_logprobs: int = 20,  # maximum number
-    ) -> list[float | None]:
-        if stride:
-            logger.warning("stride is ignored in batch_compute_log_probs of OpenAIChatAPI due to its specification.")
-
-        batch_size = len(text_list)
-        prefix_list = prefix_list if prefix_list else ["" for _ in range(batch_size)]
-
-        # For saving cost, remove duplication from message_list for an API request.
-        prefix_unique_list = list(set(prefix_list))
-        messages_list = [[{"role": "user", "content": prefix}] for prefix in prefix_unique_list]
-        api_responses = asyncio.run(
-            self._async_batch_run_chatgpt(
-                messages_list,
-                max_completion_tokens=1,
-                seed=seed,
-                logprobs=True,
-                top_logprobs=top_logprobs,
-            ),
-        )
-
-        log_probs = []
-        top_logprobs_list = [res.choices[0].logprobs.content[0].top_logprobs for res in api_responses]
-        for index, prefix in enumerate(prefix_list):
-            target_token = text_list[index]
-            index_in_unique = prefix_unique_list.index(prefix)
-
-            log_prob = None  # if target token not in top_logprobs, return None for log_prob of the token
-            top_logprobs = top_logprobs_list[index_in_unique]
-            for token_logprob in top_logprobs:
-                if token_logprob.token == target_token:
-                    log_prob = token_logprob.logprob
-                    break
-            log_probs.append(log_prob)
-
-        return log_probs
-
-    def batch_compute_chat_log_probs(
+    def batch_compute_chat_single_token_log_probs(
         self,
         prompt_list: list[list[dict[str, str]]],
-        response_list: list[dict[str, str]],
+        choice_list: list[str],
         temperature: float = 0,
         seed: int = 42,
-        top_logprobs: int = 20,
-    ) -> list[float]:
-        response_tokens = [resp["content"] for resp in response_list]
-
+        top_logprobs: int = 20,  # maximum number for OpenAI API
+    ) -> list[float | None]:
         # For saving cost, remove duplication from message_list for an API request.
         unique_prompt_list = remove_duplicates_from_prompt_list(prompt_list)
         api_responses = asyncio.run(
@@ -224,7 +178,7 @@ class OpenAIChatAPI(LanguageModel):
         log_probs = []
         top_logprobs_list = [res.choices[0].logprobs.content[0].top_logprobs for res in api_responses]
         for index, prompt_list in enumerate(unique_prompt_list):
-            target_token = response_tokens[index]
+            target_token = choice_list[index]
             index_in_unique = unique_prompt_list.index(prompt_list)
 
             log_prob = None  # if target token not in top_logprobs, return None for log_prob of the token
