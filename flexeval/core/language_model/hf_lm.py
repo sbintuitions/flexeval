@@ -414,7 +414,8 @@ class HuggingFaceLM(LanguageModel):
         return self.batch_compute_log_probs(response_as_string, prefix_list=prompt_as_string)
 
     def batch_compute_single_token_log_probs(
-        self, choice_list: list[str],
+        self,
+        choice_list: list[str],
         prefix_list: list[str] | None = None,
     ) -> list[dict[str, float | None]]:
         multiple_prefix_list = []
