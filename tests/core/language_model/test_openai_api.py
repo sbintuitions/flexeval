@@ -20,23 +20,15 @@ def chat_lm() -> OpenAIChatAPI:
 
 
 @pytest.mark.skipif(not is_openai_enabled(), reason="OpenAI is not installed")
-def test_compute_log_probs(chat_lm: OpenAIChatAPI) -> None:
-    prefix = "Hello, how are you?"
-    text = "Good"
-    log_prob = chat_lm.compute_log_probs(text, [prefix])
-    assert isinstance(log_prob, None | float)
-    batch_log_prob = chat_lm.batch_compute_log_probs([text], [prefix])
-    assert isinstance(batch_log_prob[0], None | float)
-
-
-@pytest.mark.skipif(not is_openai_enabled(), reason="OpenAI is not installed")
-def test_compute_chat_log_probs(chat_lm: OpenAIChatAPI) -> None:
-    prompt = [{"role": "user", "content": "Hello, how are you?"}]
-    response = {"role": "assistant", "content": "Good"}
-    log_prob = chat_lm.compute_chat_log_probs(prompt, response)
-    assert isinstance(log_prob, None | float)
-    batch_log_prob = chat_lm.batch_compute_chat_log_probs([prompt], [response])
-    assert isinstance(batch_log_prob[0], None | float)
+def test_compute_chat_single_token_log_probs(chat_lm: OpenAIChatAPI) -> None:
+    prompt = [{"role": "user", "content": "Output a number from 1 to 3."}]
+    choice_list = ["1", "2", "3", "4"]
+    log_prob = chat_lm.compute_chat_log_probs(prompt, choice_list)
+    assert isinstance(log_prob, dict)
+    assert log_prob["1"] > log_prob["4"] or 0
+    batch_log_prob = chat_lm.batch_compute_chat_log_probs([prompt], choice_list)
+    assert isinstance(batch_log_prob[0], dict)
+    assert batch_log_prob[0]["1"] > batch_log_prob[0]["4"] or 0
 
 
 def test_message_list_and_prompt() -> None:
