@@ -165,7 +165,8 @@ class LanguageModel:
         self, prompt: list[dict[str, str]] | list[list[dict[str, str]]], choice_list: list[str]
     ) -> list[float]:
         """
-        A wrapper for `batch_compute_chat_single_token_log_probs` that accepts a single chat prompt or a list of chat prompts.
+        A wrapper for `batch_compute_chat_single_token_log_probs` that accepts a single chat prompt
+        or a list of chat prompts.
         This is a convenient method for end-users.
         To implement computation logic, you should override `batch_compute_chat_single_token_log_probs` method.
         """
