@@ -67,6 +67,21 @@ class LanguageModel:
         msg = f"{self.__class__.__name__} cannot compute perplexity."
         raise NotImplementedError(msg)
 
+    def batch_compute_single_token_log_probs(
+        self, choice_list: list[str], prefix_list: list[str]
+    ) -> list[dict[str, float | None]]:
+        """
+        Compute log probabilities of the chat responses comprising exactly one token after given prefixes.
+        This function is useful to obtain probabilities of possible choices for multiple QA
+        or scoring requests for closed models.
+
+        Args:
+            choice_list: A list of choices (must be comprised of single token) whose probabilities you want.
+            prefix_list: A list of prefixes.
+        """
+        msg = f"{self.__class__.__name__} cannot compute single token log probabilities."
+        raise NotImplementedError(msg)
+
     def batch_compute_chat_log_probs(
         self, prompt_list: list[list[dict[str, str]]], response_list: list[dict[str, str]]
     ) -> list[float]:
@@ -84,9 +99,9 @@ class LanguageModel:
         self, prompt_list: list[list[dict[str, str]]], choice_list: list[str]
     ) -> list[dict[str, float | None]]:
         """
-        Compute log probabilities of the chat responses comprising exaclty one token given the chat history.
+        Compute log probabilities of the chat responses comprising exactly one token given the chat history.
         This function is useful to obtain probabilities of possible choices for multiple QA
-        or scoring requests for closed chat AI models such as ChatGPT.
+        or scoring requests for closed chat models such as ChatGPT.
 
         Args:
             prompt_list: A list of chat histories.
