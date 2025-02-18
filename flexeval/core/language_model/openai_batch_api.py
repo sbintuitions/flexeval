@@ -84,7 +84,6 @@ class OpenAIChatBatchAPI(LanguageModel):
         max_new_tokens: int | None = None,
         **kwargs,
     ) -> str:
-        
         gen_kwargs = self.default_gen_kwargs.copy()
         gen_kwargs.update(kwargs)
         """Send batch chat requests to the OpenAI."""
