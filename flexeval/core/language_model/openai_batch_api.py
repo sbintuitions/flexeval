@@ -14,7 +14,7 @@ from openai import AsyncOpenAI
 from openai.types import Batch
 
 from .base import LanguageModel
-from .openai_api import remove_duplicates_from_prompt_list
+from .openai_api import remove_duplicates_from_prompt_list, number_of_tokens_in_openai_model
 
 MAX_NUM_TRIALS = 3
 
@@ -243,14 +243,20 @@ class OpenAIChatBatchAPI(LanguageModel):
         except OSError as e:
             logger.error(f"Error: {e.filename} - {e.strerror}.")
 
-    def batch_compute_chat_single_token_log_probs(
+    def batch_compute_chat_log_probs(
         self,
         prompt_list: list[list[dict[str, str]]],
-        choice_list: list[str],
+        response_list: list[dict[str, str]],
         temperature: float = 0,
         seed: int = 42,
         top_logprobs: int = 20,
     ) -> list[float]:
+        response_contents = [resp["content"] for resp in response_list]
+        for response_content in response_contents:
+            num_tokens = number_of_tokens_in_openai_model(self.model, response_content)
+            if num_tokens > 1:
+                return NotImplementedError(f"OpenAIChatBatchAPI.batch_compute_chat_log_probs is not applicable for two or more tokens of response content: \"{response_content}\"")
+
         # For saving cost, remove duplication from message_list for an API request.
         unique_prompt_list = remove_duplicates_from_prompt_list(prompt_list)
         api_responses = self._execute_batch_requests(
@@ -264,7 +270,7 @@ class OpenAIChatBatchAPI(LanguageModel):
         log_probs = []
         top_logprobs_list = [res["choices"][0]["logprobs"]["content"][0]["top_logprobs"] for res in api_responses]
         for index, prompt_list in enumerate(unique_prompt_list):
-            target_token = choice_list[index]
+            target_token = response_contents[index]
             index_in_unique = unique_prompt_list.index(prompt_list)
 
             log_prob = None  # if target token not in top_logprobs, return None for log_prob of the token
