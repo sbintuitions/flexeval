@@ -169,7 +169,7 @@ class OpenAIChatAPI(LanguageModel):
         for response_content in response_contents:
             num_tokens = number_of_tokens_in_openai_model(self.model, response_content)
             if num_tokens > 1:
-                return NotImplementedError(f"OpenAIChatAPI.batch_compute_chat_log_probs is not applicable for two or more tokens of response content: \"{response_content}\"")
+                raise NotImplementedError(f"OpenAIChatAPI.batch_compute_chat_log_probs is not applicable for two or more tokens of response content: \"{response_content}\"")
 
         # For saving cost, remove duplication from message_list for an API request.
         unique_prompt_list = remove_duplicates_from_prompt_list(prompt_list)
@@ -185,7 +185,7 @@ class OpenAIChatAPI(LanguageModel):
 
         log_probs = []
         top_logprobs_list = [res.choices[0].logprobs.content[0].top_logprobs for res in api_responses]
-        for index, prompt_list in enumerate(unique_prompt_list):
+        for index, prompt_list in enumerate(prompt_list):
             target_token = response_contents[index]
             index_in_unique = unique_prompt_list.index(prompt_list)
 
