@@ -34,7 +34,7 @@ def test_batch_generate_chat_response(lm: OpenAIChatBatchAPI) -> None:
         [[{"role": "user", "content": "こんにちは。"}]],
         max_new_tokens=40,
     )
-    
+
     assert len(responses) == 1
     assert isinstance(responses[0], str)
 
