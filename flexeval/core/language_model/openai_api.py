@@ -164,7 +164,7 @@ class OpenAIChatAPI(LanguageModel):
         seed: int = 42,
         top_logprobs: int = 20,
     ) -> list[float | None]:
-        # check the number of tokens is 1
+        # Check the number of tokens is 1
         response_contents = [resp["content"] for resp in response_list]
         for response_content in response_contents:
             num_tokens = number_of_tokens_in_openai_model(self.model, response_content)
