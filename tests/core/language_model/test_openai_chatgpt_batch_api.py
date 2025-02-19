@@ -11,7 +11,9 @@ def is_openai_enabled() -> bool:
 
 @pytest.fixture(scope="module")
 def lm() -> OpenAIChatBatchAPI:
-    return OpenAIChatBatchAPI(model="gpt-4o-mini-2024-07-18", polling_interval_seconds=6)
+    return OpenAIChatBatchAPI(
+        model="gpt-4o-mini-2024-07-18", polling_interval_seconds=6, default_gen_kwargs={"temperature": 0.7}
+    )
 
 
 @pytest.mark.skipif(not is_openai_enabled(), reason="OpenAI is not installed")
