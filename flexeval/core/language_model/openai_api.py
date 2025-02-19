@@ -9,6 +9,7 @@ from loguru import logger
 from openai import AsyncOpenAI
 from openai.types.chat import ChatCompletion, ChatCompletionMessage
 from openai.types.chat.chat_completion import Choice
+import tiktoken
 
 from .base import LanguageModel, normalize_stop_sequences
 
@@ -164,8 +165,11 @@ class OpenAIChatAPI(LanguageModel):
         top_logprobs: int = 20,
     ) -> list[float | None]:
         # check the number of tokens is 1
-
-        response_tokens = [resp["content"] for resp in response_list]
+        response_contents = [resp["content"] for resp in response_list]
+        for response_content in response_contents:
+            num_tokens = number_of_tokens_in_openai_model(self.model, response_content)
+            if num_tokens > 1:
+                return NotImplementedError(f"OpenAIChatAPI.batch_compute_chat_log_probs is not applicable for two or more tokens of response content: \"{response_content}\"")
 
         # For saving cost, remove duplication from message_list for an API request.
         unique_prompt_list = remove_duplicates_from_prompt_list(prompt_list)
@@ -182,7 +186,7 @@ class OpenAIChatAPI(LanguageModel):
         log_probs = []
         top_logprobs_list = [res.choices[0].logprobs.content[0].top_logprobs for res in api_responses]
         for index, prompt_list in enumerate(unique_prompt_list):
-            target_token = response_tokens[index]
+            target_token = response_contents[index]
             index_in_unique = unique_prompt_list.index(prompt_list)
 
             log_prob = None  # if target token not in top_logprobs, return None for log_prob of the token
@@ -197,6 +201,11 @@ class OpenAIChatAPI(LanguageModel):
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(model={self.model})"
+
+
+def number_of_tokens_in_openai_model(model: str, content: str) -> int:
+    encoding = tiktoken.encoding_for_model(model)
+    return len(encoding.encode(content))
 
 
 def message_list_from_prompt(prompt: list[dict[str, str]]) -> list[str]:
