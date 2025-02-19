@@ -47,6 +47,7 @@ class OpenAIChatBatchAPI(LanguageModel):
         model: The name of the model to use.
         api_headers: A dictionary of headers to use when making requests to the OpenAI API.
         polling_interval_seconds: The interval in seconds to poll the batch status.
+        default_gen_kwargs: Default generation kwargs to use when calling the API.
     """
 
     def __init__(
@@ -54,11 +55,16 @@ class OpenAIChatBatchAPI(LanguageModel):
         model: str,
         api_headers: dict[str, str] | None = None,
         polling_interval_seconds: int = 60,
+        default_gen_kwargs: dict[str, Any] | None = None,
     ) -> None:
         self.model = model
         if api_headers is None:
             api_headers = {}
         self._client = AsyncOpenAI(**api_headers)
+        self.default_gen_kwargs = default_gen_kwargs or {}
+        # convert the flexeval-specific argument name to the OpenAI-specific name
+        if "max_new_tokens" in self.default_gen_kwargs:
+            self.default_gen_kwargs["max_completion_tokens"] = self.default_gen_kwargs.pop("max_new_tokens")
         self.temp_jsonl_file = tempfile.NamedTemporaryFile(delete=False, suffix=".jsonl")
 
         self.polling_interval_seconds = polling_interval_seconds
@@ -78,6 +84,8 @@ class OpenAIChatBatchAPI(LanguageModel):
         max_new_tokens: int | None = None,
         **kwargs,
     ) -> str:
+        gen_kwargs = self.default_gen_kwargs.copy()
+        gen_kwargs.update(kwargs)
         """Send batch chat requests to the OpenAI."""
         if stop_sequences is not None:
             if "stop" in kwargs:
