@@ -243,7 +243,7 @@ class OpenAIChatBatchAPI(LanguageModel):
         except OSError as e:
             logger.error(f"Error: {e.filename} - {e.strerror}.")
 
-    def batch_compute_chat_log_probs(
+    def batch_compute_chat_single_token_log_probs(
         self,
         prompt_list: list[list[dict[str, str]]],
         choice_list: list[str],
