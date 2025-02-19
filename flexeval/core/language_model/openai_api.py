@@ -155,14 +155,18 @@ class OpenAIChatAPI(LanguageModel):
             logger.warning("All generated texts are empty string. Something may go wrong.")
         return completions
 
-    def batch_compute_chat_single_token_log_probs(
+    def batch_compute_chat_log_probs(
         self,
         prompt_list: list[list[dict[str, str]]],
-        choice_list: list[str],
+        response_list: list[dict[str, str]],
         temperature: float = 0,
         seed: int = 42,
-        top_logprobs: int = 20,  # maximum number for OpenAI API
-    ) -> list[dict[str, float | None]]:
+        top_logprobs: int = 20,
+    ) -> list[float | None]:
+        # check the number of tokens is 1
+
+        response_tokens = [resp["content"] for resp in response_list]
+
         # For saving cost, remove duplication from message_list for an API request.
         unique_prompt_list = remove_duplicates_from_prompt_list(prompt_list)
         api_responses = asyncio.run(
@@ -177,19 +181,17 @@ class OpenAIChatAPI(LanguageModel):
 
         log_probs = []
         top_logprobs_list = [res.choices[0].logprobs.content[0].top_logprobs for res in api_responses]
-        for prompt in prompt_list:
-            log_probs_of_choices = {
-                # if target token not in top_logprobs, return None for log_prob of the token
-                choice: None
-                for choice in choice_list
-            }
-            index_in_unique = unique_prompt_list.index(prompt)
+        for index, prompt_list in enumerate(unique_prompt_list):
+            target_token = response_tokens[index]
+            index_in_unique = unique_prompt_list.index(prompt_list)
 
+            log_prob = None  # if target token not in top_logprobs, return None for log_prob of the token
             top_logprobs = top_logprobs_list[index_in_unique]
             for token_logprob in top_logprobs:
-                if token_logprob.token in log_probs_of_choices:
-                    log_probs_of_choices[token_logprob.token] = token_logprob.logprob
-            log_probs.append(log_probs_of_choices)
+                if token_logprob.token == target_token:
+                    log_prob = token_logprob.logprob
+                    break
+            log_probs.append(log_prob)
 
         return log_probs
 
