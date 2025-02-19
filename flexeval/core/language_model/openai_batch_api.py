@@ -89,26 +89,26 @@ class OpenAIChatBatchAPI(LanguageModel):
         gen_kwargs.update(kwargs)
         """Send batch chat requests to the OpenAI."""
         if stop_sequences is not None:
-            if "stop" in kwargs:
+            if "stop" in gen_kwargs:
                 msg = (
                     "You specified both `stop_sequences` and `stop` in generation kwargs. "
                     "However, `stop_sequences` will be normalized into `stop`. "
                     "Please specify only one of them."
                 )
                 raise ValueError(msg)
-            kwargs["stop"] = stop_sequences
+            gen_kwargs["stop"] = stop_sequences
 
         if max_new_tokens is not None:
-            if "max_completion_tokens" in kwargs:
+            if "max_completion_tokens" in gen_kwargs:
                 msg = (
                     "You specified both `max_new_tokens` and `max_completion_tokens` in generation kwargs. "
                     "However, `max_new_tokens` will be normalized into `max_completion_tokens`. "
                     "Please specify only one of them."
                 )
                 raise ValueError(msg)
-            kwargs["max_completion_tokens"] = max_new_tokens
+            gen_kwargs["max_completion_tokens"] = max_new_tokens
 
-        self.create_batch_file(custom_id_2_message, **kwargs)
+        self.create_batch_file(custom_id_2_message, **gen_kwargs)
 
         # Update batch file
         with open(self.temp_jsonl_file.name, "rb") as batch_file:  # noqa: ASYNC101
