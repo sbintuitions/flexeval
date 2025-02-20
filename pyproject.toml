@@ -15,7 +15,7 @@ flexeval_presets = "flexeval.scripts.flexeval_presets:main"
 
 
 [tool.poetry.dependencies]
-python = "^3.9,!=3.9.7"
+python = "^3.9,!=3.9.7,<3.13"
 transformers = {extras = ["ja", "sentencepiece", "torch"], version = "^4.34.1"}
 datasets = "^2.14.6"
 evaluate = "^0.4.1"
