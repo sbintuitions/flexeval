@@ -14,7 +14,7 @@ from openai import AsyncOpenAI
 from openai.types import Batch
 
 from .base import LanguageModel
-from .openai_api import remove_duplicates_from_prompt_list, number_of_tokens_in_openai_model
+from .openai_api import number_of_tokens_in_openai_model, remove_duplicates_from_prompt_list
 
 MAX_NUM_TRIALS = 3
 
@@ -247,7 +247,8 @@ class OpenAIChatBatchAPI(LanguageModel):
         for response_content in response_contents:
             num_tokens = number_of_tokens_in_openai_model(self.model, response_content)
             if num_tokens > 1:
-                return NotImplementedError(f"OpenAIChatBatchAPI.batch_compute_chat_log_probs is not applicable for two or more tokens of response content: \"{response_content}\"")
+                err_msg = f"OpenAIChatAPI.batch_compute_chat_log_probs is not applicable for two or more tokens of response content: '{response_content}'"  # noqa: E501
+                raise NotImplementedError(err_msg)
 
         # For saving cost, remove duplication from message_list for an API request.
         unique_prompt_list = remove_duplicates_from_prompt_list(prompt_list)

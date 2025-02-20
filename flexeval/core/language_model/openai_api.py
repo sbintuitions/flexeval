@@ -5,11 +5,11 @@ import itertools
 from typing import Any, Awaitable, Callable, TypeVar
 
 import openai
+import tiktoken
 from loguru import logger
 from openai import AsyncOpenAI
 from openai.types.chat import ChatCompletion, ChatCompletionMessage
 from openai.types.chat.chat_completion import Choice
-import tiktoken
 
 from .base import LanguageModel, normalize_stop_sequences
 
@@ -169,7 +169,8 @@ class OpenAIChatAPI(LanguageModel):
         for response_content in response_contents:
             num_tokens = number_of_tokens_in_openai_model(self.model, response_content)
             if num_tokens > 1:
-                raise NotImplementedError(f"OpenAIChatAPI.batch_compute_chat_log_probs is not applicable for two or more tokens of response content: \"{response_content}\"")
+                err_msg = f"OpenAIChatAPI.batch_compute_chat_log_probs is not applicable for two or more tokens of response content: '{response_content}'"  # noqa: E501
+                raise NotImplementedError(err_msg)
 
         # For saving cost, remove duplication from message_list for an API request.
         unique_prompt_list = remove_duplicates_from_prompt_list(prompt_list)
@@ -185,9 +186,9 @@ class OpenAIChatAPI(LanguageModel):
 
         log_probs = []
         top_logprobs_list = [res.choices[0].logprobs.content[0].top_logprobs for res in api_responses]
-        for index, prompt_list in enumerate(prompt_list):
+        for index, prompt in enumerate(prompt_list):
             target_token = response_contents[index]
-            index_in_unique = unique_prompt_list.index(prompt_list)
+            index_in_unique = unique_prompt_list.index(prompt)
 
             log_prob = None  # if target token not in top_logprobs, return None for log_prob of the token
             top_logprobs = top_logprobs_list[index_in_unique]
