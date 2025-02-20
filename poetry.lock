@@ -5490,33 +5490,33 @@ SudachiPy = ">=0.5,<0.7"
 
 [[package]]
 name = "sudachipy"
-version = "0.6.9"
+version = "0.6.10"
 description = "Python version of Sudachi, the Japanese Morphological Analyzer"
 optional = false
 python-versions = "*"
 files = [
-    {file = "SudachiPy-0.6.9-cp310-cp310-macosx_10_12_universal2.whl", hash = "sha256:3695bd94c46bff43690e7bb18821e12cd21c36e849f1cb889abe11436315f5ae"},
-    {file = "SudachiPy-0.6.9-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:4738f85668054c8c03c1062969eacba6426ed50b5f299879987bd6fa17ee6e99"},
-    {file = "SudachiPy-0.6.9-cp310-cp310-win_amd64.whl", hash = "sha256:1269228d76c63aa1ff2298e4ff8b9973fa71779ae36bef9a648c545049447f7b"},
-    {file = "SudachiPy-0.6.9-cp311-cp311-macosx_10_12_universal2.whl", hash = "sha256:5a071585b760bee824309922a84646a4b0c2612bc0176a3fe91121500354c730"},
-    {file = "SudachiPy-0.6.9-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:32c3010b14855ed0c325d4170f97803a0cb85d0dc04b19b684c08ccd8daea87a"},
-    {file = "SudachiPy-0.6.9-cp311-cp311-win_amd64.whl", hash = "sha256:8bd595bb3809d4c4c262710a8736dd2150fe39b04f48925247e3f6fa3e90f8dd"},
-    {file = "SudachiPy-0.6.9-cp312-cp312-macosx_10_12_universal2.whl", hash = "sha256:4a9571e93b2be900d26f1d1713b62ae567e3a31d4654ec7d1ac472a16efd017e"},
-    {file = "SudachiPy-0.6.9-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:666f2817a9ced479610ebdfc21cbfd0ac13e97fe81e0484b314399d8dfaff90f"},
-    {file = "SudachiPy-0.6.9-cp312-cp312-win_amd64.whl", hash = "sha256:f1355e3a17e68c54aedba4275c8799233792139df2082becc9b4af82f21195ac"},
-    {file = "SudachiPy-0.6.9-cp313-cp313-macosx_10_12_universal2.whl", hash = "sha256:ddc3620503af8cbefe897a59a802a964b5f0bc41791b313fa3f7d28fd461ddbb"},
-    {file = "SudachiPy-0.6.9-cp313-cp313-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:c369062289e32e7e11d377c55e3349d73496b84a84fd8bf07ff68ca6b1d1da9c"},
-    {file = "SudachiPy-0.6.9-cp313-cp313-win_amd64.whl", hash = "sha256:0494b04d864f7788309975aeca4dc5d7b61b3c3d987d058c71e2bf4ba3a6daca"},
-    {file = "SudachiPy-0.6.9-cp37-cp37m-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:d9191ac46a2134e05a1a85df33c43ba9b1e9dab257db5f7a1c5d59ad6961873d"},
-    {file = "SudachiPy-0.6.9-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:4a1497ba2cdc538fd1c4ac8487ef26e9c6e5560fbdcd4a77385b110d9fc33f7b"},
-    {file = "SudachiPy-0.6.9-cp39-cp39-macosx_10_12_universal2.whl", hash = "sha256:5908e68157a9478a597d94c388a62e5d072047843f4419dc2ee815e88fd4d250"},
-    {file = "SudachiPy-0.6.9-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:726cc266ef33e2604f02392cfbc6e94ff41c17450433330475afe02924f8477f"},
-    {file = "SudachiPy-0.6.9-cp39-cp39-win_amd64.whl", hash = "sha256:27a9ab42787a4337f74c8187dd69298f50879d6dc548cc912a9d2d27faaf0bcc"},
-    {file = "sudachipy-0.6.9.tar.gz", hash = "sha256:131fc9521f2d538be9d5f276e69efc64a2b38dd6489af5dfe1e7161c3efaebb6"},
+    {file = "SudachiPy-0.6.10-cp310-cp310-macosx_10_12_universal2.whl", hash = "sha256:418899c5794ec8fd86341d690bdd23bb85f35890540520624a001c751bcfdff0"},
+    {file = "SudachiPy-0.6.10-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:99aeaf4a7bbf4c473929f5a9812226123dac1457fb0d549c5e95192eda3f0859"},
+    {file = "SudachiPy-0.6.10-cp310-cp310-win_amd64.whl", hash = "sha256:efd9c7584ed6dadf9f7d2f4ea616d06207b0d8a805861f9762072733b611b0db"},
+    {file = "SudachiPy-0.6.10-cp311-cp311-macosx_10_12_universal2.whl", hash = "sha256:e947d907542c8086b7e6d18669f45599b3964eec4e954ad7dd85e4acdaa94793"},
+    {file = "SudachiPy-0.6.10-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:5e1c1d8c579cc3af591a6511bffba9f88662eedf5ba32868ca8e3ba3c1051d60"},
+    {file = "SudachiPy-0.6.10-cp311-cp311-win_amd64.whl", hash = "sha256:8af8b3c91a9aaf0f300901967f85805d73e83297da6c56db50002dde3a4514fe"},
+    {file = "SudachiPy-0.6.10-cp312-cp312-macosx_10_13_universal2.whl", hash = "sha256:efb43fb3b46696ca4510b7dd4c3e490de8dbb7950d7172140dc27a4e69cd5811"},
+    {file = "SudachiPy-0.6.10-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:0f8fd0ce37961401c9bdd78c126b2119a0a1669d376feb0b2427c35894ef1428"},
+    {file = "SudachiPy-0.6.10-cp312-cp312-win_amd64.whl", hash = "sha256:4a79b92b0776613481481c1ed0d2e92994b233ed5d29aa365789a1ba521de0a4"},
+    {file = "SudachiPy-0.6.10-cp313-cp313-macosx_10_13_universal2.whl", hash = "sha256:cc97b5d48f46f9989d97e105f7dd6419da2174888fcc42e55c0e4cd46597ed3b"},
+    {file = "SudachiPy-0.6.10-cp313-cp313-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:9794b73fffd8099d93e07882ba87eee5edbed0e4f1b94761db8f22c8e5da9904"},
+    {file = "SudachiPy-0.6.10-cp313-cp313-win_amd64.whl", hash = "sha256:0fc5b60920a439c534688237e2651e15e4eaadc166a63182d6e24ac7ef3e4779"},
+    {file = "SudachiPy-0.6.10-cp313-cp313t-macosx_10_13_universal2.whl", hash = "sha256:7455e5cbb4c2cf9294c82345c9d46b344774b4eb23eca917f305ed716d8d5168"},
+    {file = "SudachiPy-0.6.10-cp313-cp313t-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:38d0de9e840ac8d199e714a40506792ea5237d0db0c966da16d51fbc74a508d6"},
+    {file = "SudachiPy-0.6.10-cp39-cp39-macosx_10_12_universal2.whl", hash = "sha256:de4fc5c155479f873f5f7cfb04989ffb41e6a187c566c59efdb7946fc87498fe"},
+    {file = "SudachiPy-0.6.10-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:a5e2664dc436798d967c0fd92ae5186a175822eb38d294e2da7dad4417b8625c"},
+    {file = "SudachiPy-0.6.10-cp39-cp39-win_amd64.whl", hash = "sha256:af941d5393b8389acbaf9ec5f50e7b2ef48cb0a875594d9d4347e78e86cf842a"},
+    {file = "sudachipy-0.6.10.tar.gz", hash = "sha256:b8910a4610de98b2c3cb6dc3362fea93e3ba5059f1eb445a68baa9585278f31b"},
 ]
 
 [package.extras]
-tests = ["sudachidict-core", "tokenizers"]
+tests = ["sudachidict_core", "tokenizers"]
 
 [[package]]
 name = "sympy"
@@ -6854,4 +6854,4 @@ wandb = ["wandb"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9,!=3.9.7"
-content-hash = "9bbd9a45f056d1007a7755312d621a82d528dc52abb4e4fedf2732c0ea1df87a"
+content-hash = "e8bcebdcd51f8b09de632f81181b03ad745fc7d5ca7dfc1579ec3d51949e60c1"

@@ -35,6 +35,11 @@ wandb = {version = "^0.17.2", optional = true}
 pyarrow = "16.1.0"  # set the version because we get "Unable to find installation candidates" with 17.0.0
 scipy = "1.13.0"
 smart-open = "^7.1.0"
+# The "ja" component of Transformers depends on sudachipy 0.6.6 or later. For aarch64 Linux h
+# environment, the pre-built binary of sudachi.rs is not available from PyPI. Pip downloads the
+# source distribution and attempts to build it. This hits FTBFS of sudachi.rs v0.6.9, and has been
+# fixed in v0.6.10.
+sudachipy = ">=0.6.10"
 
 [tool.poetry.extras]
 vllm = ["vllm"]
