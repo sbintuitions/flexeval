@@ -9,14 +9,14 @@ def test_cli() -> None:
     # fmt: off
     template = (
         "[User Question]"
-        "{{ prompt[0].content }}"
+        "{{ prompt }}"
 
         "[The Start of Assistant A's Answer]"
-        "{{ answer_a[0].content }}"
+        "{{ answer_a }}"
         "[The End of Assistant A's Answer]"
 
         "[The Start of Assistant B's Answer]"
-        "{{ answer_b[0].content }}"
+        "{{ answer_b }}"
         "[The End of Assistant B's Answer]"
     )
     command = [
