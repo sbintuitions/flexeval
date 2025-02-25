@@ -39,6 +39,7 @@ class ChatbotBench(ChatDataset):
         path_or_name: str,
         ref_path_or_name: str | None = None,
         need_ref_categories: list[str] | None = None,
+        load_only_first_n: int | None = None,
     ) -> None:
         file_path = resolve_path_or_name(path_or_name)
 
@@ -50,7 +51,10 @@ class ChatbotBench(ChatDataset):
                 item = json.loads(line)
                 self._id_to_question_id.append(item["question_id"])
                 self._id_to_category.append(item["category"])
-                self._messages_dict[item["question_id"]] = [{"role": "user", "content": turn} for turn in item["turns"]]
+                input_messages = [{"role": "user", "content": turn} for turn in item["turns"]]
+                if load_only_first_n is not None:
+                    input_messages = input_messages[:load_only_first_n]
+                self._messages_dict[item["question_id"]] = input_messages
 
         self._references_dict: dict[int | str, list[str]] = {}
         if ref_path_or_name is not None:
