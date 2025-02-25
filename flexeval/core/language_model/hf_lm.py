@@ -413,27 +413,6 @@ class HuggingFaceLM(LanguageModel):
             response_as_string.append(response_as_string_i)
         return self.batch_compute_log_probs(response_as_string, prefix_list=prompt_as_string)
 
-    def batch_compute_single_token_log_probs(
-        self,
-        choice_list: list[str],
-        prefix_list: list[str] | None = None,
-    ) -> list[dict[str, float | None]]:
-        multiple_prefix_list = []
-        multiple_text_list = []
-        for prefix in prefix_list:
-            for choice in choice_list:
-                multiple_prefix_list.append(prefix)
-                multiple_text_list.append(choice)
-        result = self.batch_compute_log_probs(multiple_text_list, multiple_prefix_list)
-        log_prob_dict_list = []
-        for prefix_i in range(len(prefix_list)):
-            log_prob_dict = {}
-            for choice_i, choice in enumerate(choice_list):
-                result_index = prefix_i * len(choice_list) + choice_i
-                log_prob_dict[choice] = result[result_index]
-            log_prob_dict_list.append(log_prob_dict)
-        return log_prob_dict_list
-
     def batch_compute_chat_single_token_log_probs(
         self, prompt_list: list[list[dict[str, str]]], choice_list: list[str]
     ) -> list[dict[str, float | None]]:
