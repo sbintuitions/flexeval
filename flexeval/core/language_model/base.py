@@ -1,6 +1,13 @@
 from __future__ import annotations
 
 from typing import final
+from dataclasses import dataclass
+
+
+@dataclass
+class LMOutput:
+    text: str
+    finish_reason: str | None = None
 
 
 class LanguageModel:
@@ -15,7 +22,7 @@ class LanguageModel:
         stop_sequences: str | list[str] | None = None,
         max_new_tokens: int | None = None,
         **kwargs,
-    ) -> list[str]:
+    ) -> list[LMOutput]:
         """
         Generate text based on the input text list.
 
@@ -39,7 +46,7 @@ class LanguageModel:
         self,
         chat_messages_list: list[list[dict[str, str]]],
         **kwargs,
-    ) -> list[str]:
+    ) -> list[LMOutput]:
         """Generate chat responses based on the chat messages in the list.
         This method is used for chatbot models.
 
@@ -87,7 +94,7 @@ class LanguageModel:
         stop_sequences: str | list[str] | None = None,
         max_new_tokens: int | None = None,
         **kwargs,
-    ) -> str | list[str]:
+    ) -> LMOutput | list[LMOutput]:
         """
         A wrapper for `batch_complete_text` that accepts a single text or a list of texts.
         This is a convenient method for end-users.
@@ -103,7 +110,7 @@ class LanguageModel:
         self,
         chat_messages: list[dict[str, str]] | list[list[dict[str, str]]],
         **kwargs,
-    ) -> str | list[str]:
+    ) -> LMOutput | list[LMOutput]:
         """
         A wrapper for `batch_generate_chat_response` that accepts a single chat message or a list of chat messages.
         This is a convenient method for end-users.
