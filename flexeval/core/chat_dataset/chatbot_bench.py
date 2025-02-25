@@ -39,6 +39,7 @@ class ChatbotBench(ChatDataset):
         path_or_name: str,
         ref_path_or_name: str | None = None,
         need_ref_categories: list[str] | None = None,
+        require_incremental_response: bool = True,
     ) -> None:
         file_path = resolve_path_or_name(path_or_name)
 
@@ -65,9 +66,10 @@ class ChatbotBench(ChatDataset):
             "coding",
             "reasoning",
         ]
+        self.require_incremental_response = require_incremental_response
 
     def require_incremental_response(self) -> bool:
-        return True
+        return self.require_incremental_response
 
     def __len__(self) -> int:
         return len(self._id_to_question_id)
