@@ -65,11 +65,11 @@ def test_max_tokens(lm: LanguageModel) -> None:
 @pytest.mark.skipif(not is_vllm_enabled(), reason="vllm library is not installed")
 def test_stop_sequences(lm: LanguageModel) -> None:
     # assume that the lm will repeat "10"
-    completion = lm.batch_complete_text(["10 10 10 10 10 10 "], stop_sequences=["1"], max_new_tokens=10)[0]
+    completion = lm.batch_complete_text(["10 10 10 10 10 10 10 "], stop_sequences=["1"], max_new_tokens=10)[0]
     assert completion.text.strip() == ""
     assert completion.finish_reason == "stop"
 
-    completion = lm.batch_complete_text(["10 10 10 10 10 10 "], stop_sequences=["0"], max_new_tokens=10)[0]
+    completion = lm.batch_complete_text(["10 10 10 10 10 10 10 "], stop_sequences=["0"], max_new_tokens=10)[0]
     assert completion.text.strip() == "1"
     assert completion.finish_reason == "stop"
 

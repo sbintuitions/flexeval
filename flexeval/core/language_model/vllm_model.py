@@ -157,8 +157,7 @@ class VLLM(LanguageModel):
                 stop_index = text.find(stop)
                 if stop_index != -1:
                     text = text[:stop_index]
-                    if finish_reason is None:
-                        finish_reason = "stop"
+                    finish_reason = "stop"
 
             outputs.append(LMOutput(text=text, finish_reason=finish_reason))
         return outputs
