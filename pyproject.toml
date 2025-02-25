@@ -15,7 +15,7 @@ flexeval_presets = "flexeval.scripts.flexeval_presets:main"
 
 
 [tool.poetry.dependencies]
-python = "^3.9,!=3.9.7"
+python = "^3.9,!=3.9.7,<3.13"  # set version bound because we get "Unable to find installation candidates" with torch 2.5.1
 transformers = {extras = ["ja", "sentencepiece", "torch"], version = "^4.34.1"}
 datasets = "^2.14.6"
 evaluate = "^0.4.1"
@@ -40,6 +40,7 @@ smart-open = "^7.1.0"
 # source distribution and attempts to build it. This hits FTBFS of sudachi.rs v0.6.9, and has been
 # fixed in v0.6.10.
 sudachipy = ">=0.6.10"
+tiktoken = "^0.9.0"
 
 [tool.poetry.extras]
 vllm = ["vllm"]
