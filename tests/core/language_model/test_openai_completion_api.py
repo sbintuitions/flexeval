@@ -3,6 +3,7 @@ import os
 import pytest
 
 from flexeval.core.language_model import OpenAICompletionAPI
+from flexeval.core.language_model.base import LMOutput
 
 
 def is_openai_enabled() -> bool:
@@ -23,4 +24,6 @@ def test_batch_generate_chat_response(lm: OpenAICompletionAPI) -> None:
     )
 
     assert len(responses) == 1
-    assert isinstance(responses[0], str)
+    assert isinstance(responses[0], LMOutput)
+    assert isinstance(responses[0].text, str)
+    assert isinstance(responses[0].finish_reason, str)

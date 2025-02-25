@@ -13,7 +13,7 @@ from loguru import logger
 from openai import AsyncOpenAI
 from openai.types import Batch
 
-from .base import LanguageModel
+from .base import LanguageModel, LMOutput
 
 MAX_NUM_TRIALS = 3
 
@@ -145,12 +145,14 @@ class OpenAIChatBatchAPI(LanguageModel):
         self,
         messages_list: list[list[dict[str, str]]],
         **kwargs,
-    ) -> list[str]:
+    ) -> list[LMOutput]:
         custom_id_2_message: dict[str, list[dict[str, str]]] = {
             str(uuid.uuid4()): messages for messages in messages_list
         }
-        # The response will be an empty string if the API produces an error.
-        custom_id_2_response: dict[str, str] = {custom_id: "" for custom_id in custom_id_2_message}
+        # The response will be an empty LMOutput if the API produces an error.
+        custom_id_2_response: dict[str, LMOutput] = {
+            custom_id: LMOutput(text="", finish_reason="error") for custom_id in custom_id_2_message
+        }
         exec_cnt = 1
 
         while len(custom_id_2_message) > 0:
@@ -192,7 +194,10 @@ class OpenAIChatBatchAPI(LanguageModel):
 
                 custom_id = data_i["custom_id"]
                 custom_id_2_message.pop(custom_id)
-                custom_id_2_response[custom_id] = data_i["response"]["body"]["choices"][0]["message"]["content"]
+                response_data = data_i["response"]["body"]["choices"][0]
+                custom_id_2_response[custom_id] = LMOutput(
+                    text=response_data["message"]["content"], finish_reason=response_data.get("finish_reason", None)
+                )
 
         # The remaining elements are all those that failed to complete request.
         if custom_id_2_message:
@@ -207,7 +212,7 @@ class OpenAIChatBatchAPI(LanguageModel):
         stop_sequences: str | list[str] | None = None,
         max_new_tokens: int | None = None,
         **kwargs,
-    ) -> list[str]:
+    ) -> list[LMOutput]:
         messages_list = [[{"role": "user", "content": text}] for text in text_list]
         return self._execute_batch_requests(
             messages_list,
@@ -220,7 +225,7 @@ class OpenAIChatBatchAPI(LanguageModel):
         self,
         chat_messages_list: list[list[dict[str, str]]],
         **kwargs,
-    ) -> list[str]:
+    ) -> list[LMOutput]:
         return self._execute_batch_requests(chat_messages_list, **kwargs)
 
     def close(self) -> None:

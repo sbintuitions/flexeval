@@ -5,7 +5,7 @@ from collections import Counter, defaultdict
 
 from loguru import logger
 
-from flexeval.core.language_model import LanguageModel
+from flexeval.core.language_model import LanguageModel, LMOutput
 from flexeval.core.metric.llm_score import (
     generate_evaluations,
     prepare_chat_input_for_evaluator,
@@ -177,14 +177,14 @@ class LLMLabel(Metric):
         evaluator_input_list: list[str] = prepare_text_input_for_evaluator(
             lm_outputs, references_list, task_inputs_list, self.prompt_template
         )
-        evaluator_output_list: list[str] = generate_evaluations(
+        evaluator_output_list: list[LMOutput] = generate_evaluations(
             evaluator_input_list, self.language_model, self.batch_size, self.disable_tqdm, "Calculating LLM score"
         )
 
         evaluator_label_list: list[int | None] = []
         for evaluator_output in evaluator_output_list:
             evaluator_label = parse_label_from_evaluator_output(
-                evaluator_output,
+                evaluator_output.text,
                 label_names=self.label_names,
             )
             if evaluator_label is None:
@@ -209,7 +209,7 @@ class LLMLabel(Metric):
                     "llm_label": eval_label,
                     "llm_score": eval_score,
                     "llm_label_input": eval_in,
-                    "llm_label_output": eval_out,
+                    "llm_label_output": eval_out.text,
                 }
                 for eval_label, eval_score, eval_in, eval_out in zip(
                     evaluator_label_list,
@@ -317,14 +317,14 @@ class ChatLLMLabel(Metric):
             lm_outputs, references_list, task_inputs_list, self.prompt_template, self.system_message
         )
 
-        evaluator_output_list: list[str] = generate_evaluations(
+        evaluator_output_list: list[LMOutput] = generate_evaluations(
             evaluator_input_list, self.language_model, self.batch_size, self.disable_tqdm, "Calculating ChatLLM score"
         )
 
         evaluator_label_list: list[str] = []
         for evaluator_output in evaluator_output_list:
             evaluator_label = parse_label_from_evaluator_output(
-                evaluator_output,
+                evaluator_output.text,
                 label_names=self.label_names,
             )
             if evaluator_label is None:
@@ -349,7 +349,7 @@ class ChatLLMLabel(Metric):
                     "llm_label": eval_label,
                     "llm_score": eval_score,
                     "llm_label_input": eval_in,
-                    "llm_label_output": eval_out,
+                    "llm_label_output": eval_out.text,
                 }
                 for eval_label, eval_score, eval_in, eval_out in zip(
                     evaluator_label_list,

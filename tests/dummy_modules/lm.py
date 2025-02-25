@@ -3,14 +3,15 @@ from __future__ import annotations
 import json
 
 from flexeval.core.language_model import LanguageModel
+from flexeval.core.language_model.base import LMOutput
 
 
 class DummyLanguageModel(LanguageModel):
     """入力をそのまま出力するダミーの言語モデルです。 テスト用に用意しています。"""
 
-    def batch_complete_text(self, text_list: list[str], **kwargs) -> list[str]:
+    def batch_complete_text(self, text_list: list[str], **kwargs) -> list[LMOutput]:
         kwargs_as_text = json.dumps(kwargs)
-        return [text + kwargs_as_text for text in text_list]
+        return [LMOutput(text=text + kwargs_as_text, finish_reason="length") for text in text_list]
 
     def batch_compute_log_probs(
         self,
@@ -24,7 +25,7 @@ class DummyLanguageModel(LanguageModel):
         self,
         chat_messages_list: list[list[dict[str, str]]],
         **kwargs,
-    ) -> list[str]:
+    ) -> list[LMOutput]:
         messages_as_text = [json.dumps(messages) for messages in chat_messages_list]
         kwargs_as_text = json.dumps(kwargs)
-        return [m + kwargs_as_text for m in messages_as_text]
+        return [LMOutput(text=m + kwargs_as_text, finish_reason="length") for m in messages_as_text]

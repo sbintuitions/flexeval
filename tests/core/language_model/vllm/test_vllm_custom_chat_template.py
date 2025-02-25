@@ -42,4 +42,4 @@ def test_if_custom_chat_template_is_given(chat_lm_with_custom_chat_template: VLL
         max_new_tokens=10,
     )
     assert len(responses) == 1
-    assert responses[0].strip().startswith("0 0")
+    assert responses[0].text.strip().startswith("0 0")

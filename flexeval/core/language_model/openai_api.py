@@ -9,7 +9,7 @@ from openai import AsyncOpenAI
 from openai.types.chat import ChatCompletion, ChatCompletionMessage
 from openai.types.chat.chat_completion import Choice
 
-from .base import LanguageModel, normalize_stop_sequences
+from .base import LanguageModel, LMOutput, normalize_stop_sequences
 
 T = TypeVar("T")
 
@@ -126,7 +126,7 @@ class OpenAIChatAPI(LanguageModel):
         stop_sequences: str | list[str] | None = None,
         max_new_tokens: int | None = None,
         **kwargs,
-    ) -> list[str]:
+    ) -> list[LMOutput]:
         messages_list = [[{"role": "user", "content": text}] for text in text_list]
         api_responses = asyncio.run(
             self._async_batch_run_chatgpt(
@@ -136,23 +136,30 @@ class OpenAIChatAPI(LanguageModel):
                 **kwargs,
             ),
         )
-        completions = [res.choices[0].message.content for res in api_responses]
-        if all(completion == "" for completion in completions):
+        outputs = [
+            LMOutput(text=res.choices[0].message.content, finish_reason=res.choices[0].finish_reason)
+            for res in api_responses
+        ]
+
+        if all(output.text == "" for output in outputs):
             logger.warning("All generated texts are empty strings. Something may be wrong.")
-        return completions
+        return outputs
 
     def batch_generate_chat_response(
         self,
         chat_messages_list: list[list[dict[str, str]]],
         **kwargs,
-    ) -> list[str]:
+    ) -> list[LMOutput]:
         api_responses = asyncio.run(
             self._async_batch_run_chatgpt(chat_messages_list, **kwargs),
         )
-        completions = [res.choices[0].message.content for res in api_responses]
-        if all(completion == "" for completion in completions):
-            logger.warning("All generated texts are empty string. Something may go wrong.")
-        return completions
+        outputs = [
+            LMOutput(text=res.choices[0].message.content, finish_reason=res.choices[0].finish_reason)
+            for res in api_responses
+        ]
+        if all(output.text == "" for output in outputs):
+            logger.warning("All generated texts are empty strings. Something may go wrong.")
+        return outputs
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(model={self.model})"
@@ -229,7 +236,7 @@ class OpenAICompletionAPI(LanguageModel):
         stop_sequences: str | list[str] | None = None,
         max_new_tokens: int | None = None,
         **kwargs,
-    ) -> list[str]:
+    ) -> list[LMOutput]:
         api_responses = asyncio.run(
             self._async_batch_run_completion(
                 text_list,
@@ -239,7 +246,7 @@ class OpenAICompletionAPI(LanguageModel):
             ),
         )
 
-        return [res.choices[0].text for res in api_responses]
+        return [LMOutput(text=res.choices[0].text, finish_reason=res.choices[0].finish_reason) for res in api_responses]
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(model={self.model})"

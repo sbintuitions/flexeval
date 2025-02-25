@@ -5,6 +5,7 @@ import pytest
 import torch
 from transformers import AutoTokenizer, PreTrainedTokenizer
 
+from flexeval.core.language_model.base import LMOutput
 from flexeval.core.language_model.hf_lm import (
     HuggingFaceLM,
     LanguageModel,
@@ -109,16 +110,22 @@ def lm() -> HuggingFaceLM:
 def test_batch_complete_text(lm: HuggingFaceLM) -> None:
     completions = lm.batch_complete_text(["こんにちは、", "おはよう、"])
     assert len(completions) == 2
-    assert isinstance(completions[0], str)
+    assert isinstance(completions[0], LMOutput)
+    assert isinstance(completions[0].text, str)
+    assert isinstance(completions[0].finish_reason, str)
 
 
 def test_complete_text(lm: HuggingFaceLM) -> None:
     completion = lm.complete_text("こんにちは、")
-    assert isinstance(completion, str)
+    assert isinstance(completion, LMOutput)
+    assert isinstance(completion.text, str)
+    assert isinstance(completion.finish_reason, str)
 
     completions = lm.batch_complete_text(["こんにちは、", "おはよう、"])
     assert len(completions) == 2
-    assert isinstance(completions[0], str)
+    assert isinstance(completions[0], LMOutput)
+    assert isinstance(completions[0].text, str)
+    assert isinstance(completions[0].finish_reason, str)
 
 
 def test_batch_complete_text_is_not_affected_by_batch(lm: LanguageModel) -> None:
@@ -128,22 +135,26 @@ def test_batch_complete_text_is_not_affected_by_batch(lm: LanguageModel) -> None
     gen_kwargs = {"do_sample": False, "stop_sequences": ["。"], "max_length": 100}
     completions_without_batch = lm.batch_complete_text(single_batch_input, **gen_kwargs)
     completions_with_batch = lm.batch_complete_text(multi_batch_inputs, **gen_kwargs)
-    assert completions_without_batch[0] == completions_with_batch[0]
+    assert completions_without_batch[0].text == completions_with_batch[0].text
+    assert completions_without_batch[0].finish_reason == completions_with_batch[0].finish_reason
 
 
 def test_max_tokens(lm: LanguageModel) -> None:
     # assume that the lm will repeat 0
     completion = lm.batch_complete_text(["0 0 0 0 0 0 0 0 0 0"], max_new_tokens=1)[0]
-    assert len(completion.strip()) == 1
+    assert len(completion.text.strip()) == 1
+    assert completion.finish_reason == "length"
 
 
 def test_stop_sequences(lm: LanguageModel) -> None:
     # assume that the lm will repeat "10"
     completion = lm.batch_complete_text(["10 10 10 10 10 10 "], stop_sequences=["1"], max_new_tokens=10)[0]
-    assert completion.strip() == ""
+    assert completion.text.strip() == ""
+    assert completion.finish_reason == "stop"
 
     completion = lm.batch_complete_text(["10 10 10 10 10 10 "], stop_sequences=["0"], max_new_tokens=10)[0]
-    assert completion.strip() == "1"
+    assert completion.text.strip() == "1"
+    assert completion.finish_reason == "stop"
 
 
 def test_compute_log_probs(lm: LanguageModel) -> None:
@@ -190,7 +201,7 @@ def test_if_random_seed_fixes_the_lm_outputs(lm_init_func: Callable[..., Hugging
     for i in range(3):
         lm = lm_init_func(random_seed=i)
         completion = lm.batch_complete_text(["<s>"], do_sample=True)[0]
-        completions.add(completion)
+        completions.add(completion.text)
     assert len(completions) > 1
 
     # then check if the outputs are the same with fixing the seed
@@ -198,7 +209,7 @@ def test_if_random_seed_fixes_the_lm_outputs(lm_init_func: Callable[..., Hugging
     for _ in range(3):
         lm = lm_init_func(random_seed=42)
         completion = lm.batch_complete_text(["<s>"], do_sample=True)[0]
-        completions.add(completion)
+        completions.add(completion.text)
     assert len(completions) == 1
 
     # note that the randomness starts in __init__
@@ -207,7 +218,7 @@ def test_if_random_seed_fixes_the_lm_outputs(lm_init_func: Callable[..., Hugging
     completions = set()
     for _ in range(3):
         completion = lm.batch_complete_text(["<s>"], do_sample=True)[0]
-        completions.add(completion)
+        completions.add(completion.text)
     assert len(completions) > 1
 
 
@@ -219,12 +230,16 @@ def chat_lm(model_name: str = "sbintuitions/tiny-lm-chat") -> HuggingFaceLM:
 def test_batch_generate_chat_response(chat_lm: LanguageModel) -> None:
     responses = chat_lm.batch_generate_chat_response([[{"role": "user", "content": "こんにちは。"}]], max_length=40)
     assert len(responses) == 1
-    assert isinstance(responses[0], str)
+    assert isinstance(responses[0], LMOutput)
+    assert isinstance(responses[0].text, str)
+    assert isinstance(responses[0].finish_reason, str)
 
 
 def test_generate_chat_response(chat_lm: LanguageModel) -> None:
     response = chat_lm.generate_chat_response([{"role": "user", "content": "こんにちは。"}], max_length=40)
-    assert isinstance(response, str)
+    assert isinstance(response, LMOutput)
+    assert isinstance(response.text, str)
+    assert isinstance(response.finish_reason, str)
 
     responses = chat_lm.generate_chat_response(
         [
@@ -234,7 +249,9 @@ def test_generate_chat_response(chat_lm: LanguageModel) -> None:
         max_length=40,
     )
     assert len(responses) == 2
-    assert isinstance(responses[0], str)
+    assert isinstance(responses[0], LMOutput)
+    assert isinstance(responses[0].text, str)
+    assert isinstance(responses[0].finish_reason, str)
 
 
 def test_if_custom_chat_template_is_given(lm_init_func: Callable[..., HuggingFaceLM]) -> None:
@@ -247,35 +264,32 @@ def test_if_custom_chat_template_is_given(lm_init_func: Callable[..., HuggingFac
     )
     responses = lm.batch_generate_chat_response([[{"role": "user", "content": "こんにちは。"}]], max_length=40)
     assert len(responses) == 1
-    assert responses[0].strip().startswith("0 0")
+    assert responses[0].text.strip().startswith("0 0")
 
 
 def test_if_stop_sequences_work_as_expected(chat_lm: HuggingFaceLM) -> None:
     test_inputs = [[{"role": "user", "content": "こんにちは"}]]
-    eos_token = "</s>"  # noqa: S105
 
     # check if the response does not have eos_token by default
     response = chat_lm.batch_generate_chat_response(test_inputs, max_new_tokens=50)[0]
-    assert not response.endswith(eos_token)
-
-    # check if the response has eos_token with include_stop_str_in_output=True
-    response = chat_lm.batch_generate_chat_response(test_inputs, max_new_tokens=50, include_stop_str_in_output=True)[0]
-    assert response.endswith(eos_token)
+    assert response.text
+    assert response.finish_reason == "stop"
 
     # check if ignore_eos=True works
     response = chat_lm.batch_generate_chat_response(test_inputs, max_new_tokens=50, ignore_eos=True)[0]
-    assert eos_token in response[: -len(eos_token)]
+    assert response.text
+    assert response.finish_reason == "length"
 
 
 def test_if_gen_kwargs_work_as_expected() -> None:
     lm = HuggingFaceLM(model="sbintuitions/tiny-lm", default_gen_kwargs={"max_new_tokens": 1})
     # check if the default gen_kwargs is used and the max_new_tokens is 1
     text = lm.complete_text("000000")
-    assert len(text) == 1
+    assert len(text.text) == 1
 
     # check if the gen_kwargs will be overwritten by the given gen_kwargs
     text = lm.complete_text("000000", max_new_tokens=10)
-    assert len(text) > 1
+    assert len(text.text) > 1
 
 
 def test_get_prefix_and_completion_from_chat() -> None:

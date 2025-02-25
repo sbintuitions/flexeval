@@ -25,9 +25,9 @@ def lm_with_default_kwargs() -> VLLM:
 @pytest.mark.skipif(not is_vllm_enabled(), reason="vllm library is not installed")
 def test_if_gen_kwargs_work_as_expected(lm_with_default_kwargs: LanguageModel) -> None:
     # check if the default gen_kwargs is used and the max_new_tokens is 1
-    text = lm_with_default_kwargs.complete_text("000000")
+    text = lm_with_default_kwargs.complete_text("000000").text
     assert len(text) == 1
 
     # check if the gen_kwargs will be overwritten by the given gen_kwargs
-    text = lm_with_default_kwargs.complete_text("000000", max_new_tokens=10)
+    text = lm_with_default_kwargs.complete_text("000000", max_new_tokens=10).text
     assert len(text) > 1
