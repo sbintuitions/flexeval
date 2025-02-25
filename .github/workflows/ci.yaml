@@ -24,6 +24,7 @@ jobs:
         python-version: ["3.9", "3.10", "3.11.6"]
     env:
       NO_CACHE: ${{ github.event.inputs.no-cache || 'false' }}
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY || null }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
