@@ -6,7 +6,7 @@ from collections import defaultdict
 import tqdm
 from loguru import logger
 
-from flexeval.core.language_model import LanguageModel
+from flexeval.core.language_model import LanguageModel, LMOutput
 from flexeval.core.prompt_template import PromptTemplate
 from flexeval.core.utils.data_util import batch_iter
 
@@ -129,7 +129,7 @@ def generate_evaluations(
     batch_size: int,
     disable_tqdm: bool = False,
     desc_for_tqdm: str | None = None,
-) -> list[str]:
+) -> list[LMOutput]:
     """Generate evaluation texts for each input in evaluator_input_list.
 
     - If evaluator_input_list contains a list of plain texts, use
@@ -231,14 +231,14 @@ class LLMScore(Metric):
         evaluator_input_list: list[str] = prepare_text_input_for_evaluator(
             lm_outputs, references_list, task_inputs_list, self.prompt_template
         )
-        evaluator_output_list: list[str] = generate_evaluations(
+        evaluator_output_list: list[LMOutput] = generate_evaluations(
             evaluator_input_list, self.language_model, self.batch_size, self.disable_tqdm, "Calculating LLM score"
         )
 
         evaluator_score_list: list[int | None] = []
         for evaluator_output in evaluator_output_list:
             evaluator_score = parse_score_from_evaluator_output(
-                evaluator_output,
+                evaluator_output.text,
                 valid_score_range=self.valid_score_range,
             )
             if evaluator_score is None:
@@ -254,7 +254,7 @@ class LLMScore(Metric):
         return MetricResult(
             summary,
             instance_details=[
-                {"llm_score": eval_score, "llm_score_input": eval_in, "llm_score_output": eval_out}
+                {"llm_score": eval_score, "llm_score_input": eval_in, "llm_score_output": eval_out.text}
                 for eval_score, eval_in, eval_out in zip(
                     evaluator_score_list,
                     evaluator_input_list,
@@ -341,14 +341,14 @@ class ChatLLMScore(Metric):
         evaluator_input_list = prepare_chat_input_for_evaluator(
             lm_outputs, references_list, task_inputs_list, self.prompt_template, self.system_message
         )
-        evaluator_output_list: list[str] = generate_evaluations(
+        evaluator_output_list: list[LMOutput] = generate_evaluations(
             evaluator_input_list, self.language_model, self.batch_size, self.disable_tqdm, "Calculating ChatLLM score"
         )
 
         evaluator_score_list: list[int] = []
         for evaluator_output in evaluator_output_list:
             evaluator_score = parse_score_from_evaluator_output(
-                evaluator_output,
+                evaluator_output.text,
                 valid_score_range=self.valid_score_range,
             )
             if evaluator_score is None:
@@ -364,7 +364,7 @@ class ChatLLMScore(Metric):
         return MetricResult(
             summary,
             instance_details=[
-                {"llm_score": eval_score, "llm_score_input": eval_in, "llm_score_output": eval_out}
+                {"llm_score": eval_score, "llm_score_input": eval_in, "llm_score_output": eval_out.text}
                 for eval_score, eval_in, eval_out in zip(
                     evaluator_score_list,
                     evaluator_input_list,

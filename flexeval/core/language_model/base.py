@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from typing import final
 from dataclasses import dataclass
+from typing import final
 
 
 @dataclass

@@ -2,6 +2,7 @@ import os
 
 import pytest
 
+from flexeval.core.language_model.base import LMOutput
 from flexeval.core.language_model.openai_batch_api import OpenAIChatBatchAPI
 
 
@@ -36,4 +37,6 @@ def test_batch_generate_chat_response(lm: OpenAIChatBatchAPI) -> None:
     )
 
     assert len(responses) == 1
-    assert isinstance(responses[0], str)
+    assert isinstance(responses[0], LMOutput)
+    assert isinstance(responses[0].text, str)
+    assert isinstance(responses[0].finish_reason, str)

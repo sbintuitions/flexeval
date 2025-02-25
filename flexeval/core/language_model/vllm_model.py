@@ -5,7 +5,7 @@ from typing import Any
 import torch
 from transformers import AutoTokenizer, PreTrainedTokenizer
 
-from .base import LanguageModel, normalize_stop_sequences
+from .base import LanguageModel, LMOutput, normalize_stop_sequences
 from .hf_lm import get_prefix_and_completion_from_chat
 
 
@@ -119,7 +119,7 @@ class VLLM(LanguageModel):
         stop_sequences: str | list[str] | None = None,
         max_new_tokens: int | None = None,
         **kwargs,
-    ) -> list[str]:
+    ) -> list[LMOutput]:
         gen_kwargs = self.default_gen_kwargs.copy()
         gen_kwargs.update(kwargs)
         if max_new_tokens is not None:
@@ -148,23 +148,26 @@ class VLLM(LanguageModel):
             sampling_params=SamplingParams(**gen_kwargs, stop=stop_sequences),
             use_tqdm=False,
         )
-        generated_texts = [self.tokenizer.decode(outputs.outputs[0].token_ids) for outputs in vllm_outputs]
-
-        # The `include_stop_str_in_output` option does not work, because we let llm generate tokens, not strings.
-        # We manually remove the stop sequences from the generated texts.
-        if not gen_kwargs.get("include_stop_str_in_output", False):
+        outputs = []
+        for vllm_output in vllm_outputs:
+            text = self.tokenizer.decode(vllm_output.outputs[0].token_ids)
+            finish_reason = "length"
+            # We manually remove the stop sequences from the generated texts.
             for stop in stop_sequences:
-                for i, gen_text in enumerate(generated_texts):
-                    stop_index = gen_text.find(stop)
-                    if stop_index != -1:
-                        generated_texts[i] = gen_text[:stop_index]
-        return generated_texts
+                stop_index = text.find(stop)
+                if stop_index != -1:
+                    text = text[:stop_index]
+                    if finish_reason is None:
+                        finish_reason = "stop"
+
+            outputs.append(LMOutput(text=text, finish_reason=finish_reason))
+        return outputs
 
     def batch_generate_chat_response(
         self,
         chat_messages_list: list[list[dict[str, str]]],
         **kwargs,
-    ) -> list[str]:
+    ) -> list[LMOutput]:
         chat_messages_as_string = [
             self.tokenizer.apply_chat_template(
                 chat_messages,
