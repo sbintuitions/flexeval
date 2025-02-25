@@ -29,3 +29,8 @@ def test_chatbot_bench(path: str, ref_name: str | None) -> None:
         assert all(len(instance.references) == 0 for instance in dataset)
     else:
         assert any(len(instance.references) > 0 for instance in dataset)
+
+
+def test_only_first_n():
+    dataset = ChatbotBench(path_or_name="mt-en", load_only_first_n=1)
+    assert all(len(instance.messages) == 1 for instance in dataset)
