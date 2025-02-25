@@ -31,6 +31,7 @@ def test_chatbot_bench(path: str, ref_name: str | None) -> None:
         assert any(len(instance.references) > 0 for instance in dataset)
 
 
-def test_only_first_n():
+def test_only_first_n() -> None:
+    # mt-en (MT-Bench) should have multiple messages by default
     dataset = ChatbotBench(path_or_name="mt-en", load_only_first_n=1)
     assert all(len(instance.messages) == 1 for instance in dataset)
