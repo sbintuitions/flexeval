@@ -12,11 +12,12 @@ def is_openai_enabled() -> bool:
 @pytest.fixture(scope="module")
 def lm() -> OpenAIChatBatchAPI:
     return OpenAIChatBatchAPI(
-        model="gpt-4o-mini-2024-07-18", polling_interval_seconds=6, default_gen_kwargs={"temperature": 0.7}
+        model="gpt-4o-mini", polling_interval_seconds=6, default_gen_kwargs={"temperature": 0.7}
     )
 
 
 @pytest.mark.skipif(not is_openai_enabled(), reason="OpenAI is not installed")
+@pytest.mark.batch_api()
 def test_create_batch_file(lm: OpenAIChatBatchAPI) -> None:
     lm.create_batch_file(
         {str(i): [[{"role": "user", "content": "こんにちは。"}]] for i in range(10)},
@@ -29,6 +30,7 @@ def test_create_batch_file(lm: OpenAIChatBatchAPI) -> None:
 
 
 @pytest.mark.skipif(not is_openai_enabled(), reason="OpenAI is not installed")
+@pytest.mark.batch_api()
 def test_batch_generate_chat_response(lm: OpenAIChatBatchAPI) -> None:
     responses = lm.batch_generate_chat_response(
         [[{"role": "user", "content": "こんにちは。"}]],

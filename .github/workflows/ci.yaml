@@ -22,8 +22,10 @@ jobs:
       matrix:
         # 3.11.9, which is picked up by GithubAction by default, doesn't work because of argparse or something...
         python-version: ["3.9", "3.10", "3.11.6"]
+        test-marker: ["", "Batch API"]
     env:
       NO_CACHE: ${{ github.event.inputs.no-cache || 'false' }}
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY || null }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -50,7 +52,11 @@ jobs:
 
       - name: Run tests
         run: |
-          poetry run pytest -v -s ./tests
+          if [  "${{ matrix.test-marker }}" == "Batch API" ]; then
+            poetry run pytest -v -s -m "batch_api" ./tests
+          else
+            poetry run pytest -v -s -m "not (batch_api)" ./tests
+          fi
 
   lint_check:
     runs-on: ubuntu-latest
