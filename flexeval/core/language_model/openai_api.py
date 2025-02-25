@@ -164,6 +164,17 @@ class OpenAIChatAPI(LanguageModel):
         seed: int = 42,
         top_logprobs: int = 20,
     ) -> list[float | None]:
+        """
+        Return logprob of one-token response only due to restriction of OpenAI API.
+        If you pass a response with two or more tokens, raise an error.
+
+        This function is mainly used for calculating weighted average of multi-choice prompts.
+        Under the design of this function, we need to pass the same prompt (the number of choice) times.
+        We only need one request for one prompt because OpenAI API returns a list of log probs.
+        So, this function removes duplicates of prompts before requesting API and
+        returns log probs by restoring the raw prompt list.
+        """
+
         # Check the number of tokens is 1
         response_contents = [resp["content"] for resp in response_list]
         for response_content in response_contents:
