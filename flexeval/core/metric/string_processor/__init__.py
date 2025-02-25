@@ -5,3 +5,4 @@ from .lower import StringLower
 from .nfkc import NFKCNormalizer
 from .regex import RegexExtractor
 from .string_strip import StringStrip
+from .template import TemplateRenderer
