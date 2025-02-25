@@ -30,21 +30,16 @@ local dataset_base_args = {
         num_shots: 3,
       },
     },
-    prompt_template: {
-      class_path: 'Jinja2PromptTemplate',
-      init_args: {
-        template: |||
-          前提と仮説の関係を「中立」、「含意」、「矛盾」の中から回答してください。
-          {% for item in few_shot_data %}
-          前提：「{{ item.sentence1 }}」
-          仮説：「{{ item.sentence2 }}」
-          関係：「{{ item.references[0] }}」
-          {% endfor %}
-          前提：「{{ sentence1 }}」
-          仮説：「{{ sentence2 }}」
-        ||| + '関係：「',
-      },
-    },
+    prompt_template: |||
+      前提と仮説の関係を「中立」、「含意」、「矛盾」の中から回答してください。
+      {% for item in few_shot_data %}
+      前提：「{{ item.sentence1 }}」
+      仮説：「{{ item.sentence2 }}」
+      関係：「{{ item.references[0] }}」
+      {% endfor %}
+      前提：「{{ sentence1 }}」
+      仮説：「{{ sentence2 }}」
+    ||| + '関係：「',
     metrics: [
       { class_path: 'ExactMatch' },
     ],

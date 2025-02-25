@@ -25,20 +25,15 @@ local dataset_base_args = {
         num_shots: 3,
       },
     },
-    prompt_template: {
-      class_path: 'Jinja2PromptTemplate',
-      init_args: {
-        template: |||
-          {% for item in few_shot_data %}
-          Passage: {{ item.passage | trim }}
-          Question: {{ item.question }}
-          Answer: "{{ item.references[0] }}"
-          {% endfor %}
-          Passage: {{ passage | trim }}
-          Question: {{ question }}
-        ||| + 'Answer: "',
-      },
-    },
+    prompt_template: |||
+      {% for item in few_shot_data %}
+      Passage: {{ item.passage | trim }}
+      Question: {{ item.question }}
+      Answer: "{{ item.references[0] }}"
+      {% endfor %}
+      Passage: {{ passage | trim }}
+      Question: {{ question }}
+    ||| + 'Answer: "',
     metrics: [
       { class_path: 'CharF1' },
       { class_path: 'ExactMatch' },

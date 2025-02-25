@@ -12,8 +12,8 @@ class ExactMatch(Metric):
     If there are multiple references, the output is considered correct if it matches any of the references.
 
     Args:
-        processor: StringProcessor or a list of StringProcessor to be applied to the model outputs before comparison.
-            Unless reference_processor is specified, this processor will be applied to the references as well.
+        lm_output_processor:
+            StringProcessor or a list of StringProcessor to be applied to the model outputs before comparison.
         reference_processor: StringProcessor or list of Normalizers to apply to the references before comparison.
 
     Examples:
@@ -31,16 +31,16 @@ class ExactMatch(Metric):
 
     def __init__(
         self,
-        processor: StringProcessor | list[StringProcessor] | None = None,
+        lm_output_processor: StringProcessor | list[StringProcessor] | None = None,
         reference_processor: StringProcessor | list[StringProcessor] | None = None,
     ) -> None:
-        if isinstance(processor, StringProcessor):
-            processor = [processor]
+        if isinstance(lm_output_processor, StringProcessor):
+            lm_output_processor = [lm_output_processor]
         if isinstance(reference_processor, StringProcessor):
             reference_processor = [reference_processor]
 
-        self.processors = processor
-        self.reference_processors = reference_processor or processor
+        self.lm_output_processors = lm_output_processor
+        self.reference_processors = reference_processor
 
     def evaluate(
         self,
@@ -55,8 +55,10 @@ class ExactMatch(Metric):
             )
             raise ValueError(msg)
 
-        if self.processors:
-            lm_outputs = [functools.reduce(lambda x, norm: norm(x), self.processors, output) for output in lm_outputs]
+        if self.lm_output_processors:
+            lm_outputs = [
+                functools.reduce(lambda x, norm: norm(x), self.lm_output_processors, output) for output in lm_outputs
+            ]
 
         if self.reference_processors:
             references_list = [

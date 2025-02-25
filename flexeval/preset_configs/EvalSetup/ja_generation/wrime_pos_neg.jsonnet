@@ -29,19 +29,14 @@ local dataset_base_args = {
         num_shots: 4,
       },
     },
-    prompt_template: {
-      class_path: 'Jinja2PromptTemplate',
-      init_args: {
-        template: |||
-          文の極性について「ポジティブ」か「ネガティブ」かで答えてください。
-          {% for item in few_shot_data %}
-          文：{{ item.sentence }}
-          極性：「{{ item.references[0] }}」
-          {% endfor %}
-          文：{{sentence}}
-        ||| + '極性：「',
-      },
-    },
+    prompt_template: |||
+      文の極性について「ポジティブ」か「ネガティブ」かで答えてください。
+      {% for item in few_shot_data %}
+      文：{{ item.sentence }}
+      極性：「{{ item.references[0] }}」
+      {% endfor %}
+      文：{{sentence}}
+    ||| + '極性：「',
     metrics: [
       { class_path: 'ExactMatch' },
     ],

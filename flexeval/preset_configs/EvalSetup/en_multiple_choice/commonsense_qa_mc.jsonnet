@@ -31,18 +31,12 @@ local dataset_base_args = {
         num_shots: 4,
       },
     },
-    prompt_template: {
-      class_path: 'Jinja2PromptTemplate',
-      init_args: {
-
-        template: |||
-          {% for item in few_shot_data %}
-          Question: {{ item.question }}
-          Answer:{{ item.choices[item.answer_index] }}
-          {% endfor %}
-          Question: {{ question }}
-        ||| + 'Answer:',
-      },
-    },
+    prompt_template: |||
+      {% for item in few_shot_data %}
+      Question: {{ item.question }}
+      Answer:{{ item.choices[item.answer_index] }}
+      {% endfor %}
+      Question: {{ question }}
+    ||| + 'Answer:',
   },
 }

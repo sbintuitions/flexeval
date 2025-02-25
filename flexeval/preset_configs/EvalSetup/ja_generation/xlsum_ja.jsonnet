@@ -29,19 +29,14 @@ local dataset_base_args = {
         num_shots: 1,
       },
     },
-    prompt_template: {
-      class_path: 'Jinja2PromptTemplate',
-      init_args: {
-        template: |||
-          文章を１〜３文で要約してください。
-          {% for item in few_shot_data %}
-          文章: {{ item.text }}
-          要約: {{ item.references[0] }}
-          {% endfor %}
-          文章: {{ text }}
-        ||| + '要約:',
-      },
-    },
+    prompt_template: |||
+      文章を１〜３文で要約してください。
+      {% for item in few_shot_data %}
+      文章: {{ item.text }}
+      要約: {{ item.references[0] }}
+      {% endfor %}
+      文章: {{ text }}
+    ||| + '要約:',
     metrics: [
       {
         class_path: 'ROUGE',
