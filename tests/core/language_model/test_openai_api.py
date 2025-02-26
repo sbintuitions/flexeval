@@ -14,6 +14,7 @@ from flexeval.core.language_model.openai_api import (
 
 model_name = "gpt-4o-mini-2024-07-18"
 
+
 def is_openai_enabled() -> bool:
     return os.environ.get("OPENAI_API_KEY") is not None
 
@@ -28,12 +29,81 @@ def tokenizer() -> Encoding:
     return tiktoken.encoding_for_model(model_name)
 
 
+@pytest.mark.skipif(not is_openai_enabled(), reason="OpenAI API Key is not set")
+def test_batch_generate_chat_response(chat_lm: OpenAIChatAPI) -> None:
+    responses = chat_lm.batch_generate_chat_response(
+        [[{"role": "user", "content": "こんにちは！"}]],
+        max_new_tokens=20,
+        stop_sequences=["。"],
+    )
+
+    assert len(responses) == 1
+    assert isinstance(responses[0], str)
+
+
+@pytest.mark.skipif(not is_openai_enabled(), reason="OpenAI API Key is not set")
+def test_generate_chat_response(chat_lm: OpenAIChatAPI) -> None:
+    response = chat_lm.generate_chat_response([{"role": "user", "content": "こんにちは。"}], max_new_tokens=40)
+    assert isinstance(response, str)
+
+    responses = chat_lm.generate_chat_response(
+        [
+            [{"role": "user", "content": "こんにちは。"}],
+            [{"role": "user", "content": "こんばんわ"}],
+        ],
+        max_new_tokens=40,
+    )
+    assert len(responses) == 2
+    assert isinstance(responses[0], str)
+
+
+@pytest.mark.skipif(not is_openai_enabled(), reason="OpenAI API Key is not set")
+def test_batch_complete_text(chat_lm: OpenAIChatAPI) -> None:
+    completions = chat_lm.batch_complete_text(["こんにちは、", "おはよう、"])
+    assert len(completions) == 2
+    assert isinstance(completions[0], str)
+
+
+@pytest.mark.skipif(not is_openai_enabled(), reason="OpenAI API Key is not set")
+def test_complete_text(chat_lm: OpenAIChatAPI) -> None:
+    completion = chat_lm.complete_text("こんにちは、")
+    assert isinstance(completion, str)
+
+    completions = chat_lm.batch_complete_text(["こんにちは、", "おはよう、"])
+    assert len(completions) == 2
+    assert isinstance(completions[0], str)
+
+
+@pytest.mark.skipif(not is_openai_enabled(), reason="OpenAI API Key is not set")
+def test_max_tokens(chat_lm: OpenAIChatAPI, tokenizer: Encoding) -> None:
+    # enter prompts where a long output is expected.
+    completion = chat_lm.batch_complete_text(["47都道府県をカンマ区切りで列挙してください。"], max_new_tokens=1)[0]
+    assert len(tokenizer.encode(completion)) == 1
+
+
+@pytest.mark.skipif(not is_openai_enabled(), reason="OpenAI API Key is not set")
+def test_stop_sequences(chat_lm: OpenAIChatAPI) -> None:
+    completion = chat_lm.batch_complete_text(
+        ["10進数の2は2進数で表すと何になりますか？回答のみ出力してください。"],
+        stop_sequences=["1"],
+        max_new_tokens=10,
+        temperature=0.0,
+    )[0]
+    assert completion.strip() == ""
+
+    completion = chat_lm.batch_complete_text(
+        ["10進数の2は2進数で表すと何になりますか？回答のみ出力してください。"],
+        stop_sequences=["0"],
+        max_new_tokens=10,
+        temperature=0.0,
+    )[0]
+    assert completion.strip() == "1"
+
+
 @pytest.mark.skipif(not is_openai_enabled(), reason="OpenAI is not installed")
 def test_warning_if_conflict_max_new_tokens(caplog: pytest.LogCaptureFixture) -> None:
     caplog.set_level(logging.WARNING)
-    chat_lm_with_max_new_tokens = OpenAIChatAPI(
-        model_name, default_gen_kwargs={"max_completion_tokens": 10}
-    )
+    chat_lm_with_max_new_tokens = OpenAIChatAPI(model_name, default_gen_kwargs={"max_completion_tokens": 10})
     chat_lm_with_max_new_tokens.batch_generate_chat_response(
         [[{"role": "user", "content": "テスト"}]], max_new_tokens=20
     )
@@ -103,63 +173,3 @@ def test_remove_duplicates_from_prompt_list() -> None:
         ],
     ]
     assert len(remove_duplicates_from_prompt_list(prompt_list)) == 3
-
-
-def test_batch_complete_text(chat_lm: OpenAIChatAPI) -> None:
-    completions = chat_lm.batch_complete_text(["こんにちは、", "おはよう、"])
-    assert len(completions) == 2
-    assert isinstance(completions[0], str)
-
-
-def test_complete_text(chat_lm: OpenAIChatAPI) -> None:
-    completion = chat_lm.complete_text("こんにちは、")
-    assert isinstance(completion, str)
-
-    completions = chat_lm.batch_complete_text(["こんにちは、", "おはよう、"])
-    assert len(completions) == 2
-    assert isinstance(completions[0], str)
-
-
-def test_max_tokens(chat_lm: OpenAIChatAPI, tokenizer: Encoding) -> None:
-    # enter prompts where a long output is expected.
-    completion = chat_lm.batch_complete_text(["47都道府県をカンマ区切りで列挙してください。"], max_new_tokens=1)[0]
-    assert len(tokenizer.encode(completion)) == 1
-
-
-def test_stop_sequences(chat_lm: OpenAIChatAPI) -> None:
-    completion = chat_lm.batch_complete_text(
-        ["10進数の2は2進数で表すと何になりますか？回答のみ出力してください。"],
-        stop_sequences=["1"],
-        max_new_tokens=10,
-        temperature=0.0,
-    )[0]
-    assert completion.strip() == ""
-
-    completion = chat_lm.batch_complete_text(
-        ["10進数の2は2進数で表すと何になりますか？回答のみ出力してください。"],
-        stop_sequences=["0"],
-        max_new_tokens=10,
-        temperature=0.0,
-    )[0]
-    assert completion.strip() == "1"
-
-
-def test_batch_generate_chat_response(chat_lm: OpenAIChatAPI) -> None:
-    responses = chat_lm.batch_generate_chat_response([[{"role": "user", "content": "こんにちは。"}]], max_new_tokens=40)
-    assert len(responses) == 1
-    assert isinstance(responses[0], str)
-
-
-def test_generate_chat_response(chat_lm: OpenAIChatAPI) -> None:
-    response = chat_lm.generate_chat_response([{"role": "user", "content": "こんにちは。"}], max_new_tokens=40)
-    assert isinstance(response, str)
-
-    responses = chat_lm.generate_chat_response(
-        [
-            [{"role": "user", "content": "こんにちは。"}],
-            [{"role": "user", "content": "こんばんわ"}],
-        ],
-        max_new_tokens=40,
-    )
-    assert len(responses) == 2
-    assert isinstance(responses[0], str)
