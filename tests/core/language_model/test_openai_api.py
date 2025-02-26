@@ -28,10 +28,7 @@ def test_warning_if_conflict_max_new_tokens(caplog: pytest.LogCaptureFixture) ->
         [[{"role": "user", "content": "テスト"}]], max_new_tokens=20
     )
     assert len(caplog.records) >= 1
-    assert any(
-        record.msg.startswith("You specified both `max_new_tokens`")
-        for record in caplog.records
-    )
+    assert any(record.msg.startswith("You specified both `max_new_tokens`") for record in caplog.records)
 
 
 @pytest.mark.skipif(not is_openai_enabled(), reason="OpenAI is not installed")
