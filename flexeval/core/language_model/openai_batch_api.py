@@ -13,7 +13,8 @@ from loguru import logger
 from openai import AsyncOpenAI
 from openai.types import Batch
 
-from .base import LanguageModel, LMOutput
+from .base import LanguageModel, LMOutput, normalize_stop_sequences
+from .openai_api import number_of_tokens_in_openai_model, remove_duplicates_from_prompt_list
 
 MAX_NUM_TRIALS = 3
 
@@ -87,25 +88,24 @@ class OpenAIChatBatchAPI(LanguageModel):
         gen_kwargs = self.default_gen_kwargs.copy()
         gen_kwargs.update(kwargs)
         """Send batch chat requests to the OpenAI."""
-        if stop_sequences is not None:
-            if "stop" in gen_kwargs:
-                msg = (
-                    "You specified both `stop_sequences` and `stop` in generation kwargs. "
-                    "However, `stop_sequences` will be normalized into `stop`. "
-                    "Please specify only one of them."
-                )
-                raise ValueError(msg)
-            gen_kwargs["stop"] = stop_sequences
 
         if max_new_tokens is not None:
             if "max_completion_tokens" in gen_kwargs:
                 msg = (
                     "You specified both `max_new_tokens` and `max_completion_tokens` in generation kwargs. "
-                    "However, `max_new_tokens` will be normalized into `max_completion_tokens`. "
-                    "Please specify only one of them."
+                    "Note that `max_new_tokens` overrides `max_completion_tokens` by default. "
+                    "It is recommended to specify only one of them to avoid unexpected behavior."
                 )
-                raise ValueError(msg)
+                logger.warning(msg)
             gen_kwargs["max_completion_tokens"] = max_new_tokens
+
+        gen_kwargs["stop"] = normalize_stop_sequences(
+            stop_sequences_list=[
+                stop_sequences,
+                gen_kwargs.pop("stop", None),  # This is used in the OpenAI API
+                gen_kwargs.pop("stop_sequences", None),  # This is a common variable name used in flexeval
+            ],
+        )
 
         self.create_batch_file(custom_id_2_message, **gen_kwargs)
 
@@ -145,13 +145,13 @@ class OpenAIChatBatchAPI(LanguageModel):
         self,
         messages_list: list[list[dict[str, str]]],
         **kwargs,
-    ) -> list[LMOutput]:
+    ) -> list[Any]:
         custom_id_2_message: dict[str, list[dict[str, str]]] = {
             str(uuid.uuid4()): messages for messages in messages_list
         }
-        # The response will be an empty LMOutput if the API produces an error.
-        custom_id_2_response: dict[str, LMOutput] = {
-            custom_id: LMOutput(text="", finish_reason="error") for custom_id in custom_id_2_message
+        # The response will be an empty string if the API produces an error.
+        custom_id_2_response: dict[str, str | list[dict[str, str]]] = {
+            custom_id: "" for custom_id in custom_id_2_message
         }
         exec_cnt = 1
 
@@ -194,10 +194,8 @@ class OpenAIChatBatchAPI(LanguageModel):
 
                 custom_id = data_i["custom_id"]
                 custom_id_2_message.pop(custom_id)
-                response_data = data_i["response"]["body"]["choices"][0]
-                custom_id_2_response[custom_id] = LMOutput(
-                    text=response_data["message"]["content"], finish_reason=response_data.get("finish_reason", None)
-                )
+
+                custom_id_2_response[custom_id] = data_i["response"]["body"]
 
         # The remaining elements are all those that failed to complete request.
         if custom_id_2_message:
@@ -214,19 +212,30 @@ class OpenAIChatBatchAPI(LanguageModel):
         **kwargs,
     ) -> list[LMOutput]:
         messages_list = [[{"role": "user", "content": text}] for text in text_list]
-        return self._execute_batch_requests(
+        api_responses = self._execute_batch_requests(
             messages_list,
             stop_sequences=stop_sequences,
             max_new_tokens=max_new_tokens,
             **kwargs,
         )
+        return [
+            LMOutput(text=res["choices"][0]["message"]["content"], finish_reason=res["choices"][0]["finish_reason"])
+            for res in api_responses
+        ]
 
     def batch_generate_chat_response(
         self,
         chat_messages_list: list[list[dict[str, str]]],
         **kwargs,
     ) -> list[LMOutput]:
-        return self._execute_batch_requests(chat_messages_list, **kwargs)
+        api_responses = self._execute_batch_requests(
+            chat_messages_list,
+            **kwargs,
+        )
+        return [
+            LMOutput(text=res["choices"][0]["message"]["content"], finish_reason=res["choices"][0]["finish_reason"])
+            for res in api_responses
+        ]
 
     def close(self) -> None:
         # in case that the program fails before the file is initialized in __init__
@@ -239,6 +248,47 @@ class OpenAIChatBatchAPI(LanguageModel):
             logger.info(f"Temporary file deleted: {self.temp_jsonl_file.name}")
         except OSError as e:
             logger.error(f"Error: {e.filename} - {e.strerror}.")
+
+    def batch_compute_chat_log_probs(
+        self,
+        prompt_list: list[list[dict[str, str]]],
+        response_list: list[dict[str, str]],
+        temperature: float = 0,
+        seed: int = 42,
+        top_logprobs: int = 20,
+    ) -> list[float]:
+        response_contents = [resp["content"] for resp in response_list]
+        for response_content in response_contents:
+            num_tokens = number_of_tokens_in_openai_model(self.model, response_content)
+            if num_tokens > 1:
+                err_msg = f"OpenAIChatAPI.batch_compute_chat_log_probs is not applicable for two or more tokens of response content: '{response_content}'"  # noqa: E501
+                raise NotImplementedError(err_msg)
+
+        # For saving cost, remove duplication from message_list for an API request.
+        unique_prompt_list = remove_duplicates_from_prompt_list(prompt_list)
+        api_responses = self._execute_batch_requests(
+            unique_prompt_list,
+            max_new_tokens=1,
+            seed=seed,
+            logprobs=True,
+            top_logprobs=top_logprobs,
+        )
+
+        log_probs = []
+        top_logprobs_list = [res["choices"][0]["logprobs"]["content"][0]["top_logprobs"] for res in api_responses]
+        for index, prompt in enumerate(prompt_list):
+            target_token = response_contents[index]
+            index_in_unique = unique_prompt_list.index(prompt)
+
+            log_prob = None  # if target token not in top_logprobs, return None for log_prob of the token
+            top_logprobs = top_logprobs_list[index_in_unique]
+            for token_logprob in top_logprobs:
+                if token_logprob["token"] == target_token:
+                    log_prob = token_logprob["logprob"]
+                    break
+            log_probs.append(log_prob)
+
+        return log_probs
 
     def __del__(self) -> None:
         self.close()

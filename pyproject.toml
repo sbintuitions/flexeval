@@ -15,7 +15,7 @@ flexeval_presets = "flexeval.scripts.flexeval_presets:main"
 
 
 [tool.poetry.dependencies]
-python = "^3.9,!=3.9.7"
+python = "^3.9,!=3.9.7,<3.13"  # set version bound because we get "Unable to find installation candidates" with torch 2.5.1
 transformers = {extras = ["ja", "sentencepiece", "torch"], version = "^4.34.1"}
 datasets = "^2.14.6"
 evaluate = "^0.4.1"
@@ -33,6 +33,7 @@ vllm = {version = "^0.7.2", optional = true }
 loguru = "^0.7.2"
 wandb = {version = "^0.17.2", optional = true}
 pyarrow = "16.1.0"  # set the version because we get "Unable to find installation candidates" with 17.0.0
+litellm = "^1.52.9"
 scipy = "1.13.0"
 smart-open = "^7.1.0"
 # The "ja" component of Transformers depends on sudachipy 0.6.6 or later. For aarch64 Linux h
@@ -40,6 +41,7 @@ smart-open = "^7.1.0"
 # source distribution and attempts to build it. This hits FTBFS of sudachi.rs v0.6.9, and has been
 # fixed in v0.6.10.
 sudachipy = ">=0.6.10"
+tiktoken = "^0.9.0"
 
 [tool.poetry.extras]
 vllm = ["vllm"]
