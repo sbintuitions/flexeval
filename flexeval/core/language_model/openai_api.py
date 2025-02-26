@@ -7,7 +7,7 @@ from typing import Any, Awaitable, Callable, TypeVar
 import openai
 import tiktoken
 from loguru import logger
-from openai import AsyncOpenAI
+from openai import AsyncOpenAI, BaseModel
 from openai.types.chat import ChatCompletion, ChatCompletionMessage
 from openai.types.chat.chat_completion import Choice
 
@@ -39,6 +39,7 @@ EMPTY_RESPONSE = ChatCompletion(
 
 async def _retry_on_error(
     openai_call: Callable[[], Awaitable[T]],
+    empty_response: BaseModel,
     max_num_trials: int = 5,
     first_wait_time: int = 10,
 ) -> Awaitable[T]:
@@ -57,12 +58,13 @@ async def _retry_on_error(
 
     logger.warning(f"We reached maximum number of trials ({max_num_trials} trials.).")
     logger.warning("Response including empty string is returned.")
-    return EMPTY_RESPONSE
+    return empty_response
 
 
 class OpenAIChatAPI(LanguageModel):
     """
     LanguageModel implementation using OpenAI's ChatGPT API.
+    Note that this class is inherited by litellm_api.LiteLLMChatAPI, so be careful when making any modifications.
 
     Args:
         model: The name of the model to use.
@@ -79,7 +81,9 @@ class OpenAIChatAPI(LanguageModel):
         self.model = model
         if api_headers is None:
             api_headers = {}
-        self._client = AsyncOpenAI(**api_headers)
+        client = AsyncOpenAI(**api_headers)
+        self.api_call_func = client.chat.completions.create
+        self.empty_response = EMPTY_RESPONSE
         self.default_gen_kwargs = default_gen_kwargs or {}
         # convert the flexeval-specific argument name to the OpenAI-specific name
         if "max_new_tokens" in self.default_gen_kwargs:
@@ -118,12 +122,13 @@ class OpenAIChatAPI(LanguageModel):
             _retry_on_error(
                 # Define an anonymous function with a lambda expression and pass it,
                 # and call it inside the _retry_on_error function
-                openai_call=lambda x=ms: self._client.chat.completions.create(
+                openai_call=lambda x=ms: self.api_call_func(
                     model=self.model,
                     messages=x,
                     stop=stop_sequences,
                     **gen_kwargs,
                 ),
+                empty_response=self.empty_response,
             )
             for ms in messages_list
         ]
@@ -281,7 +286,9 @@ class OpenAICompletionAPI(LanguageModel):
         self.model = model
         if api_headers is None:
             api_headers = {}
-        self._client = AsyncOpenAI(**api_headers)
+        client = AsyncOpenAI(**api_headers)
+        self.api_call_func = client.completions.create
+        self.empty_response = EMPTY_RESPONSE
         self.default_gen_kwargs = default_gen_kwargs or {}
         # convert the flexeval-specific argument name to the OpenAI-specific name
         if "max_new_tokens" in self.default_gen_kwargs:
@@ -313,12 +320,13 @@ class OpenAICompletionAPI(LanguageModel):
             _retry_on_error(
                 # Define an anonymous function with a lambda expression and pass it,
                 # and call it inside the _retry_on_error function
-                openai_call=lambda x=ms: self._client.completions.create(
+                openai_call=lambda x=ms: self.api_call_func(
                     model=self.model,
                     prompt=x,
                     stop=stop_sequences,
                     **gen_kwargs,
                 ),
+                empty_response=self.empty_response,
             )
             for ms in prompt_list
         ]
