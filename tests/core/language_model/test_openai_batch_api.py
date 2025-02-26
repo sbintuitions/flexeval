@@ -41,17 +41,16 @@ def test_batch_generate_chat_response(lm: OpenAIChatBatchAPI) -> None:
 
 @pytest.mark.skipif(not is_openai_enabled(), reason="OpenAI is not installed")
 def test_batch_compute_chat_log_probs(lm: OpenAIChatBatchAPI) -> None:
-    responses = lm.batch_compute_chat_log_probs(
-        [
-            [{"role": "user", "content": "こんにちは。"}],
-            [{"role": "user", "content": "こんにちは。"}],
-            [{"role": "user", "content": "こんばんは。"}],
-        ],
-        [
-            [{"role": "assistant", "content": "こんにちは。"}],
-            [{"role": "assistant", "content": "こんばんは。"}],
-        ],
-    )
+    prompt_list = [[{"role": "user", "content": "Output a number from 1 to 3."}] for _ in range(2)]
+    response_list = [{"role": "assistant", "content": "1"}, {"role": "assistant", "content": "4"}]
+    log_probs = lm.batch_compute_chat_log_probs(prompt_list, response_list)
+    assert isinstance(log_probs, list)
+    assert log_probs[0] > log_probs[1] or 0
 
-    assert len(responses) == 3
-    assert isinstance(responses[0], float)
+
+@pytest.mark.skipif(not is_openai_enabled(), reason="OpenAI is not installed")
+def test_compute_chat_log_probs_for_multi_tokens(lm: OpenAIChatBatchAPI) -> None:
+    prompt = [{"role": "user", "content": "Hello."}]
+    response = {"role": "assistant", "content": "Hello~~~"}
+    with pytest.raises(NotImplementedError):
+        lm.batch_compute_chat_log_probs([prompt], [response])

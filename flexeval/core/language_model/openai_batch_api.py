@@ -269,9 +269,9 @@ class OpenAIChatBatchAPI(LanguageModel):
 
         log_probs = []
         top_logprobs_list = [res["choices"][0]["logprobs"]["content"][0]["top_logprobs"] for res in api_responses]
-        for index, prompt_list in enumerate(unique_prompt_list):
+        for index, prompt in enumerate(prompt_list):
             target_token = response_contents[index]
-            index_in_unique = unique_prompt_list.index(prompt_list)
+            index_in_unique = unique_prompt_list.index(prompt)
 
             log_prob = None  # if target token not in top_logprobs, return None for log_prob of the token
             top_logprobs = top_logprobs_list[index_in_unique]
