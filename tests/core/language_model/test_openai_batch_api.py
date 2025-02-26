@@ -46,7 +46,7 @@ def test_batch_generate_chat_response(lm: OpenAIChatBatchAPI) -> None:
 def test_warning_if_conflict_max_new_tokens(caplog: pytest.LogCaptureFixture) -> None:
     caplog.set_level(logging.WARNING)
     chat_lm_with_max_new_tokens = OpenAIChatBatchAPI(
-        "[dummy_model]", #  to avoid long waiting time, set a dummy model name to cause an error.
+        "[dummy_model]",  #  to avoid long waiting time, set a dummy model name to cause an error.
         default_gen_kwargs={"max_completion_tokens": 10},
     )
     with pytest.raises(ValueError):
