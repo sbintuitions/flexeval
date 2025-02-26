@@ -1,3 +1,4 @@
+import logging
 import os
 
 import pytest
@@ -39,6 +40,21 @@ def test_batch_generate_chat_response(lm: OpenAIChatBatchAPI) -> None:
 
     assert len(responses) == 1
     assert isinstance(responses[0], str)
+
+
+@pytest.mark.skipif(not is_openai_enabled(), reason="OpenAI is not installed")
+def test_warning_if_conflict_max_new_tokens(caplog: pytest.LogCaptureFixture) -> None:
+    caplog.set_level(logging.WARNING)
+    chat_lm_with_max_new_tokens = OpenAIChatBatchAPI(
+        "[dummy_model]", #  to avoid long waiting time, set a dummy model name to cause an error.
+        default_gen_kwargs={"max_completion_tokens": 10},
+    )
+    with pytest.raises(ValueError):
+        chat_lm_with_max_new_tokens.batch_generate_chat_response(
+            [[{"role": "user", "content": "テスト"}]], max_new_tokens=20
+        )
+    assert len(caplog.records) >= 1
+    assert any(record.msg.startswith("You specified both `max_new_tokens`") for record in caplog.records)
 
 
 @pytest.mark.skipif(not is_openai_enabled(), reason="OpenAI is not installed")
