@@ -1,9 +1,11 @@
 from __future__ import annotations
 
 import asyncio
+import itertools
 from typing import Any, Awaitable, Callable, TypeVar
 
 import openai
+import tiktoken
 from loguru import logger
 from openai import AsyncOpenAI, BaseModel
 from openai.types.chat import ChatCompletion, ChatCompletionMessage
@@ -99,6 +101,13 @@ class OpenAIChatAPI(LanguageModel):
         gen_kwargs = self.default_gen_kwargs.copy()
         gen_kwargs.update(kwargs)
         if max_new_tokens is not None:
+            if "max_completion_tokens" in gen_kwargs:
+                msg = (
+                    "You specified both `max_new_tokens` and `max_completion_tokens` in generation kwargs. "
+                    "Note that `max_new_tokens` overrides `max_completion_tokens` by default. "
+                    "It is recommended to specify only one of them to avoid unexpected behavior."
+                )
+                logger.warning(msg)
             gen_kwargs["max_completion_tokens"] = max_new_tokens
 
         stop_sequences = normalize_stop_sequences(
@@ -159,8 +168,100 @@ class OpenAIChatAPI(LanguageModel):
             logger.warning("All generated texts are empty string. Something may go wrong.")
         return completions
 
+    def batch_compute_chat_log_probs(
+        self,
+        prompt_list: list[list[dict[str, str]]],
+        response_list: list[dict[str, str]],
+        temperature: float = 0,
+        seed: int = 42,
+        top_logprobs: int = 20,
+    ) -> list[float | None]:
+        """
+        Return logprob of one-token response only due to restriction of OpenAI API.
+        If you pass a response with two or more tokens, raise an error.
+
+        This function is mainly used for calculating weighted average of multi-choice prompts.
+        Under the design of this function, we need to pass the same prompt (the number of choice) times.
+        We only need one request for one prompt because OpenAI API returns a list of log probs.
+        So, this function removes duplicates of prompts before requesting API and
+        returns log probs by restoring the raw prompt list.
+        """
+
+        # Check the number of tokens is 1
+        response_contents = [resp["content"] for resp in response_list]
+        for response_content in response_contents:
+            num_tokens = number_of_tokens_in_openai_model(self.model, response_content)
+            if num_tokens > 1:
+                err_msg = f"OpenAIChatAPI.batch_compute_chat_log_probs is not applicable for two or more tokens of response content: '{response_content}'"  # noqa: E501
+                raise NotImplementedError(err_msg)
+
+        # For saving cost, remove duplication from message_list for an API request.
+        unique_prompt_list = remove_duplicates_from_prompt_list(prompt_list)
+        api_responses = asyncio.run(
+            self._async_batch_run_chatgpt(
+                unique_prompt_list,
+                max_completion_tokens=1,
+                seed=seed,
+                logprobs=True,
+                top_logprobs=top_logprobs,
+            ),
+        )
+
+        log_probs = []
+        top_logprobs_list = [res.choices[0].logprobs.content[0].top_logprobs for res in api_responses]
+        for index, prompt in enumerate(prompt_list):
+            target_token = response_contents[index]
+            index_in_unique = unique_prompt_list.index(prompt)
+
+            log_prob = None  # if target token not in top_logprobs, return None for log_prob of the token
+            top_logprobs = top_logprobs_list[index_in_unique]
+            for token_logprob in top_logprobs:
+                if token_logprob.token == target_token:
+                    log_prob = token_logprob.logprob
+                    break
+            log_probs.append(log_prob)
+
+        return log_probs
+
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(model={self.model})"
+
+
+def number_of_tokens_in_openai_model(model: str, content: str) -> int:
+    encoding = tiktoken.encoding_for_model(model)
+    return len(encoding.encode(content))
+
+
+def message_list_from_prompt(prompt: list[dict[str, str]]) -> list[str]:
+    """A preprocess function to remove duplicates from prompt_list.
+    This function translates prompt into list[str], allowing sorting
+    """
+    return [f"[{message['role']}]{message['content']}" for message in prompt]
+
+
+def prompt_from_message_list(message_list: list[str]) -> list[dict[str, str]]:
+    """The inverted function of message_list_from_prompt."""
+    prompt = []
+    for message_str in message_list:
+        role_end = message_str.index("]")
+        role = message_str[1:role_end]
+        content = message_str[role_end + 1 :]
+        prompt.append({"role": role, "content": content})
+    return prompt
+
+
+def remove_duplicates_from_prompt_list(prompt_list: list[list[dict[str, str]]]) -> list[list[dict[str, str]]]:
+    """We cannot sort raw prompt_list because order is not defined for dict.
+
+    Removing duplicates can be done as below.
+    1. Change each element in prompt_list into list[str]
+    2. Sort list of list[str] by itertools.groupby
+    3. Invert list[str] into the original prompt format
+    """
+    messages_list = [message_list_from_prompt(prompt) for prompt in prompt_list]
+    messages_list.sort()
+    unique_messages_list = [element for element, _ in itertools.groupby(messages_list)]
+    return [prompt_from_message_list(messages) for messages in unique_messages_list]
 
 
 class OpenAICompletionAPI(LanguageModel):

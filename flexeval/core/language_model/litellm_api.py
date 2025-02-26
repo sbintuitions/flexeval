@@ -40,5 +40,11 @@ class LiteLLMChatAPI(OpenAIChatAPI):
             model_response_object=ModelResponse(),
         )
 
+    def batch_compute_chat_log_probs(
+            self, prompt_list: list[list[dict[str, str]]], response_list: list[dict[str, str]], temperature: float = 0,
+            seed: int = 42, top_logprobs: int = 20
+        ) -> list[float | None]:
+        raise NotImplementedError
+
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(model={self.model})"
