@@ -35,7 +35,9 @@ def test_batch_generate_chat_response(chat_lm: OpenAIChatAPI) -> None:
 @pytest.mark.skipif(not is_openai_enabled(), reason="OpenAI is not installed")
 def test_warning_if_conflict_max_new_tokens(caplog: pytest.LogCaptureFixture) -> None:
     caplog.set_level(logging.WARNING)
-    chat_lm_with_max_new_tokens = OpenAIChatAPI("gpt-4o-mini-2024-07-18", default_gen_kwargs={"max_completion_tokens": 10})
+    chat_lm_with_max_new_tokens = OpenAIChatAPI(
+        "gpt-4o-mini-2024-07-18", default_gen_kwargs={"max_completion_tokens": 10}
+    )
     chat_lm_with_max_new_tokens.batch_generate_chat_response(
         [[{"role": "user", "content": "テスト"}]], max_new_tokens=20
     )
