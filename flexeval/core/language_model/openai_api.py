@@ -97,6 +97,13 @@ class OpenAIChatAPI(LanguageModel):
         gen_kwargs = self.default_gen_kwargs.copy()
         gen_kwargs.update(kwargs)
         if max_new_tokens is not None:
+            if "max_completion_tokens" in gen_kwargs:
+                msg = (
+                    "You specified both `max_new_tokens` and `max_completion_tokens` in generation kwargs. "
+                    "Note that `max_new_tokens` overrides `max_completion_tokens` by default. "
+                    "It is recommended to specify only one of them to avoid unexpected behavior."
+                )
+                logger.warning(msg)
             gen_kwargs["max_completion_tokens"] = max_new_tokens
 
         stop_sequences = normalize_stop_sequences(

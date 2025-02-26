@@ -13,7 +13,7 @@ from loguru import logger
 from openai import AsyncOpenAI
 from openai.types import Batch
 
-from .base import LanguageModel
+from .base import LanguageModel, normalize_stop_sequences
 from .openai_api import number_of_tokens_in_openai_model, remove_duplicates_from_prompt_list
 
 MAX_NUM_TRIALS = 3
@@ -88,25 +88,24 @@ class OpenAIChatBatchAPI(LanguageModel):
         gen_kwargs = self.default_gen_kwargs.copy()
         gen_kwargs.update(kwargs)
         """Send batch chat requests to the OpenAI."""
-        if stop_sequences is not None:
-            if "stop" in gen_kwargs:
-                msg = (
-                    "You specified both `stop_sequences` and `stop` in generation kwargs. "
-                    "However, `stop_sequences` will be normalized into `stop`. "
-                    "Please specify only one of them."
-                )
-                raise ValueError(msg)
-            gen_kwargs["stop"] = stop_sequences
 
         if max_new_tokens is not None:
             if "max_completion_tokens" in gen_kwargs:
                 msg = (
                     "You specified both `max_new_tokens` and `max_completion_tokens` in generation kwargs. "
-                    "However, `max_new_tokens` will be normalized into `max_completion_tokens`. "
-                    "Please specify only one of them."
+                    "Note that `max_new_tokens` overrides `max_completion_tokens` by default. "
+                    "It is recommended to specify only one of them to avoid unexpected behavior."
                 )
-                raise ValueError(msg)
+                logger.warning(msg)
             gen_kwargs["max_completion_tokens"] = max_new_tokens
+
+        stop_sequences = normalize_stop_sequences(
+            stop_sequences_list=[
+                stop_sequences,
+                gen_kwargs.pop("stop", None),  # This is used in the OpenAI API
+                gen_kwargs.pop("stop_sequences", None),  # This is a common variable name used in flexeval
+            ],
+        )
 
         self.create_batch_file(custom_id_2_message, **gen_kwargs)
 
