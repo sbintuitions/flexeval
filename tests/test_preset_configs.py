@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+from unittest.mock import patch
 
 import datasets
 import pytest
@@ -33,9 +34,9 @@ def test_if_eval_setup_config_is_valid(config_path: str, mocker: MockerFixture) 
 )
 def test_if_metric_config_is_valid(config_path: str) -> None:
     # we need to set OPENAI_API_KEY to instantiate classes that use OpenAI API
-    os.environ["OPENAI_API_KEY"] = "this-is-a-dummy-key"
+    with patch.dict(os.environ, {"OPENAI_API_KEY": "this-is-a-dummy-key"}):
+        eval_setup = instantiate_from_config(config_path)
 
-    eval_setup = instantiate_from_config(config_path)
     assert isinstance(eval_setup, Metric)
 
 
@@ -45,9 +46,9 @@ def test_if_metric_config_is_valid(config_path: str) -> None:
 )
 def test_if_pairwise_judge_config_is_valid(config_path: str) -> None:
     # we need to set OPENAI_API_KEY to instantiate classes that use OpenAI API
-    os.environ["OPENAI_API_KEY"] = "this-is-a-dummy-key"
+    with patch.dict(os.environ, {"OPENAI_API_KEY": "this-is-a-dummy-key"}):
+        eval_setup = instantiate_from_config(config_path)
 
-    eval_setup = instantiate_from_config(config_path)
     assert isinstance(eval_setup, PairwiseJudge)
 
 

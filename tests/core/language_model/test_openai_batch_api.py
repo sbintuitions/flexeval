@@ -17,6 +17,7 @@ def lm() -> OpenAIChatBatchAPI:
 
 
 @pytest.mark.skipif(not is_openai_enabled(), reason="OpenAI is not installed")
+@pytest.mark.batch_api()
 def test_create_batch_file(lm: OpenAIChatBatchAPI) -> None:
     lm.create_batch_file(
         {str(i): [[{"role": "user", "content": "こんにちは。"}]] for i in range(10)},
@@ -29,6 +30,7 @@ def test_create_batch_file(lm: OpenAIChatBatchAPI) -> None:
 
 
 @pytest.mark.skipif(not is_openai_enabled(), reason="OpenAI is not installed")
+@pytest.mark.batch_api()
 def test_batch_generate_chat_response(lm: OpenAIChatBatchAPI) -> None:
     responses = lm.batch_generate_chat_response(
         [[{"role": "user", "content": "こんにちは。"}]],
