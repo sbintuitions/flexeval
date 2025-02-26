@@ -1,3 +1,4 @@
+import logging
 import os
 
 import pytest
@@ -25,6 +26,19 @@ def chat_lm() -> OpenAIChatAPI:
 @pytest.fixture(scope="module")
 def tokenizer() -> Encoding:
     return tiktoken.encoding_for_model(model_name)
+
+
+@pytest.mark.skipif(not is_openai_enabled(), reason="OpenAI is not installed")
+def test_warning_if_conflict_max_new_tokens(caplog: pytest.LogCaptureFixture) -> None:
+    caplog.set_level(logging.WARNING)
+    chat_lm_with_max_new_tokens = OpenAIChatAPI(
+        model_name, default_gen_kwargs={"max_completion_tokens": 10}
+    )
+    chat_lm_with_max_new_tokens.batch_generate_chat_response(
+        [[{"role": "user", "content": "テスト"}]], max_new_tokens=20
+    )
+    assert len(caplog.records) >= 1
+    assert any(record.msg.startswith("You specified both `max_new_tokens`") for record in caplog.records)
 
 
 @pytest.mark.skipif(not is_openai_enabled(), reason="OpenAI is not installed")

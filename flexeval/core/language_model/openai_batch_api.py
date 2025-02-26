@@ -13,7 +13,7 @@ from loguru import logger
 from openai import AsyncOpenAI
 from openai.types import Batch
 
-from .base import LanguageModel
+from .base import LanguageModel, normalize_stop_sequences
 from .openai_api import number_of_tokens_in_openai_model, remove_duplicates_from_prompt_list
 
 MAX_NUM_TRIALS = 3
@@ -48,6 +48,7 @@ class OpenAIChatBatchAPI(LanguageModel):
         model: The name of the model to use.
         api_headers: A dictionary of headers to use when making requests to the OpenAI API.
         polling_interval_seconds: The interval in seconds to poll the batch status.
+        default_gen_kwargs: Default generation kwargs to use when calling the API.
     """
 
     def __init__(
@@ -55,11 +56,16 @@ class OpenAIChatBatchAPI(LanguageModel):
         model: str,
         api_headers: dict[str, str] | None = None,
         polling_interval_seconds: int = 60,
+        default_gen_kwargs: dict[str, Any] | None = None,
     ) -> None:
         self.model = model
         if api_headers is None:
             api_headers = {}
         self._client = AsyncOpenAI(**api_headers)
+        self.default_gen_kwargs = default_gen_kwargs or {}
+        # convert the flexeval-specific argument name to the OpenAI-specific name
+        if "max_new_tokens" in self.default_gen_kwargs:
+            self.default_gen_kwargs["max_completion_tokens"] = self.default_gen_kwargs.pop("max_new_tokens")
         self.temp_jsonl_file = tempfile.NamedTemporaryFile(delete=False, suffix=".jsonl")
 
         self.polling_interval_seconds = polling_interval_seconds
@@ -79,28 +85,29 @@ class OpenAIChatBatchAPI(LanguageModel):
         max_new_tokens: int | None = None,
         **kwargs,
     ) -> str:
+        gen_kwargs = self.default_gen_kwargs.copy()
+        gen_kwargs.update(kwargs)
         """Send batch chat requests to the OpenAI."""
-        if stop_sequences is not None:
-            if "stop" in kwargs:
-                msg = (
-                    "You specified both `stop_sequences` and `stop` in generation kwargs. "
-                    "However, `stop_sequences` will be normalized into `stop`. "
-                    "Please specify only one of them."
-                )
-                raise ValueError(msg)
-            kwargs["stop"] = stop_sequences
 
         if max_new_tokens is not None:
-            if "max_completion_tokens" in kwargs:
+            if "max_completion_tokens" in gen_kwargs:
                 msg = (
                     "You specified both `max_new_tokens` and `max_completion_tokens` in generation kwargs. "
-                    "However, `max_new_tokens` will be normalized into `max_completion_tokens`. "
-                    "Please specify only one of them."
+                    "Note that `max_new_tokens` overrides `max_completion_tokens` by default. "
+                    "It is recommended to specify only one of them to avoid unexpected behavior."
                 )
-                raise ValueError(msg)
-            kwargs["max_completion_tokens"] = max_new_tokens
+                logger.warning(msg)
+            gen_kwargs["max_completion_tokens"] = max_new_tokens
 
-        self.create_batch_file(custom_id_2_message, **kwargs)
+        stop_sequences = normalize_stop_sequences(
+            stop_sequences_list=[
+                stop_sequences,
+                gen_kwargs.pop("stop", None),  # This is used in the OpenAI API
+                gen_kwargs.pop("stop_sequences", None),  # This is a common variable name used in flexeval
+            ],
+        )
+
+        self.create_batch_file(custom_id_2_message, **gen_kwargs)
 
         # Update batch file
         with open(self.temp_jsonl_file.name, "rb") as batch_file:  # noqa: ASYNC101
@@ -262,9 +269,9 @@ class OpenAIChatBatchAPI(LanguageModel):
 
         log_probs = []
         top_logprobs_list = [res["choices"][0]["logprobs"]["content"][0]["top_logprobs"] for res in api_responses]
-        for index, prompt_list in enumerate(unique_prompt_list):
+        for index, prompt in enumerate(prompt_list):
             target_token = response_contents[index]
-            index_in_unique = unique_prompt_list.index(prompt_list)
+            index_in_unique = unique_prompt_list.index(prompt)
 
             log_prob = None  # if target token not in top_logprobs, return None for log_prob of the token
             top_logprobs = top_logprobs_list[index_in_unique]
