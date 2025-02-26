@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from collections import Counter
 from typing import Any, Sequence
 
 from loguru import logger
@@ -55,7 +56,10 @@ def evaluate_chat_response(  # noqa: C901,PLR0912
                 )
                 for input_messages, lm_output in zip(input_messages_list, lm_outputs):
                     all_messages_list.append(
-                        [*input_messages, {"role": "assistant", "content": lm_output.text}],
+                        [
+                            *input_messages,
+                            {"role": "assistant", "content": lm_output.text, "finish_reason": lm_output.finish_reason},
+                        ],
                     )
             else:
                 max_num_turns = max(len(messages) for messages in input_messages_list)
@@ -76,7 +80,11 @@ def evaluate_chat_response(  # noqa: C901,PLR0912
                     for o_id, b_id in enumerate(batch_ids_fed_to_model):
                         current_chat_history[b_id].append(input_messages_list[b_id][turn])
                         current_chat_history[b_id].append(
-                            {"role": "assistant", "content": lm_outputs[o_id].text},
+                            {
+                                "role": "assistant",
+                                "content": lm_outputs[o_id].text,
+                                "finish_reason": lm_outputs[o_id].finish_reason,
+                            },
                         )
                 all_messages_list += current_chat_history
 
@@ -107,12 +115,21 @@ def evaluate_chat_response(  # noqa: C901,PLR0912
                 metric_result.instance_details,
             ):
                 instance_metrics_list[instance_idx].update(instance_details)
+    # Calculate the finish_reason statistics
+    finish_reason_counter = Counter()
+    for messages in all_messages_list:
+        for mes in messages:
+            if "finish_reason" in mes:
+                finish_reason_counter[mes["finish_reason"]] += 1
+    for finish_reason, count in finish_reason_counter.items():
+        metrics_summary_dict[f"finish_reason_ratio-{finish_reason}"] = count / sum(finish_reason_counter.values())
 
     logger.info(metrics_summary_dict)
 
     outputs = [
         {
             "lm_output": messages[-1]["content"],
+            "finish_reason": messages[-1]["finish_reason"],
             "task_inputs": {"messages": messages[:-1], **extra_info},
             "references": references,
             **instance_metrics,

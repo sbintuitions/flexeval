@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from collections import Counter
 from typing import Any, Sequence
 
 from loguru import logger
@@ -81,6 +82,10 @@ def evaluate_generation(  # noqa: C901
                 metric_result.instance_details,
             ):
                 instance_metrics_list[instance_idx].update(instance_details)
+    # Calculate the finish_reason statistics
+    finish_reason_counter = Counter([lm_output.finish_reason for lm_output in lm_output_list])
+    for finish_reason, count in finish_reason_counter.items():
+        metrics_summary_dict[f"finish_reason_ratio-{finish_reason}"] = count / len(lm_output_list)
 
     logger.info(metrics_summary_dict)
 
@@ -88,6 +93,7 @@ def evaluate_generation(  # noqa: C901
         {
             "lm_prompt": lm_prompt,
             "lm_output": lm_output.text,
+            "finish_reason": lm_output.finish_reason,
             "task_inputs": eval_instance.inputs,
             "references": eval_instance.references,
             **instance_metrics,

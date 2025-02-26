@@ -48,6 +48,7 @@ def test_evaluate_chat_response(require_incremental_response: bool, use_few_shot
         max_instances=max_instances,
     )
     assert isinstance(metrics, dict)
+    assert metrics["finish_reason_ratio-length"] == 1.0
     assert isinstance(outputs, list)
 
     if max_instances is not None:
@@ -74,6 +75,7 @@ def test_evaluate_generation(use_few_shot: bool) -> None:
         batch_size=1,
     )
     assert isinstance(metrics, dict)
+    assert metrics["finish_reason_ratio-length"] == 1.0
     assert isinstance(outputs, list)
 
 
