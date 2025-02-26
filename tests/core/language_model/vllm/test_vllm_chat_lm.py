@@ -1,5 +1,6 @@
 import pytest
 
+from flexeval.core.language_model.base import LMOutput
 from flexeval.core.language_model.vllm_model import VLLM, LanguageModel
 from tests.conftest import is_vllm_enabled
 
@@ -25,19 +26,16 @@ def chat_lm() -> VLLM:
 @pytest.mark.skipif(not is_vllm_enabled(), reason="vllm library is not installed")
 def test_if_stop_sequences_work_as_expected(chat_lm: VLLM) -> None:
     test_inputs = [[{"role": "user", "content": "こんにちは"}]]
-    eos_token = "</s>"  # noqa: S105
 
     # check if the response does not have eos_token by default
     response = chat_lm.batch_generate_chat_response(test_inputs, max_new_tokens=50)[0]
-    assert not response.endswith(eos_token)
-
-    # check if the response has eos_token with include_stop_str_in_output=True
-    response = chat_lm.batch_generate_chat_response(test_inputs, max_new_tokens=50, include_stop_str_in_output=True)[0]
-    assert response.endswith(eos_token)
+    assert response.text
+    assert response.finish_reason == "stop"
 
     # check if ignore_eos=True works
     response = chat_lm.batch_generate_chat_response(test_inputs, max_new_tokens=50, ignore_eos=True)[0]
-    assert eos_token in response[: -len(eos_token)]
+    assert response.text
+    assert response.finish_reason == "length"
 
 
 @pytest.mark.skipif(not is_vllm_enabled(), reason="vllm library is not installed")
@@ -82,4 +80,6 @@ def test_batch_generate_chat_response(chat_lm: LanguageModel) -> None:
         max_new_tokens=40,
     )
     assert len(responses) == 1
-    assert isinstance(responses[0], str)
+    assert isinstance(responses[0], LMOutput)
+    assert isinstance(responses[0].text, str)
+    assert isinstance(responses[0].finish_reason, str)

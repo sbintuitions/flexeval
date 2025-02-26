@@ -3,6 +3,7 @@ from __future__ import annotations
 import pytest
 
 from flexeval import Jinja2PromptTemplate, LanguageModel
+from flexeval.core.language_model.base import LMOutput
 from flexeval.core.metric.llm_score import (
     ChatLLMScore,
     LLMScore,
@@ -18,15 +19,17 @@ class EchoBackLanguageModel(LanguageModel):
         stop_sequences: str | list[str] | None = None,
         max_new_tokens: int | None = None,
         **kwargs,
-    ) -> list[str]:
-        return text_list
+    ) -> list[LMOutput]:
+        return [LMOutput(text=text, finish_reason="length") for text in text_list]
 
     def batch_generate_chat_response(
         self,
         chat_messages_list: list[list[dict[str, str]]],
         **kwargs,
-    ) -> list[str]:
-        return [chat_messages[-1]["content"] for chat_messages in chat_messages_list]
+    ) -> list[LMOutput]:
+        return [
+            LMOutput(text=chat_messages[-1]["content"], finish_reason="length") for chat_messages in chat_messages_list
+        ]
 
 
 @pytest.mark.parametrize(

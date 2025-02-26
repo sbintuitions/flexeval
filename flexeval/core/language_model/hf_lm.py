@@ -11,7 +11,7 @@ from transformers import AutoModelForCausalLM, AutoTokenizer, BatchEncoding, Pre
 
 from flexeval.utils.hf_utils import get_default_model_kwargs
 
-from .base import LanguageModel, normalize_stop_sequences
+from .base import LanguageModel, LMOutput, normalize_stop_sequences
 
 T = TypeVar("T")
 
@@ -220,9 +220,8 @@ class HuggingFaceLM(LanguageModel):
         stop_sequences: str | list[str] | None = None,
         max_new_tokens: int | None = None,
         ignore_eos: bool = False,
-        include_stop_str_in_output: bool = False,
         **kwargs,
-    ) -> list[str]:
+    ) -> list[LMOutput]:
         gen_kwargs = self.default_gen_kwargs.copy()
         gen_kwargs.update(kwargs)
         if max_new_tokens is not None:
@@ -254,31 +253,28 @@ class HuggingFaceLM(LanguageModel):
         )
 
         with self._get_amp_context():
-            lm_outputs = self.model.generate(**model_inputs, **gen_kwargs)
+            generated_tokens = self.model.generate(**model_inputs, **gen_kwargs)
 
-        # `lm_outputs` contains full text including the input text.
         # We strip the input text and stop sequences from the output text.
-        output_texts: list[str] = []
-        for output_tensor in lm_outputs[:, input_token_length:]:
+        lm_outputs: list[str] = []
+        for output_tensor in generated_tokens[:, input_token_length:]:
             output_tokens = [t for t in output_tensor.tolist() if t != self.tokenizer.pad_token_id]
             decoded_text = self.tokenizer.decode(output_tokens, skip_special_tokens=False)
 
-            if include_stop_str_in_output:
-                output_texts.append(decoded_text)
-                continue
-
+            finish_reason = "length"
             for stop_seq in stop_sequences:
                 idx = decoded_text.find(stop_seq)
                 if idx != -1:
                     decoded_text = decoded_text[:idx]
-            output_texts.append(decoded_text)
-        return output_texts
+                    finish_reason = "stop"
+            lm_outputs.append(LMOutput(text=decoded_text, finish_reason=finish_reason))
+        return lm_outputs
 
     def batch_generate_chat_response(
         self,
         chat_messages_list: list[list[dict[str, str]]],
         **kwargs,
-    ) -> list[str]:
+    ) -> list[LMOutput]:
         chat_messages_as_string = [
             self.tokenizer.apply_chat_template(
                 chat_messages,

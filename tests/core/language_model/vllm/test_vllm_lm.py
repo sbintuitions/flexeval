@@ -1,5 +1,6 @@
 import pytest
 
+from flexeval.core.language_model.base import LMOutput
 from flexeval.core.language_model.hf_lm import HuggingFaceLM
 from flexeval.core.language_model.vllm_model import VLLM, LanguageModel
 from tests.conftest import is_vllm_enabled
@@ -36,7 +37,9 @@ def hf_lm() -> HuggingFaceLM:
 def test_batch_complete_text(lm: LanguageModel) -> None:
     completions = lm.batch_complete_text(["こんにちは、", "おはよう、"])
     assert len(completions) == 2
-    assert isinstance(completions[0], str)
+    assert isinstance(completions[0], LMOutput)
+    assert isinstance(completions[0].text, str)
+    assert isinstance(completions[0].finish_reason, str)
 
 
 @pytest.mark.skipif(not is_vllm_enabled(), reason="vllm library is not installed")
@@ -47,24 +50,28 @@ def test_batch_complete_text_is_not_affected_by_batch(lm: LanguageModel) -> None
     gen_kwargs = {"stop_sequences": ["。"], "max_new_tokens": 100}
     completions_without_batch = lm.batch_complete_text(single_batch_input, **gen_kwargs)
     completions_with_batch = lm.batch_complete_text(multi_batch_inputs, **gen_kwargs)
-    assert completions_without_batch[0] == completions_with_batch[0]
+    assert completions_without_batch[0].text == completions_with_batch[0].text
+    assert completions_without_batch[0].finish_reason == completions_with_batch[0].finish_reason
 
 
 @pytest.mark.skipif(not is_vllm_enabled(), reason="vllm library is not installed")
 def test_max_tokens(lm: LanguageModel) -> None:
     # assume that the lm will repeat 0
     completion = lm.batch_complete_text(["0 0 0 0 0 0 0 0 0 0"], max_new_tokens=1)[0]
-    assert len(completion.strip()) == 1
+    assert len(completion.text.strip()) == 1
+    assert completion.finish_reason == "length"
 
 
 @pytest.mark.skipif(not is_vllm_enabled(), reason="vllm library is not installed")
 def test_stop_sequences(lm: LanguageModel) -> None:
     # assume that the lm will repeat "10"
-    completion = lm.batch_complete_text(["10 10 10 10 10 10 "], stop_sequences=["1"], max_new_tokens=10)[0]
-    assert completion.strip() == ""
+    completion = lm.batch_complete_text(["10 10 10 10 10 10 10 "], stop_sequences=["1"], max_new_tokens=10)[0]
+    assert completion.text.strip() == ""
+    assert completion.finish_reason == "stop"
 
-    completion = lm.batch_complete_text(["10 10 10 10 10 10 "], stop_sequences=["0"], max_new_tokens=10)[0]
-    assert completion.strip() == "1"
+    completion = lm.batch_complete_text(["10 10 10 10 10 10 10 "], stop_sequences=["0"], max_new_tokens=10)[0]
+    assert completion.text.strip() == "1"
+    assert completion.finish_reason == "stop"
 
 
 @pytest.mark.skipif(not is_vllm_enabled(), reason="vllm library is not installed")

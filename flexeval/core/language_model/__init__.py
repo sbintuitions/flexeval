@@ -1,4 +1,4 @@
-from .base import LanguageModel
+from .base import LanguageModel, LMOutput
 from .hf_lm import HuggingFaceLM
 from .litellm_api import LiteLLMChatAPI
 from .openai_api import OpenAIChatAPI, OpenAICompletionAPI

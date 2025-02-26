@@ -13,7 +13,7 @@ from loguru import logger
 from openai import AsyncOpenAI
 from openai.types import Batch
 
-from .base import LanguageModel, normalize_stop_sequences
+from .base import LanguageModel, LMOutput, normalize_stop_sequences
 from .openai_api import number_of_tokens_in_openai_model, remove_duplicates_from_prompt_list
 
 MAX_NUM_TRIALS = 3
@@ -99,7 +99,7 @@ class OpenAIChatBatchAPI(LanguageModel):
                 logger.warning(msg)
             gen_kwargs["max_completion_tokens"] = max_new_tokens
 
-        stop_sequences = normalize_stop_sequences(
+        gen_kwargs["stop"] = normalize_stop_sequences(
             stop_sequences_list=[
                 stop_sequences,
                 gen_kwargs.pop("stop", None),  # This is used in the OpenAI API
@@ -145,7 +145,7 @@ class OpenAIChatBatchAPI(LanguageModel):
         self,
         messages_list: list[list[dict[str, str]]],
         **kwargs,
-    ) -> list[str, Any]:
+    ) -> list[Any]:
         custom_id_2_message: dict[str, list[dict[str, str]]] = {
             str(uuid.uuid4()): messages for messages in messages_list
         }
@@ -194,6 +194,7 @@ class OpenAIChatBatchAPI(LanguageModel):
 
                 custom_id = data_i["custom_id"]
                 custom_id_2_message.pop(custom_id)
+
                 custom_id_2_response[custom_id] = data_i["response"]["body"]
 
         # The remaining elements are all those that failed to complete request.
@@ -209,7 +210,7 @@ class OpenAIChatBatchAPI(LanguageModel):
         stop_sequences: str | list[str] | None = None,
         max_new_tokens: int | None = None,
         **kwargs,
-    ) -> list[str]:
+    ) -> list[LMOutput]:
         messages_list = [[{"role": "user", "content": text}] for text in text_list]
         api_responses = self._execute_batch_requests(
             messages_list,
@@ -217,18 +218,24 @@ class OpenAIChatBatchAPI(LanguageModel):
             max_new_tokens=max_new_tokens,
             **kwargs,
         )
-        return [res["choices"][0]["message"]["content"] for res in api_responses]
+        return [
+            LMOutput(text=res["choices"][0]["message"]["content"], finish_reason=res["choices"][0]["finish_reason"])
+            for res in api_responses
+        ]
 
     def batch_generate_chat_response(
         self,
         chat_messages_list: list[list[dict[str, str]]],
         **kwargs,
-    ) -> list[str]:
+    ) -> list[LMOutput]:
         api_responses = self._execute_batch_requests(
             chat_messages_list,
             **kwargs,
         )
-        return [res["choices"][0]["message"]["content"] for res in api_responses]
+        return [
+            LMOutput(text=res["choices"][0]["message"]["content"], finish_reason=res["choices"][0]["finish_reason"])
+            for res in api_responses
+        ]
 
     def close(self) -> None:
         # in case that the program fails before the file is initialized in __init__
