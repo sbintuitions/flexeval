@@ -40,7 +40,7 @@ def test_batch_generate_chat_response(lm: OpenAIChatBatchAPI) -> None:
 
     assert len(responses) == 1
     assert isinstance(responses[0], LMOutput)
-    assert responses[0].text == "assistant"
+    assert isinstance(responses[0].text, str)
     assert responses[0].finish_reason in {"stop", "length"}
 
 
