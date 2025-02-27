@@ -75,6 +75,7 @@ def test_tokenize_text_for_lm_continuation(tokenizer_name: str) -> None:
         tokenizer.pad_token = tokenizer.eos_token
 
     # normal test cases
+    # The character 'm' forms a weird token when it follows certain multi-byte characters in Llama3 tokenizer.
     text_list = ["は続き", "is continuation.", "m"]
     batch_encoding = tokenize_text_for_lm_continuation(text_list, tokenizer)
     for i, tokens in enumerate(batch_encoding.input_ids):
