@@ -3,7 +3,7 @@ from __future__ import annotations
 import pytest
 
 from flexeval.core.metric import CharF1
-from flexeval.core.metric.string_processor import AIONormalizer, RegexExtractor, StringProcessor
+from flexeval.core.string_processor import AIONormalizer, RegexExtractor, StringProcessor
 
 
 @pytest.mark.parametrize(

@@ -7,11 +7,11 @@ from typing import Any, Awaitable, Callable, TypeVar
 import openai
 import tiktoken
 from loguru import logger
-from openai import AsyncOpenAI
+from openai import AsyncOpenAI, BaseModel
 from openai.types.chat import ChatCompletion, ChatCompletionMessage
 from openai.types.chat.chat_completion import Choice
 
-from .base import LanguageModel, normalize_stop_sequences
+from .base import LanguageModel, LMOutput, normalize_stop_sequences
 
 T = TypeVar("T")
 
@@ -39,6 +39,7 @@ EMPTY_RESPONSE = ChatCompletion(
 
 async def _retry_on_error(
     openai_call: Callable[[], Awaitable[T]],
+    empty_response: BaseModel,
     max_num_trials: int = 5,
     first_wait_time: int = 10,
 ) -> Awaitable[T]:
@@ -57,12 +58,13 @@ async def _retry_on_error(
 
     logger.warning(f"We reached maximum number of trials ({max_num_trials} trials.).")
     logger.warning("Response including empty string is returned.")
-    return EMPTY_RESPONSE
+    return empty_response
 
 
 class OpenAIChatAPI(LanguageModel):
     """
     LanguageModel implementation using OpenAI's ChatGPT API.
+    Note that this class is inherited by litellm_api.LiteLLMChatAPI, so be careful when making any modifications.
 
     Args:
         model: The name of the model to use.
@@ -79,7 +81,9 @@ class OpenAIChatAPI(LanguageModel):
         self.model = model
         if api_headers is None:
             api_headers = {}
-        self._client = AsyncOpenAI(**api_headers)
+        client = AsyncOpenAI(**api_headers)
+        self.api_call_func = client.chat.completions.create
+        self.empty_response = EMPTY_RESPONSE
         self.default_gen_kwargs = default_gen_kwargs or {}
         # convert the flexeval-specific argument name to the OpenAI-specific name
         if "max_new_tokens" in self.default_gen_kwargs:
@@ -97,6 +101,13 @@ class OpenAIChatAPI(LanguageModel):
         gen_kwargs = self.default_gen_kwargs.copy()
         gen_kwargs.update(kwargs)
         if max_new_tokens is not None:
+            if "max_completion_tokens" in gen_kwargs:
+                msg = (
+                    "You specified both `max_new_tokens` and `max_completion_tokens` in generation kwargs. "
+                    "Note that `max_new_tokens` overrides `max_completion_tokens` by default. "
+                    "It is recommended to specify only one of them to avoid unexpected behavior."
+                )
+                logger.warning(msg)
             gen_kwargs["max_completion_tokens"] = max_new_tokens
 
         stop_sequences = normalize_stop_sequences(
@@ -111,12 +122,13 @@ class OpenAIChatAPI(LanguageModel):
             _retry_on_error(
                 # Define an anonymous function with a lambda expression and pass it,
                 # and call it inside the _retry_on_error function
-                openai_call=lambda x=ms: self._client.chat.completions.create(
+                openai_call=lambda x=ms: self.api_call_func(
                     model=self.model,
                     messages=x,
                     stop=stop_sequences,
                     **gen_kwargs,
                 ),
+                empty_response=self.empty_response,
             )
             for ms in messages_list
         ]
@@ -128,7 +140,7 @@ class OpenAIChatAPI(LanguageModel):
         stop_sequences: str | list[str] | None = None,
         max_new_tokens: int | None = None,
         **kwargs,
-    ) -> list[str]:
+    ) -> list[LMOutput]:
         messages_list = [[{"role": "user", "content": text}] for text in text_list]
         api_responses = asyncio.run(
             self._async_batch_run_chatgpt(
@@ -138,23 +150,30 @@ class OpenAIChatAPI(LanguageModel):
                 **kwargs,
             ),
         )
-        completions = [res.choices[0].message.content for res in api_responses]
-        if all(completion == "" for completion in completions):
+        outputs = [
+            LMOutput(text=res.choices[0].message.content, finish_reason=res.choices[0].finish_reason)
+            for res in api_responses
+        ]
+
+        if all(output.text == "" for output in outputs):
             logger.warning("All generated texts are empty strings. Something may be wrong.")
-        return completions
+        return outputs
 
     def batch_generate_chat_response(
         self,
         chat_messages_list: list[list[dict[str, str]]],
         **kwargs,
-    ) -> list[str]:
+    ) -> list[LMOutput]:
         api_responses = asyncio.run(
             self._async_batch_run_chatgpt(chat_messages_list, **kwargs),
         )
-        completions = [res.choices[0].message.content for res in api_responses]
-        if all(completion == "" for completion in completions):
-            logger.warning("All generated texts are empty string. Something may go wrong.")
-        return completions
+        outputs = [
+            LMOutput(text=res.choices[0].message.content, finish_reason=res.choices[0].finish_reason)
+            for res in api_responses
+        ]
+        if all(output.text == "" for output in outputs):
+            logger.warning("All generated texts are empty strings. Something may go wrong.")
+        return outputs
 
     def batch_compute_chat_log_probs(
         self,
@@ -274,7 +293,9 @@ class OpenAICompletionAPI(LanguageModel):
         self.model = model
         if api_headers is None:
             api_headers = {}
-        self._client = AsyncOpenAI(**api_headers)
+        client = AsyncOpenAI(**api_headers)
+        self.api_call_func = client.completions.create
+        self.empty_response = EMPTY_RESPONSE
         self.default_gen_kwargs = default_gen_kwargs or {}
         # convert the flexeval-specific argument name to the OpenAI-specific name
         if "max_new_tokens" in self.default_gen_kwargs:
@@ -306,12 +327,13 @@ class OpenAICompletionAPI(LanguageModel):
             _retry_on_error(
                 # Define an anonymous function with a lambda expression and pass it,
                 # and call it inside the _retry_on_error function
-                openai_call=lambda x=ms: self._client.completions.create(
+                openai_call=lambda x=ms: self.api_call_func(
                     model=self.model,
                     prompt=x,
                     stop=stop_sequences,
                     **gen_kwargs,
                 ),
+                empty_response=self.empty_response,
             )
             for ms in prompt_list
         ]
@@ -323,7 +345,7 @@ class OpenAICompletionAPI(LanguageModel):
         stop_sequences: str | list[str] | None = None,
         max_new_tokens: int | None = None,
         **kwargs,
-    ) -> list[str]:
+    ) -> list[LMOutput]:
         api_responses = asyncio.run(
             self._async_batch_run_completion(
                 text_list,
@@ -333,7 +355,7 @@ class OpenAICompletionAPI(LanguageModel):
             ),
         )
 
-        return [res.choices[0].text for res in api_responses]
+        return [LMOutput(text=res.choices[0].text, finish_reason=res.choices[0].finish_reason) for res in api_responses]
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(model={self.model})"

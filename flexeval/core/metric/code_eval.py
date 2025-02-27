@@ -7,7 +7,7 @@ from typing import Any
 import evaluate
 
 from flexeval.core.metric.base import Metric, MetricResult
-from flexeval.core.metric.string_processor import StringProcessor
+from flexeval.core.string_processor import StringProcessor
 from flexeval.core.utils.jinja2_utils import JINJA2_ENV
 
 # by default, the program is not allowed to execute code and we need to set this environment variable

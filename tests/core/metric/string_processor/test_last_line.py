@@ -1,6 +1,6 @@
 import pytest
 
-from flexeval.core.metric.string_processor import LastLineExtractor
+from flexeval.core.string_processor import LastLineExtractor
 
 
 @pytest.mark.parametrize(

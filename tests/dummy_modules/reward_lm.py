@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from flexeval.core.language_model import LanguageModel
+from flexeval.core.language_model.base import LMOutput
 
 
 class DummyRewardLanguageModel(LanguageModel):
@@ -10,8 +11,8 @@ class DummyRewardLanguageModel(LanguageModel):
         super().__init__()
         self.response = response
 
-    def batch_complete_text(self, text_list: list[str], **kwargs) -> list[str]:
-        return [self.response for _ in text_list]
+    def batch_complete_text(self, text_list: list[str], **kwargs) -> list[LMOutput]:
+        return [LMOutput(text=self.response, finish_reason="length") for _ in text_list]
 
     def batch_compute_log_probs(
         self,
@@ -25,5 +26,5 @@ class DummyRewardLanguageModel(LanguageModel):
         self,
         chat_messages_list: list[list[dict[str, str]]],
         **kwargs,
-    ) -> list[str]:
-        return [self.response for _ in chat_messages_list]
+    ) -> list[LMOutput]:
+        return [LMOutput(text=self.response, finish_reason="length") for _ in chat_messages_list]

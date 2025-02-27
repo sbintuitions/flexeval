@@ -1,8 +1,9 @@
+import logging
 import os
 
 import pytest
 
-from flexeval import OpenAIChatAPI
+from flexeval import LMOutput, OpenAIChatAPI
 from flexeval.core.language_model.openai_api import (
     message_list_from_prompt,
     prompt_from_message_list,
@@ -16,7 +17,34 @@ def is_openai_enabled() -> bool:
 
 @pytest.fixture(scope="module")
 def chat_lm() -> OpenAIChatAPI:
-    return OpenAIChatAPI("gpt-3.5-turbo-0125")
+    return OpenAIChatAPI("gpt-4o-mini-2024-07-18")
+
+
+@pytest.mark.skipif(not is_openai_enabled(), reason="OpenAI API Key is not set")
+def test_batch_generate_chat_response(chat_lm: OpenAIChatAPI) -> None:
+    responses = chat_lm.batch_generate_chat_response(
+        [[{"role": "user", "content": "こんにちは！"}]],
+        max_new_tokens=20,
+        stop_sequences=["。"],
+    )
+
+    assert len(responses) == 1
+    assert isinstance(responses[0], LMOutput)
+    assert isinstance(responses[0].text, str)
+    assert responses[0].finish_reason in {"length", "stop"}
+
+
+@pytest.mark.skipif(not is_openai_enabled(), reason="OpenAI is not installed")
+def test_warning_if_conflict_max_new_tokens(caplog: pytest.LogCaptureFixture) -> None:
+    caplog.set_level(logging.WARNING)
+    chat_lm_with_max_new_tokens = OpenAIChatAPI(
+        "gpt-4o-mini-2024-07-18", default_gen_kwargs={"max_completion_tokens": 10}
+    )
+    chat_lm_with_max_new_tokens.batch_generate_chat_response(
+        [[{"role": "user", "content": "テスト"}]], max_new_tokens=20
+    )
+    assert len(caplog.records) >= 1
+    assert any(record.msg.startswith("You specified both `max_new_tokens`") for record in caplog.records)
 
 
 @pytest.mark.skipif(not is_openai_enabled(), reason="OpenAI is not installed")

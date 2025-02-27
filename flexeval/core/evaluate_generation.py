@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from collections import Counter
 from typing import Any, Sequence
 
 from loguru import logger
@@ -7,7 +8,7 @@ from tqdm import tqdm
 
 from .few_shot_generator import FewShotGenerator
 from .generation_dataset import GenerationDataset, GenerationInstance
-from .language_model import LanguageModel
+from .language_model import LanguageModel, LMOutput
 from .metric import Metric
 from .prompt_template import PromptTemplate
 from .utils.data_util import batch_iter
@@ -31,7 +32,7 @@ def evaluate_generation(  # noqa: C901
         eval_instances = [eval_dataset[i] for i in range(min(max_instances, len(eval_dataset)))]
 
     lm_prompt_list: list[str] = []
-    lm_output_list: list[str] = []
+    lm_output_list: list[LMOutput] = []
     with tqdm(total=len(eval_instances)) as pbar:
         for i, batch in enumerate(batch_iter(eval_instances, batch_size)):
             lm_prompts: list[str] = []
@@ -69,7 +70,7 @@ def evaluate_generation(  # noqa: C901
     instance_metrics_list: list[dict[str, Any]] = [{} for _ in range(len(eval_instances))]
     for metric in metrics:
         metric_result = metric.evaluate(
-            lm_outputs=lm_output_list,
+            lm_outputs=[lm_output.text for lm_output in lm_output_list],
             references_list=[i.references for i in eval_instances],
             task_inputs_list=[i.inputs for i in eval_instances],
         )
@@ -81,13 +82,18 @@ def evaluate_generation(  # noqa: C901
                 metric_result.instance_details,
             ):
                 instance_metrics_list[instance_idx].update(instance_details)
+    # Calculate the finish_reason statistics
+    finish_reason_counter = Counter([lm_output.finish_reason for lm_output in lm_output_list])
+    for finish_reason, count in finish_reason_counter.items():
+        metrics_summary_dict[f"finish_reason_ratio-{finish_reason}"] = count / len(lm_output_list)
 
     logger.info(metrics_summary_dict)
 
     outputs = [
         {
             "lm_prompt": lm_prompt,
-            "lm_output": lm_output,
+            "lm_output": lm_output.text,
+            "finish_reason": lm_output.finish_reason,
             "task_inputs": eval_instance.inputs,
             "references": eval_instance.references,
             **instance_metrics,
