@@ -56,7 +56,7 @@ def tokenize_text_for_lm_prefix(
 def tokenize_text_for_lm_continuation(
     text_list: list[str],
     tokenizer: PreTrainedTokenizer,
-    single_token_character: str = "\x80",
+    single_token_character: str = "\x80",  # noqa: S107
     as_continuation: bool | list[bool] = True,
 ) -> BatchEncoding:
     """When tokenizing a prefix and continuation separately, the sentencepiece-
