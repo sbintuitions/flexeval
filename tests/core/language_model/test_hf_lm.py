@@ -61,13 +61,21 @@ def test_if_tokenizer_add_bos_tokens_in_an_expected_way(
 
 @pytest.mark.parametrize(
     "tokenizer_name",
-    ["line-corporation/japanese-large-lm-1.7b", "rinna/japanese-gpt-1b", "sbintuitions/sarashina2-7b"],
+    [
+        "line-corporation/japanese-large-lm-1.7b",
+        "rinna/japanese-gpt-1b",
+        "sbintuitions/sarashina2-7b",
+        "meta-llama/Meta-Llama-3-8B",
+    ],
 )
 def test_tokenize_text_for_lm_continuation(tokenizer_name: str) -> None:
     tokenizer = AutoTokenizer.from_pretrained(tokenizer_name, use_fast=False)
+    # Set pad_token for tokenizers such as "meta-llama/Meta-Llama-3-8B"
+    if not tokenizer.pad_token:
+        tokenizer.pad_token = tokenizer.eos_token
 
     # normal test cases
-    text_list = ["は続き", "is continuation."]
+    text_list = ["は続き", "is continuation.", "m"]
     batch_encoding = tokenize_text_for_lm_continuation(text_list, tokenizer)
     for i, tokens in enumerate(batch_encoding.input_ids):
         first_token = tokenizer.convert_ids_to_tokens([tokens[0]])[0]
