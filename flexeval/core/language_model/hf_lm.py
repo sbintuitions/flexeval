@@ -56,7 +56,7 @@ def tokenize_text_for_lm_prefix(
 def tokenize_text_for_lm_continuation(
     text_list: list[str],
     tokenizer: PreTrainedTokenizer,
-    oov_character: str = "彁",
+    single_token_character: str = "\x80",
     as_continuation: bool | list[bool] = True,
 ) -> BatchEncoding:
     """When tokenizing a prefix and continuation separately, the sentencepiece-
@@ -82,17 +82,14 @@ def tokenize_text_for_lm_continuation(
         msg = "The length of as_continuation must be the same as the length of text_list."
         raise ValueError(msg)
 
-    if oov_character in tokenizer.get_vocab():
-        msg = f"oov_character '{oov_character}' is already in the tokenizer's vocab."
-        raise ValueError(msg)
-    oov_char_len = len(tokenizer.tokenize(oov_character))
+    oov_char_len = len(tokenizer.tokenize(single_token_character))
 
     encoding_list: list[BatchEncoding] = []
     for text, as_cont in zip(text_list, as_continuation):
         input_text = text
         # tokenize with OOV character
         if as_cont:
-            input_text = oov_character + text
+            input_text = single_token_character + text
         encoding = tokenizer(
             input_text,
             add_special_tokens=False,
