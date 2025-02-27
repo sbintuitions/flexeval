@@ -91,17 +91,21 @@ def test_tokenize_text_for_lm_continuation(tokenizer_name: str) -> None:
     "tokenizer_name",
     ["sbintuitions/sarashina2-7b", "llm-jp/llm-jp-3-3.7b", "meta-llama/Meta-Llama-3-8B", "Qwen/Qwen2.5-0.5B"],
 )
-@pytest.mark.parametrize("text", ["def foo():\n", "    return 1", "こんにちは世界"])
+@pytest.mark.parametrize(
+    "text", ["def foo():\n", "    return 1", "こんにちは世界", "<|im_start|>Hello<|end_of_text|>Yes"]
+)
 def test_decode_for_lm_continuation(tokenizer_name: str, text: str) -> None:
     tokenizer = AutoTokenizer.from_pretrained(tokenizer_name, use_fast=False)
     # First we need to check if the tokenizer does not change the text
-    assert tokenizer.decode(tokenizer(text)["input_ids"], skip_special_tokens=True) == text
+    assert tokenizer.decode(tokenizer(text, add_special_tokens=False)["input_ids"]) == text
 
-    text_tokens = tokenizer(text, add_special_tokens=False)["input_ids"]
-    for i in range(1, len(text_tokens) - 1):
-        prefix_tokens = text_tokens[:i]
-        continuation_tokens = text_tokens[i:]
-        prefix = tokenizer.decode(prefix_tokens, skip_special_tokens=True)
+    # Simulate generated tokens at various text boundaries
+    for i in range(1, len(text) - 1):
+        prefix = text[:i]
+        continuation = text[i:]
+        prefix_tokens = tokenize_text_for_lm_prefix([prefix], tokenizer).input_ids[0].tolist()
+        continuation_tokens = tokenize_text_for_lm_continuation([continuation], tokenizer).input_ids[0].tolist()
+        prefix = tokenizer.decode(prefix_tokens, skip_special_tokens=False)
         # The point is, just decoding the continuation_tokens as follows sometimes can not restore the original text.
         # `continuation = tokenizer.decode(continuation_tokens, skip_special_tokens=True)`
         continuation = decode_for_lm_continuation(continuation_tokens, prefix_tokens, tokenizer)
