@@ -1,6 +1,6 @@
 import pytest
 
-from flexeval.core.metric.string_processor import StringLower
+from flexeval.core.string_processor import StringLower
 
 
 @pytest.mark.parametrize(

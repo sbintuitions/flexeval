@@ -2,8 +2,9 @@ from __future__ import annotations
 
 import functools
 
+from flexeval.core.string_processor import StringProcessor
+
 from .base import Metric, MetricResult
-from .string_processor import StringProcessor
 
 
 class ExactMatch(Metric):

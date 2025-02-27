@@ -4,8 +4,9 @@ import functools
 from collections import Counter
 from typing import Any
 
+from flexeval.core.string_processor import StringProcessor
+
 from .base import Metric, MetricResult
-from .string_processor import StringProcessor
 
 
 def get_most_repeated_pattern(text: str, threshold_length: int = 10) -> tuple[str, int]:

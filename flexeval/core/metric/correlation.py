@@ -6,8 +6,9 @@ from typing import Literal
 
 from scipy.stats import kendalltau, pearsonr, spearmanr
 
+from flexeval.core.string_processor import StringProcessor
+
 from .base import Metric, MetricResult
-from .string_processor import StringProcessor
 
 
 class Correlation(Metric):

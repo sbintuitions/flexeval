@@ -1,7 +1,7 @@
 import pytest
 
 from flexeval.core.metric import CodeEval
-from flexeval.core.metric.string_processor import RegexExtractor, StringProcessor
+from flexeval.core.string_processor import RegexExtractor, StringProcessor
 
 
 @pytest.mark.parametrize(
