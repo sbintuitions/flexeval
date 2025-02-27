@@ -6,7 +6,7 @@ import torch
 from transformers import AutoTokenizer, PreTrainedTokenizer
 
 from .base import LanguageModel, LMOutput, normalize_stop_sequences
-from .hf_lm import get_prefix_and_completion_from_chat
+from .hf_lm import decode_for_lm_continuation, get_prefix_and_completion_from_chat
 
 
 def tokenize_text_for_lm_prefix(
@@ -149,17 +149,18 @@ class VLLM(LanguageModel):
             use_tqdm=False,
         )
         outputs = []
-        for vllm_output in vllm_outputs:
-            text = self.tokenizer.decode(vllm_output.outputs[0].token_ids)
+        for input_token_ids, vllm_output in zip(model_inputs.input_ids, vllm_outputs):
+            output_token_ids = list(vllm_output.outputs[0].token_ids)
+            decoded_text = decode_for_lm_continuation(output_token_ids, input_token_ids, self.tokenizer)
             finish_reason = "length"
             # We manually remove the stop sequences from the generated texts.
             for stop in stop_sequences:
-                stop_index = text.find(stop)
+                stop_index = decoded_text.find(stop)
                 if stop_index != -1:
-                    text = text[:stop_index]
+                    decoded_text = decoded_text[:stop_index]
                     finish_reason = "stop"
 
-            outputs.append(LMOutput(text=text, finish_reason=finish_reason))
+            outputs.append(LMOutput(text=decoded_text, finish_reason=finish_reason))
         return outputs
 
     def batch_generate_chat_response(
