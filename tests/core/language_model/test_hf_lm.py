@@ -100,7 +100,14 @@ def test_tokenize_text_for_lm_continuation(tokenizer_name: str) -> None:
 
 @pytest.mark.parametrize(
     "tokenizer_name",
-    ["sbintuitions/sarashina2-7b", "llm-jp/llm-jp-3-3.7b", "meta-llama/Meta-Llama-3-8B", "Qwen/Qwen2.5-0.5B"],
+    [
+        "sbintuitions/sarashina2-7b",
+        "llm-jp/llm-jp-3-3.7b",
+        "Qwen/Qwen2.5-0.5B",
+        # We cannot get the tokenizer from CI because we need permission to access the model.
+        # Leave this for manual testing.
+        # "meta-llama/Meta-Llama-3-8B"
+    ],
 )
 @pytest.mark.parametrize(
     "text", ["def foo():\n", "    return 1", "こんにちは世界", "<|im_start|>Hello<|end_of_text|>Yes"]
