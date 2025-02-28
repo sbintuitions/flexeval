@@ -56,7 +56,7 @@ def tokenize_text_for_lm_prefix(
 def tokenize_text_for_lm_continuation(
     text_list: list[str],
     tokenizer: PreTrainedTokenizer,
-    oov_character: str = "彁",
+    single_token_character: str = "\x80",  # noqa: S107
     as_continuation: bool | list[bool] = True,
 ) -> BatchEncoding:
     """When tokenizing a prefix and continuation separately, the sentencepiece-
@@ -82,17 +82,14 @@ def tokenize_text_for_lm_continuation(
         msg = "The length of as_continuation must be the same as the length of text_list."
         raise ValueError(msg)
 
-    if oov_character in tokenizer.get_vocab():
-        msg = f"oov_character '{oov_character}' is already in the tokenizer's vocab."
-        raise ValueError(msg)
-    oov_char_len = len(tokenizer.tokenize(oov_character))
+    oov_char_len = len(tokenizer.tokenize(single_token_character))
 
     encoding_list: list[BatchEncoding] = []
     for text, as_cont in zip(text_list, as_continuation):
         input_text = text
         # tokenize with OOV character
         if as_cont:
-            input_text = oov_character + text
+            input_text = single_token_character + text
         encoding = tokenizer(
             input_text,
             add_special_tokens=False,
@@ -106,6 +103,37 @@ def tokenize_text_for_lm_continuation(
 
     with set_temporal_padding_side(tokenizer, "right"):
         return tokenizer.pad(encoding_list, return_tensors="pt")
+
+
+def decode_for_lm_continuation(
+    output_tokens: list[int],
+    input_tokens: list[int],
+    tokenizer: PreTrainedTokenizer,
+) -> str:
+    """
+    Decode output tokens while preserving correct formatting.
+
+    Some tokenizers modify tokenized text (e.g., stripping leading spaces). This function ensures
+    the continuation text is extracted correctly by decoding both input and output tokens together
+    and removing the input portion.
+
+    Example of undesired behavior:
+    ```
+    # ['▁▁▁', '▁return', '▁1']
+    >>> tokenizer.decode([1, 2, 3])
+    '   return 1'  # The first space is stripped away due to the tokenizer's behavior.
+    ```
+
+    Example of desired behavior:
+    ```
+    # input_tokens: ['▁def', '▁func', '():', '\n']
+    # output_tokens: ['▁▁▁', '▁return', '▁1']
+    >>> decode_for_lm_continuation(output_tokens = [1, 2, 3], input_tokens = [1])
+    '    return 1'  # The first space is preserved.
+    """
+    entire_text = tokenizer.decode(input_tokens + output_tokens, skip_special_tokens=False)
+    input_text = tokenizer.decode(input_tokens, skip_special_tokens=False)
+    return entire_text[len(input_text) :]
 
 
 class HuggingFaceLM(LanguageModel):
@@ -256,10 +284,14 @@ class HuggingFaceLM(LanguageModel):
             generated_tokens = self.model.generate(**model_inputs, **gen_kwargs)
 
         # We strip the input text and stop sequences from the output text.
-        lm_outputs: list[str] = []
-        for output_tensor in generated_tokens[:, input_token_length:]:
+        lm_outputs: list[LMOutput] = []
+        for generated_tensor in generated_tokens:
+            input_tensor = generated_tensor[:input_token_length]
+            output_tensor = generated_tensor[input_token_length:]
+
+            input_tokens = [t for t in input_tensor.tolist() if t != self.tokenizer.pad_token_id]
             output_tokens = [t for t in output_tensor.tolist() if t != self.tokenizer.pad_token_id]
-            decoded_text = self.tokenizer.decode(output_tokens, skip_special_tokens=False)
+            decoded_text = decode_for_lm_continuation(output_tokens, input_tokens, self.tokenizer)
 
             finish_reason = "length"
             for stop_seq in stop_sequences:

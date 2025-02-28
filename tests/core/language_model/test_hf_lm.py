@@ -9,6 +9,7 @@ from flexeval.core.language_model.base import LMOutput
 from flexeval.core.language_model.hf_lm import (
     HuggingFaceLM,
     LanguageModel,
+    decode_for_lm_continuation,
     get_prefix_and_completion_from_chat,
     tokenize_text_for_lm_continuation,
     tokenize_text_for_lm_prefix,
@@ -63,27 +64,61 @@ def test_if_tokenizer_add_bos_tokens_in_an_expected_way(
     [
         "line-corporation/japanese-large-lm-1.7b",
         "rinna/japanese-gpt-1b",
+        "sbintuitions/sarashina2-7b",
+        "allenai/Llama-3.1-Tulu-3-8B",
     ],
 )
 def test_tokenize_text_for_lm_continuation(tokenizer_name: str) -> None:
     tokenizer = AutoTokenizer.from_pretrained(tokenizer_name, use_fast=False)
+    # Set pad_token for tokenizers such as "meta-llama/Meta-Llama-3-8B"
+    if not tokenizer.pad_token:
+        tokenizer.pad_token = tokenizer.eos_token
 
     # normal test cases
-    text_list = ["は続き", "is continuation."]
+    # The character 'm' forms a weird token when it follows certain multi-byte characters in Llama3 tokenizer.
+    text_list = ["は続き", "is continuation.", "m"]
     batch_encoding = tokenize_text_for_lm_continuation(text_list, tokenizer)
     for i, tokens in enumerate(batch_encoding.input_ids):
         first_token = tokenizer.convert_ids_to_tokens([tokens[0]])[0]
         assert not first_token.startswith("▁")  # check if the prefix of sentencepiece is not added
         assert tokenizer.decode(tokens, skip_special_tokens=True) == text_list[i]
 
-    # test with conditional operations
+    # Test with conditional operations
+    # This is mainly for tokenizers with add_prefix_space=True,
+    # which adds a space to the beginning of the text but not to the continuation.
     text_list = ["これは文頭", "これは続き"]
     as_continuation = [False, True]
     batch_encoding = tokenize_text_for_lm_continuation(text_list, tokenizer, as_continuation=as_continuation)
     for i, (tokens, as_cont) in enumerate(zip(batch_encoding.input_ids, as_continuation)):
         first_token = tokenizer.convert_ids_to_tokens([tokens[0]])[0]
-        assert first_token.startswith("▁") != as_cont
+        starts_with_prefix = (not as_cont) and tokenizer.add_prefix_space
+        assert first_token.startswith("▁") == starts_with_prefix
         assert tokenizer.decode(tokens, skip_special_tokens=True) == text_list[i]
+
+
+@pytest.mark.parametrize(
+    "tokenizer_name",
+    ["sbintuitions/sarashina2-7b", "llm-jp/llm-jp-3-3.7b", "Qwen/Qwen2.5-0.5B", "allenai/Llama-3.1-Tulu-3-8B"],
+)
+@pytest.mark.parametrize(
+    "text", ["def foo():\n", "    return 1", "こんにちは世界", "<|im_start|>Hello<|end_of_text|>Yes"]
+)
+def test_decode_for_lm_continuation(tokenizer_name: str, text: str) -> None:
+    tokenizer = AutoTokenizer.from_pretrained(tokenizer_name, use_fast=False)
+    # First we need to check if the tokenizer does not change the text
+    assert tokenizer.decode(tokenizer(text, add_special_tokens=False)["input_ids"]) == text
+
+    # Simulate generated tokens at various text boundaries
+    for i in range(1, len(text) - 1):
+        prefix = text[:i]
+        continuation = text[i:]
+        prefix_tokens = tokenize_text_for_lm_prefix([prefix], tokenizer).input_ids[0].tolist()
+        continuation_tokens = tokenize_text_for_lm_continuation([continuation], tokenizer).input_ids[0].tolist()
+        prefix = tokenizer.decode(prefix_tokens, skip_special_tokens=False)
+        # The point is, just decoding the continuation_tokens as follows sometimes can not restore the original text.
+        # `continuation = tokenizer.decode(continuation_tokens, skip_special_tokens=True)`
+        continuation = decode_for_lm_continuation(continuation_tokens, prefix_tokens, tokenizer)
+        assert prefix + continuation == text
 
 
 @pytest.fixture(scope="module")
