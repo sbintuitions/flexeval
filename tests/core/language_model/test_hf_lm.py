@@ -65,7 +65,9 @@ def test_if_tokenizer_add_bos_tokens_in_an_expected_way(
         "line-corporation/japanese-large-lm-1.7b",
         "rinna/japanese-gpt-1b",
         "sbintuitions/sarashina2-7b",
-        "meta-llama/Meta-Llama-3-8B",
+        # We cannot get the tokenizer from CI because we need permission to access the model.
+        # Leave this for manual testing.
+        # "meta-llama/Meta-Llama-3-8B",
     ],
 )
 def test_tokenize_text_for_lm_continuation(tokenizer_name: str) -> None:
