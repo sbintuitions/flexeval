@@ -1,11 +1,18 @@
 from __future__ import annotations
 
+from typing import Literal
+
 from .base import Metric, MetricResult
 
 
 class SubstringMatch(Metric):
     """
     A metric that calculates how many outputs contain any of the expected substrings.
+
+    Args:
+        mode: The mode to calculate the substring match.
+            - "any": If any of the expected substrings are in the output, it is a match.
+            - "all": If all of the expected substrings are in the output, it is a match.
 
     Examples:
         >>> from flexeval import SubstringMatch
@@ -19,6 +26,14 @@ class SubstringMatch(Metric):
             instance_details=[{'substring_match': True}, {'substring_match': False}]
         )
     """
+
+    def __init__(self, mode: Literal["any", "all"] = "any"):
+        if mode == "all":
+            self.match_func = all
+        elif mode == "any":
+            self.match_func = any
+        else:
+            raise ValueError(f"mode must be 'any' or 'all', but got '{mode}'.")
 
     def evaluate(
         self,
@@ -34,7 +49,7 @@ class SubstringMatch(Metric):
             raise ValueError(msg)
 
         match_list = [
-            any(substring in lm_output for substring in expected_output)
+            self.match_func(substring in lm_output for substring in expected_output)
             for lm_output, expected_output in zip(lm_outputs, references_list)
         ]
 
