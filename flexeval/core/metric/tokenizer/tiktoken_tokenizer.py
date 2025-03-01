@@ -2,8 +2,10 @@ from __future__ import annotations
 
 import tiktoken
 
+from .base import Tokenizer
 
-class TiktokenTokenizer:
+
+class TiktokenTokenizer(Tokenizer):
     def __init__(self, tokenizer_name: str | None = None, model_name: str | None = None) -> None:
         # raise error, if both tokenizer_name and model_name are provided
         if tokenizer_name is not None and model_name is not None:

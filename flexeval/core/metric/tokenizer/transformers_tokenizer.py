@@ -4,8 +4,10 @@ from typing import Any
 
 from transformers import AutoTokenizer
 
+from .base import Tokenizer
 
-class TransformersTokenizer:
+
+class TransformersTokenizer(Tokenizer):
     def __init__(
         self,
         path: str,
