@@ -27,13 +27,15 @@ class SubstringMatch(Metric):
         )
     """
 
-    def __init__(self, mode: Literal["any", "all"] = "any"):
+    def __init__(self, mode: Literal["any", "all"] = "any") -> None:
+        self.mode = mode
         if mode == "all":
             self.match_func = all
         elif mode == "any":
             self.match_func = any
         else:
-            raise ValueError(f"mode must be 'any' or 'all', but got '{mode}'.")
+            msg = f"mode must be 'any' or 'all', but got '{mode}'."
+            raise ValueError(msg)
 
     def evaluate(
         self,
@@ -53,7 +55,11 @@ class SubstringMatch(Metric):
             for lm_output, expected_output in zip(lm_outputs, references_list)
         ]
 
+        score = 0.0
+        if len(match_list):
+            score = sum(match_list) / len(match_list)
+
         return MetricResult(
-            {"substring_match": sum(match_list) / len(match_list)},
+            {f"substring_match-{self.mode}": score},
             instance_details=[{"substring_match": match} for match in match_list],
         )
