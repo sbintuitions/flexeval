@@ -1,5 +1,3 @@
-from flexeval.core.tokenizer import *
-
 from .core.chat_dataset import *
 from .core.eval_setups import ChatResponse, EvalSetup, Generation, MultipleChoice, Perplexity
 from .core.evaluate_chat_response import evaluate_chat_response
@@ -20,4 +18,5 @@ from .core.reward_bench_dataset import *
 from .core.reward_model import *
 from .core.string_processor import *
 from .core.text_dataset import *
+from .core.tokenizer import *
 from .utils import *
