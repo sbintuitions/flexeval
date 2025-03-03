@@ -13,10 +13,10 @@ from .few_shot_generator import FewShotGenerator
 from .generation_dataset import GenerationDataset
 from .language_model import LanguageModel
 from .metric import Metric
-from .metric.tokenizer import Tokenizer
 from .multiple_choice_dataset import MultipleChoiceDataset
 from .prompt_template import PromptTemplate, instantiate_prompt_template_from_string
 from .text_dataset import TextDataset
+from .tokenizer import Tokenizer
 
 
 class EvalSetup(ABC):

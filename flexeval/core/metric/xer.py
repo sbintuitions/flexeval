@@ -2,8 +2,9 @@ from __future__ import annotations
 
 from jiwer import cer, wer
 
+from flexeval.core.tokenizer import Tokenizer
+
 from .base import Metric, MetricResult
-from .tokenizer import Tokenizer
 
 
 class XER(Metric):

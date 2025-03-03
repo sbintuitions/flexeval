@@ -2,7 +2,7 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from flexeval.core.metric.tokenizer import MecabTokenizer
+from flexeval import MecabTokenizer
 
 
 @pytest.fixture()

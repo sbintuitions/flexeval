@@ -8,8 +8,8 @@ from loguru import logger
 from tqdm import tqdm
 
 from .language_model import LanguageModel
-from .metric.tokenizer import Tokenizer
 from .text_dataset import TextDataset, TextInstance
+from .tokenizer import Tokenizer
 from .utils.data_util import batch_iter
 
 
