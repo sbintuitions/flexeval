@@ -2,8 +2,9 @@ from __future__ import annotations
 
 from rouge import Rouge as RougeCalculator
 
+from flexeval.core.tokenizer import Tokenizer
+
 from .base import Metric, MetricResult
-from .tokenizer import Tokenizer
 
 
 class ROUGE(Metric):

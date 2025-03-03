@@ -1,4 +1,4 @@
-from flexeval.core.metric.tokenizer import TiktokenTokenizer
+from flexeval import TiktokenTokenizer
 
 
 def test_tokenizer_from_tokenizer_name() -> None:
