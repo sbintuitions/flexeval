@@ -1,4 +1,4 @@
-from flexeval.core.metric.tokenizer import TransformersTokenizer
+from flexeval import TransformersTokenizer
 
 
 def test_transformers_tokenizer() -> None:

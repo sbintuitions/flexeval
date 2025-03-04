@@ -3,7 +3,7 @@ from __future__ import annotations
 import pytest
 
 from flexeval.core.metric import XER
-from flexeval.core.metric.tokenizer import WhitespaceTokenizer
+from flexeval.core.tokenizer import WhitespaceTokenizer
 
 
 @pytest.mark.parametrize(

@@ -1,4 +1,4 @@
-from flexeval.core.metric.tokenizer import SacreBleuTokenizer
+from flexeval import SacreBleuTokenizer
 
 
 def test_sacrebleu_zh_tokenizer() -> None:
