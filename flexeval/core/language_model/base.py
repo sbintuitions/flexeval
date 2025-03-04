@@ -155,6 +155,7 @@ class LanguageModel:
 
 def normalize_stop_sequences(
     stop_sequences_list: list[str | list[str] | None],
+    bos_token: str | None = None,
     eos_token: str | None = None,
     ignore_eos: bool = False,
 ) -> list[str]:
@@ -173,7 +174,8 @@ def normalize_stop_sequences(
         else:
             msg = f"Invalid type of stop_sequences: {type(stop_sequences)}"
             raise ValueError(msg)
-
+    if bos_token:
+        normalized_stop_sequences.append(bos_token)
     if eos_token and not ignore_eos:
         normalized_stop_sequences.append(eos_token)
     return list(set(normalized_stop_sequences))

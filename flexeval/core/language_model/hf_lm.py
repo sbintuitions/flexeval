@@ -269,6 +269,7 @@ class HuggingFaceLM(LanguageModel):
                 gen_kwargs.pop("stop_strings", None),  # This is used in the transformers `generate` function
                 gen_kwargs.pop("stop_sequences", None),  # This is a common variable name used in flexeval
             ],
+            bos_token=self.tokenizer.bos_token,
             eos_token=self.tokenizer.eos_token,
             ignore_eos=ignore_eos,
         )

@@ -131,6 +131,7 @@ class VLLM(LanguageModel):
                 gen_kwargs.pop("stop", None),  # This is used in the vllm `SamplingParams`
                 gen_kwargs.pop("stop_sequences", None),  # This is a common variable name used in flexeval
             ],
+            bos_token=self.tokenizer.bos_token,
             eos_token=self.tokenizer.eos_token,
             ignore_eos=gen_kwargs.get("ignore_eos", False),
         )
