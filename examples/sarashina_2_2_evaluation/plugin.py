@@ -3,8 +3,9 @@ from pathlib import Path
 
 import pandas as pd
 import requests
-from flexeval import GenerationDataset, GenerationInstance
 from loguru import logger
+
+from flexeval import GenerationDataset, GenerationInstance
 
 
 class JMMLU(GenerationDataset):
