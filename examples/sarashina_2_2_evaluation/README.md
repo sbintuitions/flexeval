@@ -1,6 +1,6 @@
 # Sarashina2.2 の評価
 
-Sarashina2.2 のモデル評価の設定や結果をまとめておくディレクトリです。
+[Sarashina2.2](https://huggingface.co/collections/sbintuitions/sarashina22-67c65fdab1ff63d92defb47e) のモデル評価の設定や結果をまとめておくディレクトリです。
 以下、事前学習モデルの評価とチューニングモデルの評価について説明します。
 
 ## 事前学習モデルの評価
@@ -17,11 +17,11 @@ flexeval_lm \
   --save_dir "./results_pretrained/sarashina2.2-3b/mgsm-ja"
 ```
 
-評価スコアは `--save_dir` で指定したディレクトリに `metrics.json` として保存されます。
-
 > [!TIP]
 > `--eval_setup.batch_size 4` と指定することで、バッチサイズを変更することができます。
 > デフォルトは、各ベンチマークの config に記載されている通り 1 です。
+
+評価スコアは `--save_dir` で指定したディレクトリに `metrics.json` として保存されます。
 
 > [!Note]
 > HumanEval と JHumanEval のタスクに関しては、設定ファイルが２種類用意されています。
@@ -29,7 +29,7 @@ flexeval_lm \
 > これは、モデル毎に適切なトークン区切りが異なり、改行の有無によって評価スコアが大きく変わることがあるからです。
 > 評価結果の表では、２つの設定のうち、より高いスコアを示すものを採用しています。
 
-### 評価スコア
+### 事前学習モデルの評価スコア
 
 Sarashina2.2 を含む同パラメータ帯のモデルの内、各ベンチマークで最も高いスコアを太字で示しています。
 
@@ -61,7 +61,6 @@ Sarashina2.2 を含む同パラメータ帯のモデルの内、各ベンチマ�
 > ですが、モデルの推論に低精度演算（bfloat16 など）を用いており、ハードウェアやバッチサイズが異なると、スコアも変わる現象が見られます。
 > これは、内部における数値計算の順序が変わることで、数値計算誤差が蓄積され、モデルの出力が変わるためです。
 
-
 ## チューニングモデルの評価
 
 各評価対象のモデルとベンチマークの設定ファイルが、[./configs/instruction_models](./configs/instruction_models) と [./configs/instruction_evals](./configs/instruction_evals) に配置されています。
@@ -81,7 +80,7 @@ flexeval_lm \
   --save_dir "./results_instruction/sarashina2.2-3b-instruct-v0.1/elyza_tasks_100"
 ```
 
-### 評価スコア
+### チューニングモデルの評価スコア
 
 各評価値は、9回の評価（モデルに3回生成させ、各生成結果に対して3回の評価）の平均値です。
 Sarashina2.2 を含む同パラメータ帯のモデルの内、各ベンチマークで最も高いスコアを太字で示しています。
