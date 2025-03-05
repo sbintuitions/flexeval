@@ -1,7 +1,7 @@
 # Sarashina2.2 の評価
 
 [Sarashina2.2](https://huggingface.co/collections/sbintuitions/sarashina22-67c65fdab1ff63d92defb47e) のモデル評価の設定や結果をまとめておくディレクトリです。
-以下、事前学習モデルの評価とチューニングモデルの評価について説明します。
+以下、事前学習モデルの評価と Instruct モデルの評価について説明します。
 
 ## 事前学習モデルの評価
 
@@ -61,7 +61,7 @@ Sarashina2.2 を含む同パラメータ帯のモデルの内、各ベンチマ�
 > ですが、モデルの推論に低精度演算（bfloat16 など）を用いており、ハードウェアやバッチサイズが異なると、スコアも変わる現象が見られます。
 > これは、内部における数値計算の順序が変わることで、数値計算誤差が蓄積され、モデルの出力が変わるためです。
 
-## チューニングモデルの評価
+## Instruct モデルの評価
 
 各評価対象のモデルとベンチマークの設定ファイルが、[./configs/instruction_models](./configs/instruction_models) と [./configs/instruction_evals](./configs/instruction_evals) に配置されています。
 それぞれのパスを指定して、`flexeval_lm` を実行することで、評価を行うことができます。
@@ -80,7 +80,7 @@ flexeval_lm \
   --save_dir "./results_instruction/sarashina2.2-3b-instruct-v0.1/elyza_tasks_100"
 ```
 
-### チューニングモデルの評価スコア
+### Instruct モデルの評価スコア
 
 各評価値は、9回の評価（モデルに3回生成させ、各生成結果に対して3回の評価）の平均値です。
 Sarashina2.2 を含む同パラメータ帯のモデルの内、各ベンチマークで最も高いスコアを太字で示しています。
