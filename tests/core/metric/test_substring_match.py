@@ -70,3 +70,41 @@ def test_empty_inputs() -> None:
     result = metric.evaluate(lm_outputs=[], references_list=[])
     assert isinstance(result, MetricResult)
     assert len(result.instance_details) == 0
+
+
+def test_substring_match_with_category_key() -> None:
+    """Test SubstringMatch metric with category_key parameter."""
+    metric = SubstringMatch(category_key="category")
+
+    task_inputs_list = [
+        {"category": "binary", "text": "Is this true?"},
+        {"category": "binary", "text": "Is this false?"},
+        {"category": "binary", "text": "Is this correct?"},
+        {"category": "open", "text": "What do you think?"},
+    ]
+    lm_outputs = [
+        "Yes, that is true",
+        "No, that is false",
+        "Yes, that is true",
+        "I think maybe",
+    ]
+    references_list = [
+        ["true", "yes"],
+        ["false", "no"],
+        ["false", "no"],
+        ["maybe", "think"],
+    ]
+
+    result = metric.evaluate(lm_outputs, references_list, task_inputs_list)
+
+    assert isinstance(result, MetricResult)
+    assert "substring_match-any" in result.summary
+    assert "substring_match-any/binary" in result.summary
+    assert "substring_match-any/open" in result.summary
+
+    # Overall accuracy: 3/4 = 0.75 (first, second, and fourth match)
+    assert result.summary["substring_match-any"] == 0.75
+    # Binary category accuracy: 2/3 = ~0.67 (2 correct out of 3)
+    assert pytest.approx(result.summary["substring_match-any/binary"]) == 2 / 3
+    # Open category accuracy: 1/1 = 1.0 (1 correct out of 1)
+    assert result.summary["substring_match-any/open"] == 1.0

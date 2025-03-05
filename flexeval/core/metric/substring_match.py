@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import Literal
 
 from .base import Metric, MetricResult
+from .utils import aggregate_category_wise_scores
 
 
 class SubstringMatch(Metric):
@@ -13,6 +14,7 @@ class SubstringMatch(Metric):
         mode: The mode to calculate the substring match.
             - "any": If any of the expected substrings are in the output, it is a match.
             - "all": If all of the expected substrings are in the output, it is a match.
+        category_key: Optional key to group scores by category from task_inputs_list.
 
     Examples:
         >>> from flexeval import SubstringMatch
@@ -27,8 +29,9 @@ class SubstringMatch(Metric):
         )
     """
 
-    def __init__(self, mode: Literal["any", "all"] = "any") -> None:
+    def __init__(self, mode: Literal["any", "all"] = "any", category_key: str | None = None) -> None:
         self.mode = mode
+        self.category_key = category_key
         if mode == "all":
             self.match_func = all
         elif mode == "any":
@@ -59,7 +62,15 @@ class SubstringMatch(Metric):
         if len(match_list):
             score = sum(match_list) / len(match_list)
 
+        summary = {f"substring_match-{self.mode}": score}
+
+        if self.category_key:
+            categories = [task_input[self.category_key] for task_input in task_inputs_list]
+            category_wise_scores = aggregate_category_wise_scores(match_list, categories)
+            for category, category_wise_score in category_wise_scores.items():
+                summary[f"substring_match-{self.mode}/{category}"] = category_wise_score
+
         return MetricResult(
-            {f"substring_match-{self.mode}": score},
+            summary,
             instance_details=[{"substring_match": match} for match in match_list],
         )
