@@ -16,7 +16,7 @@ class ExactMatch(Metric):
     Args:
         lm_output_processor:
             StringProcessor or a list of StringProcessor to be applied to the model outputs before comparison.
-        reference_processor: StringProcessor or list of Normalizers to apply to the references before comparison.
+        reference_processor: StringProcessor or list of StringProcessor to apply to the references before comparison.
 
     Examples:
         >>> from flexeval import ExactMatch
