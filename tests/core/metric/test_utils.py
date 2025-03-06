@@ -38,7 +38,7 @@ T = TypeVar("T")
             [1.0, 2.0],
             ["A", "B", "C"],
             None,
-            "Length of scores (2) and category_keys (3) should be the same",
+            "Length of scores (2) and category_keys (3) must be the same",
         ),
     ],
 )
