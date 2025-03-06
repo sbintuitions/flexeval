@@ -5,6 +5,7 @@ import functools
 from flexeval.core.string_processor import StringProcessor
 
 from .base import Metric, MetricResult
+from .utils import aggregate_category_wise_scores
 
 
 class ExactMatch(Metric):
@@ -15,7 +16,7 @@ class ExactMatch(Metric):
     Args:
         lm_output_processor:
             StringProcessor or a list of StringProcessor to be applied to the model outputs before comparison.
-        reference_processor: StringProcessor or list of Normalizers to apply to the references before comparison.
+        reference_processor: StringProcessor or list of StringProcessor to apply to the references before comparison.
 
     Examples:
         >>> from flexeval import ExactMatch
@@ -34,6 +35,7 @@ class ExactMatch(Metric):
         self,
         lm_output_processor: StringProcessor | list[StringProcessor] | None = None,
         reference_processor: StringProcessor | list[StringProcessor] | None = None,
+        category_key: str | None = None,
     ) -> None:
         if isinstance(lm_output_processor, StringProcessor):
             lm_output_processor = [lm_output_processor]
@@ -42,6 +44,7 @@ class ExactMatch(Metric):
 
         self.lm_output_processors = lm_output_processor
         self.reference_processors = reference_processor
+        self.category_key = category_key
 
     def evaluate(
         self,
@@ -70,8 +73,15 @@ class ExactMatch(Metric):
         exact_match_list = [
             lm_output in expected_output for lm_output, expected_output in zip(lm_outputs, references_list)
         ]
+        summary = {"exact_match": sum(exact_match_list) / len(exact_match_list)}
+
+        if self.category_key:
+            categories = [task_input[self.category_key] for task_input in task_inputs_list]
+            category_wise_scores = aggregate_category_wise_scores(exact_match_list, categories)
+            for category, category_wise_score in category_wise_scores.items():
+                summary[f"exact_match/{category}"] = category_wise_score
 
         return MetricResult(
-            {"exact_match": sum(exact_match_list) / len(exact_match_list)},
+            summary,
             instance_details=[{"exact_match": s} for s in exact_match_list],
         )
