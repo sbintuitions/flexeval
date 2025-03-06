@@ -49,18 +49,12 @@ def summarize_evaluator_scores(
         if score is None or category_key is None:
             continue
         if category_key in task_inputs:
-            category = task_inputs[category_key]
-            if isinstance(category, list):
-                for _category in category:
-                    if not isinstance(_category, str):
-                        msg = f"category should be either str or list[str], but got list containing {type(category)}"
-                        raise TypeError(msg)
-                    category2valid_scores[_category].append(score)
-            elif isinstance(category, str):
+        if category_key in task_inputs:
+            categories = task_inputs[category_key]
+            if not isinstance(categories, (list, tuple, set)):
+                categories = [categories]
+            for category in categories:
                 category2valid_scores[category].append(score)
-            else:
-                msg = f"category should be either str or list[str], but got {type(category)}"
-                raise TypeError(msg)
 
     category2mean_score: dict[str, float] = {}
     for category, valid_scores in category2valid_scores.items():
