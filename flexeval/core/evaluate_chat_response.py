@@ -58,7 +58,7 @@ def evaluate_chat_response(  # noqa: C901,PLR0912
                     all_messages_list.append(
                         [
                             *input_messages,
-                            {"role": "assistant", "content": lm_output.text, "finish_reason": lm_output.finish_reason},
+                            {"role": "assistant", "content": lm_output.text},
                         ],
                     )
             else:
