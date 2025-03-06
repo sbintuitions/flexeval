@@ -49,7 +49,6 @@ def summarize_evaluator_scores(
         if score is None or category_key is None:
             continue
         if category_key in task_inputs:
-        if category_key in task_inputs:
             categories = task_inputs[category_key]
             if not isinstance(categories, (list, tuple, set)):
                 categories = [categories]
