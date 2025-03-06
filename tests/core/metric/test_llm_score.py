@@ -67,28 +67,55 @@ def test_llm_score() -> None:
         assert instance_detail["llm_score_output"] == lm_output
 
 
-def test_llm_score_with_category() -> None:
+@pytest.mark.parametrize(
+    ("lm_outputs", "task_inputs_list", "expected_summary"),
+    [
+        (
+            ["This score is 1.", "This score is 2.", "This is a good one."],
+            [
+                {"category": "category-0"},
+                {"category": "category-0"},
+                {"category": "category-1"},
+            ],
+            {
+                "llm_score": 1.5,
+                "num_failed_score_parses": 1,
+                "llm_score/category-0": 1.5,
+            }
+        ),
+        (
+            ["This score is 1.", "This score is 2.", "This score is 3.", "This is a good one."],
+            [
+                {"category": ["category-0"]},
+                {"category": ["category-0", "category-1"]},
+                {"category": []},
+                {"category": [""]},
+            ],
+            {
+                "llm_score": 2.0,
+                "num_failed_score_parses": 1,
+                "llm_score/category-0": 1.5,
+                "llm_score/category-1": 2.0,
+            }
+        )
+    ],
+)
+def test_llm_score_with_category(
+    lm_outputs: list[str],
+    task_inputs_list: list[dict[str, str | list[str]]],
+    expected_summary: dict[str, float]
+) -> None:
     metric = LLMScore(
         language_model=EchoBackLanguageModel(),
         prompt_template=Jinja2PromptTemplate("{{ lm_output }}"),
         category_key="category",
     )
-    lm_outputs = ["This score is 1.", "This score is 2.", "This is a good one."]
-    task_inputs_list = [
-        {"category": "category-0"},
-        {"category": "category-0"},
-        {"category": "category-1"},
-    ]
     metric_output = metric.evaluate(
         lm_outputs=lm_outputs,
         task_inputs_list=task_inputs_list,
     )
 
-    assert metric_output.summary == {
-        "llm_score": 1.5,
-        "num_failed_score_parses": 1,
-        "llm_score/category-0": 1.5,
-    }
+    assert metric_output.summary == expected_summary
 
     for lm_output, instance_detail in zip(lm_outputs, metric_output.instance_details):
         assert instance_detail["llm_score_input"] == lm_output
@@ -112,28 +139,55 @@ def test_chat_llm_score() -> None:
         assert instance_detail["llm_score_output"] == lm_output
 
 
-def test_chat_llm_score_with_category() -> None:
+@pytest.mark.parametrize(
+    ("lm_outputs", "task_inputs_list", "expected_summary"),
+    [
+        (
+            ["This score is 1.", "This score is 2.", "This is a good one."],
+            [
+                {"category": "category-0"},
+                {"category": "category-0"},
+                {"category": "category-1"},
+            ],
+            {
+                "llm_score": 1.5,
+                "num_failed_score_parses": 1,
+                "llm_score/category-0": 1.5,
+            }
+        ),
+        (
+            ["This score is 1.", "This score is 2.", "This score is 3.", "This is a good one."],
+            [
+                {"category": ["category-0"]},
+                {"category": ["category-0", "category-1"]},
+                {"category": []},
+                {"category": [""]},
+            ],
+            {
+                "llm_score": 2.0,
+                "num_failed_score_parses": 1,
+                "llm_score/category-0": 1.5,
+                "llm_score/category-1": 2.0,
+            }
+        )
+    ],
+)
+def test_chat_llm_score_with_category(
+    lm_outputs: list[str],
+    task_inputs_list: list[dict[str, str | list[str]]],
+    expected_summary: dict[str, float]
+) -> None:
     metric = ChatLLMScore(
         language_model=EchoBackLanguageModel(),
         prompt_template=Jinja2PromptTemplate("{{ lm_output }}"),
         category_key="category",
     )
-    lm_outputs = ["This score is 1.", "This score is 2.", "This is a good one."]
-    task_inputs_list = [
-        {"category": "category-0"},
-        {"category": "category-0"},
-        {"category": "category-1"},
-    ]
     metric_output = metric.evaluate(
         lm_outputs=lm_outputs,
         task_inputs_list=task_inputs_list,
     )
 
-    assert metric_output.summary == {
-        "llm_score": 1.5,
-        "num_failed_score_parses": 1,
-        "llm_score/category-0": 1.5,
-    }
+    assert metric_output.summary == expected_summary
 
     for lm_output, instance_detail in zip(lm_outputs, metric_output.instance_details):
         assert instance_detail["llm_score_input"] == [{"role": "user", "content": lm_output}]
