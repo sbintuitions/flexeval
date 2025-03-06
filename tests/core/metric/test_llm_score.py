@@ -81,7 +81,7 @@ def test_llm_score() -> None:
                 "llm_score": 1.5,
                 "num_failed_score_parses": 1,
                 "llm_score/category-0": 1.5,
-            }
+            },
         ),
         (
             ["This score is 1.", "This score is 2.", "This score is 3.", "This is a good one."],
@@ -96,14 +96,12 @@ def test_llm_score() -> None:
                 "num_failed_score_parses": 1,
                 "llm_score/category-0": 1.5,
                 "llm_score/category-1": 2.0,
-            }
-        )
+            },
+        ),
     ],
 )
 def test_llm_score_with_category(
-    lm_outputs: list[str],
-    task_inputs_list: list[dict[str, str | list[str]]],
-    expected_summary: dict[str, float]
+    lm_outputs: list[str], task_inputs_list: list[dict[str, str | list[str]]], expected_summary: dict[str, float]
 ) -> None:
     metric = LLMScore(
         language_model=EchoBackLanguageModel(),
@@ -153,7 +151,7 @@ def test_chat_llm_score() -> None:
                 "llm_score": 1.5,
                 "num_failed_score_parses": 1,
                 "llm_score/category-0": 1.5,
-            }
+            },
         ),
         (
             ["This score is 1.", "This score is 2.", "This score is 3.", "This is a good one."],
@@ -168,14 +166,12 @@ def test_chat_llm_score() -> None:
                 "num_failed_score_parses": 1,
                 "llm_score/category-0": 1.5,
                 "llm_score/category-1": 2.0,
-            }
-        )
+            },
+        ),
     ],
 )
 def test_chat_llm_score_with_category(
-    lm_outputs: list[str],
-    task_inputs_list: list[dict[str, str | list[str]]],
-    expected_summary: dict[str, float]
+    lm_outputs: list[str], task_inputs_list: list[dict[str, str | list[str]]], expected_summary: dict[str, float]
 ) -> None:
     metric = ChatLLMScore(
         language_model=EchoBackLanguageModel(),
