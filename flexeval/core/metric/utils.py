@@ -10,7 +10,7 @@ def aggregate_category_wise_scores(scores: list[float, bool], categories: list[T
     Compute average scores for each category.
     """
     if len(scores) != len(categories):
-        msg = f"Length of scores ({len(scores)}) and category_keys ({len(categories)}) should be the same."
+        msg = f"Length of scores ({len(scores)}) and category_keys ({len(categories)}) must be the same."
         raise ValueError(msg)
 
     category_set = sorted(set(categories))
