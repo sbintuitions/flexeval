@@ -76,7 +76,7 @@ class OpenAIChatBatchAPI(LanguageModel):
         with open(self.temp_jsonl_file.name, mode="w") as f:
             for custom_id, message in custom_id_2_message.items():
                 if self.developer_message:
-                    message = [{"role": "developer", "content": self.developer_message}, *message]
+                    message = [{"role": "developer", "content": self.developer_message}, *message]  # noqa: PLW2901
 
                 f.write(
                     json.dumps(create_request_details(self.model, custom_id, message, **kwargs), ensure_ascii=False)
