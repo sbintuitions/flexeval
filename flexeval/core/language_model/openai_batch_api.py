@@ -57,6 +57,7 @@ class OpenAIChatBatchAPI(LanguageModel):
         api_headers: dict[str, str] | None = None,
         polling_interval_seconds: int = 60,
         default_gen_kwargs: dict[str, Any] | None = None,
+        developer_message: str | None = None,
     ) -> None:
         self.model = model
         if api_headers is None:
@@ -69,10 +70,14 @@ class OpenAIChatBatchAPI(LanguageModel):
         self.temp_jsonl_file = tempfile.NamedTemporaryFile(delete=False, suffix=".jsonl")
 
         self.polling_interval_seconds = polling_interval_seconds
+        self.developer_message = developer_message
 
     def create_batch_file(self, custom_id_2_message: dict[str, list[dict[str, str]]], **kwargs) -> None:
         with open(self.temp_jsonl_file.name, mode="w") as f:
             for custom_id, message in custom_id_2_message.items():
+                if self.developer_message:
+                    message = [{"role": "developer", "content": self.developer_message}, *message]
+
                 f.write(
                     json.dumps(create_request_details(self.model, custom_id, message, **kwargs), ensure_ascii=False)
                     + "\n",
