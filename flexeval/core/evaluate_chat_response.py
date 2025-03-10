@@ -13,7 +13,15 @@ from .metric import Metric
 from .utils.data_util import batch_iter
 
 
-def evaluate_chat_response(  # noqa: C901,PLR0912
+def _remove_finish_reason(messages: list[dict[str, str]]) -> list[dict[str, str]]:
+    remove_key = "finish_reason"
+    return [
+        {key: value for key, value in message.items() if key is not remove_key}
+        for message in messages
+    ]
+
+
+def evaluate_chat_response(  # noqa: C901,PLR0912, PLR0915
     language_model: LanguageModel,
     gen_kwargs: dict[str, Any],
     eval_dataset: ChatDataset,
@@ -58,7 +66,7 @@ def evaluate_chat_response(  # noqa: C901,PLR0912
                     all_messages_list.append(
                         [
                             *input_messages,
-                            {"role": "assistant", "content": lm_output.text},
+                            {"role": "assistant", "content": lm_output.text, "finish_reason": lm_output.finish_reason},
                         ],
                     )
             else:
@@ -70,7 +78,9 @@ def evaluate_chat_response(  # noqa: C901,PLR0912
                         b_id for b_id, messages in enumerate(input_messages_list) if turn < len(messages)
                     ]
                     current_model_inputs = [
-                        current_chat_history[b_id] + [input_messages_list[b_id][turn]]
+                        _remove_finish_reason(
+                            current_chat_history[b_id] + [input_messages_list[b_id][turn]]
+                        )
                         for b_id in batch_ids_fed_to_model
                     ]
                     lm_outputs = language_model.batch_generate_chat_response(
