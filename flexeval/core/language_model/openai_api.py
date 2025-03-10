@@ -51,8 +51,6 @@ async def _retry_on_error(
                 # Since reaching maximum number of trials, exit for-loop and return
                 # empty response.
                 break
-            if "Event loop is closed" in e.message:
-                continue
             logger.warning(f"We got an error: {e}")
             wait_time_seconds = first_wait_time * (2**i)
             logger.warning(f"Wait for {wait_time_seconds} seconds...")
@@ -153,7 +151,7 @@ class OpenAIChatAPI(LanguageModel):
             ),
         )
         outputs = [
-            LMOutput(text=res.choices[0].message.content or "", finish_reason=res.choices[0].finish_reason)
+            LMOutput(text=res.choices[0].message.content, finish_reason=res.choices[0].finish_reason)
             for res in api_responses
         ]
 
@@ -170,7 +168,7 @@ class OpenAIChatAPI(LanguageModel):
             self._async_batch_run_chatgpt(chat_messages_list, **kwargs),
         )
         outputs = [
-            LMOutput(text=res.choices[0].message.content or "", finish_reason=res.choices[0].finish_reason)
+            LMOutput(text=res.choices[0].message.content, finish_reason=res.choices[0].finish_reason)
             for res in api_responses
         ]
         if all(output.text == "" for output in outputs):
