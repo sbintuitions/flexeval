@@ -18,7 +18,7 @@ def _remove_finish_reason(messages: list[dict[str, str]]) -> list[dict[str, str]
     return [{key: value for key, value in message.items() if key is not remove_key} for message in messages]
 
 
-def evaluate_chat_response(  # noqa: C901,PLR0912, PLR0915
+def evaluate_chat_response(  # noqa: C901,PLR0912
     language_model: LanguageModel,
     gen_kwargs: dict[str, Any],
     eval_dataset: ChatDataset,
