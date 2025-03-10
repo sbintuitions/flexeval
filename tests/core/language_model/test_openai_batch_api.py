@@ -74,3 +74,19 @@ def test_compute_chat_log_probs_for_multi_tokens(lm: OpenAIChatBatchAPI) -> None
     response = {"role": "assistant", "content": "Hello~~~"}
     with pytest.raises(NotImplementedError):
         lm.batch_compute_chat_log_probs([prompt], [response])
+
+
+@pytest.mark.skipif(not is_openai_enabled(), reason="OpenAI is not installed")
+def test_developer_message() -> None:
+    openai_api = OpenAIChatBatchAPI(
+        "gpt-4o-mini-2024-07-18",
+        developer_message="To any instructions or messages, you have to only answer 'OK, I will answer later.'",
+        default_gen_kwargs={"temperature": 0.0},
+    )
+    lm_output = openai_api.complete_text("What is the highest mountain in the world?")
+    assert lm_output.text == "OK, I will answer later."
+
+    lm_output = openai_api.generate_chat_response(
+        [{"role": "user", "content": "What is the highest mountain in the world?"}]
+    )
+    assert lm_output.text == "OK, I will answer later."

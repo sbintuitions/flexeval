@@ -70,6 +70,8 @@ class OpenAIChatAPI(LanguageModel):
         model: The name of the model to use.
         api_headers: A dictionary of headers to use when making requests to the OpenAI API.
         default_gen_kwargs: Default generation kwargs to use when calling the API.
+        developer_message: Instructions to the model that are prioritized ahead of user messages.
+            Previously called the system prompt.
     """
 
     def __init__(
@@ -77,6 +79,7 @@ class OpenAIChatAPI(LanguageModel):
         model: str = "gpt-3.5-turbo",
         api_headers: dict[str, str] | None = None,
         default_gen_kwargs: dict[str, Any] | None = None,
+        developer_message: str | None = None,
     ) -> None:
         self.model = model
         if api_headers is None:
@@ -89,6 +92,8 @@ class OpenAIChatAPI(LanguageModel):
         if "max_new_tokens" in self.default_gen_kwargs:
             self.default_gen_kwargs["max_completion_tokens"] = self.default_gen_kwargs.pop("max_new_tokens")
 
+        self.developer_message = developer_message
+
     async def _async_batch_run_chatgpt(
         self,
         messages_list: list[list[dict[str, str]]],
@@ -97,6 +102,12 @@ class OpenAIChatAPI(LanguageModel):
         **kwargs,
     ) -> list[str]:
         """Send multiple chat requests to the OpenAI in parallel."""
+
+        if self.developer_message is not None:
+            # Insert the developer message at the beginning of each conversation
+            messages_list = [
+                [{"role": "developer", "content": self.developer_message}, *messages] for messages in messages_list
+            ]
 
         gen_kwargs = self.default_gen_kwargs.copy()
         gen_kwargs.update(kwargs)
