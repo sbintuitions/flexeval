@@ -25,7 +25,7 @@ def lm_init_func(model: str = "sbintuitions/tiny-lm") -> Callable[..., HuggingFa
         model=model,
         model_kwargs={"torch_dtype": "float32"},
         tokenizer_kwargs={"use_fast": False},
-        default_gen_kwargs={"temperature": 0.0},
+        default_gen_kwargs={"do_sample": False},
     )
 
 
@@ -36,14 +36,14 @@ def lm() -> HuggingFaceLM:
         model="sbintuitions/tiny-lm",
         model_kwargs={"torch_dtype": "float32"},
         tokenizer_kwargs={"use_fast": False},
-        default_gen_kwargs={"temperature": 0.0},
+        default_gen_kwargs={"do_sample": False},
     )
 
 
 @pytest.fixture(scope="module")
 def chat_lm(model_name: str = "sbintuitions/tiny-lm-chat") -> HuggingFaceLM:
     return HuggingFaceLM(
-        model=model_name, model_kwargs={"torch_dtype": "float32"}, default_gen_kwargs={"temperature": 0.0}
+        model=model_name, model_kwargs={"torch_dtype": "float32"}, default_gen_kwargs={"do_sample": False}
     )
 
 
