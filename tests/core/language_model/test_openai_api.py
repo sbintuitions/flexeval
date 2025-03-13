@@ -3,12 +3,14 @@ import os
 
 import pytest
 
-from flexeval import LMOutput, OpenAIChatAPI
+from flexeval import LanguageModel, LMOutput, OpenAIChatAPI
 from flexeval.core.language_model.openai_api import (
     message_list_from_prompt,
     prompt_from_message_list,
     remove_duplicates_from_prompt_list,
 )
+
+from .base import BaseLanguageModelTest
 
 
 def is_openai_enabled() -> bool:
@@ -18,6 +20,18 @@ def is_openai_enabled() -> bool:
 @pytest.fixture(scope="module")
 def chat_lm() -> OpenAIChatAPI:
     return OpenAIChatAPI("gpt-4o-mini-2024-07-18")
+
+
+@pytest.mark.skipif(not is_openai_enabled(), reason="OpenAI API Key is not set")
+class TestOpenAIChatAPI(BaseLanguageModelTest):
+    @pytest.fixture()
+    def model(self, chat_lm: OpenAIChatAPI) -> LanguageModel:
+        """OpenAIChatAPI can be used for both completion and chat."""
+        return chat_lm
+
+    @pytest.fixture()
+    def chat_model(self, chat_lm: OpenAIChatAPI) -> LanguageModel:
+        return chat_lm
 
 
 @pytest.mark.skipif(not is_openai_enabled(), reason="OpenAI API Key is not set")

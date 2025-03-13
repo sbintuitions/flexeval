@@ -3,7 +3,9 @@ import os
 import pytest
 
 from flexeval.core.language_model import OpenAICompletionAPI
-from flexeval.core.language_model.base import LMOutput
+from flexeval.core.language_model.base import LanguageModel, LMOutput
+
+from .base import BaseLanguageModelTest
 
 
 def is_openai_enabled() -> bool:
@@ -13,6 +15,20 @@ def is_openai_enabled() -> bool:
 @pytest.fixture(scope="module")
 def lm() -> OpenAICompletionAPI:
     return OpenAICompletionAPI(model="gpt-3.5-turbo-instruct")
+
+
+@pytest.mark.skipif(not is_openai_enabled(), reason="OpenAI API Key is not set")
+class TestOpenAICompletionAPI(BaseLanguageModelTest):
+    @pytest.fixture()
+    def model(self, lm: OpenAICompletionAPI) -> LanguageModel:
+        return lm
+
+    @pytest.fixture()
+    def chat_model(self, lm: OpenAICompletionAPI) -> LanguageModel:
+        """OpenAICompletionAPI doesn't support chat, but we need to implement this fixture.
+        Tests that require chat functionality will be skipped due to NotImplementedError.
+        """
+        return lm
 
 
 @pytest.mark.skipif(not is_openai_enabled(), reason="OpenAI API Key is not set")

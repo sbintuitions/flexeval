@@ -3,7 +3,10 @@ import os
 
 import pytest
 
+from flexeval.core.language_model.base import LanguageModel
 from flexeval.core.language_model.openai_batch_api import LMOutput, OpenAIChatBatchAPI
+
+from .base import BaseLanguageModelTest
 
 
 def is_openai_enabled() -> bool:
@@ -15,6 +18,19 @@ def lm() -> OpenAIChatBatchAPI:
     return OpenAIChatBatchAPI(
         model="gpt-4o-mini-2024-07-18", polling_interval_seconds=6, default_gen_kwargs={"temperature": 0.7}
     )
+
+
+@pytest.mark.skipif(not is_openai_enabled(), reason="OpenAI API Key is not set")
+@pytest.mark.batch_api()
+class TestOpenAIChatBatchAPI(BaseLanguageModelTest):
+    @pytest.fixture()
+    def model(self, lm: OpenAIChatBatchAPI) -> LanguageModel:
+        """OpenAIChatBatchAPI can be used for both completion and chat."""
+        return lm
+
+    @pytest.fixture()
+    def chat_model(self, lm: OpenAIChatBatchAPI) -> LanguageModel:
+        return lm
 
 
 @pytest.mark.skipif(not is_openai_enabled(), reason="OpenAI is not installed")

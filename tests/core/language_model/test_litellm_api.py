@@ -2,7 +2,9 @@ import os
 
 import pytest
 
-from flexeval.core.language_model import LiteLLMChatAPI, LMOutput
+from flexeval.core.language_model import LanguageModel, LiteLLMChatAPI, LMOutput
+
+from .test_base_language_model import BaseLanguageModelTest
 
 
 def is_openai_enabled() -> bool:
@@ -12,6 +14,17 @@ def is_openai_enabled() -> bool:
 @pytest.fixture(scope="module")
 def lm() -> LiteLLMChatAPI:
     return LiteLLMChatAPI(model="gpt-4o-mini-2024-07-18")
+
+
+@pytest.mark.skipif(not is_openai_enabled(), reason="OpenAI API Key is not set")
+class TestLiteLLMChatAPI(BaseLanguageModelTest):
+    @pytest.fixture()
+    def model(self, lm: LiteLLMChatAPI) -> LanguageModel:
+        return lm
+
+    @pytest.fixture()
+    def chat_model(self, chat_lm: LiteLLMChatAPI) -> LanguageModel:
+        return chat_lm
 
 
 @pytest.mark.skipif(not is_openai_enabled(), reason="OpenAI API Key is not set")
