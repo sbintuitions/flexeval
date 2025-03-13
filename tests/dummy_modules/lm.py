@@ -9,11 +9,11 @@ from flexeval.core.language_model.base import LMOutput
 class DummyLanguageModel(LanguageModel):
     """入力をそのまま出力するダミーの言語モデルです。 テスト用に用意しています。"""
 
-    def batch_complete_text(self, text_list: list[str], **kwargs) -> list[LMOutput]:
+    def complete_text(self, text_list: list[str], **kwargs) -> list[LMOutput]:
         kwargs_as_text = json.dumps(kwargs)
         return [LMOutput(text=text + kwargs_as_text, finish_reason="length") for text in text_list]
 
-    def batch_compute_log_probs(
+    def compute_log_probs(
         self,
         text_list: list[str],
         prefix_list: list[str] | None = None,
@@ -21,7 +21,7 @@ class DummyLanguageModel(LanguageModel):
     ) -> list[float]:
         return [-1.0] * len(text_list)
 
-    def batch_generate_chat_response(
+    def generate_chat_response(
         self,
         chat_messages_list: list[list[dict[str, str]]],
         **kwargs,

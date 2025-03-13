@@ -29,7 +29,7 @@ def evaluate_perplexity(
     token_counts: dict[str, int] = defaultdict(int)
     with tqdm(total=len(eval_instances)) as pbar:
         for batch in batch_iter(eval_instances, batch_size):
-            log_probs = language_model.batch_compute_log_probs(
+            log_probs = language_model.compute_log_probs(
                 text_list=[i.text for i in batch], prefix_list=[i.prefix for i in batch]
             )
             total_log_prob += sum(log_probs)

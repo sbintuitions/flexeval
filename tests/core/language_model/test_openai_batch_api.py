@@ -60,9 +60,7 @@ def test_warning_if_conflict_max_new_tokens(caplog: pytest.LogCaptureFixture) ->
         default_gen_kwargs={"max_completion_tokens": 10},
     )
     with pytest.raises(ValueError):
-        chat_lm_with_max_new_tokens.batch_generate_chat_response(
-            [[{"role": "user", "content": "テスト"}]], max_new_tokens=20
-        )
+        chat_lm_with_max_new_tokens.generate_chat_response([[{"role": "user", "content": "テスト"}]], max_new_tokens=20)
     assert len(caplog.records) >= 1
     assert any(record.msg.startswith("You specified both `max_new_tokens`") for record in caplog.records)
 
@@ -73,7 +71,7 @@ def test_compute_chat_log_probs_for_multi_tokens(lm: OpenAIChatBatchAPI) -> None
     prompt = [{"role": "user", "content": "Hello."}]
     response = {"role": "assistant", "content": "Hello~~~"}
     with pytest.raises(NotImplementedError):
-        lm.batch_compute_chat_log_probs([prompt], [response])
+        lm.compute_chat_log_probs([prompt], [response])
 
 
 @pytest.mark.skipif(not is_openai_enabled(), reason="OpenAI is not installed")

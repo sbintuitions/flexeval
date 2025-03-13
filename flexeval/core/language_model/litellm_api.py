@@ -43,7 +43,7 @@ class LiteLLMChatAPI(OpenAIChatAPI):
             model_response_object=ModelResponse(),
         )
 
-    def batch_compute_chat_log_probs(
+    def _batch_compute_chat_log_probs(
         self,
         prompt_list: list[list[dict[str, str]]],
         response_list: list[dict[str, str]],

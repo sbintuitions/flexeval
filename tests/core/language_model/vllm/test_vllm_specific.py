@@ -34,10 +34,10 @@ def test_batch_compute_log_probs_approximates_hf_lm(chat_lm: LanguageModel, hf_l
     prefix_list = ["それは正しい日本語ですか？"]
     text_list = ["これは正しい日本語です。"]
 
-    vllm_log_probs = chat_lm.batch_compute_log_probs(text_list)
-    hf_log_probs = hf_lm.batch_compute_log_probs(text_list)
+    vllm_log_probs = chat_lm.compute_log_probs(text_list)
+    hf_log_probs = hf_lm.compute_log_probs(text_list)
     assert vllm_log_probs == pytest.approx(hf_log_probs, abs=1e-2)
 
-    vllm_log_probs = chat_lm.batch_compute_log_probs(text_list, prefix_list=prefix_list)
-    hf_log_probs = hf_lm.batch_compute_log_probs(text_list, prefix_list=prefix_list)
+    vllm_log_probs = chat_lm.compute_log_probs(text_list, prefix_list=prefix_list)
+    hf_log_probs = hf_lm.compute_log_probs(text_list, prefix_list=prefix_list)
     assert vllm_log_probs == pytest.approx(hf_log_probs, abs=1e-2)

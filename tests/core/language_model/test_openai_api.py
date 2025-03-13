@@ -48,9 +48,7 @@ def test_warning_if_conflict_max_new_tokens(caplog: pytest.LogCaptureFixture) ->
     chat_lm_with_max_new_tokens = OpenAIChatAPI(
         "gpt-4o-mini-2024-07-18", default_gen_kwargs={"max_completion_tokens": 10}
     )
-    chat_lm_with_max_new_tokens.batch_generate_chat_response(
-        [[{"role": "user", "content": "テスト"}]], max_new_tokens=20
-    )
+    chat_lm_with_max_new_tokens.generate_chat_response([[{"role": "user", "content": "テスト"}]], max_new_tokens=20)
     assert len(caplog.records) >= 1
     assert any(record.msg.startswith("You specified both `max_new_tokens`") for record in caplog.records)
 
@@ -60,7 +58,7 @@ def test_compute_chat_log_probs_for_multi_tokens(chat_lm: OpenAIChatAPI) -> None
     prompt = [{"role": "user", "content": "Hello."}]
     response = {"role": "assistant", "content": "Hello~~~"}
     with pytest.raises(NotImplementedError):
-        chat_lm.batch_compute_chat_log_probs([prompt], [response])
+        chat_lm.compute_chat_log_probs([prompt], [response])
 
 
 def test_message_list_and_prompt() -> None:
