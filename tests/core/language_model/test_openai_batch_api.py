@@ -4,7 +4,7 @@ import os
 import pytest
 
 from flexeval.core.language_model.base import LanguageModel
-from flexeval.core.language_model.openai_batch_api import LMOutput, OpenAIChatBatchAPI
+from flexeval.core.language_model.openai_batch_api import OpenAIChatBatchAPI
 
 from .base import BaseLanguageModelTest
 
@@ -14,7 +14,7 @@ def is_openai_enabled() -> bool:
 
 
 @pytest.fixture(scope="module")
-def lm() -> OpenAIChatBatchAPI:
+def chat_lm() -> OpenAIChatBatchAPI:
     return OpenAIChatBatchAPI(
         model="gpt-4o-mini-2024-07-18", polling_interval_seconds=6, default_gen_kwargs={"temperature": 0.7}
     )
@@ -24,40 +24,31 @@ def lm() -> OpenAIChatBatchAPI:
 @pytest.mark.batch_api()
 class TestOpenAIChatBatchAPI(BaseLanguageModelTest):
     @pytest.fixture()
-    def model(self, lm: OpenAIChatBatchAPI) -> LanguageModel:
-        """OpenAIChatBatchAPI can be used for both completion and chat."""
-        return lm
+    def lm(self) -> LanguageModel:
+        return OpenAIChatBatchAPI(
+            "gpt-4o-mini-2024-07-18",
+            default_gen_kwargs={"temperature": 0.0},
+            developer_message="You are text completion model. "
+            "Please provide the text likely to continue after the user input. "
+            "Do not provide the answer or any other information.",
+        )
 
     @pytest.fixture()
-    def chat_model(self, lm: OpenAIChatBatchAPI) -> LanguageModel:
-        return lm
+    def chat_lm(self, chat_lm: OpenAIChatBatchAPI) -> LanguageModel:
+        return chat_lm
 
 
 @pytest.mark.skipif(not is_openai_enabled(), reason="OpenAI is not installed")
 @pytest.mark.batch_api()
-def test_create_batch_file(lm: OpenAIChatBatchAPI) -> None:
-    lm.create_batch_file(
+def test_create_batch_file(chat_lm: OpenAIChatBatchAPI) -> None:
+    chat_lm.create_batch_file(
         {str(i): [[{"role": "user", "content": "こんにちは。"}]] for i in range(10)},
         max_new_tokens=40,
     )
-    with open(lm.temp_jsonl_file.name) as f:
+    with open(chat_lm.temp_jsonl_file.name) as f:
         lines = f.readlines()
 
     assert len(lines) == 10
-
-
-@pytest.mark.skipif(not is_openai_enabled(), reason="OpenAI is not installed")
-@pytest.mark.batch_api()
-def test_batch_generate_chat_response(lm: OpenAIChatBatchAPI) -> None:
-    responses = lm.batch_generate_chat_response(
-        [[{"role": "user", "content": "こんにちは。"}]],
-        max_new_tokens=40,
-    )
-
-    assert len(responses) == 1
-    assert isinstance(responses[0], LMOutput)
-    assert isinstance(responses[0].text, str)
-    assert responses[0].finish_reason in {"stop", "length"}
 
 
 @pytest.mark.skipif(not is_openai_enabled(), reason="OpenAI is not installed")
@@ -73,15 +64,6 @@ def test_warning_if_conflict_max_new_tokens(caplog: pytest.LogCaptureFixture) ->
         )
     assert len(caplog.records) >= 1
     assert any(record.msg.startswith("You specified both `max_new_tokens`") for record in caplog.records)
-
-
-@pytest.mark.skipif(not is_openai_enabled(), reason="OpenAI is not installed")
-def test_batch_compute_chat_log_probs(lm: OpenAIChatBatchAPI) -> None:
-    prompt_list = [[{"role": "user", "content": "Output a number from 1 to 3."}] for _ in range(2)]
-    response_list = [{"role": "assistant", "content": "1"}, {"role": "assistant", "content": "4"}]
-    log_probs = lm.batch_compute_chat_log_probs(prompt_list, response_list)
-    assert isinstance(log_probs, list)
-    assert log_probs[0] > log_probs[1] or 0
 
 
 @pytest.mark.skipif(not is_openai_enabled(), reason="OpenAI is not installed")
