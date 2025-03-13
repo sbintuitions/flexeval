@@ -14,7 +14,10 @@ def is_openai_enabled() -> bool:
 
 @pytest.fixture(scope="module")
 def lm() -> OpenAICompletionAPI:
-    return OpenAICompletionAPI(model="gpt-3.5-turbo-instruct")
+    return OpenAICompletionAPI(
+        model="gpt-3.5-turbo-instruct",
+        default_gen_kwargs={"max_new_tokens": 16, "stop_sequences": "\n", "temperature": 0.0},
+    )
 
 
 @pytest.mark.skipif(not is_openai_enabled(), reason="OpenAI API Key is not set")

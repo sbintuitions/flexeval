@@ -252,7 +252,7 @@ class BaseLanguageModelTest:
     def test_max_new_tokens(self, lm: LanguageModel) -> None:
         """Test that max_new_tokens limits the output length."""
         # Test with a very small max_new_tokens value
-        completion = lm.batch_complete_text(["Test input"], max_new_tokens=1)[0]
+        completion = lm.batch_complete_text(["0 0 0 0 0 0 0 0 0"], max_new_tokens=1)[0]
 
         # The completion should be very short and finish_reason should be "length"
         assert len(completion.text.strip()) <= 5  # Allow for some tokenization differences
