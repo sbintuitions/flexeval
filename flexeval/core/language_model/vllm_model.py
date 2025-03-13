@@ -113,7 +113,7 @@ class VLLM(LanguageModel):
             model_kwargs["disable_sliding_window"] = True
         self.llm = LLM(model, **model_kwargs)
 
-    def complete_text(
+    def _batch_complete_text(
         self,
         text_list: list[str],
         stop_sequences: str | list[str] | None = None,
@@ -164,7 +164,7 @@ class VLLM(LanguageModel):
             outputs.append(LMOutput(text=decoded_text, finish_reason=finish_reason))
         return outputs
 
-    def generate_chat_response(
+    def _batch_generate_chat_response(
         self,
         chat_messages_list: list[list[dict[str, str]]],
         **kwargs,
@@ -178,7 +178,7 @@ class VLLM(LanguageModel):
             )
             for chat_messages in chat_messages_list
         ]
-        return self.complete_text(chat_messages_as_string, **kwargs)
+        return self._batch_complete_text(chat_messages_as_string, **kwargs)
 
     def _batch_compute_log_probs(
         self, text_list: list[str], prefix_list: list[str] | None = None, stride: int | None = None
