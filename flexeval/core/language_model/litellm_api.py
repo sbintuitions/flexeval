@@ -26,8 +26,11 @@ class LiteLLMChatAPI(OpenAIChatAPI):
         self,
         model: str = "openai/gpt-3.5-turbo",
         default_gen_kwargs: dict[str, Any] | None = None,
+        developer_message: str | None = None,
     ) -> None:
-        super().__init__(model=model, api_headers=None, default_gen_kwargs=default_gen_kwargs)
+        super().__init__(
+            model=model, api_headers=None, default_gen_kwargs=default_gen_kwargs, developer_message=developer_message
+        )
         self.model = model
         self.default_gen_kwargs = default_gen_kwargs or {}
         # convert the flexeval-specific argument name to the OpenAI-specific name

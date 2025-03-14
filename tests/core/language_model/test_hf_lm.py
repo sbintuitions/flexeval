@@ -5,7 +5,6 @@ import pytest
 import torch
 from transformers import AutoTokenizer, PreTrainedTokenizer
 
-from flexeval.core.language_model.base import LMOutput
 from flexeval.core.language_model.hf_lm import (
     HuggingFaceLM,
     LanguageModel,
@@ -14,6 +13,48 @@ from flexeval.core.language_model.hf_lm import (
     tokenize_text_for_lm_continuation,
     tokenize_text_for_lm_prefix,
 )
+
+from .base import BaseLanguageModelTest
+
+
+@pytest.fixture(scope="module")
+def lm_init_func(model: str = "sbintuitions/tiny-lm") -> Callable[..., HuggingFaceLM]:
+    # use float32 because half precision is not supported in some hardware
+    return functools.partial(
+        HuggingFaceLM,
+        model=model,
+        model_kwargs={"torch_dtype": "float32"},
+        tokenizer_kwargs={"use_fast": False},
+        default_gen_kwargs={"do_sample": False},
+    )
+
+
+@pytest.fixture(scope="module")
+def lm() -> HuggingFaceLM:
+    # use float32 because half precision is not supported in some hardware
+    return HuggingFaceLM(
+        model="sbintuitions/tiny-lm",
+        model_kwargs={"torch_dtype": "float32"},
+        tokenizer_kwargs={"use_fast": False},
+        default_gen_kwargs={"do_sample": False},
+    )
+
+
+@pytest.fixture(scope="module")
+def chat_lm(model_name: str = "sbintuitions/tiny-lm-chat") -> HuggingFaceLM:
+    return HuggingFaceLM(
+        model=model_name, model_kwargs={"torch_dtype": "float32"}, default_gen_kwargs={"do_sample": False}
+    )
+
+
+class TestHuggingFaceLM(BaseLanguageModelTest):
+    @pytest.fixture()
+    def lm(self, lm: HuggingFaceLM) -> LanguageModel:
+        return lm
+
+    @pytest.fixture()
+    def chat_lm(self, chat_lm: HuggingFaceLM) -> LanguageModel:
+        return chat_lm
 
 
 @pytest.mark.parametrize(
@@ -121,115 +162,6 @@ def test_decode_for_lm_continuation(tokenizer_name: str, text: str) -> None:
         assert prefix + continuation == text
 
 
-@pytest.fixture(scope="module")
-def lm_init_func(model: str = "sbintuitions/tiny-lm") -> Callable[..., HuggingFaceLM]:
-    # use float32 because half precision is not supported in some hardware
-    return functools.partial(
-        HuggingFaceLM,
-        model=model,
-        model_kwargs={"torch_dtype": "float32"},
-        tokenizer_kwargs={"use_fast": False},
-    )
-
-
-@pytest.fixture(scope="module")
-def lm() -> HuggingFaceLM:
-    # use float32 because half precision is not supported in some hardware
-    return HuggingFaceLM(
-        model="sbintuitions/tiny-lm",
-        model_kwargs={"torch_dtype": "float32"},
-        tokenizer_kwargs={"use_fast": False},
-    )
-
-
-def test_batch_complete_text(lm: HuggingFaceLM) -> None:
-    completions = lm.batch_complete_text(["こんにちは、", "おはよう、"])
-    assert len(completions) == 2
-    assert isinstance(completions[0], LMOutput)
-    assert isinstance(completions[0].text, str)
-    assert isinstance(completions[0].finish_reason, str)
-
-
-def test_complete_text(lm: HuggingFaceLM) -> None:
-    completion = lm.complete_text("こんにちは、")
-    assert isinstance(completion, LMOutput)
-    assert isinstance(completion.text, str)
-    assert isinstance(completion.finish_reason, str)
-
-    completions = lm.batch_complete_text(["こんにちは、", "おはよう、"])
-    assert len(completions) == 2
-    assert isinstance(completions[0], LMOutput)
-    assert isinstance(completions[0].text, str)
-    assert isinstance(completions[0].finish_reason, str)
-
-
-def test_batch_complete_text_is_not_affected_by_batch(lm: LanguageModel) -> None:
-    single_batch_input = ["こんにちは。今日もいい天気。"]
-    multi_batch_inputs = ["こんにちは。今日もいい天気。", "Lorem ipsum"]
-
-    gen_kwargs = {"do_sample": False, "stop_sequences": ["。"], "max_length": 100}
-    completions_without_batch = lm.batch_complete_text(single_batch_input, **gen_kwargs)
-    completions_with_batch = lm.batch_complete_text(multi_batch_inputs, **gen_kwargs)
-    assert completions_without_batch[0].text == completions_with_batch[0].text
-    assert completions_without_batch[0].finish_reason == completions_with_batch[0].finish_reason
-
-
-def test_max_tokens(lm: LanguageModel) -> None:
-    # assume that the lm will repeat 0
-    completion = lm.batch_complete_text(["0 0 0 0 0 0 0 0 0 0"], max_new_tokens=1)[0]
-    assert len(completion.text.strip()) == 1
-    assert completion.finish_reason == "length"
-
-
-def test_stop_sequences(lm: LanguageModel) -> None:
-    # assume that the lm will repeat "10"
-    completion = lm.batch_complete_text(["10 10 10 10 10 10 "], stop_sequences=["1"], max_new_tokens=10)[0]
-    assert completion.text.strip() == ""
-    assert completion.finish_reason == "stop"
-
-    completion = lm.batch_complete_text(["10 10 10 10 10 10 "], stop_sequences=["0"], max_new_tokens=10)[0]
-    assert completion.text.strip() == "1"
-    assert completion.finish_reason == "stop"
-
-
-def test_compute_log_probs(lm: LanguageModel) -> None:
-    log_prob = lm.compute_log_probs("こんにちは")
-    assert isinstance(log_prob, float)
-
-    log_probs = lm.batch_compute_log_probs(["こんにちは", "こんばんは"])
-    assert len(log_probs) == 2
-    assert isinstance(log_probs[0], float)
-
-
-def test_batch_compute_log_probs_produces_reasonable_comparisons(lm: LanguageModel) -> None:
-    # test if the shorter sentence has higher log prob
-    log_probs = lm.batch_compute_log_probs(["これは正しい日本語です。", "これは正しい日本語です。そして…"])
-    assert log_probs[0] > log_probs[1]
-
-    # test if the more natural short phrase has higher log prob
-    log_probs = lm.batch_compute_log_probs(["こんにちは", "コニチハ"])
-    assert log_probs[0] > log_probs[1]
-
-    # test if the grammatical sentence has higher log prob
-    log_probs = lm.batch_compute_log_probs(["これは正しい日本語です。", "は正いしこれで日語本す。"])
-    assert log_probs[0] > log_probs[1]
-
-    # test if the right prefix reduces the log prob
-    log_probs = lm.batch_compute_log_probs(["富士山", "富士山"], prefix_list=["日本で一番高い山は", "Yes, we are"])
-    assert log_probs[0] > log_probs[1]
-
-
-def test_batch_compute_log_probs_is_not_affected_by_batch(lm: LanguageModel) -> None:
-    # test if the shorter sentence has higher log prob
-    log_probs_without_batch = lm.batch_compute_log_probs(["これは正しい日本語です。"])
-
-    log_probs_with_batch = lm.batch_compute_log_probs(
-        ["これは正しい日本語です。", "これは正しい日本語です。padding を作るために余計な文を入れます。"],
-    )
-
-    assert round(log_probs_without_batch[0], 4) == round(log_probs_with_batch[0], 4)
-
-
 def test_if_random_seed_fixes_the_lm_outputs(lm_init_func: Callable[..., HuggingFaceLM]) -> None:
     # first check if the outputs are different without fixing the seed
     completions = set()
@@ -255,38 +187,6 @@ def test_if_random_seed_fixes_the_lm_outputs(lm_init_func: Callable[..., Hugging
         completion = lm.batch_complete_text(["<s>"], do_sample=True)[0]
         completions.add(completion.text)
     assert len(completions) > 1
-
-
-@pytest.fixture(scope="module")
-def chat_lm(model_name: str = "sbintuitions/tiny-lm-chat") -> HuggingFaceLM:
-    return HuggingFaceLM(model=model_name, model_kwargs={"torch_dtype": "float32"})
-
-
-def test_batch_generate_chat_response(chat_lm: LanguageModel) -> None:
-    responses = chat_lm.batch_generate_chat_response([[{"role": "user", "content": "こんにちは。"}]], max_length=40)
-    assert len(responses) == 1
-    assert isinstance(responses[0], LMOutput)
-    assert isinstance(responses[0].text, str)
-    assert isinstance(responses[0].finish_reason, str)
-
-
-def test_generate_chat_response(chat_lm: LanguageModel) -> None:
-    response = chat_lm.generate_chat_response([{"role": "user", "content": "こんにちは。"}], max_length=40)
-    assert isinstance(response, LMOutput)
-    assert isinstance(response.text, str)
-    assert isinstance(response.finish_reason, str)
-
-    responses = chat_lm.generate_chat_response(
-        [
-            [{"role": "user", "content": "こんにちは。"}],
-            [{"role": "user", "content": "こんばんわ"}],
-        ],
-        max_length=40,
-    )
-    assert len(responses) == 2
-    assert isinstance(responses[0], LMOutput)
-    assert isinstance(responses[0].text, str)
-    assert isinstance(responses[0].finish_reason, str)
 
 
 def test_if_custom_chat_template_is_given(lm_init_func: Callable[..., HuggingFaceLM]) -> None:
@@ -343,36 +243,3 @@ def test_get_prefix_and_completion_from_chat() -> None:
     )
     assert prefix == "CUSTOM_TEMPLATE"
     assert completion == ""
-
-
-def test_batch_compute_chat_log_probs(chat_lm: HuggingFaceLM) -> None:
-    log_probs_natural = chat_lm.batch_compute_chat_log_probs(
-        [[{"role": "user", "content": "Hello, how are you?"}]],
-        [{"role": "assistant", "content": "Good."}],
-    )
-    log_probs_unnatural_lang = chat_lm.batch_compute_chat_log_probs(
-        [[{"role": "user", "content": "Hello, how are you?"}]],
-        [{"role": "assistant", "content": "!?本日は晴天ナリ."}],
-    )
-    log_probs_unnatural_ord = chat_lm.batch_compute_chat_log_probs(
-        [[{"role": "user", "content": "Good."}]],
-        [{"role": "assistant", "content": "Hello, how are you?"}],
-    )
-
-    assert len(log_probs_natural) == 1
-    assert isinstance(log_probs_natural[0], float)
-    assert len(log_probs_unnatural_lang) == 1
-    assert isinstance(log_probs_unnatural_lang[0], float)
-    assert len(log_probs_unnatural_ord) == 1
-    assert isinstance(log_probs_unnatural_ord[0], float)
-    assert log_probs_natural[0] > log_probs_unnatural_lang[0]
-    assert log_probs_natural[0] > log_probs_unnatural_ord[0]
-
-
-def test_compute_chat_log_probs(chat_lm: HuggingFaceLM) -> None:
-    prompt = [{"role": "user", "content": "Hello, how are you?"}]
-    response = {"role": "assistant", "content": "Good."}
-    log_prob = chat_lm.compute_chat_log_probs(prompt, response)
-    assert isinstance(log_prob, float)
-    batch_log_prob = chat_lm.batch_compute_chat_log_probs([prompt], [response])
-    assert log_prob == batch_log_prob[0]
