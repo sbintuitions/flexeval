@@ -14,6 +14,13 @@ from .utils.data_util import batch_iter
 
 
 def _remove_finish_reason(messages: list[dict[str, str]]) -> list[dict[str, str]]:
+    """
+    Remove `finish_reason` from all turns in `messages`.
+
+    Each `finish_reason` is added in `evaluate_chat_response()` for logging.
+    However, some APIs of Azure OpenAI (e.g. tsuzumi-7b-instruct) do not allow extra input keys.
+    Thus this removal is required before each input step.
+    """
     remove_key = "finish_reason"
     return [{key: value for key, value in message.items() if key is not remove_key} for message in messages]
 
