@@ -145,7 +145,7 @@ class OpenAIChatAPI(LanguageModel):
         ]
         return await asyncio.gather(*tasks)
 
-    def batch_complete_text(
+    def _batch_complete_text(
         self,
         text_list: list[str],
         stop_sequences: str | list[str] | None = None,
@@ -170,7 +170,7 @@ class OpenAIChatAPI(LanguageModel):
             logger.warning("All generated texts are empty strings. Something may be wrong.")
         return outputs
 
-    def batch_generate_chat_response(
+    def _batch_generate_chat_response(
         self,
         chat_messages_list: list[list[dict[str, str]]],
         **kwargs,
@@ -186,7 +186,7 @@ class OpenAIChatAPI(LanguageModel):
             logger.warning("All generated texts are empty strings. Something may go wrong.")
         return outputs
 
-    def batch_compute_chat_log_probs(
+    def _batch_compute_chat_log_probs(
         self,
         prompt_list: list[list[dict[str, str]]],
         response_list: list[dict[str, str]],
@@ -350,7 +350,7 @@ class OpenAICompletionAPI(LanguageModel):
         ]
         return await asyncio.gather(*tasks)
 
-    def batch_complete_text(
+    def _batch_complete_text(
         self,
         text_list: list[str],
         stop_sequences: str | list[str] | None = None,

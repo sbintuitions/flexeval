@@ -41,4 +41,4 @@ def test_compute_chat_log_probs_for_multi_tokens(chat_lm: LiteLLMChatAPI) -> Non
     prompt_list = [[{"role": "user", "content": "Output a number from 1 to 3."}] for _ in range(2)]
     response_list = [{"role": "assistant", "content": "1"}, {"role": "assistant", "content": "4"}]
     with pytest.raises(NotImplementedError):
-        chat_lm.batch_compute_chat_log_probs(prompt_list, response_list)
+        chat_lm.compute_chat_log_probs(prompt_list, response_list)

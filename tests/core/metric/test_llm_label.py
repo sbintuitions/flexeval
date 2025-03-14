@@ -8,7 +8,7 @@ from flexeval.core.metric.llm_label import ChatLLMLabel, LLMLabel, parse_label_f
 
 
 class EchoBackLanguageModel(LanguageModel):
-    def batch_complete_text(
+    def complete_text(
         self,
         text_list: list[str],
         stop_sequences: str | list[str] | None = None,
@@ -17,7 +17,7 @@ class EchoBackLanguageModel(LanguageModel):
     ) -> list[LMOutput]:
         return [LMOutput(text=text, finish_reason="length") for text in text_list]
 
-    def batch_generate_chat_response(
+    def generate_chat_response(
         self,
         chat_messages_list: list[list[dict[str, str]]],
         **kwargs,

@@ -153,11 +153,11 @@ def generate_evaluations(
             batch_size=batch_size,
         ):
             if all(isinstance(elem, str) for elem in batch_inputs):
-                evaluator_outputs = language_model.batch_complete_text(
+                evaluator_outputs = language_model.complete_text(
                     batch_inputs,
                 )
             else:
-                evaluator_outputs = language_model.batch_generate_chat_response(
+                evaluator_outputs = language_model.generate_chat_response(
                     batch_inputs,
                 )
             evaluator_output_list += evaluator_outputs

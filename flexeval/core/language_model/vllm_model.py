@@ -113,7 +113,7 @@ class VLLM(LanguageModel):
             model_kwargs["disable_sliding_window"] = True
         self.llm = LLM(model, **model_kwargs)
 
-    def batch_complete_text(
+    def _batch_complete_text(
         self,
         text_list: list[str],
         stop_sequences: str | list[str] | None = None,
@@ -164,7 +164,7 @@ class VLLM(LanguageModel):
             outputs.append(LMOutput(text=decoded_text, finish_reason=finish_reason))
         return outputs
 
-    def batch_generate_chat_response(
+    def _batch_generate_chat_response(
         self,
         chat_messages_list: list[list[dict[str, str]]],
         **kwargs,
@@ -178,9 +178,9 @@ class VLLM(LanguageModel):
             )
             for chat_messages in chat_messages_list
         ]
-        return self.batch_complete_text(chat_messages_as_string, **kwargs)
+        return self._batch_complete_text(chat_messages_as_string, **kwargs)
 
-    def batch_compute_log_probs(
+    def _batch_compute_log_probs(
         self, text_list: list[str], prefix_list: list[str] | None = None, stride: int | None = None
     ) -> list[float]:
         batch_size = len(text_list)
@@ -259,7 +259,7 @@ class VLLM(LanguageModel):
 
         return batch_logprobs
 
-    def batch_compute_chat_log_probs(
+    def _batch_compute_chat_log_probs(
         self, prompt_list: list[list[dict[str, str]]], response_list: list[dict[str, str]]
     ) -> list[float]:
         prompt_as_string: list[str] = []
@@ -273,7 +273,7 @@ class VLLM(LanguageModel):
             )
             prompt_as_string.append(prompt_as_string_i)
             response_as_string.append(response_as_string_i)
-        return self.batch_compute_log_probs(response_as_string, prefix_list=prompt_as_string)
+        return self.compute_log_probs(response_as_string, prefix_list=prompt_as_string)
 
     def __repr__(self) -> str:
         return f"VLLM(model_name={self.model_name})"

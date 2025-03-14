@@ -139,8 +139,8 @@ class BaseLanguageModelTest:
         multi_batch_inputs = ["Test input", "Another test input"]
 
         gen_kwargs = {"max_new_tokens": 10}
-        completions_without_batch = lm.batch_complete_text(single_batch_input, **gen_kwargs)
-        completions_with_batch = lm.batch_complete_text(multi_batch_inputs, **gen_kwargs)
+        completions_without_batch = lm.complete_text(single_batch_input, **gen_kwargs)
+        completions_with_batch = lm.complete_text(multi_batch_inputs, **gen_kwargs)
         assert completions_without_batch[0].text == completions_with_batch[0].text
         assert completions_without_batch[0].finish_reason == completions_with_batch[0].finish_reason
 
@@ -151,8 +151,8 @@ class BaseLanguageModelTest:
             multi_batch_inputs = [[{"role": "user", "content": "Hello"}], [{"role": "user", "content": "Hi"}]]
 
             gen_kwargs = {"max_new_tokens": 10}
-            completions_without_batch = chat_lm.batch_generate_chat_response(single_batch_input, **gen_kwargs)
-            completions_with_batch = chat_lm.batch_generate_chat_response(multi_batch_inputs, **gen_kwargs)
+            completions_without_batch = chat_lm.generate_chat_response(single_batch_input, **gen_kwargs)
+            completions_with_batch = chat_lm.generate_chat_response(multi_batch_inputs, **gen_kwargs)
             assert completions_without_batch[0].text == completions_with_batch[0].text
             assert completions_without_batch[0].finish_reason == completions_with_batch[0].finish_reason
         except NotImplementedError:
@@ -164,8 +164,8 @@ class BaseLanguageModelTest:
             single_batch_input = ["Test input"]
             multi_batch_inputs = ["Test input", "Another test input"]
 
-            log_probs_without_batch = lm.batch_compute_log_probs(single_batch_input)
-            log_probs_with_batch = lm.batch_compute_log_probs(multi_batch_inputs)
+            log_probs_without_batch = lm.compute_log_probs(single_batch_input)
+            log_probs_with_batch = lm.compute_log_probs(multi_batch_inputs)
 
             assert round(log_probs_without_batch[0], 4) == round(log_probs_with_batch[0], 4)
         except NotImplementedError:
@@ -174,11 +174,11 @@ class BaseLanguageModelTest:
     def test_batch_compute_chat_log_probs_is_not_affected_by_batch(self, chat_lm: LanguageModel) -> None:
         """Test that batch_compute_chat_log_probs is not affected by batch size."""
         try:
-            log_probs_without_batch = chat_lm.batch_compute_chat_log_probs(
+            log_probs_without_batch = chat_lm.compute_chat_log_probs(
                 [[{"role": "user", "content": "Hi"}]],
                 [{"role": "assistant", "content": "Hi"}],
             )
-            log_probs_with_batch = chat_lm.batch_compute_chat_log_probs(
+            log_probs_with_batch = chat_lm.compute_chat_log_probs(
                 [[{"role": "user", "content": "Hi"}], [{"role": "user", "content": "Hello"}]],
                 [{"role": "assistant", "content": "Hi"}, {"role": "assistant", "content": "Hello there"}],
             )
@@ -195,21 +195,19 @@ class BaseLanguageModelTest:
         """Test that batch_compute_log_probs produces reasonable comparisons."""
         try:
             # test if the shorter sentence has higher log prob
-            log_probs = lm.batch_compute_log_probs(["これは正しい日本語です。", "これは正しい日本語です。そして…"])
+            log_probs = lm.compute_log_probs(["これは正しい日本語です。", "これは正しい日本語です。そして…"])
             assert log_probs[0] > log_probs[1]
 
             # test if the more natural short phrase has higher log prob
-            log_probs = lm.batch_compute_log_probs(["こんにちは", "コニチハ"])
+            log_probs = lm.compute_log_probs(["こんにちは", "コニチハ"])
             assert log_probs[0] > log_probs[1]
 
             # test if the grammatical sentence has higher log prob
-            log_probs = lm.batch_compute_log_probs(["これは正しい日本語です。", "は正いしこれで日語本す。"])
+            log_probs = lm.compute_log_probs(["これは正しい日本語です。", "は正いしこれで日語本す。"])
             assert log_probs[0] > log_probs[1]
 
             # test if the right prefix reduces the log prob
-            log_probs = lm.batch_compute_log_probs(
-                ["富士山", "富士山"], prefix_list=["日本で一番高い山は", "Yes, we are"]
-            )
+            log_probs = lm.compute_log_probs(["富士山", "富士山"], prefix_list=["日本で一番高い山は", "Yes, we are"])
             assert log_probs[0] > log_probs[1]
         except NotImplementedError:
             pytest.skip("This model does not support log probability computation")
@@ -219,7 +217,7 @@ class BaseLanguageModelTest:
     def test_batch_compute_chat_log_probs_produces_reasonable_comparisons(self, chat_lm: LanguageModel) -> None:
         """Test that batch_compute_chat_log_probs produces reasonable comparisons."""
         try:
-            log_probs = chat_lm.batch_compute_chat_log_probs(
+            log_probs = chat_lm.compute_chat_log_probs(
                 [
                     [{"role": "user", "content": "Output number from range 1 to 3"}],
                     [{"role": "user", "content": "Output number from range 1 to 3"}],
@@ -241,18 +239,18 @@ class BaseLanguageModelTest:
 
     def test_stop_sequences(self, lm: LanguageModel) -> None:
         # assume that the lm will repeat "10"
-        completion = lm.batch_complete_text(["10 10 10 10 10 10 "], stop_sequences=["1"], max_new_tokens=10)[0]
+        completion = lm.complete_text(["10 10 10 10 10 10 "], stop_sequences=["1"], max_new_tokens=10)[0]
         assert completion.text.strip() == ""
         assert completion.finish_reason == "stop"
 
-        completion = lm.batch_complete_text(["10 10 10 10 10 10 "], stop_sequences=["0"], max_new_tokens=10)[0]
+        completion = lm.complete_text(["10 10 10 10 10 10 "], stop_sequences=["0"], max_new_tokens=10)[0]
         assert completion.text.strip() == "1"
         assert completion.finish_reason == "stop"
 
     def test_max_new_tokens(self, lm: LanguageModel) -> None:
         """Test that max_new_tokens limits the output length."""
         # Test with a very small max_new_tokens value
-        completion = lm.batch_complete_text(["0 0 0 0 0 0 0 0 0"], max_new_tokens=1)[0]
+        completion = lm.complete_text(["0 0 0 0 0 0 0 0 0"], max_new_tokens=1)[0]
 
         # The completion should be very short and finish_reason should be "length"
         assert len(completion.text.strip()) <= 5  # Allow for some tokenization differences

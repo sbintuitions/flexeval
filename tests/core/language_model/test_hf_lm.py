@@ -167,7 +167,7 @@ def test_if_random_seed_fixes_the_lm_outputs(lm_init_func: Callable[..., Hugging
     completions = set()
     for i in range(3):
         lm = lm_init_func(random_seed=i)
-        completion = lm.batch_complete_text(["<s>"], do_sample=True)[0]
+        completion = lm.complete_text(["<s>"], do_sample=True)[0]
         completions.add(completion.text)
     assert len(completions) > 1
 
@@ -175,7 +175,7 @@ def test_if_random_seed_fixes_the_lm_outputs(lm_init_func: Callable[..., Hugging
     completions = set()
     for _ in range(3):
         lm = lm_init_func(random_seed=42)
-        completion = lm.batch_complete_text(["<s>"], do_sample=True)[0]
+        completion = lm.complete_text(["<s>"], do_sample=True)[0]
         completions.add(completion.text)
     assert len(completions) == 1
 
@@ -184,7 +184,7 @@ def test_if_random_seed_fixes_the_lm_outputs(lm_init_func: Callable[..., Hugging
     lm = lm_init_func(random_seed=42)
     completions = set()
     for _ in range(3):
-        completion = lm.batch_complete_text(["<s>"], do_sample=True)[0]
+        completion = lm.complete_text(["<s>"], do_sample=True)[0]
         completions.add(completion.text)
     assert len(completions) > 1
 
@@ -197,7 +197,7 @@ def test_if_custom_chat_template_is_given(lm_init_func: Callable[..., HuggingFac
         random_seed=42,
         custom_chat_template=custom_chat_template,
     )
-    responses = lm.batch_generate_chat_response([[{"role": "user", "content": "こんにちは。"}]], max_length=40)
+    responses = lm.generate_chat_response([[{"role": "user", "content": "こんにちは。"}]], max_length=40)
     assert len(responses) == 1
     assert responses[0].text.strip().startswith("0 0")
 
@@ -206,12 +206,12 @@ def test_if_stop_sequences_work_as_expected(chat_lm: HuggingFaceLM) -> None:
     test_inputs = [[{"role": "user", "content": "こんにちは"}]]
 
     # check if the response does not have eos_token by default
-    response = chat_lm.batch_generate_chat_response(test_inputs, max_new_tokens=50)[0]
+    response = chat_lm.generate_chat_response(test_inputs, max_new_tokens=50)[0]
     assert response.text
     assert response.finish_reason == "stop"
 
     # check if ignore_eos=True works
-    response = chat_lm.batch_generate_chat_response(test_inputs, max_new_tokens=50, ignore_eos=True)[0]
+    response = chat_lm.generate_chat_response(test_inputs, max_new_tokens=50, ignore_eos=True)[0]
     assert response.text
     assert response.finish_reason == "length"
 

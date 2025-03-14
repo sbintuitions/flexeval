@@ -108,13 +108,13 @@ def generate_evaluation_logprobs(
         evaluator_logprobs_list: list[dict[str, float]] = []
         for evaluator_input in evaluator_input_list:
             if isinstance(evaluator_input, str):
-                evaluator_logprobs = language_model.batch_compute_log_probs(
+                evaluator_logprobs = language_model.compute_log_probs(
                     valid_labels,  # for openai models, len(valid_labels) <= 20 due to constraint
                     [evaluator_input]
                     * len(valid_labels),  # we have to provide len(valid_labels) same inputs for generate logprob
                 )
             else:
-                evaluator_logprobs = language_model.batch_compute_chat_log_probs(
+                evaluator_logprobs = language_model.compute_chat_log_probs(
                     [evaluator_input for _ in valid_labels],
                     [{"role": "assistant", "content": label} for label in valid_labels],
                 )
