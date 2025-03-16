@@ -62,7 +62,7 @@ def evaluate_chat_response(  # noqa: C901,PLR0912
                     input_messages_list[input_id] = [*few_shot_messages, *input_messages_list[input_id]]
 
             if not eval_dataset.require_incremental_response():
-                lm_outputs = language_model.batch_generate_chat_response(
+                lm_outputs = language_model.generate_chat_response(
                     input_messages_list,
                     **gen_kwargs,
                 )
@@ -85,7 +85,7 @@ def evaluate_chat_response(  # noqa: C901,PLR0912
                         _remove_finish_reason(current_chat_history[b_id] + [input_messages_list[b_id][turn]])
                         for b_id in batch_ids_fed_to_model
                     ]
-                    lm_outputs = language_model.batch_generate_chat_response(
+                    lm_outputs = language_model.generate_chat_response(
                         current_model_inputs,
                         **gen_kwargs,
                     )

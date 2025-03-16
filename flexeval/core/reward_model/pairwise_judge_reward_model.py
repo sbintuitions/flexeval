@@ -117,7 +117,7 @@ class PairwiseJudgeRewardModel(RewardModel):
                 "llm_inputs": [input_chat_messages_a_is_chosen, input_chat_messages_b_is_chosen],
             }
             outputs.append(output)
-        judge_outputs = self.language_model.batch_generate_chat_response(input_chat_messages_list, **self.gen_kwargs)
+        judge_outputs = self.language_model.generate_chat_response(input_chat_messages_list, **self.gen_kwargs)
         chosen_is_betters: list[bool] = [
             self._is_correct_llm_answer(judge_output.text, shuffle_pairwise_instance.answer_label)
             for judge_output, shuffle_pairwise_instance in zip(judge_outputs, all_pairwise_instances)

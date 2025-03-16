@@ -27,11 +27,11 @@ class LogProbRewardModel(RewardModel):
             msg = "`rejected` field must have exactly one element."
             raise ValueError(msg)
 
-        chosen_log_probs = self.language_model.batch_compute_chat_log_probs(
+        chosen_log_probs = self.language_model.compute_chat_log_probs(
             prompt_list=[instance.prompt for instance in batch_reward_bench_instances],
             response_list=[instance.chosen[0] for instance in batch_reward_bench_instances],
         )
-        rejected_log_probs = self.language_model.batch_compute_chat_log_probs(
+        rejected_log_probs = self.language_model.compute_chat_log_probs(
             prompt_list=[instance.prompt for instance in batch_reward_bench_instances],
             response_list=[instance.rejected[0] for instance in batch_reward_bench_instances],
         )
