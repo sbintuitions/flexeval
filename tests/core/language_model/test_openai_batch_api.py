@@ -71,7 +71,7 @@ def test_compute_chat_log_probs_for_multi_tokens(chat_lm: OpenAIChatBatchAPI) ->
     prompt = [{"role": "user", "content": "Hello."}]
     response = {"role": "assistant", "content": "Hello~~~"}
     with pytest.raises(NotImplementedError):
-        chat_lm.batch_compute_chat_log_probs([prompt], [response])
+        chat_lm.compute_chat_log_probs([prompt], [response])
 
 
 @pytest.mark.skipif(not is_openai_enabled(), reason="OpenAI is not installed")
