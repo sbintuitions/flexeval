@@ -102,8 +102,12 @@ class LanguageModel:
         """
 
         if isinstance(text_list, str):
-            return self._batch_complete_text([text_list], stop_sequences, max_new_tokens, **kwargs)[0]
-        return self._batch_complete_text(text_list, stop_sequences, max_new_tokens, **kwargs)
+            return self._batch_complete_text(
+                [text_list], stop_sequences=stop_sequences, max_new_tokens=max_new_tokens, **kwargs
+            )[0]
+        return self._batch_complete_text(
+            text_list, stop_sequences=stop_sequences, max_new_tokens=max_new_tokens, **kwargs
+        )
 
     @final
     def generate_chat_response(
@@ -135,8 +139,8 @@ class LanguageModel:
         """
 
         if isinstance(text_list, str):
-            return self._batch_compute_log_probs([text_list], prefix_list, stride)[0]
-        return self._batch_compute_log_probs(text_list, prefix_list, stride)
+            return self._batch_compute_log_probs([text_list], prefix_list=prefix_list, stride=stride)[0]
+        return self._batch_compute_log_probs(text_list, prefix_list=prefix_list, stride=stride)
 
     @final
     def compute_chat_log_probs(
