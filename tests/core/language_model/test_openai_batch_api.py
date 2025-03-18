@@ -67,11 +67,11 @@ def test_warning_if_conflict_max_new_tokens(caplog: pytest.LogCaptureFixture) ->
 
 @pytest.mark.skipif(not is_openai_enabled(), reason="OpenAI is not installed")
 @pytest.mark.batch_api()
-def test_compute_chat_log_probs_for_multi_tokens(lm: OpenAIChatBatchAPI) -> None:
+def test_compute_chat_log_probs_for_multi_tokens(chat_lm: OpenAIChatBatchAPI) -> None:
     prompt = [{"role": "user", "content": "Hello."}]
     response = {"role": "assistant", "content": "Hello~~~"}
     with pytest.raises(NotImplementedError):
-        lm.compute_chat_log_probs([prompt], [response])
+        chat_lm.compute_chat_log_probs([prompt], [response])
 
 
 @pytest.mark.skipif(not is_openai_enabled(), reason="OpenAI is not installed")
