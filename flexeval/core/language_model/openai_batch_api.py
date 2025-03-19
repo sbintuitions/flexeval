@@ -57,15 +57,17 @@ class OpenAIChatBatchAPI(LanguageModel):
         api_headers: dict[str, str] | None = None,
         polling_interval_seconds: int = 60,
         default_gen_kwargs: dict[str, Any] | None = None,
+        max_new_tokens_key_on_api: str = "max_completion_tokens",
     ) -> None:
         self.model = model
+        self.max_new_tokens_key_on_api = max_new_tokens_key_on_api
         if api_headers is None:
             api_headers = {}
         self._client = AsyncOpenAI(**api_headers)
         self.default_gen_kwargs = default_gen_kwargs or {}
         # convert the flexeval-specific argument name to the OpenAI-specific name
         if "max_new_tokens" in self.default_gen_kwargs:
-            self.default_gen_kwargs["max_completion_tokens"] = self.default_gen_kwargs.pop("max_new_tokens")
+            self.default_gen_kwargs[self.max_new_tokens_key_on_api] = self.default_gen_kwargs.pop("max_new_tokens")
         self.temp_jsonl_file = tempfile.NamedTemporaryFile(delete=False, suffix=".jsonl")
 
         self.polling_interval_seconds = polling_interval_seconds
@@ -90,14 +92,14 @@ class OpenAIChatBatchAPI(LanguageModel):
         """Send batch chat requests to the OpenAI."""
 
         if max_new_tokens is not None:
-            if "max_completion_tokens" in gen_kwargs:
+            if self.max_new_tokens_key_on_api in gen_kwargs:
                 msg = (
-                    "You specified both `max_new_tokens` and `max_completion_tokens` in generation kwargs. "
-                    "Note that `max_new_tokens` overrides `max_completion_tokens` by default. "
+                    f"You specified both `max_new_tokens` and `{self.max_new_tokens_key_on_api}` in generation kwargs. "
+                    f"Note that `max_new_tokens` overrides `{self.max_new_tokens_key_on_api}` by default. "
                     "It is recommended to specify only one of them to avoid unexpected behavior."
                 )
                 logger.warning(msg)
-            gen_kwargs["max_completion_tokens"] = max_new_tokens
+            gen_kwargs[self.max_new_tokens_key_on_api] = max_new_tokens
 
         gen_kwargs["stop"] = normalize_stop_sequences(
             stop_sequences_list=[
