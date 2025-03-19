@@ -46,10 +46,8 @@ class TestOpenAIChatAPI(BaseLanguageModelTest):
 def test_if_max_new_tokens_replaced() -> None:
     # To verify that the flexeval-specific `max_new_tokens` parameter can be properly renamed for API,
     # set the `max_new_tokens_key_on_api` to invalid value.
-    invalid_key="max_hogefugapiyo_tokens"
-    chat_lm_with_invalid_override_key = OpenAIChatAPI(
-        "gpt-4o-mini-2024-07-18", max_new_tokens_key_on_api=invalid_key
-    )
+    invalid_key = "max_hogefugapiyo_tokens"
+    chat_lm_with_invalid_override_key = OpenAIChatAPI("gpt-4o-mini-2024-07-18", max_new_tokens_key_on_api=invalid_key)
 
     with pytest.raises(TypeError) as e:
         chat_lm_with_invalid_override_key.batch_generate_chat_response(

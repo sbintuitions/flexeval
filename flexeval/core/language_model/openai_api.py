@@ -116,7 +116,7 @@ class OpenAIChatAPI(LanguageModel):
         if max_new_tokens is not None:
             if self.max_new_tokens_key_on_api in gen_kwargs:
                 msg = (
-                    f"You specified both `max_new_tokens` and `{self.max_new_tokens_key_on_api}` in generation kwargs. "  # noqa: E501
+                    f"You specified both `max_new_tokens` and `{self.max_new_tokens_key_on_api}` in generation kwargs. "
                     f"Note that `max_new_tokens` overrides `{self.max_new_tokens_key_on_api}` by default. "
                     "It is recommended to specify only one of them to avoid unexpected behavior."
                 )
@@ -223,7 +223,7 @@ class OpenAIChatAPI(LanguageModel):
                 seed=seed,
                 logprobs=True,
                 top_logprobs=top_logprobs,
-                **{self.max_new_tokens_key_on_api: 1}
+                **{self.max_new_tokens_key_on_api: 1},
             ),
         )
 
