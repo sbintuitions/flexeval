@@ -13,6 +13,18 @@ from .metric import Metric
 from .utils.data_util import batch_iter
 
 
+def _remove_finish_reason(messages: list[dict[str, str]]) -> list[dict[str, str]]:
+    """
+    Remove `finish_reason` from all turns in `messages`.
+
+    Each `finish_reason` is added in `evaluate_chat_response()` for logging.
+    However, some APIs of Azure OpenAI (e.g. tsuzumi-7b-instruct) do not allow extra input keys.
+    Thus this removal is required before each input step.
+    """
+    remove_key = "finish_reason"
+    return [{key: value for key, value in message.items() if key is not remove_key} for message in messages]
+
+
 def evaluate_chat_response(  # noqa: C901,PLR0912
     language_model: LanguageModel,
     gen_kwargs: dict[str, Any],
@@ -50,7 +62,7 @@ def evaluate_chat_response(  # noqa: C901,PLR0912
                     input_messages_list[input_id] = [*few_shot_messages, *input_messages_list[input_id]]
 
             if not eval_dataset.require_incremental_response():
-                lm_outputs = language_model.batch_generate_chat_response(
+                lm_outputs = language_model.generate_chat_response(
                     input_messages_list,
                     **gen_kwargs,
                 )
@@ -70,10 +82,10 @@ def evaluate_chat_response(  # noqa: C901,PLR0912
                         b_id for b_id, messages in enumerate(input_messages_list) if turn < len(messages)
                     ]
                     current_model_inputs = [
-                        current_chat_history[b_id] + [input_messages_list[b_id][turn]]
+                        _remove_finish_reason(current_chat_history[b_id] + [input_messages_list[b_id][turn]])
                         for b_id in batch_ids_fed_to_model
                     ]
-                    lm_outputs = language_model.batch_generate_chat_response(
+                    lm_outputs = language_model.generate_chat_response(
                         current_model_inputs,
                         **gen_kwargs,
                     )

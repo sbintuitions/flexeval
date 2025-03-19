@@ -7,7 +7,7 @@ from flexeval.core.metric.llm_geval_score import ChatLLMGEvalScore, LLMGEvalScor
 
 
 class EchoBackLanguageModel(LanguageModel):
-    def batch_compute_log_probs(
+    def compute_log_probs(
         self,
         text_list: list[str],
         prefix_list: list[str] | None = None,
@@ -24,11 +24,11 @@ class EchoBackLanguageModel(LanguageModel):
         # This simulates all of the valid scores are not obtained from logprob results.
         return [None, None, None, None, None]
 
-    def batch_compute_chat_log_probs(
+    def compute_chat_log_probs(
         self, prompt_list: list[list[dict[str, str]]], response_list: list[dict[str, str]]
     ) -> list[float]:
         text = prompt_list[0][-1]["content"]
-        return self.batch_compute_log_probs([], [text])
+        return self.compute_log_probs([], [text])
 
 
 @pytest.mark.parametrize(

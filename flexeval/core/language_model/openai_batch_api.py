@@ -58,6 +58,7 @@ class OpenAIChatBatchAPI(LanguageModel):
         polling_interval_seconds: int = 60,
         default_gen_kwargs: dict[str, Any] | None = None,
         max_new_tokens_key_on_api: str = "max_completion_tokens",
+        developer_message: str | None = None,
     ) -> None:
         self.model = model
         self.max_new_tokens_key_on_api = max_new_tokens_key_on_api
@@ -71,10 +72,14 @@ class OpenAIChatBatchAPI(LanguageModel):
         self.temp_jsonl_file = tempfile.NamedTemporaryFile(delete=False, suffix=".jsonl")
 
         self.polling_interval_seconds = polling_interval_seconds
+        self.developer_message = developer_message
 
     def create_batch_file(self, custom_id_2_message: dict[str, list[dict[str, str]]], **kwargs) -> None:
         with open(self.temp_jsonl_file.name, mode="w") as f:
             for custom_id, message in custom_id_2_message.items():
+                if self.developer_message:
+                    message = [{"role": "developer", "content": self.developer_message}, *message]  # noqa: PLW2901
+
                 f.write(
                     json.dumps(create_request_details(self.model, custom_id, message, **kwargs), ensure_ascii=False)
                     + "\n",
@@ -206,7 +211,7 @@ class OpenAIChatBatchAPI(LanguageModel):
 
         return list(custom_id_2_response.values())
 
-    def batch_complete_text(
+    def _batch_complete_text(
         self,
         text_list: list[str],
         stop_sequences: str | list[str] | None = None,
@@ -225,7 +230,7 @@ class OpenAIChatBatchAPI(LanguageModel):
             for res in api_responses
         ]
 
-    def batch_generate_chat_response(
+    def _batch_generate_chat_response(
         self,
         chat_messages_list: list[list[dict[str, str]]],
         **kwargs,
@@ -251,7 +256,7 @@ class OpenAIChatBatchAPI(LanguageModel):
         except OSError as e:
             logger.error(f"Error: {e.filename} - {e.strerror}.")
 
-    def batch_compute_chat_log_probs(
+    def _batch_compute_chat_log_probs(
         self,
         prompt_list: list[list[dict[str, str]]],
         response_list: list[dict[str, str]],

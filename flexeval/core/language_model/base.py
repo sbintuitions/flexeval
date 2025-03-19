@@ -16,7 +16,7 @@ class LanguageModel:
     It can generate text based on the input text, response to chat messages, and compute log probabilities.
     """
 
-    def batch_complete_text(
+    def _batch_complete_text(
         self,
         text_list: list[str],
         stop_sequences: str | list[str] | None = None,
@@ -42,7 +42,7 @@ class LanguageModel:
         msg = f"{self.__class__.__name__} cannot generate text."
         raise NotImplementedError(msg)
 
-    def batch_generate_chat_response(
+    def _batch_generate_chat_response(
         self,
         chat_messages_list: list[list[dict[str, str]]],
         **kwargs,
@@ -56,7 +56,7 @@ class LanguageModel:
         msg = f"{self.__class__.__name__} cannot generate chat responses."
         raise NotImplementedError(msg)
 
-    def batch_compute_log_probs(
+    def _batch_compute_log_probs(
         self,
         text_list: list[str],
         prefix_list: list[str] | None = None,
@@ -74,7 +74,7 @@ class LanguageModel:
         msg = f"{self.__class__.__name__} cannot compute perplexity."
         raise NotImplementedError(msg)
 
-    def batch_compute_chat_log_probs(
+    def _batch_compute_chat_log_probs(
         self, prompt_list: list[list[dict[str, str]]], response_list: list[dict[str, str]]
     ) -> list[float]:
         """
@@ -102,8 +102,12 @@ class LanguageModel:
         """
 
         if isinstance(text_list, str):
-            return self.batch_complete_text([text_list], stop_sequences, max_new_tokens, **kwargs)[0]
-        return self.batch_complete_text(text_list, stop_sequences, max_new_tokens, **kwargs)
+            return self._batch_complete_text(
+                [text_list], stop_sequences=stop_sequences, max_new_tokens=max_new_tokens, **kwargs
+            )[0]
+        return self._batch_complete_text(
+            text_list, stop_sequences=stop_sequences, max_new_tokens=max_new_tokens, **kwargs
+        )
 
     @final
     def generate_chat_response(
@@ -118,8 +122,8 @@ class LanguageModel:
         """
 
         if isinstance(chat_messages[0], dict):
-            return self.batch_generate_chat_response([chat_messages], **kwargs)[0]
-        return self.batch_generate_chat_response(chat_messages, **kwargs)
+            return self._batch_generate_chat_response([chat_messages], **kwargs)[0]
+        return self._batch_generate_chat_response(chat_messages, **kwargs)
 
     @final
     def compute_log_probs(
@@ -135,8 +139,8 @@ class LanguageModel:
         """
 
         if isinstance(text_list, str):
-            return self.batch_compute_log_probs([text_list], prefix_list, stride)[0]
-        return self.batch_compute_log_probs(text_list, prefix_list, stride)
+            return self._batch_compute_log_probs([text_list], prefix_list=prefix_list, stride=stride)[0]
+        return self._batch_compute_log_probs(text_list, prefix_list=prefix_list, stride=stride)
 
     @final
     def compute_chat_log_probs(
@@ -149,8 +153,8 @@ class LanguageModel:
         """
 
         if isinstance(prompt[0], dict):
-            return self.batch_compute_chat_log_probs([prompt], [response])[0]
-        return self.batch_compute_chat_log_probs(prompt, response)
+            return self._batch_compute_chat_log_probs([prompt], [response])[0]
+        return self._batch_compute_chat_log_probs(prompt, response)
 
 
 def normalize_stop_sequences(

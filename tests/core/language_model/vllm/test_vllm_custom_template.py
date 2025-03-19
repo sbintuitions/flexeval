@@ -37,7 +37,7 @@ def chat_lm_with_custom_chat_template() -> VLLM:
 
 @pytest.mark.skipif(not is_vllm_enabled(), reason="vllm library is not installed")
 def test_if_custom_chat_template_is_given(chat_lm_with_custom_chat_template: VLLM) -> None:
-    responses = chat_lm_with_custom_chat_template.batch_generate_chat_response(
+    responses = chat_lm_with_custom_chat_template.generate_chat_response(
         [[{"role": "user", "content": "こんにちは。"}]],
         max_new_tokens=10,
     )

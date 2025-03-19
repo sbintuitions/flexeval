@@ -52,7 +52,7 @@ def evaluate_generation(  # noqa: C901
                 prompt = prompt_template.embed_inputs(template_inputs)
                 lm_prompts.append(prompt)
 
-            lm_outputs = language_model.batch_complete_text(
+            lm_outputs = language_model.complete_text(
                 lm_prompts,
                 **gen_kwargs,
             )
