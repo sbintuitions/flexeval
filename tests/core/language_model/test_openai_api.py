@@ -42,6 +42,22 @@ class TestOpenAIChatAPI(BaseLanguageModelTest):
         return chat_lm
 
 
+@pytest.mark.skipif(not is_openai_enabled(), reason="OpenAI API Key is not set")
+def test_if_max_new_tokens_replaced() -> None:
+    # To verify that the flexeval-specific `max_new_tokens` parameter can be properly renamed for API,
+    # set the `max_new_tokens_key_on_api` to invalid value.
+    invalid_key = "max_hogefugapiyo_tokens"
+    chat_lm_with_invalid_override_key = OpenAIChatAPI("gpt-4o-mini-2024-07-18", max_new_tokens_key_on_api=invalid_key)
+
+    with pytest.raises(TypeError) as e:
+        chat_lm_with_invalid_override_key.generate_chat_response(
+            [[{"role": "user", "content": "こんにちは！"}]],
+            max_new_tokens=20,
+            stop_sequences=["。"],
+        )
+    assert f"got an unexpected keyword argument '{invalid_key}'" in str(e.value)
+
+
 @pytest.mark.skipif(not is_openai_enabled(), reason="OpenAI is not installed")
 def test_warning_if_conflict_max_new_tokens(caplog: pytest.LogCaptureFixture) -> None:
     caplog.set_level(logging.WARNING)
