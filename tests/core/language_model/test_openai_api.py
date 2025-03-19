@@ -50,7 +50,7 @@ def test_if_max_new_tokens_replaced() -> None:
     chat_lm_with_invalid_override_key = OpenAIChatAPI("gpt-4o-mini-2024-07-18", max_new_tokens_key_on_api=invalid_key)
 
     with pytest.raises(TypeError) as e:
-        chat_lm_with_invalid_override_key.batch_generate_chat_response(
+        chat_lm_with_invalid_override_key.generate_chat_response(
             [[{"role": "user", "content": "こんにちは！"}]],
             max_new_tokens=20,
             stop_sequences=["。"],
