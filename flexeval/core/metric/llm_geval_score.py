@@ -143,6 +143,7 @@ class LLMGEvalScore(Metric):
         prompt_template (required): An instance of `PromptTemplate` to embed the input for the evaluator.
         valid_score_range (required): A tuple of two integers representing the valid score range.
             If the parsed score is out of the range, it will be ignored.
+        batch_size: The batch size for the evaluator.
         disable_tqdm: Whether to disable the progress bar.
         category_key: A key to create category-wise mean score.
             The category key is expected to be in task inputs.
@@ -297,6 +298,7 @@ class ChatLLMGEvalScore(Metric):
         prompt_template (required): An instance of `PromptTemplate` to embed the input for the evaluator.
         valid_score_range (required): A tuple of two integers representing the valid score range.
             If the parsed score is out of the range, it will be ignored.
+        batch_size: The batch size for the evaluator.
         system_message: A system message to be prepended to the input for the evaluator.
         disable_tqdm: Whether to disable the progress bar.
         category_key: A key to create category-wise mean score.
@@ -311,7 +313,7 @@ class ChatLLMGEvalScore(Metric):
         >>> template = "Evaluate the quality of this text.\\n`{{ lm_output }}`\\nOutput only a number from 1 to 5."
         >>> prompt_template = Jinja2PromptTemplate(template)
         >>> system_message = "This is the system message."
-        >>> llm_score = ChatLLMGEvalScore(language_model, prompt_template, [1, 5], system_message)
+        >>> llm_score = ChatLLMGEvalScore(language_model, prompt_template, [1, 5], system_message=system_message)
         >>> lm_outputs = ["Hello, world!", "Good morning!"]
         >>> llm_score.evaluate(lm_outputs)
         MetricResult(
