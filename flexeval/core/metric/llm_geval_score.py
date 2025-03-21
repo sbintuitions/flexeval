@@ -102,7 +102,6 @@ def generate_evaluation_logprobs(
       use language_model.batch_compute_chat_log_probs().
     """
 
-    # TODO: batch に詰め込みたい、今はデータ数分の batch が作られ、実行時間が間延びしている
     with tqdm.tqdm(
         total=len(evaluator_input_list),
         disable=disable_tqdm,
