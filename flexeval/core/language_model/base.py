@@ -7,7 +7,16 @@ from typing import final
 @dataclass
 class LMOutput:
     text: str
+    """
+    The output text of the language model.
+    """
     finish_reason: str | None = None
+    """
+    The reason why the generation is finished.
+    Typically,
+    - 'stop': A stop sequence is generated.
+    - 'length': The maximum length is reached.
+    """
 
 
 class LanguageModel:
