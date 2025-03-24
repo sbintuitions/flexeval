@@ -142,7 +142,7 @@ class LanguageModel:
             for lm_output in lm_outputs:
                 lm_output.raw_text = lm_output.text
                 for string_processor in self.string_processors:
-                    lm_output.text = string_processor.post_process(lm_output.text)
+                    lm_output.text = string_processor(lm_output.text)
 
         # Return the result
         if isinstance(text, str):
@@ -172,7 +172,7 @@ class LanguageModel:
             for lm_output in lm_outputs:
                 lm_output.raw_text = lm_output.text
                 for string_processor in self.string_processors:
-                    lm_output.text = string_processor.post_process(lm_output.text)
+                    lm_output.text = string_processor(lm_output.text)
 
         # Return the result
         if isinstance(chat_messages[0], dict):

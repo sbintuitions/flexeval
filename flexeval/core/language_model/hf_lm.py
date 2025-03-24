@@ -322,7 +322,7 @@ class HuggingFaceLM(LanguageModel):
             )
             for chat_messages in chat_messages_list
         ]
-        return self.complete_text(chat_messages_as_string, **kwargs)
+        return self._batch_complete_text(chat_messages_as_string, **kwargs)
 
     @torch.inference_mode()
     def _batch_compute_log_probs(
@@ -445,7 +445,7 @@ class HuggingFaceLM(LanguageModel):
             )
             prompt_as_string.append(prompt_as_string_i)
             response_as_string.append(response_as_string_i)
-        return self.compute_log_probs(response_as_string, prefix_list=prompt_as_string)
+        return self._batch_compute_log_probs(response_as_string, prefix_list=prompt_as_string)
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(model={self._model_name_or_path!r})"
