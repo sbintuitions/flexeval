@@ -298,6 +298,7 @@ class OpenAICompletionAPI(LanguageModel):
         model: The name of the model to use.
         api_headers: A dictionary of headers to use when making requests to the OpenAI API.
         default_gen_kwargs: Default generation kwargs to use when calling the API.
+        string_processors: A single or a list of StringProcessor objects to process the model's output.
     """
 
     def __init__(
@@ -305,7 +306,9 @@ class OpenAICompletionAPI(LanguageModel):
         model: str = "gpt-3.5-turbo-instruct",
         api_headers: dict[str, str] | None = None,
         default_gen_kwargs: dict[str, Any] | None = None,
+        string_processors: StringProcessor | list[StringProcessor] | None = None,
     ) -> None:
+        super().__init__(string_processors=string_processors)
         self.model = model
         if api_headers is None:
             api_headers = {}
