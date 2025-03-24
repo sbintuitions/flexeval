@@ -9,6 +9,7 @@ import transformers
 from loguru import logger
 from transformers import AutoModelForCausalLM, AutoTokenizer, BatchEncoding, PreTrainedModel, PreTrainedTokenizer
 
+from flexeval.core.string_processor import StringProcessor
 from flexeval.utils.hf_utils import get_default_model_kwargs
 
 from .base import LanguageModel, LMOutput, normalize_stop_sequences
@@ -152,6 +153,8 @@ class HuggingFaceLM(LanguageModel):
         load_peft: Should be set to True when loading the model from PEFT weights.
         custom_chat_template: A custom chat template for chatbot models.
             If specified, this overrides the default chat template of the tokenizer.
+        default_gen_kwargs: Default generation kwargs to use when calling the API.
+        string_processors: A single or a list of StringProcessor objects to process the model's output.
     """
 
     def __init__(
@@ -166,7 +169,9 @@ class HuggingFaceLM(LanguageModel):
         load_peft: bool = False,
         custom_chat_template: str | None = None,
         default_gen_kwargs: dict[str, Any] | None = None,
+        string_processors: StringProcessor | list[StringProcessor] | None = None,
     ) -> None:
+        super().__init__(string_processors=string_processors)
         self._model_name_or_path = model
         tokenizer = tokenizer if tokenizer else model
         tokenizer_kwargs = tokenizer_kwargs or {}

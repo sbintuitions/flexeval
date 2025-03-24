@@ -11,6 +11,8 @@ from openai import AsyncOpenAI, BaseModel
 from openai.types.chat import ChatCompletion, ChatCompletionMessage
 from openai.types.chat.chat_completion import Choice
 
+from flexeval.core.string_processor import StringProcessor
+
 from .base import LanguageModel, LMOutput, normalize_stop_sequences
 
 T = TypeVar("T")
@@ -72,6 +74,7 @@ class OpenAIChatAPI(LanguageModel):
         default_gen_kwargs: Default generation kwargs to use when calling the API.
         developer_message: Instructions to the model that are prioritized ahead of user messages.
             Previously called the system prompt.
+        string_processors: A single or a list of StringProcessor objects to process the model's output.
     """
 
     def __init__(
@@ -80,7 +83,9 @@ class OpenAIChatAPI(LanguageModel):
         api_headers: dict[str, str] | None = None,
         default_gen_kwargs: dict[str, Any] | None = None,
         developer_message: str | None = None,
+        string_processors: StringProcessor | list[StringProcessor] | None = None,
     ) -> None:
+        super().__init__(string_processors=string_processors)
         self.model = model
         if api_headers is None:
             api_headers = {}

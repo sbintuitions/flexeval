@@ -3,12 +3,18 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import final
 
+from flexeval.core.string_processor import StringProcessor
+
 
 @dataclass
 class LMOutput:
     text: str
     """
     The output text of the language model.
+    """
+    raw_text: str | None = None
+    """
+    The raw output text of the language model before post-processing.
     """
     finish_reason: str | None = None
     """
@@ -23,7 +29,19 @@ class LanguageModel:
     """LanguageModel is what you want to evaluate with this library.
 
     It can generate text based on the input text, response to chat messages, and compute log probabilities.
+
+    Args:
+        string_processors: A single or a list of StringProcessor objects to process the model's output.
+
     """
+
+    def __init__(self, string_processors: StringProcessor | list[StringProcessor] | None = None):
+        if string_processors is None:
+            string_processors = []
+        elif isinstance(string_processors, StringProcessor):
+            string_processors = [string_processors]
+
+        self.string_processors = string_processors
 
     def _batch_complete_text(
         self,
@@ -99,7 +117,7 @@ class LanguageModel:
     @final
     def complete_text(
         self,
-        text_list: str | list[str],
+        text: str | list[str],
         stop_sequences: str | list[str] | None = None,
         max_new_tokens: int | None = None,
         **kwargs,
@@ -110,13 +128,26 @@ class LanguageModel:
         To implement generation logic, you should override `batch_complete_text` method.
         """
 
-        if isinstance(text_list, str):
-            return self._batch_complete_text(
-                [text_list], stop_sequences=stop_sequences, max_new_tokens=max_new_tokens, **kwargs
-            )[0]
-        return self._batch_complete_text(
+        # Normalize the input text
+        text_list = text
+        if isinstance(text, str):
+            text_list = [text]
+
+        lm_outputs = self._batch_complete_text(
             text_list, stop_sequences=stop_sequences, max_new_tokens=max_new_tokens, **kwargs
         )
+
+        # Post-process the generated text
+        if self.string_processors:
+            for lm_output in lm_outputs:
+                lm_output.raw_text = lm_output.text
+                for string_processor in self.string_processors:
+                    lm_output.text = string_processor.post_process(lm_output.text)
+
+        # Return the result
+        if isinstance(text, str):
+            return lm_outputs[0]
+        return lm_outputs
 
     @final
     def generate_chat_response(
@@ -130,9 +161,23 @@ class LanguageModel:
         To implement generation logic, you should override `batch_generate_chat_response` method.
         """
 
+        chat_messages_list = chat_messages
         if isinstance(chat_messages[0], dict):
-            return self._batch_generate_chat_response([chat_messages], **kwargs)[0]
-        return self._batch_generate_chat_response(chat_messages, **kwargs)
+            chat_messages_list = [chat_messages]
+
+        lm_outputs = self._batch_generate_chat_response(chat_messages_list, **kwargs)
+
+        # Post-process the generated text
+        if self.string_processors:
+            for lm_output in lm_outputs:
+                lm_output.raw_text = lm_output.text
+                for string_processor in self.string_processors:
+                    lm_output.text = string_processor.post_process(lm_output.text)
+
+        # Return the result
+        if isinstance(chat_messages[0], dict):
+            return lm_outputs[0]
+        return lm_outputs
 
     @final
     def compute_log_probs(

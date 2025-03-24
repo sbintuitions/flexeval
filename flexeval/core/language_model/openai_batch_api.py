@@ -13,6 +13,8 @@ from loguru import logger
 from openai import AsyncOpenAI
 from openai.types import Batch
 
+from flexeval.core.string_processor import StringProcessor
+
 from .base import LanguageModel, LMOutput, normalize_stop_sequences
 from .openai_api import number_of_tokens_in_openai_model, remove_duplicates_from_prompt_list
 
@@ -49,6 +51,9 @@ class OpenAIChatBatchAPI(LanguageModel):
         api_headers: A dictionary of headers to use when making requests to the OpenAI API.
         polling_interval_seconds: The interval in seconds to poll the batch status.
         default_gen_kwargs: Default generation kwargs to use when calling the API.
+        developer_message: Instructions to the model that are prioritized ahead of user messages.
+            Previously called the system prompt.
+        string_processors: A single or a list of StringProcessor objects to process the model's output.
     """
 
     def __init__(
@@ -58,7 +63,9 @@ class OpenAIChatBatchAPI(LanguageModel):
         polling_interval_seconds: int = 60,
         default_gen_kwargs: dict[str, Any] | None = None,
         developer_message: str | None = None,
+        string_processors: StringProcessor | list[StringProcessor] | None = None,
     ) -> None:
+        super().__init__(string_processors=string_processors)
         self.model = model
         if api_headers is None:
             api_headers = {}
