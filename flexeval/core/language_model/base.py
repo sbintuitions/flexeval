@@ -35,7 +35,7 @@ class LanguageModel:
 
     """
 
-    def __init__(self, string_processors: StringProcessor | list[StringProcessor] | None = None):
+    def __init__(self, string_processors: StringProcessor | list[StringProcessor] | None = None) -> None:
         if string_processors is None:
             string_processors = []
         elif isinstance(string_processors, StringProcessor):
