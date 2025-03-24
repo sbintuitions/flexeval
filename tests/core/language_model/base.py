@@ -255,3 +255,43 @@ class BaseLanguageModelTest:
         # The completion should be very short and finish_reason should be "length"
         assert len(completion.text.strip()) <= 5  # Allow for some tokenization differences
         assert completion.finish_reason == "length"
+
+    def test_string_processors_with_complete_text(self, lm: LanguageModel) -> None:
+        """Test that string processors work as expected."""
+        try:
+            assert hasattr(lm, "string_processors")
+            original_string_processors = lm.string_processors
+
+            from flexeval import TemplateRenderer
+
+            test_text = "This text is processed by StringProcessor."
+            lm.string_processors = [TemplateRenderer(template=test_text)]
+
+            lm_output = lm.complete_text("Test input: ")
+            assert lm_output.text == test_text
+            assert lm_output.raw_text is not None
+            assert lm_output.raw_text != test_text
+
+            lm.string_processors = original_string_processors
+        except NotImplementedError:
+            pytest.skip("This model does not support complete_text")
+
+    def test_string_processors_with_generate_chat_response(self, chat_lm: LanguageModel) -> None:
+        """Test that string processors work as expected."""
+        try:
+            assert hasattr(chat_lm, "string_processors")
+            original_string_processors = chat_lm.string_processors
+
+            from flexeval import TemplateRenderer
+
+            test_text = "This text is processed by StringProcessor."
+            chat_lm.string_processors = [TemplateRenderer(template=test_text)]
+
+            lm_output = chat_lm.generate_chat_response([{"role": "user", "content": "Test input"}])
+            assert lm_output.text == test_text
+            assert lm_output.raw_text is not None
+            assert lm_output.raw_text != test_text
+
+            chat_lm.string_processors = original_string_processors
+        except NotImplementedError:
+            pytest.skip("This model does not support generate_chat_response")

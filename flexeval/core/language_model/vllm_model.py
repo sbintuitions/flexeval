@@ -5,6 +5,8 @@ from typing import Any
 import torch
 from transformers import AutoTokenizer, PreTrainedTokenizer
 
+from flexeval.core.string_processor import StringProcessor
+
 from .base import LanguageModel, LMOutput, normalize_stop_sequences
 from .hf_lm import decode_for_lm_continuation, get_prefix_and_completion_from_chat
 
@@ -77,6 +79,7 @@ class VLLM(LanguageModel):
         custom_chat_template: A custom chat template for chatbot models.
             If specified, this overrides the default chat template of the tokenizer.
         default_gen_kwargs: Default generation kwargs to use when calling the model.
+        string_processors: A single or a list of StringProcessor objects to process the model's output.
     """
 
     def __init__(
@@ -88,7 +91,9 @@ class VLLM(LanguageModel):
         add_special_tokens: bool = False,
         custom_chat_template: str | None = None,
         default_gen_kwargs: dict[str, Any] | None = None,
+        string_processors: StringProcessor | list[StringProcessor] | None = None,
     ) -> None:
+        super().__init__(string_processors=string_processors)
         self.model_name = model
         tokenizer = tokenizer if tokenizer else model
         tokenizer_kwargs = tokenizer_kwargs or {}
@@ -273,7 +278,7 @@ class VLLM(LanguageModel):
             )
             prompt_as_string.append(prompt_as_string_i)
             response_as_string.append(response_as_string_i)
-        return self.compute_log_probs(response_as_string, prefix_list=prompt_as_string)
+        return self._batch_compute_log_probs(response_as_string, prefix_list=prompt_as_string)
 
     def __repr__(self) -> str:
         return f"VLLM(model_name={self.model_name})"
