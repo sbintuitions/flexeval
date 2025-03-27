@@ -1,21 +1,25 @@
-name: Run tests
+name: Run batch-api tests
 
 on:
-  push:
-    branches:
-      - main
+  release:
+    types: [ published ]
   pull_request:
+    paths:
+      - 'flexeval/core/language_model/*.py'
+      - 'tests/core/language_model/*.py'
     branches:
       - main
   workflow_dispatch:
 
 jobs:
-  run-tests:
+  run-batch-api-tests:
     runs-on: ubuntu-latest
+    timeout-minutes: 1440
     strategy:
       matrix:
         # 3.11.9, which is picked up by GithubAction by default, doesn't work because of argparse or something...
         python-version: ["3.9", "3.10", "3.11.6"]
+        test-marker: ["", "Batch API"]
     env:
       OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY || null }}
     steps:
@@ -44,40 +48,4 @@ jobs:
 
       - name: Run tests
         run: |
-          poetry run pytest -v -s -m "not (batch_api)" ./tests
-
-  lint_check:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: ["3.9", "3.10", "3.11"]
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Install Poetry
-        run: |
-          pipx install poetry
-
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: ${{ matrix.python-version }}
-
-      - name: Install dev dependencies
-        run: |
-          poetry install --only dev
-
-      - name: Check Ruff
-        run: |
-          poetry run ruff check
-          poetry run ruff format --check
-
-  markdown_lint_check:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: markdownlint-cli
-        uses: nosborn/github-action-markdown-cli@v3.3.0
-        with:
-          files: docs
-          config_file: .markdownlint.yaml
+          poetry run pytest -v -s -m "batch_api" ./tests
