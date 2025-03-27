@@ -37,13 +37,8 @@ jobs:
           cache-dependency-path: "poetry.lock"
 
       - name: Install dependencies
-        # vllm (ray) can't be installed on python 3.8
         run: |
-          if [ "${{ matrix.python-version }}" == "3.8" ]; then
-              poetry install --only main,dev
-          else
-              poetry install --only main,dev --all-extras
-          fi
+          poetry install --only main,dev --all-extras
 
       - name: Run tests
         run: |
