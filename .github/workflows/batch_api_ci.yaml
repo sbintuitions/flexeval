@@ -14,11 +14,6 @@ on:
 jobs:
   run-batch-api-tests:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        # 3.11.9, which is picked up by GithubAction by default, doesn't work because of argparse or something...
-        python-version: ["3.9", "3.10", "3.11.6"]
-        test-marker: ["", "Batch API"]
     env:
       OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY || null }}
     steps:
@@ -32,7 +27,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: 3.11.6
           cache: "poetry"
           cache-dependency-path: "poetry.lock"
 
