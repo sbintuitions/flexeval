@@ -82,11 +82,13 @@ class OpenAIChatAPI(LanguageModel):
         model: str = "gpt-3.5-turbo",
         api_headers: dict[str, str] | None = None,
         default_gen_kwargs: dict[str, Any] | None = None,
+        max_new_tokens_key_on_api: str = "max_completion_tokens",
         developer_message: str | None = None,
         string_processors: StringProcessor | list[StringProcessor] | None = None,
     ) -> None:
         super().__init__(string_processors=string_processors)
         self.model = model
+        self.max_new_tokens_key_on_api = max_new_tokens_key_on_api
         if api_headers is None:
             api_headers = {}
         client = AsyncOpenAI(**api_headers)
@@ -95,7 +97,7 @@ class OpenAIChatAPI(LanguageModel):
         self.default_gen_kwargs = default_gen_kwargs or {}
         # convert the flexeval-specific argument name to the OpenAI-specific name
         if "max_new_tokens" in self.default_gen_kwargs:
-            self.default_gen_kwargs["max_completion_tokens"] = self.default_gen_kwargs.pop("max_new_tokens")
+            self.default_gen_kwargs[self.max_new_tokens_key_on_api] = self.default_gen_kwargs.pop("max_new_tokens")
 
         self.developer_message = developer_message
 
@@ -117,14 +119,14 @@ class OpenAIChatAPI(LanguageModel):
         gen_kwargs = self.default_gen_kwargs.copy()
         gen_kwargs.update(kwargs)
         if max_new_tokens is not None:
-            if "max_completion_tokens" in gen_kwargs:
+            if self.max_new_tokens_key_on_api in gen_kwargs:
                 msg = (
-                    "You specified both `max_new_tokens` and `max_completion_tokens` in generation kwargs. "
-                    "Note that `max_new_tokens` overrides `max_completion_tokens` by default. "
+                    f"You specified both `max_new_tokens` and `{self.max_new_tokens_key_on_api}` in generation kwargs. "
+                    f"Note that `max_new_tokens` overrides `{self.max_new_tokens_key_on_api}` by default. "
                     "It is recommended to specify only one of them to avoid unexpected behavior."
                 )
                 logger.warning(msg)
-            gen_kwargs["max_completion_tokens"] = max_new_tokens
+            gen_kwargs[self.max_new_tokens_key_on_api] = max_new_tokens
 
         stop_sequences = normalize_stop_sequences(
             stop_sequences_list=[
@@ -223,10 +225,10 @@ class OpenAIChatAPI(LanguageModel):
         api_responses = asyncio.run(
             self._async_batch_run_chatgpt(
                 unique_prompt_list,
-                max_completion_tokens=1,
                 seed=seed,
                 logprobs=True,
                 top_logprobs=top_logprobs,
+                **{self.max_new_tokens_key_on_api: 1},
             ),
         )
 
