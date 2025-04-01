@@ -5,6 +5,8 @@ from typing import Any
 import torch
 from transformers import AutoTokenizer, PreTrainedTokenizer
 
+from flexeval.core.string_processor import StringProcessor
+
 from .base import LanguageModel, LMOutput, normalize_stop_sequences
 from .hf_lm import decode_for_lm_continuation, get_prefix_and_completion_from_chat
 
@@ -77,6 +79,7 @@ class VLLM(LanguageModel):
         custom_chat_template: A custom chat template for chatbot models.
             If specified, this overrides the default chat template of the tokenizer.
         default_gen_kwargs: Default generation kwargs to use when calling the model.
+        string_processors: A single or a list of StringProcessor objects to process the model's output.
     """
 
     def __init__(
@@ -88,7 +91,9 @@ class VLLM(LanguageModel):
         add_special_tokens: bool = False,
         custom_chat_template: str | None = None,
         default_gen_kwargs: dict[str, Any] | None = None,
+        string_processors: StringProcessor | list[StringProcessor] | None = None,
     ) -> None:
+        super().__init__(string_processors=string_processors)
         self.model_name = model
         tokenizer = tokenizer if tokenizer else model
         tokenizer_kwargs = tokenizer_kwargs or {}
@@ -113,7 +118,7 @@ class VLLM(LanguageModel):
             model_kwargs["disable_sliding_window"] = True
         self.llm = LLM(model, **model_kwargs)
 
-    def batch_complete_text(
+    def _batch_complete_text(
         self,
         text_list: list[str],
         stop_sequences: str | list[str] | None = None,
@@ -164,7 +169,7 @@ class VLLM(LanguageModel):
             outputs.append(LMOutput(text=decoded_text, finish_reason=finish_reason))
         return outputs
 
-    def batch_generate_chat_response(
+    def _batch_generate_chat_response(
         self,
         chat_messages_list: list[list[dict[str, str]]],
         **kwargs,
@@ -178,9 +183,9 @@ class VLLM(LanguageModel):
             )
             for chat_messages in chat_messages_list
         ]
-        return self.batch_complete_text(chat_messages_as_string, **kwargs)
+        return self._batch_complete_text(chat_messages_as_string, **kwargs)
 
-    def batch_compute_log_probs(
+    def _batch_compute_log_probs(
         self, text_list: list[str], prefix_list: list[str] | None = None, stride: int | None = None
     ) -> list[float]:
         batch_size = len(text_list)
@@ -259,7 +264,7 @@ class VLLM(LanguageModel):
 
         return batch_logprobs
 
-    def batch_compute_chat_log_probs(
+    def _batch_compute_chat_log_probs(
         self, prompt_list: list[list[dict[str, str]]], response_list: list[dict[str, str]]
     ) -> list[float]:
         prompt_as_string: list[str] = []
@@ -273,7 +278,7 @@ class VLLM(LanguageModel):
             )
             prompt_as_string.append(prompt_as_string_i)
             response_as_string.append(response_as_string_i)
-        return self.batch_compute_log_probs(response_as_string, prefix_list=prompt_as_string)
+        return self._batch_compute_log_probs(response_as_string, prefix_list=prompt_as_string)
 
     def __repr__(self) -> str:
         return f"VLLM(model_name={self.model_name})"

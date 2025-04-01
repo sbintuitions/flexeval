@@ -5,6 +5,8 @@ from typing import Any, TypeVar
 from litellm import ModelResponse, acompletion
 from litellm.utils import convert_to_model_response_object
 
+from flexeval.core.string_processor import StringProcessor
+
 from .openai_api import EMPTY_RESPONSE as EMPTY_RESPONSE_OPENAI
 from .openai_api import OpenAIChatAPI
 
@@ -20,14 +22,25 @@ class LiteLLMChatAPI(OpenAIChatAPI):
     Args:
         model: The name of the model to use. e.g. 'openai/gpt-3.5-turbo',
         default_gen_kwargs: Default generation kwargs to use when calling the API.
+        developer_message: Instructions to the model that are prioritized ahead of user messages.
+            Previously called the system prompt.
+        string_processors: A single or a list of StringProcessor objects to process the model's output.
     """
 
     def __init__(
         self,
         model: str = "openai/gpt-3.5-turbo",
         default_gen_kwargs: dict[str, Any] | None = None,
+        developer_message: str | None = None,
+        string_processors: StringProcessor | list[StringProcessor] | None = None,
     ) -> None:
-        super().__init__(model=model, api_headers=None, default_gen_kwargs=default_gen_kwargs)
+        super().__init__(
+            model=model,
+            api_headers=None,
+            default_gen_kwargs=default_gen_kwargs,
+            developer_message=developer_message,
+            string_processors=string_processors,
+        )
         self.model = model
         self.default_gen_kwargs = default_gen_kwargs or {}
         # convert the flexeval-specific argument name to the OpenAI-specific name
@@ -40,7 +53,7 @@ class LiteLLMChatAPI(OpenAIChatAPI):
             model_response_object=ModelResponse(),
         )
 
-    def batch_compute_chat_log_probs(
+    def _batch_compute_chat_log_probs(
         self,
         prompt_list: list[list[dict[str, str]]],
         response_list: list[dict[str, str]],

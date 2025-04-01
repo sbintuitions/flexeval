@@ -1,0 +1,40 @@
+name: Run batch-api tests
+
+on:
+  release:
+    types: [ published ]
+  pull_request:
+    paths:
+      - 'flexeval/core/language_model/*.py'
+      - 'tests/core/language_model/*.py'
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  run-batch-api-tests:
+    runs-on: ubuntu-latest
+    env:
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY || null }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Poetry
+        run: |
+          pipx install poetry
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.11.6
+          cache: "poetry"
+          cache-dependency-path: "poetry.lock"
+
+      - name: Install dependencies
+        run: |
+          poetry install --only main,dev --all-extras
+
+      - name: Run tests
+        run: |
+          poetry run pytest -v -s -m "batch_api" ./tests

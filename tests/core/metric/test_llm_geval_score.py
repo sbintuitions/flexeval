@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import re
+
 import pytest
 
 from flexeval import Jinja2PromptTemplate, LanguageModel
@@ -7,28 +9,36 @@ from flexeval.core.metric.llm_geval_score import ChatLLMGEvalScore, LLMGEvalScor
 
 
 class EchoBackLanguageModel(LanguageModel):
-    def batch_compute_log_probs(
+    def compute_log_probs(
         self,
         text_list: list[str],
         prefix_list: list[str] | None = None,
         stride: int | None = None,
-    ) -> list[float]:
-        if prefix_list[0].startswith("[A]"):
-            return [-2, -2, -2, -1, -2]
-        if prefix_list[0].startswith("[B]"):
-            return [-2, -1, -2, -2, -2]
-        if prefix_list[0].startswith("[C]"):
-            return [-2, -2, -1, -2, -2]
+    ) -> list[float | None]:
+        log_prob_list = []
+        for text, prefix in zip(text_list, prefix_list):
+            if re.match(r"\d+", text):
+                index = int(text)
+                if (
+                    (index == 2 and prefix.startswith("[B]"))
+                    or (index == 3 and prefix.startswith("[C]"))
+                    or (index == 4 and prefix.startswith("[A]"))
+                ):
+                    log_prob_list.append(-1)
+                elif prefix.startswith(("[A]", "[B]", "[C]")):
+                    log_prob_list.append(-2)
+                else:
+                    log_prob_list.append(None)
+            else:
+                log_prob_list.append(None)
+        return log_prob_list
 
-        # For OpenAI models, we can obtain 20 or less tokens and their logprobs.
-        # This simulates all of the valid scores are not obtained from logprob results.
-        return [None, None, None, None, None]
-
-    def batch_compute_chat_log_probs(
+    def compute_chat_log_probs(
         self, prompt_list: list[list[dict[str, str]]], response_list: list[dict[str, str]]
-    ) -> list[float]:
-        text = prompt_list[0][-1]["content"]
-        return self.batch_compute_log_probs([], [text])
+    ) -> list[float | None]:
+        return self.compute_log_probs(
+            [response["content"] for response in response_list], [prompt[-1]["content"] for prompt in prompt_list]
+        )
 
 
 @pytest.mark.parametrize(

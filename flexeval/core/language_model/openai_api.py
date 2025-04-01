@@ -11,6 +11,8 @@ from openai import AsyncOpenAI, BaseModel
 from openai.types.chat import ChatCompletion, ChatCompletionMessage
 from openai.types.chat.chat_completion import Choice
 
+from flexeval.core.string_processor import StringProcessor
+
 from .base import LanguageModel, LMOutput, normalize_stop_sequences
 
 T = TypeVar("T")
@@ -70,6 +72,9 @@ class OpenAIChatAPI(LanguageModel):
         model: The name of the model to use.
         api_headers: A dictionary of headers to use when making requests to the OpenAI API.
         default_gen_kwargs: Default generation kwargs to use when calling the API.
+        developer_message: Instructions to the model that are prioritized ahead of user messages.
+            Previously called the system prompt.
+        string_processors: A single or a list of StringProcessor objects to process the model's output.
     """
 
     def __init__(
@@ -77,7 +82,10 @@ class OpenAIChatAPI(LanguageModel):
         model: str = "gpt-3.5-turbo",
         api_headers: dict[str, str] | None = None,
         default_gen_kwargs: dict[str, Any] | None = None,
+        developer_message: str | None = None,
+        string_processors: StringProcessor | list[StringProcessor] | None = None,
     ) -> None:
+        super().__init__(string_processors=string_processors)
         self.model = model
         if api_headers is None:
             api_headers = {}
@@ -89,6 +97,8 @@ class OpenAIChatAPI(LanguageModel):
         if "max_new_tokens" in self.default_gen_kwargs:
             self.default_gen_kwargs["max_completion_tokens"] = self.default_gen_kwargs.pop("max_new_tokens")
 
+        self.developer_message = developer_message
+
     async def _async_batch_run_chatgpt(
         self,
         messages_list: list[list[dict[str, str]]],
@@ -97,6 +107,12 @@ class OpenAIChatAPI(LanguageModel):
         **kwargs,
     ) -> list[str]:
         """Send multiple chat requests to the OpenAI in parallel."""
+
+        if self.developer_message is not None:
+            # Insert the developer message at the beginning of each conversation
+            messages_list = [
+                [{"role": "developer", "content": self.developer_message}, *messages] for messages in messages_list
+            ]
 
         gen_kwargs = self.default_gen_kwargs.copy()
         gen_kwargs.update(kwargs)
@@ -134,7 +150,7 @@ class OpenAIChatAPI(LanguageModel):
         ]
         return await asyncio.gather(*tasks)
 
-    def batch_complete_text(
+    def _batch_complete_text(
         self,
         text_list: list[str],
         stop_sequences: str | list[str] | None = None,
@@ -159,7 +175,7 @@ class OpenAIChatAPI(LanguageModel):
             logger.warning("All generated texts are empty strings. Something may be wrong.")
         return outputs
 
-    def batch_generate_chat_response(
+    def _batch_generate_chat_response(
         self,
         chat_messages_list: list[list[dict[str, str]]],
         **kwargs,
@@ -175,7 +191,7 @@ class OpenAIChatAPI(LanguageModel):
             logger.warning("All generated texts are empty strings. Something may go wrong.")
         return outputs
 
-    def batch_compute_chat_log_probs(
+    def _batch_compute_chat_log_probs(
         self,
         prompt_list: list[list[dict[str, str]]],
         response_list: list[dict[str, str]],
@@ -282,6 +298,7 @@ class OpenAICompletionAPI(LanguageModel):
         model: The name of the model to use.
         api_headers: A dictionary of headers to use when making requests to the OpenAI API.
         default_gen_kwargs: Default generation kwargs to use when calling the API.
+        string_processors: A single or a list of StringProcessor objects to process the model's output.
     """
 
     def __init__(
@@ -289,7 +306,9 @@ class OpenAICompletionAPI(LanguageModel):
         model: str = "gpt-3.5-turbo-instruct",
         api_headers: dict[str, str] | None = None,
         default_gen_kwargs: dict[str, Any] | None = None,
+        string_processors: StringProcessor | list[StringProcessor] | None = None,
     ) -> None:
+        super().__init__(string_processors=string_processors)
         self.model = model
         if api_headers is None:
             api_headers = {}
@@ -339,7 +358,7 @@ class OpenAICompletionAPI(LanguageModel):
         ]
         return await asyncio.gather(*tasks)
 
-    def batch_complete_text(
+    def _batch_complete_text(
         self,
         text_list: list[str],
         stop_sequences: str | list[str] | None = None,

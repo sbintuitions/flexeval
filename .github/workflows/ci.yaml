@@ -8,12 +8,6 @@ on:
     branches:
       - main
   workflow_dispatch:
-    inputs:
-      no-cache:
-        description: "Run tests without cache"
-        default: false
-        required: false
-        type: boolean
 
 jobs:
   run-tests:
@@ -22,9 +16,7 @@ jobs:
       matrix:
         # 3.11.9, which is picked up by GithubAction by default, doesn't work because of argparse or something...
         python-version: ["3.9", "3.10", "3.11.6"]
-        test-marker: ["", "Batch API"]
     env:
-      NO_CACHE: ${{ github.event.inputs.no-cache || 'false' }}
       OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY || null }}
     steps:
       - name: Checkout
@@ -42,21 +34,12 @@ jobs:
           cache-dependency-path: "poetry.lock"
 
       - name: Install dependencies
-        # vllm (ray) can't be installed on python 3.8
         run: |
-          if [ "${{ matrix.python-version }}" == "3.8" ]; then
-              poetry install --only main,dev
-          else
-              poetry install --only main,dev --all-extras
-          fi
+          poetry install --only main,dev --all-extras
 
       - name: Run tests
         run: |
-          if [  "${{ matrix.test-marker }}" == "Batch API" ]; then
-            poetry run pytest -v -s -m "batch_api" ./tests
-          else
-            poetry run pytest -v -s -m "not (batch_api)" ./tests
-          fi
+          poetry run pytest -v -s -m "not (batch_api)" ./tests
 
   lint_check:
     runs-on: ubuntu-latest

@@ -9,6 +9,7 @@ import transformers
 from loguru import logger
 from transformers import AutoModelForCausalLM, AutoTokenizer, BatchEncoding, PreTrainedModel, PreTrainedTokenizer
 
+from flexeval.core.string_processor import StringProcessor
 from flexeval.utils.hf_utils import get_default_model_kwargs
 
 from .base import LanguageModel, LMOutput, normalize_stop_sequences
@@ -152,6 +153,8 @@ class HuggingFaceLM(LanguageModel):
         load_peft: Should be set to True when loading the model from PEFT weights.
         custom_chat_template: A custom chat template for chatbot models.
             If specified, this overrides the default chat template of the tokenizer.
+        default_gen_kwargs: Default generation kwargs to use when calling the API.
+        string_processors: A single or a list of StringProcessor objects to process the model's output.
     """
 
     def __init__(
@@ -166,7 +169,9 @@ class HuggingFaceLM(LanguageModel):
         load_peft: bool = False,
         custom_chat_template: str | None = None,
         default_gen_kwargs: dict[str, Any] | None = None,
+        string_processors: StringProcessor | list[StringProcessor] | None = None,
     ) -> None:
+        super().__init__(string_processors=string_processors)
         self._model_name_or_path = model
         tokenizer = tokenizer if tokenizer else model
         tokenizer_kwargs = tokenizer_kwargs or {}
@@ -242,7 +247,7 @@ class HuggingFaceLM(LanguageModel):
         return stop_token_ids
 
     @torch.inference_mode()
-    def batch_complete_text(
+    def _batch_complete_text(
         self,
         text_list: list[str],
         stop_sequences: str | list[str] | None = None,
@@ -303,7 +308,7 @@ class HuggingFaceLM(LanguageModel):
             lm_outputs.append(LMOutput(text=decoded_text, finish_reason=finish_reason))
         return lm_outputs
 
-    def batch_generate_chat_response(
+    def _batch_generate_chat_response(
         self,
         chat_messages_list: list[list[dict[str, str]]],
         **kwargs,
@@ -317,10 +322,10 @@ class HuggingFaceLM(LanguageModel):
             )
             for chat_messages in chat_messages_list
         ]
-        return self.batch_complete_text(chat_messages_as_string, **kwargs)
+        return self._batch_complete_text(chat_messages_as_string, **kwargs)
 
     @torch.inference_mode()
-    def batch_compute_log_probs(
+    def _batch_compute_log_probs(
         self,
         text_list: list[str],
         prefix_list: list[str] | None = None,
@@ -426,7 +431,7 @@ class HuggingFaceLM(LanguageModel):
             total_log_probs = (log_prob_of_next * log_prob_mask).sum(dim=-1)
         return total_log_probs.tolist()
 
-    def batch_compute_chat_log_probs(
+    def _batch_compute_chat_log_probs(
         self, prompt_list: list[list[dict[str, str]]], response_list: list[dict[str, str]]
     ) -> list[float]:
         prompt_as_string: list[str] = []
@@ -440,7 +445,7 @@ class HuggingFaceLM(LanguageModel):
             )
             prompt_as_string.append(prompt_as_string_i)
             response_as_string.append(response_as_string_i)
-        return self.batch_compute_log_probs(response_as_string, prefix_list=prompt_as_string)
+        return self._batch_compute_log_probs(response_as_string, prefix_list=prompt_as_string)
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(model={self._model_name_or_path!r})"

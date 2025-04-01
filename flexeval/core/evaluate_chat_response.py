@@ -13,6 +13,18 @@ from .metric import Metric
 from .utils.data_util import batch_iter
 
 
+def _remove_finish_reason(messages: list[dict[str, str]]) -> list[dict[str, str]]:
+    """
+    Remove `finish_reason` from all turns in `messages`.
+
+    Each `finish_reason` is added in `evaluate_chat_response()` for logging.
+    However, some APIs of Azure OpenAI (e.g. tsuzumi-7b-instruct) do not allow extra input keys.
+    Thus this removal is required before each input step.
+    """
+    remove_key = "finish_reason"
+    return [{key: value for key, value in message.items() if key is not remove_key} for message in messages]
+
+
 def evaluate_chat_response(  # noqa: C901,PLR0912
     language_model: LanguageModel,
     gen_kwargs: dict[str, Any],
@@ -24,10 +36,12 @@ def evaluate_chat_response(  # noqa: C901,PLR0912
 ) -> tuple[dict[str, float], list[dict[str, Any]]]:
     logger.info(f"Evaluate the model with gen_kwargs: {gen_kwargs}")
 
+    # Load the evaluation dataset
     eval_instances: Sequence[ChatInstance] = eval_dataset
     if max_instances is not None:
         eval_instances = [eval_dataset[i] for i in range(min(max_instances, len(eval_dataset)))]
 
+    # Generate responses for each instance
     all_messages_list: list[list[dict[str, str]]] = []
     references_list: list[list[str]] = []
     extra_info_list: list[dict[str, Any]] = []
@@ -35,6 +49,8 @@ def evaluate_chat_response(  # noqa: C901,PLR0912
         for batch_id, batch in enumerate(batch_iter(eval_instances, batch_size)):
             input_messages_list = [chat_instance.messages for chat_instance in batch]
 
+            # Generate few-shot instances
+            # The few-shot examples here follow a multi-turn format, interleaving user and assistant messages.
             if few_shot_generator is not None:
                 for input_id in range(len(input_messages_list)):
                     few_shot_instances = few_shot_generator(eval_inputs=input_messages_list[input_id])
@@ -50,7 +66,8 @@ def evaluate_chat_response(  # noqa: C901,PLR0912
                     input_messages_list[input_id] = [*few_shot_messages, *input_messages_list[input_id]]
 
             if not eval_dataset.require_incremental_response():
-                lm_outputs = language_model.batch_generate_chat_response(
+                # Continue generation from the given conversation history
+                lm_outputs = language_model.generate_chat_response(
                     input_messages_list,
                     **gen_kwargs,
                 )
@@ -62,6 +79,10 @@ def evaluate_chat_response(  # noqa: C901,PLR0912
                         ],
                     )
             else:
+                # In incremental response generation,
+                # the input messages are supposed to be the user messages across turns.
+                # The model first responses to the first user message, then add its response to the chat history,
+                # and responses to the next user message, and so on.
                 max_num_turns = max(len(messages) for messages in input_messages_list)
                 current_chat_history: list[list[dict[str, str]]] = [[] for _ in input_messages_list]
                 # perform generation for each turn
@@ -70,10 +91,10 @@ def evaluate_chat_response(  # noqa: C901,PLR0912
                         b_id for b_id, messages in enumerate(input_messages_list) if turn < len(messages)
                     ]
                     current_model_inputs = [
-                        current_chat_history[b_id] + [input_messages_list[b_id][turn]]
+                        _remove_finish_reason(current_chat_history[b_id] + [input_messages_list[b_id][turn]])
                         for b_id in batch_ids_fed_to_model
                     ]
-                    lm_outputs = language_model.batch_generate_chat_response(
+                    lm_outputs = language_model.generate_chat_response(
                         current_model_inputs,
                         **gen_kwargs,
                     )
@@ -96,6 +117,8 @@ def evaluate_chat_response(  # noqa: C901,PLR0912
                 logger.info(f"{all_messages_list[0]}")
 
             pbar.update(len(batch))
+
+    # Evaluate the generated responses
     metrics_summary_dict: dict[str, float] = {}
     instance_metrics_list: list[dict[str, Any]] = [{} for _ in range(len(all_messages_list))]
     for metric in metrics:
@@ -115,6 +138,7 @@ def evaluate_chat_response(  # noqa: C901,PLR0912
                 metric_result.instance_details,
             ):
                 instance_metrics_list[instance_idx].update(instance_details)
+
     # Calculate the finish_reason statistics
     finish_reason_counter = Counter()
     for messages in all_messages_list:

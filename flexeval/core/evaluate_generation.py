@@ -27,10 +27,12 @@ def evaluate_generation(  # noqa: C901
     logger.info(f"Evaluate the model with gen_kwargs: {gen_kwargs}")
     logger.info(f"Prompt template: {prompt_template}")
 
+    # Load the evaluation dataset
     eval_instances: Sequence[GenerationInstance] = eval_dataset
     if max_instances is not None:
         eval_instances = [eval_dataset[i] for i in range(min(max_instances, len(eval_dataset)))]
 
+    # Generate continuation for each instance
     lm_prompt_list: list[str] = []
     lm_output_list: list[LMOutput] = []
     with tqdm(total=len(eval_instances)) as pbar:
@@ -52,7 +54,7 @@ def evaluate_generation(  # noqa: C901
                 prompt = prompt_template.embed_inputs(template_inputs)
                 lm_prompts.append(prompt)
 
-            lm_outputs = language_model.batch_complete_text(
+            lm_outputs = language_model.complete_text(
                 lm_prompts,
                 **gen_kwargs,
             )
@@ -66,6 +68,8 @@ def evaluate_generation(  # noqa: C901
             lm_output_list += lm_outputs
 
             pbar.update(len(batch))
+
+    # Evaluate the generated continuations
     metrics_summary_dict: dict[str, float] = {}
     instance_metrics_list: list[dict[str, Any]] = [{} for _ in range(len(eval_instances))]
     for metric in metrics:
@@ -82,6 +86,7 @@ def evaluate_generation(  # noqa: C901
                 metric_result.instance_details,
             ):
                 instance_metrics_list[instance_idx].update(instance_details)
+
     # Calculate the finish_reason statistics
     finish_reason_counter = Counter([lm_output.finish_reason for lm_output in lm_output_list])
     for finish_reason, count in finish_reason_counter.items():

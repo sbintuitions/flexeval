@@ -10,6 +10,7 @@ from numpy import average
 
 from flexeval.core.language_model import LanguageModel
 from flexeval.core.prompt_template import PromptTemplate
+from flexeval.core.utils.data_util import batch_iter
 
 from .base import Metric, MetricResult
 from .llm_score import prepare_chat_input_for_evaluator, prepare_text_input_for_evaluator
@@ -88,6 +89,7 @@ def generate_evaluation_logprobs(
     evaluator_input_list: list[str] | list[list[dict[str, str]]],
     language_model: LanguageModel,
     valid_labels: list[str],
+    batch_size: int = 4,
     disable_tqdm: bool = False,
     desc_for_tqdm: str | None = None,
 ) -> list[dict[str, float]]:
@@ -106,20 +108,24 @@ def generate_evaluation_logprobs(
         desc=desc_for_tqdm,
     ) as pbar:
         evaluator_logprobs_list: list[dict[str, float]] = []
-        for evaluator_input in evaluator_input_list:
-            if isinstance(evaluator_input, str):
-                evaluator_logprobs = language_model.batch_compute_log_probs(
-                    valid_labels,  # for openai models, len(valid_labels) <= 20 due to constraint
-                    [evaluator_input]
-                    * len(valid_labels),  # we have to provide len(valid_labels) same inputs for generate logprob
+        for evaluator_inputs in batch_iter(
+            evaluator_input_list,
+            batch_size=batch_size,
+        ):
+            if all(isinstance(elem, str) for elem in evaluator_inputs):
+                evaluator_logprobs = language_model.compute_log_probs(
+                    valid_labels * batch_size,  # for openai models, len(valid_labels) <= 20 due to constraint
+                    [evaluator_input for evaluator_input in evaluator_inputs for _ in valid_labels],
+                    # we have to provide len(valid_labels) same inputs for generate logprob
                 )
             else:
-                evaluator_logprobs = language_model.batch_compute_chat_log_probs(
-                    [evaluator_input for _ in valid_labels],
-                    [{"role": "assistant", "content": label} for label in valid_labels],
+                evaluator_logprobs = language_model.compute_chat_log_probs(
+                    [evaluator_input for evaluator_input in evaluator_inputs for _ in valid_labels],
+                    [{"role": "assistant", "content": label} for _ in valid_labels for label in valid_labels],
                 )
-            evaluator_logprobs_list += [dict(zip(valid_labels, evaluator_logprobs))]
-            pbar.update(1)
+            for evaluator_logprobs_for_single in batch_iter(evaluator_logprobs, batch_size=len(valid_labels)):
+                evaluator_logprobs_list += [dict(zip(valid_labels, evaluator_logprobs_for_single))]
+            pbar.update(batch_size)
     return evaluator_logprobs_list
 
 
@@ -137,6 +143,7 @@ class LLMGEvalScore(Metric):
         prompt_template (required): An instance of `PromptTemplate` to embed the input for the evaluator.
         valid_score_range (required): A tuple of two integers representing the valid score range.
             If the parsed score is out of the range, it will be ignored.
+        batch_size: The batch size for the evaluator.
         disable_tqdm: Whether to disable the progress bar.
         category_key: A key to create category-wise mean score.
             The category key is expected to be in task inputs.
@@ -199,12 +206,14 @@ class LLMGEvalScore(Metric):
         language_model: LanguageModel,
         prompt_template: PromptTemplate,
         valid_score_range: tuple[int, int],
+        batch_size: int = 4,
         disable_tqdm: bool = False,
         category_key: str | None = None,
         prob_threshold: float = 0,
     ) -> None:
         self.language_model = language_model
         self.prompt_template = prompt_template
+        self.batch_size = batch_size
         self.disable_tqdm = disable_tqdm
         self.valid_score_range = valid_score_range
         self.category_key = category_key
@@ -230,6 +239,7 @@ class LLMGEvalScore(Metric):
             evaluator_input_list,
             self.language_model,
             self.valid_labels,
+            self.batch_size,
             self.disable_tqdm,
             "Calculating logprobs",
         )
@@ -288,6 +298,7 @@ class ChatLLMGEvalScore(Metric):
         prompt_template (required): An instance of `PromptTemplate` to embed the input for the evaluator.
         valid_score_range (required): A tuple of two integers representing the valid score range.
             If the parsed score is out of the range, it will be ignored.
+        batch_size: The batch size for the evaluator.
         system_message: A system message to be prepended to the input for the evaluator.
         disable_tqdm: Whether to disable the progress bar.
         category_key: A key to create category-wise mean score.
@@ -302,7 +313,7 @@ class ChatLLMGEvalScore(Metric):
         >>> template = "Evaluate the quality of this text.\\n`{{ lm_output }}`\\nOutput only a number from 1 to 5."
         >>> prompt_template = Jinja2PromptTemplate(template)
         >>> system_message = "This is the system message."
-        >>> llm_score = ChatLLMGEvalScore(language_model, prompt_template, [1, 5], system_message)
+        >>> llm_score = ChatLLMGEvalScore(language_model, prompt_template, [1, 5], system_message=system_message)
         >>> lm_outputs = ["Hello, world!", "Good morning!"]
         >>> llm_score.evaluate(lm_outputs)
         MetricResult(
@@ -358,6 +369,7 @@ class ChatLLMGEvalScore(Metric):
         language_model: LanguageModel,
         prompt_template: PromptTemplate,
         valid_score_range: tuple[int, int],
+        batch_size: int = 4,
         system_message: str | PromptTemplate | None = None,
         disable_tqdm: bool = False,
         category_key: str | None = None,
@@ -365,6 +377,7 @@ class ChatLLMGEvalScore(Metric):
     ) -> None:
         self.language_model = language_model
         self.prompt_template = prompt_template
+        self.batch_size = batch_size
         self.system_message = system_message
         self.disable_tqdm = disable_tqdm
         self.valid_score_range = valid_score_range
@@ -391,6 +404,7 @@ class ChatLLMGEvalScore(Metric):
             evaluator_input_list,
             self.language_model,
             self.valid_labels,
+            self.batch_size,
             self.disable_tqdm,
             "Calculating logprobs",
         )
