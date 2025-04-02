@@ -42,3 +42,12 @@ def test_compute_chat_log_probs_for_multi_tokens(chat_lm: LiteLLMChatAPI) -> Non
     response_list = [{"role": "assistant", "content": "1"}, {"role": "assistant", "content": "4"}]
     with pytest.raises(NotImplementedError):
         chat_lm.compute_chat_log_probs(prompt_list, response_list)
+
+
+def test_ignore_seed() -> LiteLLMChatAPI:
+    chat_lm = LiteLLMChatAPI(
+        "gpt-4o-mini-2024-07-18",
+        default_gen_kwargs={"temperature": 0.0, "seed": 42},
+        ignore_seed=True
+    )
+    assert "seed" not in chat_lm.default_gen_kwargs

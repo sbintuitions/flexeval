@@ -25,6 +25,8 @@ class LiteLLMChatAPI(OpenAIChatAPI):
         developer_message: Instructions to the model that are prioritized ahead of user messages.
             Previously called the system prompt.
         string_processors: A single or a list of StringProcessor objects to process the model's output.
+        ignore_seed: If True, ignore the seed specified in default_gen_kwargs.
+            This is an option for models that do not support seed parameters such as anthropic/claude.
     """
 
     def __init__(
@@ -33,6 +35,7 @@ class LiteLLMChatAPI(OpenAIChatAPI):
         default_gen_kwargs: dict[str, Any] | None = None,
         developer_message: str | None = None,
         string_processors: StringProcessor | list[StringProcessor] | None = None,
+        ignore_seed: bool = False,
     ) -> None:
         super().__init__(
             model=model,
@@ -46,6 +49,9 @@ class LiteLLMChatAPI(OpenAIChatAPI):
         # convert the flexeval-specific argument name to the OpenAI-specific name
         if "max_new_tokens" in self.default_gen_kwargs:
             self.default_gen_kwargs["max_tokens"] = self.default_gen_kwargs.pop("max_new_tokens")
+
+        if ignore_seed:
+            self.default_gen_kwargs.pop("seed", None)
 
         self.api_call_func = acompletion
         self.empty_response = convert_to_model_response_object(
