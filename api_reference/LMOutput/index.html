@@ -3587,6 +3587,17 @@ Previously called the system prompt.</p>
             <p>A single or a list of StringProcessor objects to process the model's output.</p>
           </div>
         </li>
+        <li class="doc-section-item field-body">
+            <b><code>ignore_seed</code></b>
+              (<code><span title="bool">bool</span></code>, default:
+                  <code>False</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>If True, ignore the seed specified in default_gen_kwargs.
+This is an option for models that do not support seed parameters such as anthropic/claude.</p>
+          </div>
+        </li>
     </ul>
 
 
@@ -3597,8 +3608,7 @@ Previously called the system prompt.</p>
 
               <details class="quote">
                 <summary>Source code in <code>flexeval/core/language_model/litellm_api.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">16</span>
-<span class="normal">17</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">17</span>
 <span class="normal">18</span>
 <span class="normal">19</span>
 <span class="normal">20</span>
@@ -3648,7 +3658,32 @@ Previously called the system prompt.</p>
 <span class="normal">64</span>
 <span class="normal">65</span>
 <span class="normal">66</span>
-<span class="normal">67</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">LiteLLMChatAPI</span><span class="p">(</span><span class="n">OpenAIChatAPI</span><span class="p">):</span>
+<span class="normal">67</span>
+<span class="normal">68</span>
+<span class="normal">69</span>
+<span class="normal">70</span>
+<span class="normal">71</span>
+<span class="normal">72</span>
+<span class="normal">73</span>
+<span class="normal">74</span>
+<span class="normal">75</span>
+<span class="normal">76</span>
+<span class="normal">77</span>
+<span class="normal">78</span>
+<span class="normal">79</span>
+<span class="normal">80</span>
+<span class="normal">81</span>
+<span class="normal">82</span>
+<span class="normal">83</span>
+<span class="normal">84</span>
+<span class="normal">85</span>
+<span class="normal">86</span>
+<span class="normal">87</span>
+<span class="normal">88</span>
+<span class="normal">89</span>
+<span class="normal">90</span>
+<span class="normal">91</span>
+<span class="normal">92</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">LiteLLMChatAPI</span><span class="p">(</span><span class="n">OpenAIChatAPI</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    LanguageModel implementation using LiteLLM.</span>
 <span class="sd">    Various APIs are available, such as OpenAI, Claude, Gemini, etc.</span>
@@ -3660,6 +3695,8 @@ Previously called the system prompt.</p>
 <span class="sd">        developer_message: Instructions to the model that are prioritized ahead of user messages.</span>
 <span class="sd">            Previously called the system prompt.</span>
 <span class="sd">        string_processors: A single or a list of StringProcessor objects to process the model&#39;s output.</span>
+<span class="sd">        ignore_seed: If True, ignore the seed specified in default_gen_kwargs.</span>
+<span class="sd">            This is an option for models that do not support seed parameters such as anthropic/claude.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
@@ -3668,6 +3705,7 @@ Previously called the system prompt.</p>
         <span class="n">default_gen_kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">developer_message</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">string_processors</span><span class="p">:</span> <span class="n">StringProcessor</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="n">StringProcessor</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">ignore_seed</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
             <span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span>
@@ -3687,6 +3725,27 @@ Previously called the system prompt.</p>
             <span class="n">response_object</span><span class="o">=</span><span class="n">EMPTY_RESPONSE_OPENAI</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(),</span>
             <span class="n">model_response_object</span><span class="o">=</span><span class="n">ModelResponse</span><span class="p">(),</span>
         <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ignore_seed</span> <span class="o">=</span> <span class="n">ignore_seed</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_batch_complete_text</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">text_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+        <span class="n">stop_sequences</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">max_new_tokens</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">LMOutput</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="s2">&quot;seed&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">ignore_seed</span><span class="p">:</span>
+            <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;seed&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_batch_complete_text</span><span class="p">(</span><span class="n">text_list</span><span class="p">,</span> <span class="n">stop_sequences</span><span class="p">,</span> <span class="n">max_new_tokens</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_batch_generate_chat_response</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">chat_messages_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]],</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">LMOutput</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="s2">&quot;seed&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">ignore_seed</span><span class="p">:</span>
+            <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;seed&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_batch_generate_chat_response</span><span class="p">(</span><span class="n">chat_messages_list</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_batch_compute_chat_log_probs</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -3804,6 +3863,28 @@ Previously called the system prompt.</p>
 
 </div>
 
+<div class="doc doc-object doc-attribute">
+
+
+
+<h3 id="flexeval.core.language_model.litellm_api.LiteLLMChatAPI.ignore_seed" class="doc doc-heading">
+            <span class="doc doc-object-name doc-attribute-name">ignore_seed</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+<a href="#flexeval.core.language_model.litellm_api.LiteLLMChatAPI.ignore_seed" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">ignore_seed</span> <span class="o">=</span> <span class="n">ignore_seed</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+    </div>
+
+</div>
+
 
 
 <div class="doc doc-object doc-function">
@@ -3821,6 +3902,7 @@ Previously called the system prompt.</p>
     <span class="n">string_processors</span><span class="p">:</span> <span class="n">StringProcessor</span>
     <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="n">StringProcessor</span><span class="p">]</span>
     <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">ignore_seed</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
 </code></pre></div>
 
@@ -3829,10 +3911,7 @@ Previously called the system prompt.</p>
 
             <details class="quote">
               <summary>Source code in <code>flexeval/core/language_model/litellm_api.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">30</span>
-<span class="normal">31</span>
-<span class="normal">32</span>
-<span class="normal">33</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">33</span>
 <span class="normal">34</span>
 <span class="normal">35</span>
 <span class="normal">36</span>
@@ -3853,12 +3932,18 @@ Previously called the system prompt.</p>
 <span class="normal">51</span>
 <span class="normal">52</span>
 <span class="normal">53</span>
-<span class="normal">54</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+<span class="normal">54</span>
+<span class="normal">55</span>
+<span class="normal">56</span>
+<span class="normal">57</span>
+<span class="normal">58</span>
+<span class="normal">59</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">model</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;openai/gpt-3.5-turbo&quot;</span><span class="p">,</span>
     <span class="n">default_gen_kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">developer_message</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">string_processors</span><span class="p">:</span> <span class="n">StringProcessor</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="n">StringProcessor</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">ignore_seed</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
         <span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span>
@@ -3878,6 +3963,7 @@ Previously called the system prompt.</p>
         <span class="n">response_object</span><span class="o">=</span><span class="n">EMPTY_RESPONSE_OPENAI</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(),</span>
         <span class="n">model_response_object</span><span class="o">=</span><span class="n">ModelResponse</span><span class="p">(),</span>
     <span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">ignore_seed</span> <span class="o">=</span> <span class="n">ignore_seed</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -3900,8 +3986,8 @@ Previously called the system prompt.</p>
 
             <details class="quote">
               <summary>Source code in <code>flexeval/core/language_model/litellm_api.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">66</span>
-<span class="normal">67</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">91</span>
+<span class="normal">92</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">(model=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="si">}</span><span class="s2">)&quot;</span>
 </code></pre></div></td></tr></table></div>
             </details>
