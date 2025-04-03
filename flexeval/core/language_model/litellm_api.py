@@ -5,6 +5,7 @@ from typing import Any, TypeVar
 from litellm import ModelResponse, acompletion
 from litellm.utils import convert_to_model_response_object
 
+from flexeval.core.language_model.base import LMOutput
 from flexeval.core.string_processor import StringProcessor
 
 from .openai_api import EMPTY_RESPONSE as EMPTY_RESPONSE_OPENAI
@@ -50,14 +51,32 @@ class LiteLLMChatAPI(OpenAIChatAPI):
         if "max_new_tokens" in self.default_gen_kwargs:
             self.default_gen_kwargs["max_tokens"] = self.default_gen_kwargs.pop("max_new_tokens")
 
-        if ignore_seed:
-            self.default_gen_kwargs.pop("seed", None)
-
         self.api_call_func = acompletion
         self.empty_response = convert_to_model_response_object(
             response_object=EMPTY_RESPONSE_OPENAI.to_dict(),
             model_response_object=ModelResponse(),
         )
+        self.ignore_seed = ignore_seed
+
+    def _batch_complete_text(
+        self,
+        text_list: list[str],
+        stop_sequences: str | list[str] | None = None,
+        max_new_tokens: int | None = None,
+        **kwargs,
+    ) -> list[LMOutput]:
+        if "seed" in kwargs and self.ignore_seed:
+            kwargs.pop("seed")
+        return super()._batch_complete_text(text_list, stop_sequences, max_new_tokens, **kwargs)
+
+    def _batch_generate_chat_response(
+        self,
+        chat_messages_list: list[list[dict[str, str]]],
+        **kwargs,
+    ) -> list[LMOutput]:
+        if "seed" in kwargs and self.ignore_seed:
+            kwargs.pop("seed")
+        return super()._batch_generate_chat_response(chat_messages_list, **kwargs)
 
     def _batch_compute_chat_log_probs(
         self,
