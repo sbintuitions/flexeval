@@ -98,12 +98,12 @@ def evaluate_generation(  # noqa: C901
         {
             "lm_prompt": lm_prompt,
             "lm_output": lm_output.text,
-            "raw_lm_output": lm_output.raw_text,
             "finish_reason": lm_output.finish_reason,
             "task_inputs": eval_instance.inputs,
             "references": eval_instance.references,
             **instance_metrics,
         }
+        | ({"raw_lm_output": lm_output.raw_text} if lm_output.raw_text else {})
         for lm_prompt, lm_output, eval_instance, instance_metrics in zip(
             lm_prompt_list,
             lm_output_list,

@@ -84,8 +84,8 @@ def evaluate_chat_response(  # noqa: C901,PLR0912
                                 "role": "assistant",
                                 "content": lm_output.text,
                                 "finish_reason": lm_output.finish_reason,
-                                "raw_content": lm_output.raw_text,
-                            },
+                            }
+                            | ({"raw_content": lm_output.raw_text} if lm_output.raw_text else {}),
                         ],
                     )
             else:
@@ -118,8 +118,8 @@ def evaluate_chat_response(  # noqa: C901,PLR0912
                                 "role": "assistant",
                                 "content": lm_outputs[o_id].text,
                                 "finish_reason": lm_outputs[o_id].finish_reason,
-                                "raw_content": lm_outputs[o_id].raw_text,
-                            },
+                            }
+                            | ({"raw_content": lm_outputs[o_id].raw_text} if lm_outputs[o_id].raw_text else {})
                         )
                 all_messages_list += current_chat_history
 
@@ -167,12 +167,12 @@ def evaluate_chat_response(  # noqa: C901,PLR0912
     outputs = [
         {
             "lm_output": messages[-1]["content"],
-            "raw_lm_output": messages[-1]["raw_content"],
             "finish_reason": messages[-1]["finish_reason"],
             "task_inputs": {"messages": messages[:-1], **extra_info},
             "references": references,
             **instance_metrics,
         }
+        | ({"raw_lm_output": messages[-1]["raw_content"]} if "raw_content" in messages[-1] else {})
         for messages, references, extra_info, instance_metrics in zip(
             all_messages_list,
             references_list,
