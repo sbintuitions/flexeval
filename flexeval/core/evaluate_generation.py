@@ -98,6 +98,7 @@ def evaluate_generation(  # noqa: C901
         {
             "lm_prompt": lm_prompt,
             "lm_output": lm_output.text,
+            "raw_lm_output": lm_output.raw_text,
             "finish_reason": lm_output.finish_reason,
             "task_inputs": eval_instance.inputs,
             "references": eval_instance.references,
