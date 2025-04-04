@@ -1,8 +1,11 @@
 import os
+from unittest.mock import patch
 
 import pytest
 
 from flexeval.core.language_model import LanguageModel, LiteLLMChatAPI
+from flexeval.core.language_model.base import LMOutput
+from flexeval.core.language_model.openai_api import OpenAIChatAPI
 
 from .base import BaseLanguageModelTest
 
@@ -42,3 +45,31 @@ def test_compute_chat_log_probs_for_multi_tokens(chat_lm: LiteLLMChatAPI) -> Non
     response_list = [{"role": "assistant", "content": "1"}, {"role": "assistant", "content": "4"}]
     with pytest.raises(NotImplementedError):
         chat_lm.compute_chat_log_probs(prompt_list, response_list)
+
+
+def test_if_ignore_seed() -> None:
+    chat_lm = LiteLLMChatAPI("gpt-4o-mini-2024-07-18", ignore_seed=True)
+    chat_messages = [{"role": "user", "content": "Hello"}]
+    with patch.object(OpenAIChatAPI, "_batch_generate_chat_response", return_value=[LMOutput("Hello!")]) as mock_method:
+        chat_lm.generate_chat_response(chat_messages, temperature=0.7, seed=42)
+        # `seed` parameter should be removed
+        mock_method.assert_called_once_with([chat_messages], temperature=0.7)
+
+    text = "Hello, I'm"
+    with patch.object(OpenAIChatAPI, "_batch_complete_text", return_value=[LMOutput("ChatGPT.")]) as mock_method:
+        chat_lm.complete_text(text, stop_sequences=None, max_new_tokens=None, temperature=0.7, seed=42)
+        # `seed` parameter should be removed
+        mock_method.assert_called_once_with([text], None, None, temperature=0.7)
+
+
+def test_if_not_ignore_seed() -> None:
+    chat_lm = LiteLLMChatAPI("gpt-4o-mini-2024-07-18")
+    chat_messages = [{"role": "user", "content": "Hello"}]
+    with patch.object(OpenAIChatAPI, "_batch_generate_chat_response", return_value=[LMOutput("Hello!")]) as mock_method:
+        chat_lm.generate_chat_response(chat_messages, temperature=0.7, seed=42)
+        mock_method.assert_called_once_with([chat_messages], temperature=0.7, seed=42)
+
+    text = "Hello, I'm"
+    with patch.object(OpenAIChatAPI, "_batch_complete_text", return_value=[LMOutput("ChatGPT.")]) as mock_method:
+        chat_lm.complete_text(text, stop_sequences=None, max_new_tokens=None, temperature=0.7, seed=42)
+        mock_method.assert_called_once_with([text], None, None, temperature=0.7, seed=42)
