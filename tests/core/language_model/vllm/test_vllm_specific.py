@@ -45,7 +45,8 @@ def test_batch_compute_log_probs_approximates_hf_lm(chat_lm: LanguageModel, hf_l
     assert vllm_log_probs == pytest.approx(hf_log_probs, abs=1e-2)
 
 
-def test_model_limit_max_tokens_generate_chat_response(chat_lm: VLLM, caplog: pytest.LogCaptureFixture) -> None:
+@pytest.mark.skipif(not is_vllm_enabled(), reason="vllm library is not installed")
+def test_model_limit_new_tokens_generate_chat_response(chat_lm: VLLM, caplog: pytest.LogCaptureFixture) -> None:
     caplog.set_level(logging.WARNING)
     messages = [{"role": "user", "content": "Hello."}]
 
@@ -62,7 +63,8 @@ def test_model_limit_max_tokens_generate_chat_response(chat_lm: VLLM, caplog: py
     caplog.clear()
 
 
-def test_model_limit_max_tokens_generate_complete_text(lm: VLLM, caplog: pytest.LogCaptureFixture) -> None:
+@pytest.mark.skipif(not is_vllm_enabled(), reason="vllm library is not installed")
+def test_model_limit_new_tokens_generate_complete_text(lm: VLLM, caplog: pytest.LogCaptureFixture) -> None:
     caplog.set_level(logging.WARNING)
     text = "Hello."
 

@@ -117,7 +117,7 @@ def test_developer_message() -> None:
 
 
 @pytest.mark.skipif(not is_openai_enabled(), reason="OpenAI is not installed")
-def test_model_limit_max_tokens_generate_chat_response(
+def test_model_limit_new_tokens_generate_chat_response(
     chat_lm: OpenAIChatAPI, caplog: pytest.LogCaptureFixture
 ) -> None:
     caplog.set_level(logging.WARNING)
@@ -135,7 +135,7 @@ def test_model_limit_max_tokens_generate_chat_response(
 
 
 @pytest.mark.skipif(not is_openai_enabled(), reason="OpenAI is not installed")
-def test_model_limit_max_tokens_complete_text(chat_lm: OpenAIChatAPI, caplog: pytest.LogCaptureFixture) -> None:
+def test_model_limit_new_tokens_complete_text(chat_lm: OpenAIChatAPI, caplog: pytest.LogCaptureFixture) -> None:
     caplog.set_level(logging.WARNING)
     text = "Hello."
 

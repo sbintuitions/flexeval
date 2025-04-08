@@ -246,7 +246,7 @@ def test_get_prefix_and_completion_from_chat() -> None:
     assert completion == ""
 
 
-def test_model_limit_max_tokens_generate_chat_response(
+def test_model_limit_new_tokens_generate_chat_response(
     chat_lm: HuggingFaceLM, caplog: pytest.LogCaptureFixture
 ) -> None:
     caplog.set_level(logging.WARNING)
@@ -270,7 +270,7 @@ def test_model_limit_max_tokens_generate_chat_response(
     caplog.clear()
 
 
-def test_model_limit_max_tokens_complete_text(lm: HuggingFaceLM, caplog: pytest.LogCaptureFixture) -> None:
+def test_model_limit_new_tokens_complete_text(lm: HuggingFaceLM, caplog: pytest.LogCaptureFixture) -> None:
     caplog.set_level(logging.WARNING)
     text = "Hello. I am a "
 
