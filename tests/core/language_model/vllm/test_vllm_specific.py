@@ -1,7 +1,6 @@
 import logging
 
 import pytest
-from transformers import AutoTokenizer
 
 from flexeval.core.language_model import VLLM, HuggingFaceLM, LanguageModel
 from tests.conftest import is_vllm_enabled
@@ -59,9 +58,7 @@ def test_model_limit_max_tokens_generate_chat_response(chat_lm: VLLM, caplog: py
     chat_lm_with_limit_tokens = VLLM(model="sbintuitions/tiny-lm-chat", model_limit_new_tokens=1)
     chat_lm_with_limit_tokens.generate_chat_response(messages, max_new_tokens=128)
     assert len(caplog.records) >= 1
-    assert any(
-        record.msg.startswith("The specified `max_new_tokens` (128) exceeds") for record in caplog.records
-    )
+    assert any(record.msg.startswith("The specified `max_new_tokens` (128) exceeds") for record in caplog.records)
     caplog.clear()
 
 
@@ -78,7 +75,5 @@ def test_model_limit_max_tokens_generate_complete_text(lm: VLLM, caplog: pytest.
     lm_with_limit_tokens = VLLM(model="sbintuitions/tiny-lm", model_limit_new_tokens=1)
     lm_with_limit_tokens.complete_text(text, max_new_tokens=128)
     assert len(caplog.records) >= 1
-    assert any(
-        record.msg.startswith("The specified `max_new_tokens` (128) exceeds") for record in caplog.records
-    )
+    assert any(record.msg.startswith("The specified `max_new_tokens` (128) exceeds") for record in caplog.records)
     caplog.clear()

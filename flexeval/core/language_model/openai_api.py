@@ -130,7 +130,6 @@ class OpenAIChatAPI(LanguageModel):
                 logger.warning(msg)
             gen_kwargs["max_completion_tokens"] = max_new_tokens
 
-
         if self.model_limit_new_tokens and (gen_kwargs["max_completion_tokens"] > self.model_limit_new_tokens):
             msg = (
                 f"The specified `max_new_tokens` ({gen_kwargs['max_completion_tokens']}) exceeds"
@@ -138,7 +137,6 @@ class OpenAIChatAPI(LanguageModel):
             )
             logger.warning(msg)
             gen_kwargs["max_completion_tokens"] = self.model_limit_new_tokens
-
 
         stop_sequences = normalize_stop_sequences(
             stop_sequences_list=[

@@ -66,7 +66,7 @@ class OpenAIChatBatchAPI(LanguageModel):
         default_gen_kwargs: dict[str, Any] | None = None,
         developer_message: str | None = None,
         string_processors: StringProcessor | list[StringProcessor] | None = None,
-        model_limit_completion_tokens: int | None = None
+        model_limit_completion_tokens: int | None = None,
     ) -> None:
         super().__init__(string_processors=string_processors)
         self.model = model
@@ -115,7 +115,9 @@ class OpenAIChatBatchAPI(LanguageModel):
                 logger.warning(msg)
             gen_kwargs["max_completion_tokens"] = max_new_tokens
 
-        if self.model_limit_completion_tokens and (gen_kwargs["max_completion_tokens"] > self.model_limit_completion_tokens):  # noqa: E501
+        if self.model_limit_completion_tokens and (
+            gen_kwargs["max_completion_tokens"] > self.model_limit_completion_tokens
+        ):
             msg = (
                 f"The specified `max_new_tokens` ({gen_kwargs['max_completion_tokens']}) exceeds"
                 f"the model’s capability ({self.model_limit_completion_tokens} tokens). It will be reduced."

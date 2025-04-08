@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from typing import Any
 
-from loguru import logger
 import torch
+from loguru import logger
 from transformers import AutoTokenizer, PreTrainedTokenizer
 
 from flexeval.core.string_processor import StringProcessor

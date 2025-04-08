@@ -246,7 +246,9 @@ def test_get_prefix_and_completion_from_chat() -> None:
     assert completion == ""
 
 
-def test_model_limit_max_tokens_generate_chat_response(chat_lm: HuggingFaceLM, caplog: pytest.LogCaptureFixture) -> None:  # noqa: E501
+def test_model_limit_max_tokens_generate_chat_response(
+    chat_lm: HuggingFaceLM, caplog: pytest.LogCaptureFixture
+) -> None:
     caplog.set_level(logging.WARNING)
     messages = [{"role": "user", "content": "Hello."}]
 
@@ -264,9 +266,7 @@ def test_model_limit_max_tokens_generate_chat_response(chat_lm: HuggingFaceLM, c
     )
     chat_lm_with_limit_tokens.generate_chat_response(messages, max_new_tokens=128)
     assert len(caplog.records) >= 1
-    assert any(
-        record.msg.startswith("The specified `max_new_tokens` (128) exceeds") for record in caplog.records
-    )
+    assert any(record.msg.startswith("The specified `max_new_tokens` (128) exceeds") for record in caplog.records)
     caplog.clear()
 
 
@@ -285,11 +285,9 @@ def test_model_limit_max_tokens_complete_text(lm: HuggingFaceLM, caplog: pytest.
         model_kwargs={"torch_dtype": "float32"},
         tokenizer_kwargs={"use_fast": False},
         default_gen_kwargs={"do_sample": False},
-        model_limit_new_tokens=1
+        model_limit_new_tokens=1,
     )
     lm_with_limit_tokens.complete_text(text, max_new_tokens=128)
     assert len(caplog.records) >= 1
-    assert any(
-        record.msg.startswith("The specified `max_new_tokens` (128) exceeds") for record in caplog.records
-    )
+    assert any(record.msg.startswith("The specified `max_new_tokens` (128) exceeds") for record in caplog.records)
     caplog.clear()
