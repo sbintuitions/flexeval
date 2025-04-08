@@ -264,7 +264,7 @@ class HuggingFaceLM(LanguageModel):
         if max_new_tokens is not None:
             gen_kwargs["max_new_tokens"] = max_new_tokens
 
-        if self.model_limit_new_tokens and (gen_kwargs["max_new_tokens"] > self.model_limit_new_tokens):
+        if self.model_limit_new_tokens and (gen_kwargs.get("max_new_tokens", 0) > self.model_limit_new_tokens):
             msg = (
                 f"The specified `max_new_tokens` ({gen_kwargs['max_new_tokens']}) exceeds"
                 f"the model’s capability ({self.model_limit_new_tokens} tokens). It will be reduced."

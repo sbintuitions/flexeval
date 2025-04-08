@@ -130,7 +130,7 @@ class OpenAIChatAPI(LanguageModel):
                 logger.warning(msg)
             gen_kwargs["max_completion_tokens"] = max_new_tokens
 
-        if self.model_limit_new_tokens and (gen_kwargs["max_completion_tokens"] > self.model_limit_new_tokens):
+        if self.model_limit_new_tokens and (gen_kwargs.get("max_completion_tokens", 0) > self.model_limit_new_tokens):
             msg = (
                 f"The specified `max_new_tokens` ({gen_kwargs['max_completion_tokens']}) exceeds"
                 f"the model’s capability ({self.model_limit_new_tokens} tokens). It will be reduced."

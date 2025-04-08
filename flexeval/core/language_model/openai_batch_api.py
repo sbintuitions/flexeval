@@ -116,7 +116,7 @@ class OpenAIChatBatchAPI(LanguageModel):
             gen_kwargs["max_completion_tokens"] = max_new_tokens
 
         if self.model_limit_completion_tokens and (
-            gen_kwargs["max_completion_tokens"] > self.model_limit_completion_tokens
+            gen_kwargs.get("max_completion_tokens", 0) > self.model_limit_completion_tokens
         ):
             msg = (
                 f"The specified `max_new_tokens` ({gen_kwargs['max_completion_tokens']}) exceeds"
