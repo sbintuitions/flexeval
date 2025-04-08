@@ -1,4 +1,7 @@
+import logging
+
 import pytest
+from transformers import AutoTokenizer
 
 from flexeval.core.language_model import VLLM, HuggingFaceLM, LanguageModel
 from tests.conftest import is_vllm_enabled
@@ -41,3 +44,41 @@ def test_batch_compute_log_probs_approximates_hf_lm(chat_lm: LanguageModel, hf_l
     vllm_log_probs = chat_lm.compute_log_probs(text_list, prefix_list=prefix_list)
     hf_log_probs = hf_lm.compute_log_probs(text_list, prefix_list=prefix_list)
     assert vllm_log_probs == pytest.approx(hf_log_probs, abs=1e-2)
+
+
+def test_model_limit_max_tokens_generate_chat_response(chat_lm: VLLM, caplog: pytest.LogCaptureFixture) -> None:
+    caplog.set_level(logging.WARNING)
+    messages = [{"role": "user", "content": "Hello."}]
+
+    # if max_new_tokens only, no warnings will be sent.
+    chat_lm.generate_chat_response(messages, max_new_tokens=128)
+    assert len(caplog.records) == 0
+    caplog.clear()
+
+    # if max_new_tokens > model_limit_new_tokens, a warning about overwriting is sent.
+    chat_lm_with_limit_tokens = VLLM(model="sbintuitions/tiny-lm-chat", model_limit_new_tokens=1)
+    chat_lm_with_limit_tokens.generate_chat_response(messages, max_new_tokens=128)
+    assert len(caplog.records) >= 1
+    assert any(
+        record.msg.startswith("The specified `max_new_tokens` (128) exceeds") for record in caplog.records
+    )
+    caplog.clear()
+
+
+def test_model_limit_max_tokens_generate_complete_text(lm: VLLM, caplog: pytest.LogCaptureFixture) -> None:
+    caplog.set_level(logging.WARNING)
+    text = "Hello."
+
+    # if max_new_tokens only, no warnings will be sent.
+    lm.complete_text(text, max_new_tokens=128)
+    assert len(caplog.records) == 0
+    caplog.clear()
+
+    # if max_new_tokens > model_limit_new_tokens, a warning about overwriting is sent.
+    lm_with_limit_tokens = VLLM(model="sbintuitions/tiny-lm", model_limit_new_tokens=1)
+    lm_with_limit_tokens.complete_text(text, max_new_tokens=128)
+    assert len(caplog.records) >= 1
+    assert any(
+        record.msg.startswith("The specified `max_new_tokens` (128) exceeds") for record in caplog.records
+    )
+    caplog.clear()

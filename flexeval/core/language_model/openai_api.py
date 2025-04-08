@@ -75,6 +75,8 @@ class OpenAIChatAPI(LanguageModel):
         developer_message: Instructions to the model that are prioritized ahead of user messages.
             Previously called the system prompt.
         string_processors: A single or a list of StringProcessor objects to process the model's output.
+        model_limit_new_tokens: An upper limit on the number of tokens the model can generate.
+            For example, if a too-large `max_new_tokens` is given to generate_chat_response(), this value will cap it.
     """
 
     def __init__(
@@ -84,6 +86,7 @@ class OpenAIChatAPI(LanguageModel):
         default_gen_kwargs: dict[str, Any] | None = None,
         developer_message: str | None = None,
         string_processors: StringProcessor | list[StringProcessor] | None = None,
+        model_limit_new_tokens: int | None = None,
     ) -> None:
         super().__init__(string_processors=string_processors)
         self.model = model
@@ -98,6 +101,7 @@ class OpenAIChatAPI(LanguageModel):
             self.default_gen_kwargs["max_completion_tokens"] = self.default_gen_kwargs.pop("max_new_tokens")
 
         self.developer_message = developer_message
+        self.model_limit_new_tokens = model_limit_new_tokens
 
     async def _async_batch_run_chatgpt(
         self,
@@ -125,6 +129,16 @@ class OpenAIChatAPI(LanguageModel):
                 )
                 logger.warning(msg)
             gen_kwargs["max_completion_tokens"] = max_new_tokens
+
+
+        if self.model_limit_new_tokens and (gen_kwargs["max_completion_tokens"] > self.model_limit_new_tokens):
+            msg = (
+                f"The specified `max_new_tokens` ({gen_kwargs['max_completion_tokens']}) exceeds"
+                f"the model’s capability ({self.model_limit_new_tokens} tokens). It will be reduced."
+            )
+            logger.warning(msg)
+            gen_kwargs["max_completion_tokens"] = self.model_limit_new_tokens
+
 
         stop_sequences = normalize_stop_sequences(
             stop_sequences_list=[

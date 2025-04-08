@@ -155,6 +155,8 @@ class HuggingFaceLM(LanguageModel):
             If specified, this overrides the default chat template of the tokenizer.
         default_gen_kwargs: Default generation kwargs to use when calling the API.
         string_processors: A single or a list of StringProcessor objects to process the model's output.
+        model_limit_new_tokens: An upper limit on the number of tokens the model can generate.
+            For example, if a too-large `max_new_tokens` is given to generate_chat_response(), this value will cap it.
     """
 
     def __init__(
@@ -170,6 +172,7 @@ class HuggingFaceLM(LanguageModel):
         custom_chat_template: str | None = None,
         default_gen_kwargs: dict[str, Any] | None = None,
         string_processors: StringProcessor | list[StringProcessor] | None = None,
+        model_limit_new_tokens: int | None = None,
     ) -> None:
         super().__init__(string_processors=string_processors)
         self._model_name_or_path = model
@@ -197,6 +200,7 @@ class HuggingFaceLM(LanguageModel):
         self.model.eval()
 
         self.amp_dtype = amp_dtype
+        self.model_limit_new_tokens = model_limit_new_tokens
 
         transformers.set_seed(random_seed)
 
@@ -259,6 +263,14 @@ class HuggingFaceLM(LanguageModel):
         gen_kwargs.update(kwargs)
         if max_new_tokens is not None:
             gen_kwargs["max_new_tokens"] = max_new_tokens
+
+        if self.model_limit_new_tokens and (gen_kwargs["max_new_tokens"] > self.model_limit_new_tokens):
+            msg = (
+                f"The specified `max_new_tokens` ({gen_kwargs['max_new_tokens']}) exceeds"
+                f"the model’s capability ({self.model_limit_new_tokens} tokens). It will be reduced."
+            )
+            logger.warning(msg)
+            gen_kwargs["max_new_tokens"] = self.model_limit_new_tokens
 
         model_inputs = tokenize_text_for_lm_prefix(
             text_list,

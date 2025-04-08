@@ -27,24 +27,38 @@ References:
             class_path: 'Jinja2PromptTemplate',
             init_args: {
               template: std.stripChars(|||
-                [Instruction]
                 {% if references|length > 0 -%}
-                Please act as an impartial judge and evaluate the quality of the response provided by an AI assistant to the user question displayed below. Your evaluation should consider correctness and helpfulness. You will be given a reference answer and the assistant's answer. Begin your evaluation by comparing the assistant's answer with the reference answer. Identify and correct any mistakes. Be as objective as possible. After providing your explanation, you must rate the response on a scale of 1 to 10 by strictly following this format: "[[rating]]", for example: "Rating: [[5]]".
-                {%- else -%}
-                Please act as an impartial judge and evaluate the quality of the response provided by an AI assistant to the user question displayed below. Your evaluation should consider factors such as the helpfulness, relevance, accuracy, depth, creativity, and level of detail of the response. Begin your evaluation by providing a short explanation. Be as objective as possible. After providing your explanation, you must rate the response on a scale of 1 to 10 by strictly following this format: "[[rating]]", for example: "Rating: [[5]]".
-                {%- endif %}
-
-                [Question]
+                <|The Start of Reference Answer|>
+                ### User:
                 {{ messages[0]["content"] }}
 
-                {% if references|length > 0 -%}
-                [The Start of Reference Answer]
+                ### Reference answer:
                 {{ references[0] }}
-                [The End of Reference Answer]
+
+                ### User:
+                {{ messages[2]["content"] }}
+
+                ### Reference answer:
+                {{ references[1] }}
+
+                <|The End of Reference Answer|>
                 {% endif -%}
-                [The Start of Assistant's Answer]
-                {% if messages|length == 1 %}{{ lm_output }}{% else %}{{ messages[1]["content"] }}{% endif %}
-                [The End of Assistant's Answer]
+
+                <|The Start of Assistant A's Conversation with User|>
+
+                ### User:
+                {{ messages[0]["content"] }}
+
+                ### Assistant A:
+                {{ messages[1]["content"] }}
+
+                ### User:
+                {{ messages[2]["content"] }}
+
+                ### Assistant A:
+                {% if messages|length == 3 %}{{ lm_output }}{% else %}{{ messages[3]["content"] }}{% endif %}
+
+                <|The End of Assistant A's Conversation with User|>
               |||, '\n'),
             },
           },

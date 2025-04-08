@@ -1,10 +1,12 @@
 from __future__ import annotations
 
 from collections import Counter
-from typing import Any, Sequence
+from typing import Any, Iterable, Sequence
 
 from loguru import logger
 from tqdm import tqdm
+
+from flexeval.core.language_model.base import LMOutput
 
 from .chat_dataset import ChatDataset, ChatInstance
 from .few_shot_generator import FewShotGenerator
@@ -13,16 +15,19 @@ from .metric import Metric
 from .utils.data_util import batch_iter
 
 
-def _remove_finish_reason(messages: list[dict[str, str]]) -> list[dict[str, str]]:
+def _remove_redundant_keys_from_messages(
+    messages: list[dict[str, str]],
+    remove_keys: Iterable[str],
+) -> list[dict[str, str]]:
     """
-    Remove `finish_reason` from all turns in `messages`.
+    Remove specified keys from all turns in `messages`.
 
-    Each `finish_reason` is added in `evaluate_chat_response()` for logging.
+    Some keys such as `finish_reason` are added in `evaluate_chat_response()` for logging.
     However, some APIs of Azure OpenAI (e.g. tsuzumi-7b-instruct) do not allow extra input keys.
     Thus this removal is required before each input step.
     """
-    remove_key = "finish_reason"
-    return [{key: value for key, value in message.items() if key is not remove_key} for message in messages]
+    remove_keys = set(remove_keys)
+    return [{key: value for key, value in message.items() if key not in remove_keys} for message in messages]
 
 
 def evaluate_chat_response(  # noqa: C901,PLR0912
@@ -67,7 +72,7 @@ def evaluate_chat_response(  # noqa: C901,PLR0912
 
             if not eval_dataset.require_incremental_response():
                 # Continue generation from the given conversation history
-                lm_outputs = language_model.generate_chat_response(
+                lm_outputs: list[LMOutput] = language_model.generate_chat_response(
                     input_messages_list,
                     **gen_kwargs,
                 )
@@ -75,7 +80,12 @@ def evaluate_chat_response(  # noqa: C901,PLR0912
                     all_messages_list.append(
                         [
                             *input_messages,
-                            {"role": "assistant", "content": lm_output.text, "finish_reason": lm_output.finish_reason},
+                            {
+                                "role": "assistant",
+                                "content": lm_output.text,
+                                "finish_reason": lm_output.finish_reason,
+                            }
+                            | ({"raw_content": lm_output.raw_text} if lm_output.raw_text else {}),
                         ],
                     )
             else:
@@ -91,7 +101,10 @@ def evaluate_chat_response(  # noqa: C901,PLR0912
                         b_id for b_id, messages in enumerate(input_messages_list) if turn < len(messages)
                     ]
                     current_model_inputs = [
-                        _remove_finish_reason(current_chat_history[b_id] + [input_messages_list[b_id][turn]])
+                        _remove_redundant_keys_from_messages(
+                            current_chat_history[b_id] + [input_messages_list[b_id][turn]],
+                            remove_keys={"finish_reason", "raw_content"},
+                        )
                         for b_id in batch_ids_fed_to_model
                     ]
                     lm_outputs = language_model.generate_chat_response(
@@ -105,7 +118,8 @@ def evaluate_chat_response(  # noqa: C901,PLR0912
                                 "role": "assistant",
                                 "content": lm_outputs[o_id].text,
                                 "finish_reason": lm_outputs[o_id].finish_reason,
-                            },
+                            }
+                            | ({"raw_content": lm_outputs[o_id].raw_text} if lm_outputs[o_id].raw_text else {})
                         )
                 all_messages_list += current_chat_history
 
@@ -158,6 +172,7 @@ def evaluate_chat_response(  # noqa: C901,PLR0912
             "references": references,
             **instance_metrics,
         }
+        | ({"raw_lm_output": messages[-1]["raw_content"]} if "raw_content" in messages[-1] else {})
         for messages, references, extra_info, instance_metrics in zip(
             all_messages_list,
             references_list,

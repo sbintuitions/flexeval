@@ -114,3 +114,44 @@ def test_developer_message() -> None:
         [{"role": "user", "content": "What is the highest mountain in the world?"}]
     )
     assert lm_output.text == "OK, I will answer later."
+
+@pytest.mark.skipif(not is_openai_enabled(), reason="OpenAI is not installed")
+def test_model_limit_max_tokens_generate_chat_response(chat_lm: OpenAIChatAPI, caplog: pytest.LogCaptureFixture) -> None:  # noqa: E501
+    caplog.set_level(logging.WARNING)
+    messages = [{"role": "user", "content": "Hello."}]
+
+    # if max_new_tokens only, no warnings will be sent.
+    chat_lm.generate_chat_response(messages, max_new_tokens=128)
+    assert len(caplog.records) == 0
+
+    # if max_new_tokens > model_limit_completion_tokens, a warning about overwriting is sent.
+    chat_lm_with_limit_tokens = OpenAIChatAPI(
+        "gpt-4o-mini-2024-07-18", model_limit_new_tokens=1
+    )
+    chat_lm_with_limit_tokens.generate_chat_response(messages, max_new_tokens=128)
+    assert len(caplog.records) >= 1
+    assert any(
+        record.msg.startswith("The specified `max_new_tokens` (128) exceeds") for record in caplog.records
+    )
+
+@pytest.mark.skipif(not is_openai_enabled(), reason="OpenAI is not installed")
+def test_model_limit_max_tokens_complete_text(chat_lm: OpenAIChatAPI, caplog: pytest.LogCaptureFixture) -> None:
+    caplog.set_level(logging.WARNING)
+    text = "Hello."
+
+    # if max_new_tokens only, no warnings will be sent.
+    chat_lm.complete_text(text, max_new_tokens=128)
+    assert len(caplog.records) == 0
+    caplog.clear()
+
+    # if max_new_tokens > model_limit_new_tokens, a warning about overwriting is sent.
+    chat_lm_with_limit_tokens = OpenAIChatAPI(
+        "gpt-4o-mini-2024-07-18", model_limit_new_tokens=1
+    )
+    chat_lm_with_limit_tokens.complete_text(text, max_new_tokens=128)
+    assert len(caplog.records) >= 1
+    assert any(
+        record.msg.startswith("The specified `max_new_tokens` (128) exceeds") for record in caplog.records
+    )
+    caplog.clear()
+

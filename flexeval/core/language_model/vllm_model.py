@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import Any
 
+from loguru import logger
 import torch
 from transformers import AutoTokenizer, PreTrainedTokenizer
 
@@ -80,6 +81,8 @@ class VLLM(LanguageModel):
             If specified, this overrides the default chat template of the tokenizer.
         default_gen_kwargs: Default generation kwargs to use when calling the model.
         string_processors: A single or a list of StringProcessor objects to process the model's output.
+        model_limit_new_tokens: An upper limit on the number of tokens the model can generate.
+            For example, if a too-large `max_new_tokens` is given to generate_chat_response(), this value will cap it.
     """
 
     def __init__(
@@ -92,6 +95,7 @@ class VLLM(LanguageModel):
         custom_chat_template: str | None = None,
         default_gen_kwargs: dict[str, Any] | None = None,
         string_processors: StringProcessor | list[StringProcessor] | None = None,
+        model_limit_new_tokens: int | None = None,
     ) -> None:
         super().__init__(string_processors=string_processors)
         self.model_name = model
@@ -105,6 +109,7 @@ class VLLM(LanguageModel):
         # convert the flexeval-specific argument name to the vllm-specific name
         if "max_new_tokens" in self.default_gen_kwargs:
             self.default_gen_kwargs["max_tokens"] = self.default_gen_kwargs.pop("max_new_tokens")
+        self.model_limit_new_tokens = model_limit_new_tokens
 
         # import from vllm here because it is an extra dependency
         from vllm import LLM
@@ -129,6 +134,14 @@ class VLLM(LanguageModel):
         gen_kwargs.update(kwargs)
         if max_new_tokens is not None:
             gen_kwargs["max_tokens"] = max_new_tokens
+
+        if self.model_limit_new_tokens and (gen_kwargs["max_tokens"] > self.model_limit_new_tokens):
+            msg = (
+                f"The specified `max_new_tokens` ({gen_kwargs['max_new_tokens']}) exceeds"
+                f"the model’s capability ({self.model_limit_new_tokens} tokens). It will be reduced."
+            )
+            logger.warning(msg)
+            gen_kwargs["max_tokens"] = self.model_limit_new_tokens
 
         stop_sequences = normalize_stop_sequences(
             stop_sequences_list=[
