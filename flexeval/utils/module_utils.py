@@ -7,9 +7,9 @@ from typing import Any, TypeVar
 
 import _jsonnet
 from jsonargparse import ArgumentParser
+from loguru import logger
 
 import flexeval
-from loguru import logger
 
 Module = TypeVar("Module", bound=Any)
 
