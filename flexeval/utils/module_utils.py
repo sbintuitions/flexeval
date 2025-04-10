@@ -7,6 +7,7 @@ from typing import Any, TypeVar
 
 import _jsonnet
 from jsonargparse import ArgumentParser
+from loguru import logger
 
 import flexeval
 
@@ -77,4 +78,7 @@ class ConfigNameResolver:
 
         if config_name_or_path not in self._name_to_path:
             return None
-        return str(self._name_to_path[config_name_or_path])
+
+        resolved_path = str(self._name_to_path[config_name_or_path])
+        logger.info(f"Resolved config name '{config_name_or_path}' to path '{resolved_path}'")
+        return resolved_path
