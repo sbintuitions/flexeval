@@ -1,6 +1,11 @@
 from __future__ import annotations
 
+import functools
+
 import sacrebleu
+
+from flexeval.core.metric.utils import aggregate_category_wise_scores
+from flexeval.core.string_processor.base import StringProcessor
 
 from .base import Metric, MetricResult
 
@@ -12,6 +17,11 @@ class BLEU(Metric):
     Args:
         tokenize_option: Tokenization option for sacrebleu.
             If `None`, sacrebleu will use the default tokenization.
+        lm_output_processor:
+            StringProcessor or a list of StringProcessor to be applied to the model outputs before comparison.
+        reference_processor: StringProcessor or list of StringProcessor to apply to the references before comparison.
+        category_key: A key to create category-wise mean score.
+            The category key is expected to be in task inputs.
 
     Examples:
         >>> from flexeval import BLEU
@@ -32,10 +42,25 @@ class BLEU(Metric):
             )
     """
 
-    def __init__(self, tokenize_option: str | None = None) -> None:
+    def __init__(
+        self,
+        tokenize_option: str | None = None,
+        lm_output_processor: StringProcessor | list[StringProcessor] | None = None,
+        reference_processor: StringProcessor | list[StringProcessor] | None = None,
+        category_key: str | None = None,
+    ) -> None:
         self._corpus_bleu = sacrebleu.metrics.BLEU(tokenize=tokenize_option)
         # For sentence BLEU, we need to set `effective_order=True` as recommended by sacrebleu.
         self._sentence_bleu = sacrebleu.metrics.BLEU(tokenize=tokenize_option, effective_order=True)
+
+        if isinstance(lm_output_processor, StringProcessor):
+            lm_output_processor = [lm_output_processor]
+        if isinstance(reference_processor, StringProcessor):
+            reference_processor = [reference_processor]
+
+        self.lm_output_processors = lm_output_processor
+        self.reference_processors = reference_processor
+        self.category_key = category_key
 
     def evaluate(
         self,
@@ -49,6 +74,17 @@ class BLEU(Metric):
                 f"but got {len(lm_outputs)} and {len(references_list)}."
             )
             raise ValueError(msg)
+
+        if self.lm_output_processors:
+            lm_outputs = [
+                functools.reduce(lambda x, norm: norm(x), self.lm_output_processors, output) for output in lm_outputs
+            ]
+
+        if self.reference_processors:
+            references_list = [
+                [functools.reduce(lambda x, norm: norm(x), self.reference_processors, ref) for ref in references]
+                for references in references_list
+            ]
 
         # we need restructure the references to match the format expected by sacrebleu
         max_num_refs = max(len(refs) for refs in references_list)
@@ -67,11 +103,20 @@ class BLEU(Metric):
             self._sentence_bleu.sentence_score(o.strip(), refs) for o, refs in zip(lm_outputs, references_list)
         ]
 
+        summary = {
+            "bleu_score": bleu.score / 100,
+            "bleu_bp": bleu.bp,
+            "bleu_signature": self._corpus_bleu.get_signature(),
+        }
+
+        if self.category_key:
+            categories = [task_input[self.category_key] for task_input in task_inputs_list]
+            sentence_bleu_score_list = [b.score / 100 for b in sentence_bleu_list]
+            category_wise_scores = aggregate_category_wise_scores(sentence_bleu_score_list, categories)
+            for category, category_wise_score in category_wise_scores.items():
+                summary[f"sentence_bleu_score/{category}"] = category_wise_score
+
         return MetricResult(
-            {
-                "bleu_score": bleu.score / 100,
-                "bleu_bp": bleu.bp,
-                "bleu_signature": self._corpus_bleu.get_signature(),
-            },
+            summary,
             instance_details=[{"bleu_score": b.score / 100, "bleu_bp": b.bp} for b in sentence_bleu_list],
         )

@@ -17,6 +17,8 @@ class ExactMatch(Metric):
         lm_output_processor:
             StringProcessor or a list of StringProcessor to be applied to the model outputs before comparison.
         reference_processor: StringProcessor or list of StringProcessor to apply to the references before comparison.
+        category_key: A key to create category-wise mean score.
+            The category key is expected to be in task inputs.
 
     Examples:
         >>> from flexeval import ExactMatch
