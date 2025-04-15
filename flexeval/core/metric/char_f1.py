@@ -4,6 +4,7 @@ import functools
 
 from fuzzywuzzy import fuzz
 
+from flexeval.core.metric.utils import aggregate_category_wise_scores
 from flexeval.core.string_processor import StringProcessor
 
 from .base import Metric, MetricResult
@@ -18,7 +19,8 @@ class CharF1(Metric):
     Args:
         lm_output_processor: StringProcessor or list of Normalizers to apply to the model outputs before comparison.
         reference_processor: StringProcessor or list of Normalizers to apply to the references before comparison.
-
+        category_key: A key to create category-wise mean score.
+            The category key is expected to be in task inputs.
 
     Examples:
         >>> from flexeval import CharF1
@@ -34,6 +36,7 @@ class CharF1(Metric):
         self,
         lm_output_processor: StringProcessor | list[StringProcessor] | None = None,
         reference_processor: StringProcessor | list[StringProcessor] | None = None,
+        category_key: str | None = None,
     ) -> None:
         if isinstance(lm_output_processor, StringProcessor):
             lm_output_processor = [lm_output_processor]
@@ -42,6 +45,7 @@ class CharF1(Metric):
 
         self.lm_output_processors = lm_output_processor
         self.reference_processors = reference_processor
+        self.category_key = category_key
 
     def evaluate(
         self,
@@ -64,7 +68,16 @@ class CharF1(Metric):
         for lm_output, expected_output in zip(lm_outputs, references_list):
             score = max(fuzz.ratio(lm_output, o) for o in expected_output) / 100
             char_f1_scores.append(score)
+
+        summary = {"char_f1": sum(char_f1_scores) / len(char_f1_scores)}
+
+        if self.category_key:
+            categories = [task_input[self.category_key] for task_input in task_inputs_list]
+            category_wise_scores = aggregate_category_wise_scores(char_f1_scores, categories)
+            for category, category_wise_score in category_wise_scores.items():
+                summary[f"char_f1/{category}"] = category_wise_score
+
         return MetricResult(
-            {"char_f1": sum(char_f1_scores) / len(char_f1_scores)},
+            summary,
             instance_details=[{"char_f1": s} for s in char_f1_scores],
         )

@@ -3,6 +3,7 @@ from __future__ import annotations
 import pytest
 
 from flexeval.core.metric import CharF1
+from flexeval.core.metric.base import MetricResult
 from flexeval.core.string_processor import AIONormalizer, RegexExtractor, StringProcessor
 
 
@@ -35,3 +36,27 @@ def test_char_f1(
     assert metric_result.summary["char_f1"] == score
     assert metric_result.instance_details[0]["char_f1"] == score
     assert len(metric_result.instance_details) == len(lm_outputs)
+
+
+def test_exact_match_with_category_key() -> None:
+    """Test ExactMatch metric with category_key parameter."""
+    metric = CharF1(category_key="category")
+
+    task_inputs_list = [
+        {"category": "commonsense", "text": "This is sentence1."},
+        {"category": "commonsense", "text": "This is sentence2."},
+        {"category": "science", "text": "This is very scientific sentence."},
+    ]
+    lm_outputs = ["これは文1です。", "間違った訳", "これはすごく科学的な文です。"]
+    references_list = [["これは文1です。"], ["これは文2です。"], ["これはすごく科学的な文です。"]]
+
+    result = metric.evaluate(lm_outputs, references_list, task_inputs_list)
+
+    assert isinstance(result, MetricResult)
+    assert "char_f1" in result.summary
+    assert "char_f1/commonsense" in result.summary
+    assert "char_f1/science" in result.summary
+
+    assert pytest.approx(result.summary["char_f1"]) == 2 / 3
+    assert pytest.approx(result.summary["char_f1/commonsense"]) == 1 / 2
+    assert pytest.approx(result.summary["char_f1/science"]) == 1.0
