@@ -2075,6 +2075,37 @@ The calculation is based on the <a href="https://github.com/mjpost/sacrebleu">sa
 If <code>None</code>, sacrebleu will use the default tokenization.</p>
           </div>
         </li>
+        <li class="doc-section-item field-body">
+            <b><code>lm_output_processor</code></b>
+              (<code><a class="autorefs autorefs-internal" title="StringProcessor (flexeval.core.string_processor.base.StringProcessor)" href="../StringProcessor/#flexeval.core.string_processor.base.StringProcessor">StringProcessor</a> | <span title="list">list</span>[<a class="autorefs autorefs-internal" title="StringProcessor (flexeval.core.string_processor.base.StringProcessor)" href="../StringProcessor/#flexeval.core.string_processor.base.StringProcessor">StringProcessor</a>] | None</code>, default:
+                  <code>None</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>StringProcessor or a list of StringProcessor to be applied to the model outputs before comparison.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>reference_processor</code></b>
+              (<code><a class="autorefs autorefs-internal" title="StringProcessor (flexeval.core.string_processor.base.StringProcessor)" href="../StringProcessor/#flexeval.core.string_processor.base.StringProcessor">StringProcessor</a> | <span title="list">list</span>[<a class="autorefs autorefs-internal" title="StringProcessor (flexeval.core.string_processor.base.StringProcessor)" href="../StringProcessor/#flexeval.core.string_processor.base.StringProcessor">StringProcessor</a>] | None</code>, default:
+                  <code>None</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>StringProcessor or list of StringProcessor to apply to the references before comparison.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>category_key</code></b>
+              (<code><span title="str">str</span> | None</code>, default:
+                  <code>None</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>A key to create category-wise mean score.
+The category key is expected to be in task inputs.</p>
+          </div>
+        </li>
     </ul>
 
 
@@ -2105,82 +2136,127 @@ If <code>None</code>, sacrebleu will use the default tokenization.</p>
 
               <details class="quote">
                 <summary>Source code in <code>flexeval/core/metric/bleu.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span>
-<span class="normal">15</span>
-<span class="normal">16</span>
-<span class="normal">17</span>
-<span class="normal">18</span>
-<span class="normal">19</span>
-<span class="normal">20</span>
-<span class="normal">21</span>
-<span class="normal">22</span>
-<span class="normal">23</span>
-<span class="normal">24</span>
-<span class="normal">25</span>
-<span class="normal">26</span>
-<span class="normal">27</span>
-<span class="normal">28</span>
-<span class="normal">29</span>
-<span class="normal">30</span>
-<span class="normal">31</span>
-<span class="normal">32</span>
-<span class="normal">33</span>
-<span class="normal">34</span>
-<span class="normal">35</span>
-<span class="normal">36</span>
-<span class="normal">37</span>
-<span class="normal">38</span>
-<span class="normal">39</span>
-<span class="normal">40</span>
-<span class="normal">41</span>
-<span class="normal">42</span>
-<span class="normal">43</span>
-<span class="normal">44</span>
-<span class="normal">45</span>
-<span class="normal">46</span>
-<span class="normal">47</span>
-<span class="normal">48</span>
-<span class="normal">49</span>
-<span class="normal">50</span>
-<span class="normal">51</span>
-<span class="normal">52</span>
-<span class="normal">53</span>
-<span class="normal">54</span>
-<span class="normal">55</span>
-<span class="normal">56</span>
-<span class="normal">57</span>
-<span class="normal">58</span>
-<span class="normal">59</span>
-<span class="normal">60</span>
-<span class="normal">61</span>
-<span class="normal">62</span>
-<span class="normal">63</span>
-<span class="normal">64</span>
-<span class="normal">65</span>
-<span class="normal">66</span>
-<span class="normal">67</span>
-<span class="normal">68</span>
-<span class="normal">69</span>
-<span class="normal">70</span>
-<span class="normal">71</span>
-<span class="normal">72</span>
-<span class="normal">73</span>
-<span class="normal">74</span>
-<span class="normal">75</span>
-<span class="normal">76</span>
-<span class="normal">77</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">BLEU</span><span class="p">(</span><span class="n">Metric</span><span class="p">):</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 13</span>
+<span class="normal"> 14</span>
+<span class="normal"> 15</span>
+<span class="normal"> 16</span>
+<span class="normal"> 17</span>
+<span class="normal"> 18</span>
+<span class="normal"> 19</span>
+<span class="normal"> 20</span>
+<span class="normal"> 21</span>
+<span class="normal"> 22</span>
+<span class="normal"> 23</span>
+<span class="normal"> 24</span>
+<span class="normal"> 25</span>
+<span class="normal"> 26</span>
+<span class="normal"> 27</span>
+<span class="normal"> 28</span>
+<span class="normal"> 29</span>
+<span class="normal"> 30</span>
+<span class="normal"> 31</span>
+<span class="normal"> 32</span>
+<span class="normal"> 33</span>
+<span class="normal"> 34</span>
+<span class="normal"> 35</span>
+<span class="normal"> 36</span>
+<span class="normal"> 37</span>
+<span class="normal"> 38</span>
+<span class="normal"> 39</span>
+<span class="normal"> 40</span>
+<span class="normal"> 41</span>
+<span class="normal"> 42</span>
+<span class="normal"> 43</span>
+<span class="normal"> 44</span>
+<span class="normal"> 45</span>
+<span class="normal"> 46</span>
+<span class="normal"> 47</span>
+<span class="normal"> 48</span>
+<span class="normal"> 49</span>
+<span class="normal"> 50</span>
+<span class="normal"> 51</span>
+<span class="normal"> 52</span>
+<span class="normal"> 53</span>
+<span class="normal"> 54</span>
+<span class="normal"> 55</span>
+<span class="normal"> 56</span>
+<span class="normal"> 57</span>
+<span class="normal"> 58</span>
+<span class="normal"> 59</span>
+<span class="normal"> 60</span>
+<span class="normal"> 61</span>
+<span class="normal"> 62</span>
+<span class="normal"> 63</span>
+<span class="normal"> 64</span>
+<span class="normal"> 65</span>
+<span class="normal"> 66</span>
+<span class="normal"> 67</span>
+<span class="normal"> 68</span>
+<span class="normal"> 69</span>
+<span class="normal"> 70</span>
+<span class="normal"> 71</span>
+<span class="normal"> 72</span>
+<span class="normal"> 73</span>
+<span class="normal"> 74</span>
+<span class="normal"> 75</span>
+<span class="normal"> 76</span>
+<span class="normal"> 77</span>
+<span class="normal"> 78</span>
+<span class="normal"> 79</span>
+<span class="normal"> 80</span>
+<span class="normal"> 81</span>
+<span class="normal"> 82</span>
+<span class="normal"> 83</span>
+<span class="normal"> 84</span>
+<span class="normal"> 85</span>
+<span class="normal"> 86</span>
+<span class="normal"> 87</span>
+<span class="normal"> 88</span>
+<span class="normal"> 89</span>
+<span class="normal"> 90</span>
+<span class="normal"> 91</span>
+<span class="normal"> 92</span>
+<span class="normal"> 93</span>
+<span class="normal"> 94</span>
+<span class="normal"> 95</span>
+<span class="normal"> 96</span>
+<span class="normal"> 97</span>
+<span class="normal"> 98</span>
+<span class="normal"> 99</span>
+<span class="normal">100</span>
+<span class="normal">101</span>
+<span class="normal">102</span>
+<span class="normal">103</span>
+<span class="normal">104</span>
+<span class="normal">105</span>
+<span class="normal">106</span>
+<span class="normal">107</span>
+<span class="normal">108</span>
+<span class="normal">109</span>
+<span class="normal">110</span>
+<span class="normal">111</span>
+<span class="normal">112</span>
+<span class="normal">113</span>
+<span class="normal">114</span>
+<span class="normal">115</span>
+<span class="normal">116</span>
+<span class="normal">117</span>
+<span class="normal">118</span>
+<span class="normal">119</span>
+<span class="normal">120</span>
+<span class="normal">121</span>
+<span class="normal">122</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">BLEU</span><span class="p">(</span><span class="n">Metric</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;An implementation of [BLEU](https://aclanthology.org/P02-1040/).</span>
 <span class="sd">    The calculation is based on the [sacrebleu](https://github.com/mjpost/sacrebleu) library.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        tokenize_option: Tokenization option for sacrebleu.</span>
 <span class="sd">            If `None`, sacrebleu will use the default tokenization.</span>
+<span class="sd">        lm_output_processor:</span>
+<span class="sd">            StringProcessor or a list of StringProcessor to be applied to the model outputs before comparison.</span>
+<span class="sd">        reference_processor: StringProcessor or list of StringProcessor to apply to the references before comparison.</span>
+<span class="sd">        category_key: A key to create category-wise mean score.</span>
+<span class="sd">            The category key is expected to be in task inputs.</span>
 
 <span class="sd">    Examples:</span>
 <span class="sd">        &gt;&gt;&gt; from flexeval import BLEU</span>
@@ -2201,10 +2277,25 @@ If <code>None</code>, sacrebleu will use the default tokenization.</p>
 <span class="sd">            )</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tokenize_option</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">tokenize_option</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">lm_output_processor</span><span class="p">:</span> <span class="n">StringProcessor</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="n">StringProcessor</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">reference_processor</span><span class="p">:</span> <span class="n">StringProcessor</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="n">StringProcessor</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">category_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_corpus_bleu</span> <span class="o">=</span> <span class="n">sacrebleu</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">BLEU</span><span class="p">(</span><span class="n">tokenize</span><span class="o">=</span><span class="n">tokenize_option</span><span class="p">)</span>
         <span class="c1"># For sentence BLEU, we need to set `effective_order=True` as recommended by sacrebleu.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_sentence_bleu</span> <span class="o">=</span> <span class="n">sacrebleu</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">BLEU</span><span class="p">(</span><span class="n">tokenize</span><span class="o">=</span><span class="n">tokenize_option</span><span class="p">,</span> <span class="n">effective_order</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">lm_output_processor</span><span class="p">,</span> <span class="n">StringProcessor</span><span class="p">):</span>
+            <span class="n">lm_output_processor</span> <span class="o">=</span> <span class="p">[</span><span class="n">lm_output_processor</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">reference_processor</span><span class="p">,</span> <span class="n">StringProcessor</span><span class="p">):</span>
+            <span class="n">reference_processor</span> <span class="o">=</span> <span class="p">[</span><span class="n">reference_processor</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lm_output_processors</span> <span class="o">=</span> <span class="n">lm_output_processor</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reference_processors</span> <span class="o">=</span> <span class="n">reference_processor</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">category_key</span> <span class="o">=</span> <span class="n">category_key</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">evaluate</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -2218,6 +2309,17 @@ If <code>None</code>, sacrebleu will use the default tokenization.</p>
                 <span class="sa">f</span><span class="s2">&quot;but got </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">lm_outputs</span><span class="p">)</span><span class="si">}</span><span class="s2"> and </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">references_list</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span>
             <span class="p">)</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">lm_output_processors</span><span class="p">:</span>
+            <span class="n">lm_outputs</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">functools</span><span class="o">.</span><span class="n">reduce</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">norm</span><span class="p">:</span> <span class="n">norm</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">lm_output_processors</span><span class="p">,</span> <span class="n">output</span><span class="p">)</span> <span class="k">for</span> <span class="n">output</span> <span class="ow">in</span> <span class="n">lm_outputs</span>
+            <span class="p">]</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">reference_processors</span><span class="p">:</span>
+            <span class="n">references_list</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="p">[</span><span class="n">functools</span><span class="o">.</span><span class="n">reduce</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">norm</span><span class="p">:</span> <span class="n">norm</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">reference_processors</span><span class="p">,</span> <span class="n">ref</span><span class="p">)</span> <span class="k">for</span> <span class="n">ref</span> <span class="ow">in</span> <span class="n">references</span><span class="p">]</span>
+                <span class="k">for</span> <span class="n">references</span> <span class="ow">in</span> <span class="n">references_list</span>
+            <span class="p">]</span>
 
         <span class="c1"># we need restructure the references to match the format expected by sacrebleu</span>
         <span class="n">max_num_refs</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">refs</span><span class="p">)</span> <span class="k">for</span> <span class="n">refs</span> <span class="ow">in</span> <span class="n">references_list</span><span class="p">)</span>
@@ -2236,12 +2338,21 @@ If <code>None</code>, sacrebleu will use the default tokenization.</p>
             <span class="bp">self</span><span class="o">.</span><span class="n">_sentence_bleu</span><span class="o">.</span><span class="n">sentence_score</span><span class="p">(</span><span class="n">o</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span> <span class="n">refs</span><span class="p">)</span> <span class="k">for</span> <span class="n">o</span><span class="p">,</span> <span class="n">refs</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">lm_outputs</span><span class="p">,</span> <span class="n">references_list</span><span class="p">)</span>
         <span class="p">]</span>
 
+        <span class="n">summary</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;bleu_score&quot;</span><span class="p">:</span> <span class="n">bleu</span><span class="o">.</span><span class="n">score</span> <span class="o">/</span> <span class="mi">100</span><span class="p">,</span>
+            <span class="s2">&quot;bleu_bp&quot;</span><span class="p">:</span> <span class="n">bleu</span><span class="o">.</span><span class="n">bp</span><span class="p">,</span>
+            <span class="s2">&quot;bleu_signature&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_corpus_bleu</span><span class="o">.</span><span class="n">get_signature</span><span class="p">(),</span>
+        <span class="p">}</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">category_key</span><span class="p">:</span>
+            <span class="n">categories</span> <span class="o">=</span> <span class="p">[</span><span class="n">task_input</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">category_key</span><span class="p">]</span> <span class="k">for</span> <span class="n">task_input</span> <span class="ow">in</span> <span class="n">task_inputs_list</span><span class="p">]</span>
+            <span class="n">sentence_bleu_score_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">b</span><span class="o">.</span><span class="n">score</span> <span class="o">/</span> <span class="mi">100</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">sentence_bleu_list</span><span class="p">]</span>
+            <span class="n">category_wise_scores</span> <span class="o">=</span> <span class="n">aggregate_category_wise_scores</span><span class="p">(</span><span class="n">sentence_bleu_score_list</span><span class="p">,</span> <span class="n">categories</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">category</span><span class="p">,</span> <span class="n">category_wise_score</span> <span class="ow">in</span> <span class="n">category_wise_scores</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">summary</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;sentence_bleu_score/</span><span class="si">{</span><span class="n">category</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">category_wise_score</span>
+
         <span class="k">return</span> <span class="n">MetricResult</span><span class="p">(</span>
-            <span class="p">{</span>
-                <span class="s2">&quot;bleu_score&quot;</span><span class="p">:</span> <span class="n">bleu</span><span class="o">.</span><span class="n">score</span> <span class="o">/</span> <span class="mi">100</span><span class="p">,</span>
-                <span class="s2">&quot;bleu_bp&quot;</span><span class="p">:</span> <span class="n">bleu</span><span class="o">.</span><span class="n">bp</span><span class="p">,</span>
-                <span class="s2">&quot;bleu_signature&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_corpus_bleu</span><span class="o">.</span><span class="n">get_signature</span><span class="p">(),</span>
-            <span class="p">},</span>
+            <span class="n">summary</span><span class="p">,</span>
             <span class="n">instance_details</span><span class="o">=</span><span class="p">[{</span><span class="s2">&quot;bleu_score&quot;</span><span class="p">:</span> <span class="n">b</span><span class="o">.</span><span class="n">score</span> <span class="o">/</span> <span class="mi">100</span><span class="p">,</span> <span class="s2">&quot;bleu_bp&quot;</span><span class="p">:</span> <span class="n">b</span><span class="o">.</span><span class="n">bp</span><span class="p">}</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">sentence_bleu_list</span><span class="p">],</span>
         <span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -2257,6 +2368,72 @@ If <code>None</code>, sacrebleu will use the default tokenization.</p>
 
 
 
+<div class="doc doc-object doc-attribute">
+
+
+
+<h3 id="flexeval.core.metric.bleu.BLEU.lm_output_processors" class="doc doc-heading">
+            <span class="doc doc-object-name doc-attribute-name">lm_output_processors</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+<a href="#flexeval.core.metric.bleu.BLEU.lm_output_processors" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">lm_output_processors</span> <span class="o">=</span> <span class="n">lm_output_processor</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h3 id="flexeval.core.metric.bleu.BLEU.reference_processors" class="doc doc-heading">
+            <span class="doc doc-object-name doc-attribute-name">reference_processors</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+<a href="#flexeval.core.metric.bleu.BLEU.reference_processors" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">reference_processors</span> <span class="o">=</span> <span class="n">reference_processor</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h3 id="flexeval.core.metric.bleu.BLEU.category_key" class="doc doc-heading">
+            <span class="doc doc-object-name doc-attribute-name">category_key</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+<a href="#flexeval.core.metric.bleu.BLEU.category_key" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">category_key</span> <span class="o">=</span> <span class="n">category_key</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+    </div>
+
+</div>
+
 
 
 <div class="doc doc-object doc-function">
@@ -2267,7 +2444,16 @@ If <code>None</code>, sacrebleu will use the default tokenization.</p>
 
 
 <a href="#flexeval.core.metric.bleu.BLEU.__init__" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="fm">__init__</span><span class="p">(</span><span class="nf">tokenize_option</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="fm">__init__</span><span class="p">(</span>
+    <span class="nf">tokenize_option</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">lm_output_processor</span><span class="p">:</span> <span class="n">StringProcessor</span>
+    <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="n">StringProcessor</span><span class="p">]</span>
+    <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">reference_processor</span><span class="p">:</span> <span class="n">StringProcessor</span>
+    <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="n">StringProcessor</span><span class="p">]</span>
+    <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">category_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -2275,13 +2461,43 @@ If <code>None</code>, sacrebleu will use the default tokenization.</p>
 
             <details class="quote">
               <summary>Source code in <code>flexeval/core/metric/bleu.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">35</span>
-<span class="normal">36</span>
-<span class="normal">37</span>
-<span class="normal">38</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tokenize_option</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span>
+<span class="normal">55</span>
+<span class="normal">56</span>
+<span class="normal">57</span>
+<span class="normal">58</span>
+<span class="normal">59</span>
+<span class="normal">60</span>
+<span class="normal">61</span>
+<span class="normal">62</span>
+<span class="normal">63</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">tokenize_option</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">lm_output_processor</span><span class="p">:</span> <span class="n">StringProcessor</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="n">StringProcessor</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">reference_processor</span><span class="p">:</span> <span class="n">StringProcessor</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="n">StringProcessor</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">category_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_corpus_bleu</span> <span class="o">=</span> <span class="n">sacrebleu</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">BLEU</span><span class="p">(</span><span class="n">tokenize</span><span class="o">=</span><span class="n">tokenize_option</span><span class="p">)</span>
     <span class="c1"># For sentence BLEU, we need to set `effective_order=True` as recommended by sacrebleu.</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_sentence_bleu</span> <span class="o">=</span> <span class="n">sacrebleu</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">BLEU</span><span class="p">(</span><span class="n">tokenize</span><span class="o">=</span><span class="n">tokenize_option</span><span class="p">,</span> <span class="n">effective_order</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">lm_output_processor</span><span class="p">,</span> <span class="n">StringProcessor</span><span class="p">):</span>
+        <span class="n">lm_output_processor</span> <span class="o">=</span> <span class="p">[</span><span class="n">lm_output_processor</span><span class="p">]</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">reference_processor</span><span class="p">,</span> <span class="n">StringProcessor</span><span class="p">):</span>
+        <span class="n">reference_processor</span> <span class="o">=</span> <span class="p">[</span><span class="n">reference_processor</span><span class="p">]</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">lm_output_processors</span> <span class="o">=</span> <span class="n">lm_output_processor</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">reference_processors</span> <span class="o">=</span> <span class="n">reference_processor</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">category_key</span> <span class="o">=</span> <span class="n">category_key</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -2308,44 +2524,64 @@ If <code>None</code>, sacrebleu will use the default tokenization.</p>
 
             <details class="quote">
               <summary>Source code in <code>flexeval/core/metric/bleu.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">40</span>
-<span class="normal">41</span>
-<span class="normal">42</span>
-<span class="normal">43</span>
-<span class="normal">44</span>
-<span class="normal">45</span>
-<span class="normal">46</span>
-<span class="normal">47</span>
-<span class="normal">48</span>
-<span class="normal">49</span>
-<span class="normal">50</span>
-<span class="normal">51</span>
-<span class="normal">52</span>
-<span class="normal">53</span>
-<span class="normal">54</span>
-<span class="normal">55</span>
-<span class="normal">56</span>
-<span class="normal">57</span>
-<span class="normal">58</span>
-<span class="normal">59</span>
-<span class="normal">60</span>
-<span class="normal">61</span>
-<span class="normal">62</span>
-<span class="normal">63</span>
-<span class="normal">64</span>
-<span class="normal">65</span>
-<span class="normal">66</span>
-<span class="normal">67</span>
-<span class="normal">68</span>
-<span class="normal">69</span>
-<span class="normal">70</span>
-<span class="normal">71</span>
-<span class="normal">72</span>
-<span class="normal">73</span>
-<span class="normal">74</span>
-<span class="normal">75</span>
-<span class="normal">76</span>
-<span class="normal">77</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">evaluate</span><span class="p">(</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 65</span>
+<span class="normal"> 66</span>
+<span class="normal"> 67</span>
+<span class="normal"> 68</span>
+<span class="normal"> 69</span>
+<span class="normal"> 70</span>
+<span class="normal"> 71</span>
+<span class="normal"> 72</span>
+<span class="normal"> 73</span>
+<span class="normal"> 74</span>
+<span class="normal"> 75</span>
+<span class="normal"> 76</span>
+<span class="normal"> 77</span>
+<span class="normal"> 78</span>
+<span class="normal"> 79</span>
+<span class="normal"> 80</span>
+<span class="normal"> 81</span>
+<span class="normal"> 82</span>
+<span class="normal"> 83</span>
+<span class="normal"> 84</span>
+<span class="normal"> 85</span>
+<span class="normal"> 86</span>
+<span class="normal"> 87</span>
+<span class="normal"> 88</span>
+<span class="normal"> 89</span>
+<span class="normal"> 90</span>
+<span class="normal"> 91</span>
+<span class="normal"> 92</span>
+<span class="normal"> 93</span>
+<span class="normal"> 94</span>
+<span class="normal"> 95</span>
+<span class="normal"> 96</span>
+<span class="normal"> 97</span>
+<span class="normal"> 98</span>
+<span class="normal"> 99</span>
+<span class="normal">100</span>
+<span class="normal">101</span>
+<span class="normal">102</span>
+<span class="normal">103</span>
+<span class="normal">104</span>
+<span class="normal">105</span>
+<span class="normal">106</span>
+<span class="normal">107</span>
+<span class="normal">108</span>
+<span class="normal">109</span>
+<span class="normal">110</span>
+<span class="normal">111</span>
+<span class="normal">112</span>
+<span class="normal">113</span>
+<span class="normal">114</span>
+<span class="normal">115</span>
+<span class="normal">116</span>
+<span class="normal">117</span>
+<span class="normal">118</span>
+<span class="normal">119</span>
+<span class="normal">120</span>
+<span class="normal">121</span>
+<span class="normal">122</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">evaluate</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">lm_outputs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
     <span class="n">references_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span>
@@ -2357,6 +2593,17 @@ If <code>None</code>, sacrebleu will use the default tokenization.</p>
             <span class="sa">f</span><span class="s2">&quot;but got </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">lm_outputs</span><span class="p">)</span><span class="si">}</span><span class="s2"> and </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">references_list</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span>
         <span class="p">)</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">lm_output_processors</span><span class="p">:</span>
+        <span class="n">lm_outputs</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">functools</span><span class="o">.</span><span class="n">reduce</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">norm</span><span class="p">:</span> <span class="n">norm</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">lm_output_processors</span><span class="p">,</span> <span class="n">output</span><span class="p">)</span> <span class="k">for</span> <span class="n">output</span> <span class="ow">in</span> <span class="n">lm_outputs</span>
+        <span class="p">]</span>
+
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">reference_processors</span><span class="p">:</span>
+        <span class="n">references_list</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">[</span><span class="n">functools</span><span class="o">.</span><span class="n">reduce</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">norm</span><span class="p">:</span> <span class="n">norm</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">reference_processors</span><span class="p">,</span> <span class="n">ref</span><span class="p">)</span> <span class="k">for</span> <span class="n">ref</span> <span class="ow">in</span> <span class="n">references</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">references</span> <span class="ow">in</span> <span class="n">references_list</span>
+        <span class="p">]</span>
 
     <span class="c1"># we need restructure the references to match the format expected by sacrebleu</span>
     <span class="n">max_num_refs</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">refs</span><span class="p">)</span> <span class="k">for</span> <span class="n">refs</span> <span class="ow">in</span> <span class="n">references_list</span><span class="p">)</span>
@@ -2375,12 +2622,21 @@ If <code>None</code>, sacrebleu will use the default tokenization.</p>
         <span class="bp">self</span><span class="o">.</span><span class="n">_sentence_bleu</span><span class="o">.</span><span class="n">sentence_score</span><span class="p">(</span><span class="n">o</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span> <span class="n">refs</span><span class="p">)</span> <span class="k">for</span> <span class="n">o</span><span class="p">,</span> <span class="n">refs</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">lm_outputs</span><span class="p">,</span> <span class="n">references_list</span><span class="p">)</span>
     <span class="p">]</span>
 
+    <span class="n">summary</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;bleu_score&quot;</span><span class="p">:</span> <span class="n">bleu</span><span class="o">.</span><span class="n">score</span> <span class="o">/</span> <span class="mi">100</span><span class="p">,</span>
+        <span class="s2">&quot;bleu_bp&quot;</span><span class="p">:</span> <span class="n">bleu</span><span class="o">.</span><span class="n">bp</span><span class="p">,</span>
+        <span class="s2">&quot;bleu_signature&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_corpus_bleu</span><span class="o">.</span><span class="n">get_signature</span><span class="p">(),</span>
+    <span class="p">}</span>
+
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">category_key</span><span class="p">:</span>
+        <span class="n">categories</span> <span class="o">=</span> <span class="p">[</span><span class="n">task_input</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">category_key</span><span class="p">]</span> <span class="k">for</span> <span class="n">task_input</span> <span class="ow">in</span> <span class="n">task_inputs_list</span><span class="p">]</span>
+        <span class="n">sentence_bleu_score_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">b</span><span class="o">.</span><span class="n">score</span> <span class="o">/</span> <span class="mi">100</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">sentence_bleu_list</span><span class="p">]</span>
+        <span class="n">category_wise_scores</span> <span class="o">=</span> <span class="n">aggregate_category_wise_scores</span><span class="p">(</span><span class="n">sentence_bleu_score_list</span><span class="p">,</span> <span class="n">categories</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">category</span><span class="p">,</span> <span class="n">category_wise_score</span> <span class="ow">in</span> <span class="n">category_wise_scores</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">summary</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;sentence_bleu_score/</span><span class="si">{</span><span class="n">category</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">category_wise_score</span>
+
     <span class="k">return</span> <span class="n">MetricResult</span><span class="p">(</span>
-        <span class="p">{</span>
-            <span class="s2">&quot;bleu_score&quot;</span><span class="p">:</span> <span class="n">bleu</span><span class="o">.</span><span class="n">score</span> <span class="o">/</span> <span class="mi">100</span><span class="p">,</span>
-            <span class="s2">&quot;bleu_bp&quot;</span><span class="p">:</span> <span class="n">bleu</span><span class="o">.</span><span class="n">bp</span><span class="p">,</span>
-            <span class="s2">&quot;bleu_signature&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_corpus_bleu</span><span class="o">.</span><span class="n">get_signature</span><span class="p">(),</span>
-        <span class="p">},</span>
+        <span class="n">summary</span><span class="p">,</span>
         <span class="n">instance_details</span><span class="o">=</span><span class="p">[{</span><span class="s2">&quot;bleu_score&quot;</span><span class="p">:</span> <span class="n">b</span><span class="o">.</span><span class="n">score</span> <span class="o">/</span> <span class="mi">100</span><span class="p">,</span> <span class="s2">&quot;bleu_bp&quot;</span><span class="p">:</span> <span class="n">b</span><span class="o">.</span><span class="n">bp</span><span class="p">}</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">sentence_bleu_list</span><span class="p">],</span>
     <span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -2438,6 +2694,17 @@ If there are multiple expected outputs, the highest score is adopted.</p>
             <p>StringProcessor or list of Normalizers to apply to the references before comparison.</p>
           </div>
         </li>
+        <li class="doc-section-item field-body">
+            <b><code>category_key</code></b>
+              (<code><span title="str">str</span> | None</code>, default:
+                  <code>None</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>A key to create category-wise mean score.
+The category key is expected to be in task inputs.</p>
+          </div>
+        </li>
     </ul>
 
 
@@ -2459,8 +2726,7 @@ If there are multiple expected outputs, the highest score is adopted.</p>
 
               <details class="quote">
                 <summary>Source code in <code>flexeval/core/metric/char_f1.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">12</span>
-<span class="normal">13</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">13</span>
 <span class="normal">14</span>
 <span class="normal">15</span>
 <span class="normal">16</span>
@@ -2517,7 +2783,20 @@ If there are multiple expected outputs, the highest score is adopted.</p>
 <span class="normal">67</span>
 <span class="normal">68</span>
 <span class="normal">69</span>
-<span class="normal">70</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">CharF1</span><span class="p">(</span><span class="n">Metric</span><span class="p">):</span>
+<span class="normal">70</span>
+<span class="normal">71</span>
+<span class="normal">72</span>
+<span class="normal">73</span>
+<span class="normal">74</span>
+<span class="normal">75</span>
+<span class="normal">76</span>
+<span class="normal">77</span>
+<span class="normal">78</span>
+<span class="normal">79</span>
+<span class="normal">80</span>
+<span class="normal">81</span>
+<span class="normal">82</span>
+<span class="normal">83</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">CharF1</span><span class="p">(</span><span class="n">Metric</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A metric that calculates how many characters in the output string are included</span>
 <span class="sd">    in the characters of the expected output.</span>
@@ -2526,7 +2805,8 @@ If there are multiple expected outputs, the highest score is adopted.</p>
 <span class="sd">    Args:</span>
 <span class="sd">        lm_output_processor: StringProcessor or list of Normalizers to apply to the model outputs before comparison.</span>
 <span class="sd">        reference_processor: StringProcessor or list of Normalizers to apply to the references before comparison.</span>
-
+<span class="sd">        category_key: A key to create category-wise mean score.</span>
+<span class="sd">            The category key is expected to be in task inputs.</span>
 
 <span class="sd">    Examples:</span>
 <span class="sd">        &gt;&gt;&gt; from flexeval import CharF1</span>
@@ -2542,6 +2822,7 @@ If there are multiple expected outputs, the highest score is adopted.</p>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">lm_output_processor</span><span class="p">:</span> <span class="n">StringProcessor</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="n">StringProcessor</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">reference_processor</span><span class="p">:</span> <span class="n">StringProcessor</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="n">StringProcessor</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">category_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">lm_output_processor</span><span class="p">,</span> <span class="n">StringProcessor</span><span class="p">):</span>
             <span class="n">lm_output_processor</span> <span class="o">=</span> <span class="p">[</span><span class="n">lm_output_processor</span><span class="p">]</span>
@@ -2550,6 +2831,7 @@ If there are multiple expected outputs, the highest score is adopted.</p>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">lm_output_processors</span> <span class="o">=</span> <span class="n">lm_output_processor</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">reference_processors</span> <span class="o">=</span> <span class="n">reference_processor</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">category_key</span> <span class="o">=</span> <span class="n">category_key</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">evaluate</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -2572,8 +2854,17 @@ If there are multiple expected outputs, the highest score is adopted.</p>
         <span class="k">for</span> <span class="n">lm_output</span><span class="p">,</span> <span class="n">expected_output</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">lm_outputs</span><span class="p">,</span> <span class="n">references_list</span><span class="p">):</span>
             <span class="n">score</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">fuzz</span><span class="o">.</span><span class="n">ratio</span><span class="p">(</span><span class="n">lm_output</span><span class="p">,</span> <span class="n">o</span><span class="p">)</span> <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">expected_output</span><span class="p">)</span> <span class="o">/</span> <span class="mi">100</span>
             <span class="n">char_f1_scores</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">score</span><span class="p">)</span>
+
+        <span class="n">summary</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;char_f1&quot;</span><span class="p">:</span> <span class="nb">sum</span><span class="p">(</span><span class="n">char_f1_scores</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">char_f1_scores</span><span class="p">)}</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">category_key</span><span class="p">:</span>
+            <span class="n">categories</span> <span class="o">=</span> <span class="p">[</span><span class="n">task_input</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">category_key</span><span class="p">]</span> <span class="k">for</span> <span class="n">task_input</span> <span class="ow">in</span> <span class="n">task_inputs_list</span><span class="p">]</span>
+            <span class="n">category_wise_scores</span> <span class="o">=</span> <span class="n">aggregate_category_wise_scores</span><span class="p">(</span><span class="n">char_f1_scores</span><span class="p">,</span> <span class="n">categories</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">category</span><span class="p">,</span> <span class="n">category_wise_score</span> <span class="ow">in</span> <span class="n">category_wise_scores</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">summary</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;char_f1/</span><span class="si">{</span><span class="n">category</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">category_wise_score</span>
+
         <span class="k">return</span> <span class="n">MetricResult</span><span class="p">(</span>
-            <span class="p">{</span><span class="s2">&quot;char_f1&quot;</span><span class="p">:</span> <span class="nb">sum</span><span class="p">(</span><span class="n">char_f1_scores</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">char_f1_scores</span><span class="p">)},</span>
+            <span class="n">summary</span><span class="p">,</span>
             <span class="n">instance_details</span><span class="o">=</span><span class="p">[{</span><span class="s2">&quot;char_f1&quot;</span><span class="p">:</span> <span class="n">s</span><span class="p">}</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">char_f1_scores</span><span class="p">],</span>
         <span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -2633,6 +2924,28 @@ If there are multiple expected outputs, the highest score is adopted.</p>
 
 </div>
 
+<div class="doc doc-object doc-attribute">
+
+
+
+<h3 id="flexeval.core.metric.char_f1.CharF1.category_key" class="doc doc-heading">
+            <span class="doc doc-object-name doc-attribute-name">category_key</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+<a href="#flexeval.core.metric.char_f1.CharF1.category_key" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">category_key</span> <span class="o">=</span> <span class="n">category_key</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+    </div>
+
+</div>
+
 
 
 <div class="doc doc-object doc-function">
@@ -2650,6 +2963,7 @@ If there are multiple expected outputs, the highest score is adopted.</p>
     <span class="n">reference_processor</span><span class="p">:</span> <span class="n">StringProcessor</span>
     <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="n">StringProcessor</span><span class="p">]</span>
     <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">category_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
 </code></pre></div>
 
@@ -2658,9 +2972,7 @@ If there are multiple expected outputs, the highest score is adopted.</p>
 
             <details class="quote">
               <summary>Source code in <code>flexeval/core/metric/char_f1.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">33</span>
-<span class="normal">34</span>
-<span class="normal">35</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">35</span>
 <span class="normal">36</span>
 <span class="normal">37</span>
 <span class="normal">38</span>
@@ -2669,10 +2981,15 @@ If there are multiple expected outputs, the highest score is adopted.</p>
 <span class="normal">41</span>
 <span class="normal">42</span>
 <span class="normal">43</span>
-<span class="normal">44</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">lm_output_processor</span><span class="p">:</span> <span class="n">StringProcessor</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="n">StringProcessor</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">reference_processor</span><span class="p">:</span> <span class="n">StringProcessor</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="n">StringProcessor</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">category_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">lm_output_processor</span><span class="p">,</span> <span class="n">StringProcessor</span><span class="p">):</span>
         <span class="n">lm_output_processor</span> <span class="o">=</span> <span class="p">[</span><span class="n">lm_output_processor</span><span class="p">]</span>
@@ -2681,6 +2998,7 @@ If there are multiple expected outputs, the highest score is adopted.</p>
 
     <span class="bp">self</span><span class="o">.</span><span class="n">lm_output_processors</span> <span class="o">=</span> <span class="n">lm_output_processor</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">reference_processors</span> <span class="o">=</span> <span class="n">reference_processor</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">category_key</span> <span class="o">=</span> <span class="n">category_key</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -2707,11 +3025,7 @@ If there are multiple expected outputs, the highest score is adopted.</p>
 
             <details class="quote">
               <summary>Source code in <code>flexeval/core/metric/char_f1.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">46</span>
-<span class="normal">47</span>
-<span class="normal">48</span>
-<span class="normal">49</span>
-<span class="normal">50</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">50</span>
 <span class="normal">51</span>
 <span class="normal">52</span>
 <span class="normal">53</span>
@@ -2731,7 +3045,20 @@ If there are multiple expected outputs, the highest score is adopted.</p>
 <span class="normal">67</span>
 <span class="normal">68</span>
 <span class="normal">69</span>
-<span class="normal">70</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">evaluate</span><span class="p">(</span>
+<span class="normal">70</span>
+<span class="normal">71</span>
+<span class="normal">72</span>
+<span class="normal">73</span>
+<span class="normal">74</span>
+<span class="normal">75</span>
+<span class="normal">76</span>
+<span class="normal">77</span>
+<span class="normal">78</span>
+<span class="normal">79</span>
+<span class="normal">80</span>
+<span class="normal">81</span>
+<span class="normal">82</span>
+<span class="normal">83</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">evaluate</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">lm_outputs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
     <span class="n">references_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span>
@@ -2752,8 +3079,17 @@ If there are multiple expected outputs, the highest score is adopted.</p>
     <span class="k">for</span> <span class="n">lm_output</span><span class="p">,</span> <span class="n">expected_output</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">lm_outputs</span><span class="p">,</span> <span class="n">references_list</span><span class="p">):</span>
         <span class="n">score</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">fuzz</span><span class="o">.</span><span class="n">ratio</span><span class="p">(</span><span class="n">lm_output</span><span class="p">,</span> <span class="n">o</span><span class="p">)</span> <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">expected_output</span><span class="p">)</span> <span class="o">/</span> <span class="mi">100</span>
         <span class="n">char_f1_scores</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">score</span><span class="p">)</span>
+
+    <span class="n">summary</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;char_f1&quot;</span><span class="p">:</span> <span class="nb">sum</span><span class="p">(</span><span class="n">char_f1_scores</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">char_f1_scores</span><span class="p">)}</span>
+
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">category_key</span><span class="p">:</span>
+        <span class="n">categories</span> <span class="o">=</span> <span class="p">[</span><span class="n">task_input</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">category_key</span><span class="p">]</span> <span class="k">for</span> <span class="n">task_input</span> <span class="ow">in</span> <span class="n">task_inputs_list</span><span class="p">]</span>
+        <span class="n">category_wise_scores</span> <span class="o">=</span> <span class="n">aggregate_category_wise_scores</span><span class="p">(</span><span class="n">char_f1_scores</span><span class="p">,</span> <span class="n">categories</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">category</span><span class="p">,</span> <span class="n">category_wise_score</span> <span class="ow">in</span> <span class="n">category_wise_scores</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">summary</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;char_f1/</span><span class="si">{</span><span class="n">category</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">category_wise_score</span>
+
     <span class="k">return</span> <span class="n">MetricResult</span><span class="p">(</span>
-        <span class="p">{</span><span class="s2">&quot;char_f1&quot;</span><span class="p">:</span> <span class="nb">sum</span><span class="p">(</span><span class="n">char_f1_scores</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">char_f1_scores</span><span class="p">)},</span>
+        <span class="n">summary</span><span class="p">,</span>
         <span class="n">instance_details</span><span class="o">=</span><span class="p">[{</span><span class="s2">&quot;char_f1&quot;</span><span class="p">:</span> <span class="n">s</span><span class="p">}</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">char_f1_scores</span><span class="p">],</span>
     <span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -4258,6 +4594,17 @@ If there are multiple references, the output is considered correct if it matches
             <p>StringProcessor or list of StringProcessor to apply to the references before comparison.</p>
           </div>
         </li>
+        <li class="doc-section-item field-body">
+            <b><code>category_key</code></b>
+              (<code><span title="str">str</span> | None</code>, default:
+                  <code>None</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>A key to create category-wise mean score.
+The category key is expected to be in task inputs.</p>
+          </div>
+        </li>
     </ul>
 
 
@@ -4358,7 +4705,9 @@ If there are multiple references, the output is considered correct if it matches
 <span class="normal">84</span>
 <span class="normal">85</span>
 <span class="normal">86</span>
-<span class="normal">87</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ExactMatch</span><span class="p">(</span><span class="n">Metric</span><span class="p">):</span>
+<span class="normal">87</span>
+<span class="normal">88</span>
+<span class="normal">89</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ExactMatch</span><span class="p">(</span><span class="n">Metric</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Exact match metric.</span>
 <span class="sd">    If there are multiple references, the output is considered correct if it matches any of the references.</span>
@@ -4367,6 +4716,8 @@ If there are multiple references, the output is considered correct if it matches
 <span class="sd">        lm_output_processor:</span>
 <span class="sd">            StringProcessor or a list of StringProcessor to be applied to the model outputs before comparison.</span>
 <span class="sd">        reference_processor: StringProcessor or list of StringProcessor to apply to the references before comparison.</span>
+<span class="sd">        category_key: A key to create category-wise mean score.</span>
+<span class="sd">            The category key is expected to be in task inputs.</span>
 
 <span class="sd">    Examples:</span>
 <span class="sd">        &gt;&gt;&gt; from flexeval import ExactMatch</span>
@@ -4540,9 +4891,7 @@ If there are multiple references, the output is considered correct if it matches
 
             <details class="quote">
               <summary>Source code in <code>flexeval/core/metric/exact_match.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">34</span>
-<span class="normal">35</span>
-<span class="normal">36</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">36</span>
 <span class="normal">37</span>
 <span class="normal">38</span>
 <span class="normal">39</span>
@@ -4553,7 +4902,9 @@ If there are multiple references, the output is considered correct if it matches
 <span class="normal">44</span>
 <span class="normal">45</span>
 <span class="normal">46</span>
-<span class="normal">47</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">lm_output_processor</span><span class="p">:</span> <span class="n">StringProcessor</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="n">StringProcessor</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">reference_processor</span><span class="p">:</span> <span class="n">StringProcessor</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="n">StringProcessor</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -4593,9 +4944,7 @@ If there are multiple references, the output is considered correct if it matches
 
             <details class="quote">
               <summary>Source code in <code>flexeval/core/metric/exact_match.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">49</span>
-<span class="normal">50</span>
-<span class="normal">51</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">51</span>
 <span class="normal">52</span>
 <span class="normal">53</span>
 <span class="normal">54</span>
@@ -4631,7 +4980,9 @@ If there are multiple references, the output is considered correct if it matches
 <span class="normal">84</span>
 <span class="normal">85</span>
 <span class="normal">86</span>
-<span class="normal">87</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">evaluate</span><span class="p">(</span>
+<span class="normal">87</span>
+<span class="normal">88</span>
+<span class="normal">89</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">evaluate</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">lm_outputs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
     <span class="n">references_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span>
