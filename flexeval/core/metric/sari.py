@@ -13,13 +13,13 @@ from flexeval.core.tokenizer.sacrebleu_tokenizer import SacreBleuTokenizer
 
 
 def to_ngram(words: list[str], n: int) -> list[str]:
-    return [" ".join(words[i : i + n]) for i in range(len(words) - n + 1)]
+    return ["__".join(words[i : i + n]) for i in range(len(words) - n + 1)]
 
 
 class SARI(Metric):
     """An implementation of SARI, a metric for evaluating text simplification.
 
-    Based on the original implementation [1], but modified to allow configurable settings
+    Based on the original implementation [1], modified to allow configurable settings
     for the maximum n-gram size and tokenizer.
     Additionally, it fixes a bug present in the original implementation [2].
     When used with the default parameters, it produces scores that are
