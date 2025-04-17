@@ -13,5 +13,6 @@ from .output_length_stats import OutputLengthStats
 from .perspective_api import PerspectiveAPI
 from .repetition_count import RepetitionCount
 from .rouge import ROUGE
+from .sari import SARI
 from .substring_match import SubstringMatch
 from .xer import XER
