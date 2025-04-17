@@ -12,8 +12,8 @@
 
 ```bash
 flexeval_lm \
-  --language_model "examples/evaluate_sarashina_2_2/configs/pretrained_models/sarashina2.2-3b.jsonnet" \
-  --eval_setup "examples/evaluate_sarashina_2_2/configs/pretrained_evals/mgsm-ja.jsonnet" \
+  --language_model "examples/sarashina_2_2_evaluation/configs/pretrained_models/sarashina2.2-3b.jsonnet" \
+  --eval_setup "examples/sarashina_2_2_evaluation/configs/pretrained_evals/mgsm-ja.jsonnet" \
   --save_dir "./results_pretrained/sarashina2.2-3b/mgsm-ja"
 ```
 
@@ -74,9 +74,9 @@ OpenAI API を利用した LLM-as-a-Judge による評価を行うため、`OPEN
 export OPENAI_API_KEY=sk-...
 
 flexeval_lm \
-  --language_model "examples/evaluate_sarashina_2_2/configs/instruction_models/sarashina2.2-3b-instruct-v0.1.jsonnet" \
+  --language_model "examples/sarashina_2_2_evaluation/configs/instruction_models/sarashina2.2-3b-instruct-v0.1.jsonnet" \
   --language_model.default_gen_kwargs.seed 0 \
-  --eval_setup "examples/evaluate_sarashina_2_2/configs/instruction_evals/elyza_tasks_100.jsonnet" \
+  --eval_setup "examples/sarashina_2_2_evaluation/configs/instruction_evals/elyza_tasks_100.jsonnet" \
   --save_dir "./results_instruction/sarashina2.2-3b-instruct-v0.1/elyza_tasks_100"
 ```
 
