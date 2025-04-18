@@ -5,6 +5,7 @@ from typing import Any
 import torch
 from loguru import logger
 from transformers import AutoTokenizer, PreTrainedTokenizer
+from vllm import SamplingParams
 
 from flexeval.core.string_processor import StringProcessor
 
@@ -81,7 +82,7 @@ class VLLM(LanguageModel):
             If specified, this overrides the default chat template of the tokenizer.
         default_gen_kwargs: Default generation kwargs to use when calling the model.
         string_processors: A single or a list of StringProcessor objects to process the model's output.
-        model_limit_new_tokens: An upper limit on the number of tokens the model can generate.
+        model_limit_tokens: An upper limit on the number of tokens the model can receive.
             For example, if a too-large `max_new_tokens` is given to generate_chat_response(), this value will cap it.
     """
 
@@ -95,7 +96,7 @@ class VLLM(LanguageModel):
         custom_chat_template: str | None = None,
         default_gen_kwargs: dict[str, Any] | None = None,
         string_processors: StringProcessor | list[StringProcessor] | None = None,
-        model_limit_new_tokens: int | None = None,
+        model_limit_tokens: int | None = None,
     ) -> None:
         super().__init__(string_processors=string_processors)
         self.model_name = model
@@ -109,7 +110,6 @@ class VLLM(LanguageModel):
         # convert the flexeval-specific argument name to the vllm-specific name
         if "max_new_tokens" in self.default_gen_kwargs:
             self.default_gen_kwargs["max_tokens"] = self.default_gen_kwargs.pop("max_new_tokens")
-        self.model_limit_new_tokens = model_limit_new_tokens
 
         # import from vllm here because it is an extra dependency
         from vllm import LLM
@@ -123,7 +123,10 @@ class VLLM(LanguageModel):
             model_kwargs["disable_sliding_window"] = True
         self.llm = LLM(model, **model_kwargs)
 
-    def _batch_complete_text(
+        max_model_len = self.llm.llm_engine.get_model_config().max_model_len
+        self.model_limit_tokens = model_limit_tokens if model_limit_tokens else max_model_len
+
+    def _batch_complete_text(  # noqa: C901
         self,
         text_list: list[str],
         stop_sequences: str | list[str] | None = None,
@@ -134,14 +137,6 @@ class VLLM(LanguageModel):
         gen_kwargs.update(kwargs)
         if max_new_tokens is not None:
             gen_kwargs["max_tokens"] = max_new_tokens
-
-        if self.model_limit_new_tokens and (gen_kwargs.get("max_tokens", 0) > self.model_limit_new_tokens):
-            msg = (
-                f"The specified `max_new_tokens` ({gen_kwargs['max_tokens']}) exceeds"
-                f"the model’s capability ({self.model_limit_new_tokens} tokens). It will be reduced."
-            )
-            logger.warning(msg)
-            gen_kwargs["max_tokens"] = self.model_limit_new_tokens
 
         stop_sequences = normalize_stop_sequences(
             stop_sequences_list=[
@@ -160,18 +155,57 @@ class VLLM(LanguageModel):
             return_token_type_ids=False,
         )
 
-        from vllm import SamplingParams
+        from vllm import RequestOutput, SamplingParams
 
-        vllm_outputs = self.llm.generate(
-            prompt_token_ids=model_inputs.input_ids,
-            sampling_params=SamplingParams(**gen_kwargs, stop=stop_sequences),
-            use_tqdm=False,
-        )
+        prompt_token_ids: list[list[int]] = []
+        sampling_params: list[SamplingParams] = []
+        original_indices: list[int] = []
+        for i, input_ids in enumerate(model_inputs.input_ids):
+            input_length = len(input_ids)
+            remaining = self.model_limit_tokens - input_length
+            # To avoid errors on vllm.generate(), skip instances with no remaining tokens available for generation.
+            if remaining <= 0:
+                msg = (
+                    f"Received input that is longer than `model_limit_tokens = {self.model_limit_tokens}`. "
+                    f"This instance returns an empty string. instance: {i}"
+                )
+                logger.warning(msg)
+                continue
+            prompt_token_ids.append(input_ids)
+            original_indices.append(i)
+            instance_gen_kwargs = gen_kwargs.copy()
+            if "max_tokens" not in gen_kwargs or remaining < gen_kwargs["max_tokens"]:
+                instance_gen_kwargs["max_tokens"] = remaining
+                msg = (
+                    f"The specified `max_new_tokens` ({gen_kwargs['max_tokens']}) exceeds "
+                    f"the model’s capability (remaining {remaining} tokens). It will be capped."
+                )
+                logger.warning(msg)
+            sampling_params.append(SamplingParams(**instance_gen_kwargs, stop=stop_sequences))
+
+        if len(prompt_token_ids) > 0:
+            vllm_outputs: list[RequestOutput] = self.llm.generate(
+                prompt_token_ids=prompt_token_ids,
+                sampling_params=sampling_params,
+                use_tqdm=False,
+            )
+        else:
+            vllm_outputs = []
+
+        vllm_outputs_with_skipped: list[RequestOutput | None] = [None] * len(text_list)
+        for orig_idx, vllm_output in zip(original_indices, vllm_outputs):
+            vllm_outputs_with_skipped[orig_idx] = vllm_output
+
         outputs = []
-        for input_token_ids, vllm_output in zip(model_inputs.input_ids, vllm_outputs):
-            output_token_ids = list(vllm_output.outputs[0].token_ids)
-            decoded_text = decode_for_lm_continuation(output_token_ids, input_token_ids, self.tokenizer)
-            finish_reason = "length"
+        for input_token_ids, maybe_vllm_output in zip(model_inputs.input_ids, vllm_outputs_with_skipped):
+            if maybe_vllm_output is None:
+                # Treat skipped instances as if they generated an empty string.
+                decoded_text = ""
+                finish_reason = "input_length_limit"
+            else:
+                output_token_ids = list(maybe_vllm_output.outputs[0].token_ids)
+                decoded_text = decode_for_lm_continuation(output_token_ids, input_token_ids, self.tokenizer)
+                finish_reason = "length"
             # We manually remove the stop sequences from the generated texts.
             for stop in stop_sequences:
                 stop_index = decoded_text.find(stop)

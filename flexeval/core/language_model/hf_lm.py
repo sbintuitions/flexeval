@@ -155,7 +155,7 @@ class HuggingFaceLM(LanguageModel):
             If specified, this overrides the default chat template of the tokenizer.
         default_gen_kwargs: Default generation kwargs to use when calling the API.
         string_processors: A single or a list of StringProcessor objects to process the model's output.
-        model_limit_new_tokens: An upper limit on the number of tokens the model can generate.
+        model_limit_tokens: An upper limit on the number of tokens the model can receive.
             For example, if a too-large `max_new_tokens` is given to generate_chat_response(), this value will cap it.
     """
 
@@ -172,7 +172,7 @@ class HuggingFaceLM(LanguageModel):
         custom_chat_template: str | None = None,
         default_gen_kwargs: dict[str, Any] | None = None,
         string_processors: StringProcessor | list[StringProcessor] | None = None,
-        model_limit_new_tokens: int | None = None,
+        model_limit_tokens: int | None = None,
     ) -> None:
         super().__init__(string_processors=string_processors)
         self._model_name_or_path = model
@@ -200,7 +200,13 @@ class HuggingFaceLM(LanguageModel):
         self.model.eval()
 
         self.amp_dtype = amp_dtype
-        self.model_limit_new_tokens = model_limit_new_tokens
+        hf_config = self.model.config.to_dict()
+        max_position_embeddings: int | None = None
+        if "n_positions" in hf_config:
+            max_position_embeddings = hf_config["n_positions"]
+        elif "max_position_embeddings" in hf_config:
+            max_position_embeddings = hf_config["max_position_embeddings"]
+        self.model_limit_tokens = model_limit_tokens if model_limit_tokens else max_position_embeddings
 
         transformers.set_seed(random_seed)
 
@@ -264,20 +270,30 @@ class HuggingFaceLM(LanguageModel):
         if max_new_tokens is not None:
             gen_kwargs["max_new_tokens"] = max_new_tokens
 
-        if self.model_limit_new_tokens and (gen_kwargs.get("max_new_tokens", 0) > self.model_limit_new_tokens):
-            msg = (
-                f"The specified `max_new_tokens` ({gen_kwargs['max_new_tokens']}) exceeds"
-                f"the model’s capability ({self.model_limit_new_tokens} tokens). It will be reduced."
-            )
-            logger.warning(msg)
-            gen_kwargs["max_new_tokens"] = self.model_limit_new_tokens
-
         model_inputs = tokenize_text_for_lm_prefix(
             text_list,
             self.tokenizer,
             add_special_tokens=self.add_special_tokens,
         ).to(self.model.device)
         input_token_length = model_inputs["input_ids"].shape[1]
+
+        if self.model_limit_tokens:
+            model_limit_new_tokens = self.model_limit_tokens - input_token_length
+            if model_limit_new_tokens <= 0:
+                msg = (
+                    f"Received input that is longer than `model_limit_tokens = {self.model_limit_tokens}`. "
+                    f"This batch returns empty strings."
+                )
+                logger.warning(msg)
+                return [LMOutput(text="", finish_reason="input_length_limit") for _ in text_list]
+
+            if model_limit_new_tokens < gen_kwargs["max_new_tokens"]:
+                msg = (
+                    f"The specified `max_new_tokens` ({gen_kwargs['max_new_tokens']}) exceeds "
+                    f"the model’s capability (remaining {model_limit_new_tokens} tokens). It will be capped."
+                )
+                logger.warning(msg)
+                gen_kwargs["max_new_tokens"] = model_limit_new_tokens
 
         # set the stop sequences
         stop_sequences = normalize_stop_sequences(

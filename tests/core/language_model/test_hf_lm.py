@@ -6,6 +6,7 @@ import pytest
 import torch
 from transformers import AutoTokenizer, PreTrainedTokenizer
 
+from flexeval.core.language_model.base import LMOutput
 from flexeval.core.language_model.hf_lm import (
     HuggingFaceLM,
     LanguageModel,
@@ -246,48 +247,63 @@ def test_get_prefix_and_completion_from_chat() -> None:
     assert completion == ""
 
 
-def test_model_limit_new_tokens_generate_chat_response(
-    chat_lm: HuggingFaceLM, caplog: pytest.LogCaptureFixture
-) -> None:
-    caplog.set_level(logging.WARNING)
-    messages = [{"role": "user", "content": "Hello."}]
-
-    # if max_new_tokens only, no warnings will be sent.
-    chat_lm.generate_chat_response(messages, max_new_tokens=128)
-    assert len(caplog.records) == 0
-    caplog.clear()
-
-    # if max_new_tokens > model_limit_new_tokens, a warning about overwriting is sent.
-    chat_lm_with_limit_tokens = HuggingFaceLM(
-        model="sbintuitions/tiny-lm-chat",
-        model_kwargs={"torch_dtype": "float32"},
-        default_gen_kwargs={"do_sample": False},
-        model_limit_new_tokens=1,
-    )
-    chat_lm_with_limit_tokens.generate_chat_response(messages, max_new_tokens=128)
-    assert len(caplog.records) >= 1
-    assert any(record.msg.startswith("The specified `max_new_tokens` (128) exceeds") for record in caplog.records)
-    caplog.clear()
-
-
 def test_model_limit_new_tokens_complete_text(lm: HuggingFaceLM, caplog: pytest.LogCaptureFixture) -> None:
     caplog.set_level(logging.WARNING)
-    text = "Hello. I am a "
+    text = "Outputs numbers 0~10: 1 2 3 "
+    tokenizer = AutoTokenizer.from_pretrained("sbintuitions/tiny-lm")
+    input_length = len(
+        tokenizer(
+            [text],
+            add_special_tokens=False,
+            return_token_type_ids=False,
+        ).input_ids[0]
+    )
 
     # if max_new_tokens only, no warnings will be sent.
-    lm.complete_text(text, max_new_tokens=128)
+    lm_output = lm.complete_text(text, max_new_tokens=128)
     assert len(caplog.records) == 0
     caplog.clear()
 
-    # if max_new_tokens > model_limit_new_tokens, a warning about overwriting is sent.
+    # if max_new_tokens > (model_limit_new_tokens = model_new_tokens - len(input_tokens)), a warning about overwriting is sent.  # noqa: E501
     lm_with_limit_tokens = HuggingFaceLM(
         model="sbintuitions/tiny-lm",
         model_kwargs={"torch_dtype": "float32"},
         tokenizer_kwargs={"use_fast": False},
         default_gen_kwargs={"do_sample": False},
-        model_limit_new_tokens=1,
+        add_special_tokens=False,
+        model_limit_tokens=input_length + 3,
     )
-    lm_with_limit_tokens.complete_text(text, max_new_tokens=128)
+    lm_output_limit_tokens: LMOutput = lm_with_limit_tokens.complete_text(text, max_new_tokens=128)
+    assert lm_output_limit_tokens.finish_reason == "length"
+    assert len(lm_output.text) > len(lm_output_limit_tokens.text)
     assert len(caplog.records) >= 1
     assert any(record.msg.startswith("The specified `max_new_tokens` (128) exceeds") for record in caplog.records)
+    caplog.clear()
+
+
+def test_if_input_length_exceeds_model_limit_new_tokens(caplog: pytest.LogCaptureFixture) -> None:
+    caplog.set_level(logging.WARNING)
+    text = "Hello. I am a "
+    tokenizer = AutoTokenizer.from_pretrained("sbintuitions/tiny-lm")
+    input_length = len(
+        tokenizer(
+            [text],
+            add_special_tokens=False,
+            return_token_type_ids=False,
+        ).input_ids[0]
+    )
+    lm_with_limit_tokens = HuggingFaceLM(
+        model="sbintuitions/tiny-lm",
+        model_kwargs={"torch_dtype": "float32"},
+        tokenizer_kwargs={"use_fast": False},
+        default_gen_kwargs={"do_sample": False},
+        model_limit_tokens=input_length,
+        add_special_tokens=False,
+    )
+
+    lm_output: LMOutput = lm_with_limit_tokens.complete_text(text, max_new_tokens=128)
+    assert lm_output.text == ""
+    assert lm_output.finish_reason == "input_length_limit"
+    assert len(caplog.records) >= 1
+    assert any(record.msg.startswith("Received input that is longer than") for record in caplog.records)
     caplog.clear()
