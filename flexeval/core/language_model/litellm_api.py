@@ -28,6 +28,8 @@ class LiteLLMChatAPI(OpenAIChatAPI):
         string_processors: A single or a list of StringProcessor objects to process the model's output.
         ignore_seed: If True, ignore the seed specified in default_gen_kwargs.
             This is an option for models that do not support seed parameters such as anthropic/claude.
+        model_limit_new_tokens: An upper limit on the number of tokens the model can generate.
+            For example, if a too-large `max_new_tokens` is given to generate_chat_response(), this value will cap it.
     """
 
     def __init__(
@@ -37,6 +39,7 @@ class LiteLLMChatAPI(OpenAIChatAPI):
         developer_message: str | None = None,
         string_processors: StringProcessor | list[StringProcessor] | None = None,
         ignore_seed: bool = False,
+        model_limit_completion_tokens: int | None = None,
     ) -> None:
         super().__init__(
             model=model,
@@ -44,6 +47,7 @@ class LiteLLMChatAPI(OpenAIChatAPI):
             default_gen_kwargs=default_gen_kwargs,
             developer_message=developer_message,
             string_processors=string_processors,
+            model_limit_new_tokens=model_limit_completion_tokens,
         )
         self.model = model
         self.default_gen_kwargs = default_gen_kwargs or {}
