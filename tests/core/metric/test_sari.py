@@ -40,7 +40,7 @@ from flexeval.core.metric.sari import SARI
         ),
     ],
 )
-def test_rouge(
+def test_sari(
     lm_outputs: list[str],
     expected_outputs: list[list[str]],
     task_inputs_list: list[dict[str, str]],
