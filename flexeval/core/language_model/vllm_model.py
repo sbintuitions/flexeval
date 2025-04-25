@@ -5,7 +5,6 @@ from typing import Any, Literal
 import torch
 from loguru import logger
 from transformers import AutoTokenizer, PreTrainedTokenizer
-from vllm import SamplingParams
 
 from flexeval.core.string_processor import StringProcessor
 
