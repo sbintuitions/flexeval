@@ -12,7 +12,7 @@ class ChatInstance:
     A dataclass representing a single chat that will be fed to a chat language model.
     """
 
-    messages: list[dict[str, str]]
+    messages: list[dict[str, Any]]
     """
     A list of messages in the chat.
     The format of messages typically follows [OpenAI's Chat Completions API](https://platform.openai.com/docs/guides/text-generation/chat-completions-api).
