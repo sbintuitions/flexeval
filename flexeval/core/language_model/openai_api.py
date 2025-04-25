@@ -105,7 +105,7 @@ class OpenAIChatAPI(LanguageModel):
 
     async def _async_batch_run_chatgpt(
         self,
-        messages_list: list[list[dict[str, str]]],
+        messages_list: list[list[dict[str, Any]]],
         stop_sequences: str | list[str] | None = None,
         max_new_tokens: int | None = None,
         **kwargs,
@@ -189,7 +189,7 @@ class OpenAIChatAPI(LanguageModel):
 
     def _batch_generate_chat_response(
         self,
-        chat_messages_list: list[list[dict[str, str]]],
+        chat_messages_list: list[list[dict[str, Any]]],
         **kwargs,
     ) -> list[LMOutput]:
         api_responses = asyncio.run(
@@ -205,8 +205,8 @@ class OpenAIChatAPI(LanguageModel):
 
     def _batch_compute_chat_log_probs(
         self,
-        prompt_list: list[list[dict[str, str]]],
-        response_list: list[dict[str, str]],
+        prompt_list: list[list[dict[str, Any]]],
+        response_list: list[dict[str, Any]],
         temperature: float = 0,
         seed: int = 42,
         top_logprobs: int = 20,
@@ -267,14 +267,14 @@ def number_of_tokens_in_openai_model(model: str, content: str) -> int:
     return len(encoding.encode(content))
 
 
-def message_list_from_prompt(prompt: list[dict[str, str]]) -> list[str]:
+def message_list_from_prompt(prompt: list[dict[str, Any]]) -> list[str]:
     """A preprocess function to remove duplicates from prompt_list.
     This function translates prompt into list[str], allowing sorting
     """
     return [f"[{message['role']}]{message['content']}" for message in prompt]
 
 
-def prompt_from_message_list(message_list: list[str]) -> list[dict[str, str]]:
+def prompt_from_message_list(message_list: list[str]) -> list[dict[str, Any]]:
     """The inverted function of message_list_from_prompt."""
     prompt = []
     for message_str in message_list:
@@ -285,7 +285,7 @@ def prompt_from_message_list(message_list: list[str]) -> list[dict[str, str]]:
     return prompt
 
 
-def remove_duplicates_from_prompt_list(prompt_list: list[list[dict[str, str]]]) -> list[list[dict[str, str]]]:
+def remove_duplicates_from_prompt_list(prompt_list: list[list[dict[str, Any]]]) -> list[list[dict[str, Any]]]:
     """We cannot sort raw prompt_list because order is not defined for dict.
 
     Removing duplicates can be done as below.

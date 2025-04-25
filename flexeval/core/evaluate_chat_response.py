@@ -16,9 +16,9 @@ from .utils.data_util import batch_iter
 
 
 def _remove_redundant_keys_from_messages(
-    messages: list[dict[str, str]],
+    messages: list[dict[str, Any]],
     remove_keys: Iterable[str],
-) -> list[dict[str, str]]:
+) -> list[dict[str, Any]]:
     """
     Remove specified keys from all turns in `messages`.
 
@@ -47,7 +47,7 @@ def evaluate_chat_response(  # noqa: C901,PLR0912
         eval_instances = [eval_dataset[i] for i in range(min(max_instances, len(eval_dataset)))]
 
     # Generate responses for each instance
-    all_messages_list: list[list[dict[str, str]]] = []
+    all_messages_list: list[list[dict[str, Any]]] = []
     references_list: list[list[str]] = []
     extra_info_list: list[dict[str, Any]] = []
     with tqdm(total=len(eval_instances)) as pbar:
@@ -59,7 +59,7 @@ def evaluate_chat_response(  # noqa: C901,PLR0912
             if few_shot_generator is not None:
                 for input_id in range(len(input_messages_list)):
                     few_shot_instances = few_shot_generator(eval_inputs=input_messages_list[input_id])
-                    few_shot_messages: list[dict[str, str]] = []
+                    few_shot_messages: list[dict[str, Any]] = []
                     for few_shot_instance in few_shot_instances:
                         if not isinstance(few_shot_instance, ChatInstance):
                             msg = f"Invalid instance type: {type(few_shot_instance)}"
@@ -94,7 +94,7 @@ def evaluate_chat_response(  # noqa: C901,PLR0912
                 # The model first responses to the first user message, then add its response to the chat history,
                 # and responses to the next user message, and so on.
                 max_num_turns = max(len(messages) for messages in input_messages_list)
-                current_chat_history: list[list[dict[str, str]]] = [[] for _ in input_messages_list]
+                current_chat_history: list[list[dict[str, Any]]] = [[] for _ in input_messages_list]
                 # perform generation for each turn
                 for turn in range(max_num_turns):
                     batch_ids_fed_to_model = [

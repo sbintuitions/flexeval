@@ -342,7 +342,7 @@ class HuggingFaceLM(LanguageModel):
 
     def _batch_generate_chat_response(
         self,
-        chat_messages_list: list[list[dict[str, str]]],
+        chat_messages_list: list[list[dict[str, Any]]],
         **kwargs,
     ) -> list[LMOutput]:
         chat_messages_as_string = [
@@ -464,7 +464,7 @@ class HuggingFaceLM(LanguageModel):
         return total_log_probs.tolist()
 
     def _batch_compute_chat_log_probs(
-        self, prompt_list: list[list[dict[str, str]]], response_list: list[dict[str, str]]
+        self, prompt_list: list[list[dict[str, Any]]], response_list: list[dict[str, Any]]
     ) -> list[float]:
         prompt_as_string: list[str] = []
         response_as_string: list[str] = []
