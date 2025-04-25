@@ -82,4 +82,4 @@ class ChatLLMPairwiseJudge(PairwiseJudge):
                 )
             input_chat_messages_list.append(input_chat_messages)
         judge_outputs = self.language_model.generate_chat_response(input_chat_messages_list)
-        return [self._parse_judge_output(output) for output in judge_outputs]
+        return [self._parse_judge_output(output.text) for output in judge_outputs]
