@@ -31,6 +31,13 @@ class SARI(Metric):
 
     Args:
         tokenizer: An instance of `Tokenizer` to tokenize the input and output strings.
+        max_ngrams: The maximum n-gram order to consider. Defaults to `4`.
+        category_key: A key to create category-wise mean score.
+            The category key is expected to be in task inputs.
+        lm_output_processor:
+            StringProcessor or a list of StringProcessor to be applied to the model outputs before comparison.
+        reference_processor: StringProcessor or list of StringProcessor to apply to the references before comparison.
+        source_processor: StringProcessor or list of StringProcessor to apply to the source sentences before comparison.
 
     Examples:
         >>> from flexeval import SARI
