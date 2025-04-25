@@ -1897,7 +1897,7 @@
                 <span class="p">)</span>
             <span class="n">input_chat_messages_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">input_chat_messages</span><span class="p">)</span>
         <span class="n">judge_outputs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">language_model</span><span class="o">.</span><span class="n">generate_chat_response</span><span class="p">(</span><span class="n">input_chat_messages_list</span><span class="p">)</span>
-        <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_parse_judge_output</span><span class="p">(</span><span class="n">output</span><span class="p">)</span> <span class="k">for</span> <span class="n">output</span> <span class="ow">in</span> <span class="n">judge_outputs</span><span class="p">]</span>
+        <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_parse_judge_output</span><span class="p">(</span><span class="n">output</span><span class="o">.</span><span class="n">text</span><span class="p">)</span> <span class="k">for</span> <span class="n">output</span> <span class="ow">in</span> <span class="n">judge_outputs</span><span class="p">]</span>
 </code></pre></div></td></tr></table></div>
               </details>
 
@@ -2088,7 +2088,7 @@
             <span class="p">)</span>
         <span class="n">input_chat_messages_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">input_chat_messages</span><span class="p">)</span>
     <span class="n">judge_outputs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">language_model</span><span class="o">.</span><span class="n">generate_chat_response</span><span class="p">(</span><span class="n">input_chat_messages_list</span><span class="p">)</span>
-    <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_parse_judge_output</span><span class="p">(</span><span class="n">output</span><span class="p">)</span> <span class="k">for</span> <span class="n">output</span> <span class="ow">in</span> <span class="n">judge_outputs</span><span class="p">]</span>
+    <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_parse_judge_output</span><span class="p">(</span><span class="n">output</span><span class="o">.</span><span class="n">text</span><span class="p">)</span> <span class="k">for</span> <span class="n">output</span> <span class="ow">in</span> <span class="n">judge_outputs</span><span class="p">]</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
