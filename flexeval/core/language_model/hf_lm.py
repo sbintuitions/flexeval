@@ -155,6 +155,11 @@ class HuggingFaceLM(LanguageModel):
             If specified, this overrides the default chat template of the tokenizer.
         default_gen_kwargs: Default generation kwargs to use when calling the API.
         string_processors: A single or a list of StringProcessor objects to process the model's output.
+        model_limit_tokens: An upper limit on the number of tokens (input + output) the model can handle.
+            If `max_new_tokens` exceeds this limit in `generate_chat_response()`, it will be capped to this value.
+            If this value is set to less than or equal to the model's capacity and the input exceeds it,
+            an empty string is returned instead of raising an error.
+            If set to “default”, the value will be automatically determined when possible.
     """
 
     def __init__(
@@ -170,6 +175,7 @@ class HuggingFaceLM(LanguageModel):
         custom_chat_template: str | None = None,
         default_gen_kwargs: dict[str, Any] | None = None,
         string_processors: StringProcessor | list[StringProcessor] | None = None,
+        model_limit_tokens: int | None | Literal["default"] = "default",
     ) -> None:
         super().__init__(string_processors=string_processors)
         self._model_name_or_path = model
@@ -197,6 +203,19 @@ class HuggingFaceLM(LanguageModel):
         self.model.eval()
 
         self.amp_dtype = amp_dtype
+        if model_limit_tokens == "default":
+            hf_config = self.model.config.to_dict()
+            if "n_positions" in hf_config:
+                model_limit_tokens = hf_config["n_positions"]
+            elif "max_position_embeddings" in hf_config:
+                model_limit_tokens = hf_config["max_position_embeddings"]
+            else:
+                msg = (
+                    "`model_limit_tokens` was set to “default”, but the default max_position_embedeings "
+                    "could not be found in the config. Set it to `None`."
+                )
+                logger.warn(msg)
+        self.model_limit_tokens = model_limit_tokens
 
         transformers.set_seed(random_seed)
 
@@ -267,6 +286,19 @@ class HuggingFaceLM(LanguageModel):
         ).to(self.model.device)
         input_token_length = model_inputs["input_ids"].shape[1]
 
+        if self.model_limit_tokens:
+            model_limit_new_tokens = self.model_limit_tokens - input_token_length
+            if model_limit_new_tokens <= 0:
+                msg = (
+                    f"Received input that is longer than `model_limit_tokens = {self.model_limit_tokens}`. "
+                    f"This batch returns empty strings."
+                )
+                logger.warning(msg)
+                return [LMOutput(text="", finish_reason="input_length_limit") for _ in text_list]
+
+            if "max_new_tokens" not in gen_kwargs or model_limit_new_tokens < gen_kwargs["max_new_tokens"]:
+                gen_kwargs["max_new_tokens"] = model_limit_new_tokens
+
         # set the stop sequences
         stop_sequences = normalize_stop_sequences(
             stop_sequences_list=[
@@ -310,7 +342,7 @@ class HuggingFaceLM(LanguageModel):
 
     def _batch_generate_chat_response(
         self,
-        chat_messages_list: list[list[dict[str, str]]],
+        chat_messages_list: list[list[dict[str, Any]]],
         **kwargs,
     ) -> list[LMOutput]:
         chat_messages_as_string = [
@@ -432,7 +464,7 @@ class HuggingFaceLM(LanguageModel):
         return total_log_probs.tolist()
 
     def _batch_compute_chat_log_probs(
-        self, prompt_list: list[list[dict[str, str]]], response_list: list[dict[str, str]]
+        self, prompt_list: list[list[dict[str, Any]]], response_list: list[dict[str, Any]]
     ) -> list[float]:
         prompt_as_string: list[str] = []
         response_as_string: list[str] = []

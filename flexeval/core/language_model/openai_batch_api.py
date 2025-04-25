@@ -33,7 +33,7 @@ class Status(str, Enum):
     canceled = "canceled"
 
 
-def create_request_details(model: str, custom_id: str, messages: list[dict[str, str]], **kwargs) -> dict[str, Any]:
+def create_request_details(model: str, custom_id: str, messages: list[dict[str, Any]], **kwargs) -> dict[str, Any]:
     return {
         "custom_id": custom_id,
         "method": "POST",
@@ -54,6 +54,8 @@ class OpenAIChatBatchAPI(LanguageModel):
         developer_message: Instructions to the model that are prioritized ahead of user messages.
             Previously called the system prompt.
         string_processors: A single or a list of StringProcessor objects to process the model's output.
+        model_limit_new_tokens: An upper limit on the number of tokens the model can generate.
+            For example, if a too-large `max_new_tokens` is given to generate_chat_response(), this value will cap it.
     """
 
     def __init__(
@@ -64,6 +66,7 @@ class OpenAIChatBatchAPI(LanguageModel):
         default_gen_kwargs: dict[str, Any] | None = None,
         developer_message: str | None = None,
         string_processors: StringProcessor | list[StringProcessor] | None = None,
+        model_limit_new_tokens: int | None = None,
     ) -> None:
         super().__init__(string_processors=string_processors)
         self.model = model
@@ -78,8 +81,9 @@ class OpenAIChatBatchAPI(LanguageModel):
 
         self.polling_interval_seconds = polling_interval_seconds
         self.developer_message = developer_message
+        self.model_limit_new_tokens = model_limit_new_tokens
 
-    def create_batch_file(self, custom_id_2_message: dict[str, list[dict[str, str]]], **kwargs) -> None:
+    def create_batch_file(self, custom_id_2_message: dict[str, list[dict[str, Any]]], **kwargs) -> None:
         with open(self.temp_jsonl_file.name, mode="w") as f:
             for custom_id, message in custom_id_2_message.items():
                 if self.developer_message:
@@ -92,7 +96,7 @@ class OpenAIChatBatchAPI(LanguageModel):
 
     async def _post_batch_requests(
         self,
-        custom_id_2_message: dict[str, list[dict[str, str]]],
+        custom_id_2_message: dict[str, list[dict[str, Any]]],
         stop_sequences: str | list[str] | None = None,
         max_new_tokens: int | None = None,
         **kwargs,
@@ -110,6 +114,14 @@ class OpenAIChatBatchAPI(LanguageModel):
                 )
                 logger.warning(msg)
             gen_kwargs["max_completion_tokens"] = max_new_tokens
+
+        if self.model_limit_new_tokens and (gen_kwargs.get("max_completion_tokens", 0) > self.model_limit_new_tokens):
+            msg = (
+                f"The specified `max_new_tokens` ({gen_kwargs['max_completion_tokens']}) exceeds"
+                f"the model’s capability ({self.model_limit_new_tokens} tokens). It will be reduced."
+            )
+            logger.warning(msg)
+            gen_kwargs["max_completion_tokens"] = self.model_limit_new_tokens
 
         gen_kwargs["stop"] = normalize_stop_sequences(
             stop_sequences_list=[
@@ -155,14 +167,14 @@ class OpenAIChatBatchAPI(LanguageModel):
 
     def _execute_batch_requests(
         self,
-        messages_list: list[list[dict[str, str]]],
+        messages_list: list[list[dict[str, Any]]],
         **kwargs,
     ) -> list[Any]:
-        custom_id_2_message: dict[str, list[dict[str, str]]] = {
+        custom_id_2_message: dict[str, list[dict[str, Any]]] = {
             str(uuid.uuid4()): messages for messages in messages_list
         }
         # The response will be an empty string if the API produces an error.
-        custom_id_2_response: dict[str, str | list[dict[str, str]]] = {
+        custom_id_2_response: dict[str, str | list[dict[str, Any]]] = {
             custom_id: "" for custom_id in custom_id_2_message
         }
         exec_cnt = 1
@@ -237,7 +249,7 @@ class OpenAIChatBatchAPI(LanguageModel):
 
     def _batch_generate_chat_response(
         self,
-        chat_messages_list: list[list[dict[str, str]]],
+        chat_messages_list: list[list[dict[str, Any]]],
         **kwargs,
     ) -> list[LMOutput]:
         api_responses = self._execute_batch_requests(
@@ -263,8 +275,8 @@ class OpenAIChatBatchAPI(LanguageModel):
 
     def _batch_compute_chat_log_probs(
         self,
-        prompt_list: list[list[dict[str, str]]],
-        response_list: list[dict[str, str]],
+        prompt_list: list[list[dict[str, Any]]],
+        response_list: list[dict[str, Any]],
         temperature: float = 0,
         seed: int = 42,
         top_logprobs: int = 20,

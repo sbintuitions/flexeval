@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import final
+from typing import Any, final
 
 from flexeval.core.string_processor import StringProcessor
 
@@ -71,7 +71,7 @@ class LanguageModel:
 
     def _batch_generate_chat_response(
         self,
-        chat_messages_list: list[list[dict[str, str]]],
+        chat_messages_list: list[list[dict[str, Any]]],
         **kwargs,
     ) -> list[LMOutput]:
         """Generate chat responses based on the chat messages in the list.
@@ -102,7 +102,7 @@ class LanguageModel:
         raise NotImplementedError(msg)
 
     def _batch_compute_chat_log_probs(
-        self, prompt_list: list[list[dict[str, str]]], response_list: list[dict[str, str]]
+        self, prompt_list: list[list[dict[str, Any]]], response_list: list[dict[str, Any]]
     ) -> list[float]:
         """
         Compute log probabilities of the chat responses given the chat history.
@@ -152,7 +152,7 @@ class LanguageModel:
     @final
     def generate_chat_response(
         self,
-        chat_messages: list[dict[str, str]] | list[list[dict[str, str]]],
+        chat_messages: list[dict[str, Any]] | list[list[dict[str, Any]]],
         **kwargs,
     ) -> LMOutput | list[LMOutput]:
         """
@@ -198,7 +198,7 @@ class LanguageModel:
 
     @final
     def compute_chat_log_probs(
-        self, prompt: list[dict[str, str]] | list[list[dict[str, str]]], response: dict[str, str] | list[dict[str, str]]
+        self, prompt: list[dict[str, Any]] | list[list[dict[str, Any]]], response: dict[str, Any] | list[dict[str, Any]]
     ) -> float | list[float]:
         """
         A wrapper for `batch_compute_chat_log_probs` that accepts a single chat prompt or a list of chat prompts.
