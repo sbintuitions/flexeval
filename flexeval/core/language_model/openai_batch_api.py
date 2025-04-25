@@ -54,7 +54,7 @@ class OpenAIChatBatchAPI(LanguageModel):
         developer_message: Instructions to the model that are prioritized ahead of user messages.
             Previously called the system prompt.
         string_processors: A single or a list of StringProcessor objects to process the model's output.
-        model_limit_completion_tokens: An upper limit on the number of tokens the model can generate.
+        model_limit_new_tokens: An upper limit on the number of tokens the model can generate.
             For example, if a too-large `max_new_tokens` is given to generate_chat_response(), this value will cap it.
     """
 
@@ -66,7 +66,7 @@ class OpenAIChatBatchAPI(LanguageModel):
         default_gen_kwargs: dict[str, Any] | None = None,
         developer_message: str | None = None,
         string_processors: StringProcessor | list[StringProcessor] | None = None,
-        model_limit_completion_tokens: int | None = None,
+        model_limit_new_tokens: int | None = None,
     ) -> None:
         super().__init__(string_processors=string_processors)
         self.model = model
@@ -81,7 +81,7 @@ class OpenAIChatBatchAPI(LanguageModel):
 
         self.polling_interval_seconds = polling_interval_seconds
         self.developer_message = developer_message
-        self.model_limit_completion_tokens = model_limit_completion_tokens
+        self.model_limit_new_tokens = model_limit_new_tokens
 
     def create_batch_file(self, custom_id_2_message: dict[str, list[dict[str, str]]], **kwargs) -> None:
         with open(self.temp_jsonl_file.name, mode="w") as f:
@@ -115,15 +115,13 @@ class OpenAIChatBatchAPI(LanguageModel):
                 logger.warning(msg)
             gen_kwargs["max_completion_tokens"] = max_new_tokens
 
-        if self.model_limit_completion_tokens and (
-            gen_kwargs.get("max_completion_tokens", 0) > self.model_limit_completion_tokens
-        ):
+        if self.model_limit_new_tokens and (gen_kwargs.get("max_completion_tokens", 0) > self.model_limit_new_tokens):
             msg = (
                 f"The specified `max_new_tokens` ({gen_kwargs['max_completion_tokens']}) exceeds"
-                f"the model’s capability ({self.model_limit_completion_tokens} tokens). It will be reduced."
+                f"the model’s capability ({self.model_limit_new_tokens} tokens). It will be reduced."
             )
             logger.warning(msg)
-            gen_kwargs["max_completion_tokens"] = self.model_limit_completion_tokens
+            gen_kwargs["max_completion_tokens"] = self.model_limit_new_tokens
 
         gen_kwargs["stop"] = normalize_stop_sequences(
             stop_sequences_list=[

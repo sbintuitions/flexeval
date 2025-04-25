@@ -47,8 +47,7 @@ def test_batch_compute_log_probs_approximates_hf_lm(chat_lm: LanguageModel, hf_l
 
 
 @pytest.mark.skipif(not is_vllm_enabled(), reason="vllm library is not installed")
-def test_model_limit_tokens_generate_complete_text(chat_lm: VLLM, caplog: pytest.LogCaptureFixture) -> None:
-    caplog.set_level(logging.WARNING)
+def test_model_limit_tokens_generate_complete_text(chat_lm: VLLM) -> None:
     text = "Outputs numbers 0~10: 1 2 3 "
     tokenizer = AutoTokenizer.from_pretrained("sbintuitions/tiny-lm-chat")
     input_length = len(
@@ -61,17 +60,12 @@ def test_model_limit_tokens_generate_complete_text(chat_lm: VLLM, caplog: pytest
 
     # if max_new_tokens only, no warnings will be sent.
     lm_output = chat_lm.complete_text(text, max_new_tokens=128)
-    assert len(caplog.records) == 0
-    caplog.clear()
 
     # if max_new_tokens > (model_limit_new_tokens = model_new_tokens - len(input_tokens)), a warning about overwriting is sent.  # noqa: E501
     chat_lm.model_limit_tokens = input_length + 3
     lm_output_limit_tokens = chat_lm.complete_text(text, max_new_tokens=128)
     assert lm_output_limit_tokens.finish_reason == "length"
     assert len(lm_output.text) > len(lm_output_limit_tokens.text)
-    assert len(caplog.records) >= 1
-    assert any(record.msg.startswith("The specified `max_new_tokens` (128) exceeds") for record in caplog.records)
-    caplog.clear()
     chat_lm.model_limit_tokens = None
 
 

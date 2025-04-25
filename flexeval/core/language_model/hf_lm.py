@@ -155,8 +155,11 @@ class HuggingFaceLM(LanguageModel):
             If specified, this overrides the default chat template of the tokenizer.
         default_gen_kwargs: Default generation kwargs to use when calling the API.
         string_processors: A single or a list of StringProcessor objects to process the model's output.
-        model_limit_tokens: An upper limit on the number of tokens the model can receive.
-            For example, if a too-large `max_new_tokens` is given to generate_chat_response(), this value will cap it.
+        model_limit_tokens: An upper limit on the number of tokens (input + output) the model can handle.
+            If `max_new_tokens` exceeds this limit in `generate_chat_response()`, it will be capped to this value.
+            If this value is set to less than or equal to the model's capacity and the input exceeds it,
+            an empty string is returned instead of raising an error.
+            If set to “default”, the value will be automatically determined when possible.
     """
 
     def __init__(
@@ -172,7 +175,7 @@ class HuggingFaceLM(LanguageModel):
         custom_chat_template: str | None = None,
         default_gen_kwargs: dict[str, Any] | None = None,
         string_processors: StringProcessor | list[StringProcessor] | None = None,
-        model_limit_tokens: int | None = None,
+        model_limit_tokens: int | None | Literal["default"] = "default",
     ) -> None:
         super().__init__(string_processors=string_processors)
         self._model_name_or_path = model
@@ -200,13 +203,19 @@ class HuggingFaceLM(LanguageModel):
         self.model.eval()
 
         self.amp_dtype = amp_dtype
-        hf_config = self.model.config.to_dict()
-        max_position_embeddings: int | None = None
-        if "n_positions" in hf_config:
-            max_position_embeddings = hf_config["n_positions"]
-        elif "max_position_embeddings" in hf_config:
-            max_position_embeddings = hf_config["max_position_embeddings"]
-        self.model_limit_tokens = model_limit_tokens if model_limit_tokens else max_position_embeddings
+        if model_limit_tokens == "default":
+            hf_config = self.model.config.to_dict()
+            if "n_positions" in hf_config:
+                model_limit_tokens = hf_config["n_positions"]
+            elif "max_position_embeddings" in hf_config:
+                model_limit_tokens = hf_config["max_position_embeddings"]
+            else:
+                msg = (
+                    "`model_limit_tokens` was set to “default”, but the default max_position_embedeings "
+                    "could not be found in the config. Set it to `None`."
+                )
+                logger.warn(msg)
+        self.model_limit_tokens = model_limit_tokens
 
         transformers.set_seed(random_seed)
 
@@ -287,12 +296,7 @@ class HuggingFaceLM(LanguageModel):
                 logger.warning(msg)
                 return [LMOutput(text="", finish_reason="input_length_limit") for _ in text_list]
 
-            if model_limit_new_tokens < gen_kwargs["max_new_tokens"]:
-                msg = (
-                    f"The specified `max_new_tokens` ({gen_kwargs['max_new_tokens']}) exceeds "
-                    f"the model’s capability (remaining {model_limit_new_tokens} tokens). It will be capped."
-                )
-                logger.warning(msg)
+            if "max_new_tokens" not in gen_kwargs or model_limit_new_tokens < gen_kwargs["max_new_tokens"]:
                 gen_kwargs["max_new_tokens"] = model_limit_new_tokens
 
         # set the stop sequences
