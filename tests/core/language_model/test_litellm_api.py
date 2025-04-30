@@ -47,6 +47,7 @@ def test_compute_chat_log_probs_for_multi_tokens(chat_lm: LiteLLMChatAPI) -> Non
         chat_lm.compute_chat_log_probs(prompt_list, response_list)
 
 
+@pytest.mark.skipif(not is_openai_enabled(), reason="OpenAI is not installed")
 def test_if_ignore_seed() -> None:
     chat_lm = LiteLLMChatAPI("gpt-4o-mini-2024-07-18", ignore_seed=True)
     chat_messages = [{"role": "user", "content": "Hello"}]
@@ -62,6 +63,7 @@ def test_if_ignore_seed() -> None:
         mock_method.assert_called_once_with([text], None, None, temperature=0.7)
 
 
+@pytest.mark.skipif(not is_openai_enabled(), reason="OpenAI is not installed")
 def test_if_not_ignore_seed() -> None:
     chat_lm = LiteLLMChatAPI("gpt-4o-mini-2024-07-18")
     chat_messages = [{"role": "user", "content": "Hello"}]
