@@ -214,7 +214,7 @@ class HuggingFaceLM(LanguageModel):
                     "`model_limit_tokens` was set to “default”, but the default max_position_embedeings "
                     "could not be found in the config. Set it to `None`."
                 )
-                logger.warn(msg)
+                logger.warning(msg)
         self.model_limit_tokens = model_limit_tokens
 
         transformers.set_seed(random_seed)
