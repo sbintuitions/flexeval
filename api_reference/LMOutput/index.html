@@ -3023,7 +3023,7 @@ If set to “default”, the value will be automatically determined when possibl
                     <span class="s2">&quot;`model_limit_tokens` was set to “default”, but the default max_position_embedeings &quot;</span>
                     <span class="s2">&quot;could not be found in the config. Set it to `None`.&quot;</span>
                 <span class="p">)</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">model_limit_tokens</span> <span class="o">=</span> <span class="n">model_limit_tokens</span>
 
         <span class="n">transformers</span><span class="o">.</span><span class="n">set_seed</span><span class="p">(</span><span class="n">random_seed</span><span class="p">)</span>
@@ -3608,7 +3608,7 @@ If set to “default”, the value will be automatically determined when possibl
                 <span class="s2">&quot;`model_limit_tokens` was set to “default”, but the default max_position_embedeings &quot;</span>
                 <span class="s2">&quot;could not be found in the config. Set it to `None`.&quot;</span>
             <span class="p">)</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">model_limit_tokens</span> <span class="o">=</span> <span class="n">model_limit_tokens</span>
 
     <span class="n">transformers</span><span class="o">.</span><span class="n">set_seed</span><span class="p">(</span><span class="n">random_seed</span><span class="p">)</span>
