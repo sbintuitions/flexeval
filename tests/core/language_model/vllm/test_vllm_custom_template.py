@@ -35,14 +35,15 @@ def chat_lm_with_custom_chat_template() -> VLLM:
     cleanup_dist_env_and_memory()
 
 
-
+# With 1 1 1, the continuation was not 1.
 TEST_TEMPLATE = """
 {%- if fill_with_zeros is defined and fill_with_zeros is true -%}
 0 0 0 0 0 0 0 0 0 0 0
 {%- else -%}
-"1 1 1 1 1 1 1 1 1 1 1
+x x x x x x x x x x x
 {%- endif -%}
 """
+
 
 @pytest.fixture(scope="module")
 def chat_lm_with_fill_zeros() -> VLLM:
@@ -68,7 +69,7 @@ def chat_lm_with_fill_zeros() -> VLLM:
 
 
 @pytest.fixture(scope="module")
-def chat_lm_with_fill_ones() -> VLLM:
+def chat_lm_with_fill_xs() -> VLLM:
     """
     VLLM instance with enable_thinking=False in apply_chat_template_kwargs.
     """
@@ -86,6 +87,7 @@ def chat_lm_with_fill_ones() -> VLLM:
     )
     yield llm
     from vllm.distributed.parallel_state import cleanup_dist_env_and_memory
+
     cleanup_dist_env_and_memory()
 
 
@@ -110,10 +112,10 @@ def test_if_apply_chat_template_kwargs_is_used_with_fill_zeros(chat_lm_with_fill
 
 
 @pytest.mark.skipif(not is_vllm_enabled(), reason="vllm library is not installed")
-def test_if_apply_chat_template_kwargs_is_used_with_fill_ones(chat_lm_with_fill_ones: VLLM) -> None:    
-    responses = chat_lm_with_fill_ones.generate_chat_response(
+def test_if_apply_chat_template_kwargs_is_used_with_fill_ones(chat_lm_with_fill_xs: VLLM) -> None:
+    responses = chat_lm_with_fill_xs.generate_chat_response(
         [[{"role": "user", "content": "こんにちは。"}]],
         max_new_tokens=10,
     )
     assert len(responses) == 1
-    assert responses[0].text.strip().startswith("1 1")
+    assert responses[0].text.strip().startswith("x x")

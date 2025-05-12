@@ -208,19 +208,17 @@ def test_if_custom_chat_template_is_given(lm_init_func: Callable[..., HuggingFac
     ("fill_with_zeros", "expected_startswith_text"),
     [
         (True, "0 0"),
-        (False, "1 1"),
+        (False, "x x"),
     ],
 )
 def test_if_apply_chat_template_kwargs_is_used(
     lm_init_func: Callable[..., HuggingFaceLM], fill_with_zeros: bool, expected_startswith_text: str
 ) -> None:
-    # To verify that the kwargs specified in `apply_chat_template_kwargs` are passed to `tokenizer.apply_chat_template()`
-    # we'll use a simplified version of the actual chat template that uses enable_thinking parameter
     custom_chat_template = (
         "{%- if fill_with_zeros is defined and fill_with_zeros is true -%}"
         "0 0 0 0 0 0 0 0 0 0 0"
         "{%- else -%}"
-        "1 1 1 1 1 1 1 1 1 1 1"
+        "x x x x x x x x x x x"  # With 1 1 1, the continuation was not 1.
         "{%- endif -%}"
     )
     lm = lm_init_func(

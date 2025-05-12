@@ -353,7 +353,7 @@ class HuggingFaceLM(LanguageModel):
                 tokenize=False,
                 add_generation_prompt=True,
                 chat_template=self.custom_chat_template,
-                **self.apply_chat_template_kwargs
+                **self.apply_chat_template_kwargs,
             )
             for chat_messages in chat_messages_list
         ]
