@@ -211,7 +211,7 @@ def test_if_custom_chat_template_is_given(lm_init_func: Callable[..., HuggingFac
         (False, "x x"),
     ],
 )
-def test_if_apply_chat_template_kwargs_is_used(
+def test_if_chat_template_kwargs_is_used(
     lm_init_func: Callable[..., HuggingFaceLM], fill_with_zeros: bool, expected_startswith_text: str
 ) -> None:
     custom_chat_template = (
@@ -224,7 +224,7 @@ def test_if_apply_chat_template_kwargs_is_used(
     lm = lm_init_func(
         random_seed=42,
         custom_chat_template=custom_chat_template,
-        apply_chat_template_kwargs={"fill_with_zeros": fill_with_zeros},
+        chat_template_kwargs={"fill_with_zeros": fill_with_zeros},
     )
 
     responses = lm.generate_chat_response([[{"role": "user", "content": "こんにちは。"}]], max_length=40)

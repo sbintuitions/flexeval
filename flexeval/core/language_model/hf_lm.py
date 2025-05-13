@@ -173,7 +173,7 @@ class HuggingFaceLM(LanguageModel):
         random_seed: int = 42,
         load_peft: bool = False,
         custom_chat_template: str | None = None,
-        apply_chat_template_kwargs: dict[str, Any] | None = None,
+        chat_template_kwargs: dict[str, Any] | None = None,
         default_gen_kwargs: dict[str, Any] | None = None,
         string_processors: StringProcessor | list[StringProcessor] | None = None,
         model_limit_tokens: int | None | Literal["default"] = "default",
@@ -184,7 +184,7 @@ class HuggingFaceLM(LanguageModel):
         tokenizer_kwargs = tokenizer_kwargs or {}
         self.tokenizer: PreTrainedTokenizer = AutoTokenizer.from_pretrained(tokenizer, **tokenizer_kwargs)
         self.custom_chat_template = custom_chat_template
-        self.apply_chat_template_kwargs = apply_chat_template_kwargs or {}
+        self.chat_template_kwargs = chat_template_kwargs or {}
         self.add_special_tokens = add_special_tokens
         self.default_gen_kwargs = default_gen_kwargs or {}
 
@@ -353,7 +353,7 @@ class HuggingFaceLM(LanguageModel):
                 tokenize=False,
                 add_generation_prompt=True,
                 chat_template=self.custom_chat_template,
-                **self.apply_chat_template_kwargs,
+                **self.chat_template_kwargs,
             )
             for chat_messages in chat_messages_list
         ]
