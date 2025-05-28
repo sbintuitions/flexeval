@@ -7,6 +7,7 @@ from loguru import logger
 from transformers import AutoTokenizer, PreTrainedTokenizer
 
 from flexeval.core.string_processor import StringProcessor
+from flexeval.core.tool_parser.base import ToolParser
 
 from .base import LanguageModel, LMOutput, normalize_stop_sequences
 from .hf_lm import decode_for_lm_continuation, get_prefix_and_completion_from_chat
@@ -99,6 +100,7 @@ class VLLM(LanguageModel):
         default_gen_kwargs: dict[str, Any] | None = None,
         string_processors: StringProcessor | list[StringProcessor] | None = None,
         model_limit_tokens: int | None | Literal["default"] = "default",
+        tool_parser: ToolParser | None = None,
     ) -> None:
         super().__init__(string_processors=string_processors)
         self.model_name = model
@@ -128,6 +130,7 @@ class VLLM(LanguageModel):
         if model_limit_tokens == "default":
             model_limit_tokens = self.llm.llm_engine.get_model_config().max_model_len
         self.model_limit_tokens = model_limit_tokens
+        self.tool_parser = tool_parser
 
     def _batch_complete_text(
         self,
@@ -208,8 +211,14 @@ class VLLM(LanguageModel):
     def _batch_generate_chat_response(
         self,
         chat_messages_list: list[list[dict[str, Any]]],
+        tools_list: list[list[dict[str, Any]]] | None = None,
         **kwargs,
     ) -> list[LMOutput]:
+        if tools_list is None:
+            tools_list = [None] * len(chat_messages_list)
+        if len(tools_list) != len(chat_messages_list):
+            msg = "tools_list must be either None or a list of the same length as chat_messages_list."
+            raise ValueError(msg)
         chat_messages_as_string = [
             self.tokenizer.apply_chat_template(
                 chat_messages,
@@ -219,7 +228,15 @@ class VLLM(LanguageModel):
             )
             for chat_messages in chat_messages_list
         ]
-        return self._batch_complete_text(chat_messages_as_string, **kwargs)
+        lm_outputs = self._batch_complete_text(chat_messages_as_string, **kwargs)
+        if self.tool_parser:
+            for lm_output in lm_outputs:
+                parsed_tool_calling_message = self.tool_parser(lm_output.text)
+                lm_output.tool_calls = parsed_tool_calling_message.tool_call_dicts
+                lm_output.raw_text = parsed_tool_calling_message.raw_text
+                lm_output.text = parsed_tool_calling_message.text
+
+        return lm_outputs
 
     def _batch_compute_log_probs(
         self, text_list: list[str], prefix_list: list[str] | None = None, stride: int | None = None
