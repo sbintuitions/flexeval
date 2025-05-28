@@ -23,6 +23,14 @@ class LMOutput:
     - 'stop': A stop sequence is generated.
     - 'length': The maximum length is reached.
     """
+    tool_calls: list[dict[str, Any]] | None = None
+    """
+    the tools called by the language model
+    """
+    validation_tool_calls_parsing: str | None = None
+    """
+    validation results of parsing for tool_calls
+    """
 
 
 class LanguageModel:
@@ -35,7 +43,10 @@ class LanguageModel:
 
     """
 
-    def __init__(self, string_processors: StringProcessor | list[StringProcessor] | None = None) -> None:
+    def __init__(
+            self,
+            string_processors: StringProcessor | list[StringProcessor] | None = None,
+        ) -> None:
         if string_processors is None:
             string_processors = []
         elif isinstance(string_processors, StringProcessor):
@@ -72,6 +83,7 @@ class LanguageModel:
     def _batch_generate_chat_response(
         self,
         chat_messages_list: list[list[dict[str, Any]]],
+        tools_list: list[list[dict[str, Any]]] | None = None,
         **kwargs,
     ) -> list[LMOutput]:
         """Generate chat responses based on the chat messages in the list.
@@ -153,6 +165,7 @@ class LanguageModel:
     def generate_chat_response(
         self,
         chat_messages: list[dict[str, Any]] | list[list[dict[str, Any]]],
+        tools: list[dict[str, Any]] | list[list[dict[str, Any]]] | None,
         **kwargs,
     ) -> LMOutput | list[LMOutput]:
         """
@@ -162,12 +175,15 @@ class LanguageModel:
         """
 
         chat_messages_list = chat_messages
+        tools_list = tools
         if isinstance(chat_messages[0], dict):
             chat_messages_list = [chat_messages]
+        if tools and isinstance(tools[0], dict):
+            tools_list = [tools]
 
-        lm_outputs = self._batch_generate_chat_response(chat_messages_list, **kwargs)
+        lm_outputs = self._batch_generate_chat_response(chat_messages_list, tools_list = tools_list, **kwargs)
 
-        # Post-process the generated text
+        # Post-process the generatessd text
         if self.string_processors:
             for lm_output in lm_outputs:
                 lm_output.raw_text = lm_output.text

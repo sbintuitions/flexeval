@@ -250,6 +250,7 @@ class OpenAIChatBatchAPI(LanguageModel):
     def _batch_generate_chat_response(
         self,
         chat_messages_list: list[list[dict[str, Any]]],
+        tools_list: list[list[dict[str, Any]]] | None = None,
         **kwargs,
     ) -> list[LMOutput]:
         api_responses = self._execute_batch_requests(
