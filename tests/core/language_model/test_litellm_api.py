@@ -62,7 +62,7 @@ def test_if_ignore_seed() -> None:
     with patch.object(OpenAIChatAPI, "_batch_generate_chat_response", return_value=[LMOutput("Hello!")]) as mock_method:
         chat_lm.generate_chat_response(chat_messages, temperature=0.7, seed=42)
         # `seed` parameter should be removed
-        mock_method.assert_called_once_with([chat_messages], temperature=0.7)
+        mock_method.assert_called_once_with([chat_messages], None, temperature=0.7)
 
     text = "Hello, I'm"
     with patch.object(OpenAIChatAPI, "_batch_complete_text", return_value=[LMOutput("ChatGPT.")]) as mock_method:
@@ -77,7 +77,7 @@ def test_if_not_ignore_seed() -> None:
     chat_messages = [{"role": "user", "content": "Hello"}]
     with patch.object(OpenAIChatAPI, "_batch_generate_chat_response", return_value=[LMOutput("Hello!")]) as mock_method:
         chat_lm.generate_chat_response(chat_messages, temperature=0.7, seed=42)
-        mock_method.assert_called_once_with([chat_messages], temperature=0.7, seed=42)
+        mock_method.assert_called_once_with([chat_messages], None, temperature=0.7, seed=42)
 
     text = "Hello, I'm"
     with patch.object(OpenAIChatAPI, "_batch_complete_text", return_value=[LMOutput("ChatGPT.")]) as mock_method:
