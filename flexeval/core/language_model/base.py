@@ -8,9 +8,10 @@ from flexeval.core.string_processor import StringProcessor
 
 @dataclass
 class LMOutput:
-    text: str
+    text: str | None
     """
     The output text of the language model.
+    None is allowed only if tool_calls is set.
     """
     raw_text: str | None = None
     """
@@ -32,6 +33,11 @@ class LMOutput:
     validation results of parsing for tool_calls
     """
 
+    def __post_init__(self) -> None:
+        if self.tool_calls is None and self.text is None:
+            msg = "It is not allowed for both `text` and `tool_calls` to be None."
+            raise ValueError(msg)
+
 
 class LanguageModel:
     """LanguageModel is what you want to evaluate with this library.
@@ -44,9 +50,9 @@ class LanguageModel:
     """
 
     def __init__(
-            self,
-            string_processors: StringProcessor | list[StringProcessor] | None = None,
-        ) -> None:
+        self,
+        string_processors: StringProcessor | list[StringProcessor] | None = None,
+    ) -> None:
         if string_processors is None:
             string_processors = []
         elif isinstance(string_processors, StringProcessor):
@@ -165,7 +171,7 @@ class LanguageModel:
     def generate_chat_response(
         self,
         chat_messages: list[dict[str, Any]] | list[list[dict[str, Any]]],
-        tools: list[dict[str, Any]] | list[list[dict[str, Any]]] | None,
+        tools: list[dict[str, Any]] | list[list[dict[str, Any]]] | None = None,
         **kwargs,
     ) -> LMOutput | list[LMOutput]:
         """
@@ -176,12 +182,17 @@ class LanguageModel:
 
         chat_messages_list = chat_messages
         tools_list = tools
+
         if isinstance(chat_messages[0], dict):
             chat_messages_list = [chat_messages]
         if tools and isinstance(tools[0], dict):
             tools_list = [tools]
 
-        lm_outputs = self._batch_generate_chat_response(chat_messages_list, tools_list = tools_list, **kwargs)
+        if tools_list and len(tools_list) != len(chat_messages_list):
+            msg = "tools_list must be either None or a list of the same length as chat_messages_list."
+            raise ValueError(msg)
+
+        lm_outputs = self._batch_generate_chat_response(chat_messages_list, tools_list=tools_list, **kwargs)
 
         # Post-process the generatessd text
         if self.string_processors:

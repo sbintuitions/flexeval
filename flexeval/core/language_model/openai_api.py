@@ -106,12 +106,12 @@ class OpenAIChatAPI(LanguageModel):
     async def _async_batch_run_chatgpt(
         self,
         messages_list: list[list[dict[str, Any]]],
+        tools_list: list[list[dict[str, Any]]] | None = None,
         stop_sequences: str | list[str] | None = None,
         max_new_tokens: int | None = None,
         **kwargs,
-    ) -> list[str]:
+    ) -> list[ChatCompletion]:
         """Send multiple chat requests to the OpenAI in parallel."""
-
         if self.developer_message is not None:
             # Insert the developer message at the beginning of each conversation
             messages_list = [
@@ -146,19 +146,23 @@ class OpenAIChatAPI(LanguageModel):
             ],
         )
 
+        if tools_list is None:
+            tools_list = [None] * len(messages_list)
+
         tasks = [
             _retry_on_error(
                 # Define an anonymous function with a lambda expression and pass it,
                 # and call it inside the _retry_on_error function
-                openai_call=lambda x=ms: self.api_call_func(
+                openai_call=lambda messages=messages, tools=tools: self.api_call_func(
                     model=self.model,
-                    messages=x,
+                    messages=messages,
+                    tools=tools,
                     stop=stop_sequences,
                     **gen_kwargs,
                 ),
                 empty_response=self.empty_response,
             )
-            for ms in messages_list
+            for messages, tools in zip(messages_list, tools_list)
         ]
         return await asyncio.gather(*tasks)
 
@@ -194,10 +198,16 @@ class OpenAIChatAPI(LanguageModel):
         **kwargs,
     ) -> list[LMOutput]:
         api_responses = asyncio.run(
-            self._async_batch_run_chatgpt(chat_messages_list, **kwargs),
+            self._async_batch_run_chatgpt(chat_messages_list, tools_list=tools_list, **kwargs),
         )
         outputs = [
-            LMOutput(text=res.choices[0].message.content, finish_reason=res.choices[0].finish_reason)
+            LMOutput(
+                text=res.choices[0].message.content,
+                finish_reason=res.choices[0].finish_reason,
+                tool_calls=[tool_call.to_dict() for tool_call in res.choices[0].message.tool_calls]
+                if res.choices[0].message.tool_calls
+                else None,
+            )
             for res in api_responses
         ]
         if all(output.text == "" for output in outputs):

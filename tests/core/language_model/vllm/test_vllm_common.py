@@ -8,6 +8,7 @@ from flexeval.core.language_model.vllm_model import (
 )
 from tests.conftest import is_vllm_enabled
 from tests.core.language_model.base import BaseLanguageModelTest
+from tests.dummy_modules.tool_parser import DummyToolParser
 
 
 @pytest.fixture(scope="module")
@@ -23,6 +24,7 @@ def lm_init_func(model: str = "sbintuitions/tiny-lm") -> Callable[..., VLLM]:
 
 @pytest.fixture(scope="module")
 def chat_lm() -> VLLM:
+    tool_parser = DummyToolParser()
     llm = VLLM(
         model="sbintuitions/tiny-lm-chat",
         model_kwargs={
@@ -32,6 +34,7 @@ def chat_lm() -> VLLM:
             "disable_custom_all_reduce": True,
         },
         tokenizer_kwargs={"use_fast": False},
+        tool_parser=tool_parser,
     )
     yield llm
     from vllm.distributed.parallel_state import cleanup_dist_env_and_memory

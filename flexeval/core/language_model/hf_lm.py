@@ -349,15 +349,15 @@ class HuggingFaceLM(LanguageModel):
         tools_list: list[list[dict[str, Any]]] | None = None,
         **kwargs,
     ) -> list[LMOutput]:
+        if tools_list and not self.tool_parser:
+            msg = "tool_parser is not set but tools are provided."
+            raise ValueError(msg)
         if tools_list is None:
             tools_list = [None] * len(chat_messages_list)
-        if len(tools_list) != len(chat_messages_list):
-            msg = "tools_list must be either None or a list of the same length as chat_messages_list."
-            raise ValueError(msg)
         chat_messages_as_string = [
             self.tokenizer.apply_chat_template(
                 chat_messages,
-                tools = tools,
+                tools=tools,
                 tokenize=False,
                 add_generation_prompt=True,
                 chat_template=self.custom_chat_template,
@@ -366,7 +366,9 @@ class HuggingFaceLM(LanguageModel):
         ]
         lm_outputs = self._batch_complete_text(chat_messages_as_string, **kwargs)
         if self.tool_parser:
-            for lm_output in lm_outputs:
+            for lm_output, tools in zip(lm_outputs, tools_list):
+                if tools is None:
+                    continue
                 parsed_tool_calling_message = self.tool_parser(lm_output.text)
                 lm_output.tool_calls = parsed_tool_calling_message.tool_call_dicts
                 lm_output.raw_text = parsed_tool_calling_message.raw_text

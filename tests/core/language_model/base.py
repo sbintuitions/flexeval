@@ -88,6 +88,43 @@ class BaseLanguageModelTest:
         except NotImplementedError:
             pytest.skip("This model does not support chat responses")
 
+    def test_generate_chat_response_with_tools(self, chat_lm: LanguageModel) -> None:
+        """Test that generate_chat_response works with a batch input."""
+        tools = [
+            [
+                {
+                    "type": "function",
+                    "function": {
+                        "name": "get_weather",
+                        "description": "Get current weather information for provided city in celsius.",
+                        "parameters": {
+                            "type": "object",
+                            "properties": {
+                                "city": {"type": "string"},
+                            },
+                            "required": ["city"],
+                        },
+                    },
+                }
+            ]
+            for _ in range(2)
+        ]
+        try:
+            responses = chat_lm.generate_chat_response(
+                [
+                    [{"role": "user", "content": "What's the weather like in Paris today?"}],
+                    [{"role": "user", "content": "What's the weather like in Tokyo today?"}],
+                ],
+                tools=tools,
+            )
+            assert isinstance(responses, list)
+            assert len(responses) == 2
+            assert all(isinstance(r, LMOutput) for r in responses)
+            assert all(isinstance(r.tool_calls, list) for r in responses)
+            assert all(isinstance(r.finish_reason, str) for r in responses)
+        except NotImplementedError:
+            pytest.skip("This model does not support chat responses")
+
     def test_compute_log_probs_single_input(self, lm: LanguageModel) -> None:
         """Test that compute_log_probs works with a single input."""
         try:

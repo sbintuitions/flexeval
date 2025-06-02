@@ -15,6 +15,7 @@ from flexeval.core.language_model.hf_lm import (
     tokenize_text_for_lm_continuation,
     tokenize_text_for_lm_prefix,
 )
+from tests.dummy_modules.tool_parser import DummyToolParser
 
 from .base import BaseLanguageModelTest
 
@@ -44,8 +45,12 @@ def lm() -> HuggingFaceLM:
 
 @pytest.fixture(scope="module")
 def chat_lm(model_name: str = "sbintuitions/tiny-lm-chat") -> HuggingFaceLM:
+    tool_parser = DummyToolParser()
     return HuggingFaceLM(
-        model=model_name, model_kwargs={"torch_dtype": "float32"}, default_gen_kwargs={"do_sample": False}
+        model=model_name,
+        model_kwargs={"torch_dtype": "float32"},
+        default_gen_kwargs={"do_sample": False},
+        tool_parser=tool_parser,
     )
 
 

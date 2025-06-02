@@ -33,12 +33,17 @@ class Status(str, Enum):
     canceled = "canceled"
 
 
-def create_request_details(model: str, custom_id: str, messages: list[dict[str, Any]], **kwargs) -> dict[str, Any]:
+def create_request_details(
+    model: str, custom_id: str, messages: list[dict[str, Any]], tools: list[dict[str, Any]] | None, **kwargs
+) -> dict[str, Any]:
+    body = {"model": model, "messages": messages}
+    if tools:
+        body["tools"] = tools
     return {
         "custom_id": custom_id,
         "method": "POST",
         "url": "/v1/chat/completions",
-        "body": {"model": model, "messages": messages, **kwargs},
+        "body": body | kwargs,
     }
 
 
@@ -83,20 +88,25 @@ class OpenAIChatBatchAPI(LanguageModel):
         self.developer_message = developer_message
         self.model_limit_new_tokens = model_limit_new_tokens
 
-    def create_batch_file(self, custom_id_2_message: dict[str, list[dict[str, Any]]], **kwargs) -> None:
+    def create_batch_file(self, custom_id_2_input: dict[str, list[dict[str, list[dict[str, Any]]]]], **kwargs) -> None:
         with open(self.temp_jsonl_file.name, mode="w") as f:
-            for custom_id, message in custom_id_2_message.items():
+            for custom_id, input_dict in custom_id_2_input.items():
                 if self.developer_message:
-                    message = [{"role": "developer", "content": self.developer_message}, *message]  # noqa: PLW2901
+                    messages = input_dict["messages"]
+                    tools = input_dict["tools"]
+                    messages = [{"role": "developer", "content": self.developer_message}, *messages]
 
                 f.write(
-                    json.dumps(create_request_details(self.model, custom_id, message, **kwargs), ensure_ascii=False)
+                    json.dumps(
+                        create_request_details(self.model, custom_id, messages, tools=tools, **kwargs),
+                        ensure_ascii=False,
+                    )
                     + "\n",
                 )
 
     async def _post_batch_requests(
         self,
-        custom_id_2_message: dict[str, list[dict[str, Any]]],
+        custom_id_2_input: dict[str, list[dict[str, list[dict[str, Any]]]]],
         stop_sequences: str | list[str] | None = None,
         max_new_tokens: int | None = None,
         **kwargs,
@@ -131,7 +141,7 @@ class OpenAIChatBatchAPI(LanguageModel):
             ],
         )
 
-        self.create_batch_file(custom_id_2_message, **gen_kwargs)
+        self.create_batch_file(custom_id_2_input, **gen_kwargs)
 
         # Update batch file
         with open(self.temp_jsonl_file.name, "rb") as batch_file:  # noqa: ASYNC101
@@ -165,26 +175,28 @@ class OpenAIChatBatchAPI(LanguageModel):
         file_response = asyncio.run(self._client.files.content(file_id))
         return [json.loads(line) for line in file_response.text.strip().split("\n")]
 
-    def _execute_batch_requests(
+    def _execute_batch_requests(  # noqa: C901
         self,
         messages_list: list[list[dict[str, Any]]],
+        tools_list: list[list[dict[str, Any]]] | None = None,
         **kwargs,
     ) -> list[Any]:
-        custom_id_2_message: dict[str, list[dict[str, Any]]] = {
-            str(uuid.uuid4()): messages for messages in messages_list
+        if tools_list is None:
+            tools_list = [None] * len(messages_list)
+        custom_id_2_input: dict[str, list[dict[str, list[dict[str, Any]]]]] = {
+            str(uuid.uuid4()): {"messages": messages, "tools": tools}
+            for messages, tools in zip(messages_list, tools_list)
         }
         # The response will be an empty string if the API produces an error.
-        custom_id_2_response: dict[str, str | list[dict[str, Any]]] = {
-            custom_id: "" for custom_id in custom_id_2_message
-        }
+        custom_id_2_response: dict[str, str | list[dict[str, Any]]] = {custom_id: "" for custom_id in custom_id_2_input}
         exec_cnt = 1
 
-        while len(custom_id_2_message) > 0:
+        while len(custom_id_2_input) > 0:
             if exec_cnt > MAX_NUM_TRIALS:
                 break
             logger.info(f"Trial {exec_cnt}")
             exec_cnt += 1
-            batch_id = asyncio.run(self._post_batch_requests(custom_id_2_message, **kwargs))
+            batch_id = asyncio.run(self._post_batch_requests(custom_id_2_input, **kwargs))
 
             status, batch_response = asyncio.run(
                 self.poll_batch_status_until_completion(batch_id, self.polling_interval_seconds),
@@ -217,14 +229,14 @@ class OpenAIChatBatchAPI(LanguageModel):
                     continue
 
                 custom_id = data_i["custom_id"]
-                custom_id_2_message.pop(custom_id)
+                custom_id_2_input.pop(custom_id)
 
                 custom_id_2_response[custom_id] = data_i["response"]["body"]
 
         # The remaining elements are all those that failed to complete request.
-        if custom_id_2_message:
+        if custom_id_2_input:
             logger.warning("The following messages failed to complete request.")
-            logger.warning(pformat(list(custom_id_2_message.values())))
+            logger.warning(pformat(list(custom_id_2_input.values())))
 
         return list(custom_id_2_response.values())
 
@@ -255,10 +267,17 @@ class OpenAIChatBatchAPI(LanguageModel):
     ) -> list[LMOutput]:
         api_responses = self._execute_batch_requests(
             chat_messages_list,
+            tools_list=tools_list,
             **kwargs,
         )
         return [
-            LMOutput(text=res["choices"][0]["message"]["content"], finish_reason=res["choices"][0]["finish_reason"])
+            LMOutput(
+                text=res.choices[0].message.content,
+                finish_reason=res.choices[0].finish_reason,
+                tool_calls=[tool_call.to_dict() for tool_call in res.choices[0].message.tool_calls]
+                if res.choices[0].message.tool_calls
+                else None,
+            )
             for res in api_responses
         ]
 

@@ -7,8 +7,6 @@ from typing import Any, Literal
 
 @dataclass
 class ToolCall(ABC):
-    id: int | None = None
-
     @abstractmethod
     def to_dict(self) -> dict[str, Any]:
         raise NotImplementedError
@@ -18,6 +16,7 @@ class ToolCall(ABC):
 class FunctionToolCall(ToolCall):
     name: str
     arguments: dict[str, Any]
+    id: int | None
 
     def to_dict(self) -> dict[str, Any]:
         return {"id": self.id, "type": "function", "function": {"name": self.name, "arguments": self.arguments}}
