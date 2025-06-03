@@ -37,4 +37,4 @@ jobs:
 
       - name: Run tests
         run: |
-          poetry run pytest -n auto --maxprocesses 16 -v -s -m "batch_api" ./tests
+          poetry run pytest -n 8 -v -s -m "batch_api" ./tests
