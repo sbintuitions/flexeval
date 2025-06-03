@@ -113,6 +113,7 @@ def test_if_input_length_exceeds_model_limit_new_tokens(chat_lm: VLLM, caplog: p
     chat_lm.model_limit_tokens = None
 
 
+@pytest.mark.skipif(not is_vllm_enabled(), reason="vllm library is not installed")
 def test_apply_chat_template_arguments_when_tools_provided(chat_lm_for_tool_calling: VLLM) -> None:
     tools = [
         {
