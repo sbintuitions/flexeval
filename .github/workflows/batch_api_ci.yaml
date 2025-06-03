@@ -37,4 +37,4 @@ jobs:
 
       - name: Run tests
         run: |
-          poetry run pytest -v -s -m "batch_api" ./tests
+          poetry run pytest --workers auto -v -s -m "batch_api" ./tests
