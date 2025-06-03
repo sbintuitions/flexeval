@@ -80,6 +80,7 @@ class BaseLanguageModelTest:
             assert isinstance(response, LMOutput)
             assert isinstance(response.text, str)
             assert isinstance(response.finish_reason, str)
+            assert response.tool_calls is None
         except NotImplementedError:
             pytest.skip("This model does not support chat responses")
 
@@ -94,6 +95,7 @@ class BaseLanguageModelTest:
             assert all(isinstance(r, LMOutput) for r in responses)
             assert all(isinstance(r.text, str) for r in responses)
             assert all(isinstance(r.finish_reason, str) for r in responses)
+            assert all(r.tool_calls is None for r in responses)
         except NotImplementedError:
             pytest.skip("This model does not support chat responses")
 
