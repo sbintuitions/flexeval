@@ -44,7 +44,7 @@ class FunctionToolCall(ToolCall):
 
     name: str
     arguments: dict[str, Any]
-    id: int | None
+    id: int | None = None
 
     def __post_init__(self) -> None:
         if self.id is None:
@@ -61,7 +61,7 @@ class FunctionToolCall(ToolCall):
 
 
 @dataclass
-class ParsedToolCallingMessage:
+class ToolCallingMessage:
     """
     Represents the parsed result of a model output that may contain tool calls.
 
@@ -92,7 +92,7 @@ class ToolParser(ABC):
     """
 
     @abstractmethod
-    def __call__(self, text: str) -> ParsedToolCallingMessage:
+    def __call__(self, text: str) -> ToolCallingMessage:
         """
         Extract tool_calls from the input text.
 

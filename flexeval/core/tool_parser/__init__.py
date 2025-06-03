@@ -1,1 +1,1 @@
-from .base import FunctionToolCall, ParsedToolCallingMessage, ToolCall, ToolParser
+from .base import FunctionToolCall, ToolCall, ToolCallingMessage, ToolParser
