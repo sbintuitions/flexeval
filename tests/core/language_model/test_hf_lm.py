@@ -1,6 +1,7 @@
 import functools
 import logging
 from typing import Callable
+from unittest.mock import patch
 
 import pytest
 import torch
@@ -45,6 +46,15 @@ def lm() -> HuggingFaceLM:
 
 @pytest.fixture(scope="module")
 def chat_lm(model_name: str = "sbintuitions/tiny-lm-chat") -> HuggingFaceLM:
+    return HuggingFaceLM(
+        model=model_name,
+        model_kwargs={"torch_dtype": "float32"},
+        default_gen_kwargs={"do_sample": False},
+    )
+
+
+@pytest.fixture(scope="module")
+def chat_lm_for_tool_calling(model_name: str = "sbintuitions/tiny-lm-chat") -> HuggingFaceLM:
     tool_parser = DummyToolParser()
     return HuggingFaceLM(
         model=model_name,
@@ -62,6 +72,10 @@ class TestHuggingFaceLM(BaseLanguageModelTest):
     @pytest.fixture()
     def chat_lm(self, chat_lm: HuggingFaceLM) -> LanguageModel:
         return chat_lm
+
+    @pytest.fixture()
+    def chat_lm_for_tool_calling(self, chat_lm_for_tool_calling: HuggingFaceLM) -> HuggingFaceLM:
+        return chat_lm_for_tool_calling
 
 
 @pytest.mark.parametrize(
@@ -306,3 +320,34 @@ def test_if_input_length_exceeds_model_limit_new_tokens(caplog: pytest.LogCaptur
     assert len(caplog.records) >= 1
     assert any(record.msg.startswith("Received input that is longer than") for record in caplog.records)
     caplog.clear()
+
+
+def test_apply_chat_template_arguments_when_tools_provided(chat_lm_for_tool_calling: HuggingFaceLM) -> None:
+    tools = [
+        {
+            "type": "function",
+            "function": {
+                "name": "get_weather",
+                "description": "Get current weather information for provided city in celsius.",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "city": {"type": "string"},
+                    },
+                    "required": ["city"],
+                },
+            },
+        }
+    ]
+    chat_messages = [{"role": "user", "content": "What's the weather like in Paris today?"}]
+    with patch.object(chat_lm_for_tool_calling.tokenizer, "apply_chat_template", return_value="text") as mock_method:
+        chat_lm_for_tool_calling.generate_chat_response(chat_messages, max_new_tokens=1)
+        args, kwargs = mock_method.call_args
+        assert args[0] == chat_messages
+        assert kwargs["tools"] is None
+
+    with patch.object(chat_lm_for_tool_calling.tokenizer, "apply_chat_template", return_value="text") as mock_method:
+        chat_lm_for_tool_calling.generate_chat_response(chat_messages, tools=tools, max_new_tokens=1)
+        args, kwargs = mock_method.call_args
+        assert args[0] == chat_messages
+        assert kwargs["tools"] == tools

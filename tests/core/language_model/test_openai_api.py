@@ -41,6 +41,10 @@ class TestOpenAIChatAPI(BaseLanguageModelTest):
     def chat_lm(self, chat_lm: OpenAIChatAPI) -> LanguageModel:
         return chat_lm
 
+    @pytest.fixture()
+    def chat_lm_for_tool_calling(self, chat_lm: OpenAIChatAPI) -> OpenAIChatAPI:
+        return chat_lm
+
     @pytest.mark.skip(reason="Even with temperature 0.0, the output is not deterministic via API.")
     def test_batch_complete_text_is_not_affected_by_batch(self, chat_lm: LanguageModel) -> None:
         pass

@@ -24,6 +24,24 @@ def lm_init_func(model: str = "sbintuitions/tiny-lm") -> Callable[..., VLLM]:
 
 @pytest.fixture(scope="module")
 def chat_lm() -> VLLM:
+    llm = VLLM(
+        model="sbintuitions/tiny-lm-chat",
+        model_kwargs={
+            "seed": 42,
+            "gpu_memory_utilization": 0.1,
+            "enforce_eager": True,
+            "disable_custom_all_reduce": True,
+        },
+        tokenizer_kwargs={"use_fast": False},
+    )
+    yield llm
+    from vllm.distributed.parallel_state import cleanup_dist_env_and_memory
+
+    cleanup_dist_env_and_memory()
+
+
+@pytest.fixture(scope="module")
+def chat_lm_for_tool_calling() -> VLLM:
     tool_parser = DummyToolParser()
     llm = VLLM(
         model="sbintuitions/tiny-lm-chat",
@@ -51,3 +69,7 @@ class TestVLLM(BaseLanguageModelTest):
     @pytest.fixture()
     def chat_lm(self, chat_lm: VLLM) -> VLLM:
         return chat_lm
+
+    @pytest.fixture()
+    def chat_lm_for_tool_calling(self, chat_lm_for_tool_calling: VLLM) -> VLLM:
+        return chat_lm_for_tool_calling
