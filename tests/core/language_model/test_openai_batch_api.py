@@ -54,7 +54,7 @@ class TestOpenAIChatBatchAPI(BaseLanguageModelTest):
 @pytest.mark.batch_api()
 def test_create_batch_file(chat_lm: OpenAIChatBatchAPI) -> None:
     chat_lm.create_batch_file(
-        {str(i): [[{"role": "user", "content": "こんにちは。"}]] for i in range(10)},
+        {str(i): {"messages": [[{"role": "user", "content": "こんにちは。"}]], "tools": None} for i in range(10)},
         max_new_tokens=40,
     )
     with open(chat_lm.temp_jsonl_file.name) as f:

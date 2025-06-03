@@ -91,9 +91,9 @@ class OpenAIChatBatchAPI(LanguageModel):
     def create_batch_file(self, custom_id_2_input: dict[str, list[dict[str, list[dict[str, Any]]]]], **kwargs) -> None:
         with open(self.temp_jsonl_file.name, mode="w") as f:
             for custom_id, input_dict in custom_id_2_input.items():
+                messages = input_dict["messages"]
+                tools = input_dict["tools"]
                 if self.developer_message:
-                    messages = input_dict["messages"]
-                    tools = input_dict["tools"]
                     messages = [{"role": "developer", "content": self.developer_message}, *messages]
 
                 f.write(
@@ -272,11 +272,9 @@ class OpenAIChatBatchAPI(LanguageModel):
         )
         return [
             LMOutput(
-                text=res.choices[0].message.content,
-                finish_reason=res.choices[0].finish_reason,
-                tool_calls=[tool_call.to_dict() for tool_call in res.choices[0].message.tool_calls]
-                if res.choices[0].message.tool_calls
-                else None,
+                text=res["choices"][0]["message"]["content"],
+                finish_reason=res["choices"][0]["finish_reason"],
+                tool_calls=res["choices"][0]["message"].get("tool_calls", None),
             )
             for res in api_responses
         ]
