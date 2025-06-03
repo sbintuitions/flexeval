@@ -53,8 +53,7 @@ pytest = "^7.4.3"
 pytest-mock = "^3.14.0"
 taskipy = "^1.12.0"
 ruff = "^0.4.5"
-pytest-parallel = "^0.1.1"
-py = "^1.11.0"
+pytest-xdist = "^3.7.0"
 
 [tool.poetry.group.docs.dependencies]
 mkdocs = "^1.6.0"
