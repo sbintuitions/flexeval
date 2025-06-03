@@ -4,6 +4,7 @@ The files under this directory are curated from the following sources.
 
 - `mt-ja.jsonl`: https://raw.githubusercontent.com/Stability-AI/FastChat/jp-stable/fastchat/llm_judge/data/japanese_mt_bench/question_full.jsonl
 - `mt-ja-ref-gpt4.jsonl`: https://raw.githubusercontent.com/Stability-AI/FastChat/jp-stable/fastchat/llm_judge/data/japanese_mt_bench/reference_answer/gpt-4.jsonl
+- `mt-ja-ref-gpt4o-with-human-annotation.jsonl`: https://github.com/Stability-AI/FastChat/blob/jp-stable/fastchat/llm_judge/data/japanese_mt_bench/reference_answer/base-gpt4o-with-human-annotation.jsonl
 - `mt-en.jsonl`: https://raw.githubusercontent.com/lm-sys/FastChat/main/fastchat/llm_judge/data/mt_bench/question.jsonl
 - `mt-en-ref-gpt4.jsonl`: https://raw.githubusercontent.com/lm-sys/FastChat/main/fastchat/llm_judge/data/mt_bench/reference_answer/gpt-4.jsonl
 - `vicuna-ja`: https://raw.githubusercontent.com/ku-nlp/ja-vicuna-qa-benchmark/main/data/jp_bench/question.jsonl

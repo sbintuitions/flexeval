@@ -204,6 +204,34 @@ def test_if_custom_chat_template_is_given(lm_init_func: Callable[..., HuggingFac
     assert responses[0].text.strip().startswith("0 0")
 
 
+@pytest.mark.parametrize(
+    ("fill_with_zeros", "expected_startswith_text"),
+    [
+        (True, "0 0"),
+        (False, "x x"),
+    ],
+)
+def test_if_chat_template_kwargs_is_used(
+    lm_init_func: Callable[..., HuggingFaceLM], fill_with_zeros: bool, expected_startswith_text: str
+) -> None:
+    custom_chat_template = (
+        "{%- if fill_with_zeros is defined and fill_with_zeros is true -%}"
+        "0 0 0 0 0 0 0 0 0 0 0"
+        "{%- else -%}"
+        "x x x x x x x x x x x"  # With 1 1 1, the continuation was not 1.
+        "{%- endif -%}"
+    )
+    lm = lm_init_func(
+        random_seed=42,
+        custom_chat_template=custom_chat_template,
+        chat_template_kwargs={"fill_with_zeros": fill_with_zeros},
+    )
+
+    responses = lm.generate_chat_response([[{"role": "user", "content": "こんにちは。"}]], max_length=40)
+    assert len(responses) == 1
+    assert responses[0].text.strip().startswith(expected_startswith_text)
+
+
 def test_if_stop_sequences_work_as_expected(chat_lm: HuggingFaceLM) -> None:
     test_inputs = [[{"role": "user", "content": "こんにちは"}]]
 
