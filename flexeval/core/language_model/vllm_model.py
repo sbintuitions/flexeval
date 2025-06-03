@@ -87,6 +87,7 @@ class VLLM(LanguageModel):
             If this value is set to less than or equal to the model's capacity and the input exceeds it,
             an empty string is returned instead of raising an error.
             If set to “default”, the value will be automatically determined when possible.
+        tool_parser: A ToolParser object to extract the tool_calls from the model's output.
     """
 
     def __init__(

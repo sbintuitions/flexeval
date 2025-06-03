@@ -97,6 +97,9 @@ class LanguageModel:
 
         Args:
             chat_messages_list: A list of chat messages.
+            tools_list: A list of tool definitions.
+                Each function definition should be a dict that conforms to the OpenAI Chat Completion API format.
+                https://platform.openai.com/docs/guides/function-calling?api-mode=chat#defining-functions
         """
         msg = f"{self.__class__.__name__} cannot generate chat responses."
         raise NotImplementedError(msg)
