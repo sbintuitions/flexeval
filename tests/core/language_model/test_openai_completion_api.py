@@ -30,6 +30,10 @@ class TestOpenAICompletionAPI(BaseLanguageModelTest):
     def chat_lm(self, lm: OpenAICompletionAPI) -> LanguageModel:
         return lm
 
+    @pytest.fixture()
+    def chat_lm_for_tool_calling(self, lm: OpenAICompletionAPI) -> LanguageModel:
+        return lm
+
     @pytest.mark.skip(reason="Even with temperature 0.0, the output is not deterministic via API.")
     def test_batch_complete_text_is_not_affected_by_batch(self, chat_lm: LanguageModel) -> None:
         pass

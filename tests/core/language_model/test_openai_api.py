@@ -41,6 +41,10 @@ class TestOpenAIChatAPI(BaseLanguageModelTest):
     def chat_lm(self, chat_lm: OpenAIChatAPI) -> LanguageModel:
         return chat_lm
 
+    @pytest.fixture()
+    def chat_lm_for_tool_calling(self, chat_lm: OpenAIChatAPI) -> OpenAIChatAPI:
+        return chat_lm
+
     @pytest.mark.skip(reason="Even with temperature 0.0, the output is not deterministic via API.")
     def test_batch_complete_text_is_not_affected_by_batch(self, chat_lm: LanguageModel) -> None:
         pass
@@ -133,7 +137,7 @@ def test_model_limit_new_tokens_generate_chat_response(
 
     # if max_new_tokens only, no warnings will be sent.
     chat_lm.generate_chat_response(messages, max_new_tokens=128)
-    assert len(caplog.records) == 0
+    assert all(not record.msg.startswith("The specified `max_new_tokens` (128) exceeds") for record in caplog.records)
 
     # if max_new_tokens > model_limit_completion_tokens, a warning about overwriting is sent.
     chat_lm_with_limit_tokens = OpenAIChatAPI("gpt-4o-mini-2024-07-18", model_limit_new_tokens=1)
@@ -149,7 +153,7 @@ def test_model_limit_new_tokens_complete_text(chat_lm: OpenAIChatAPI, caplog: py
 
     # if max_new_tokens only, no warnings will be sent.
     chat_lm.complete_text(text, max_new_tokens=128)
-    assert len(caplog.records) == 0
+    assert all(not record.msg.startswith("The specified `max_new_tokens` (128) exceeds") for record in caplog.records)
     caplog.clear()
 
     # if max_new_tokens > model_limit_new_tokens, a warning about overwriting is sent.

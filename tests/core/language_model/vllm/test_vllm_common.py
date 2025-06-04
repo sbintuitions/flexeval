@@ -8,6 +8,7 @@ from flexeval.core.language_model.vllm_model import (
 )
 from tests.conftest import is_vllm_enabled
 from tests.core.language_model.base import BaseLanguageModelTest
+from tests.dummy_modules.tool_parser import DummyToolParser
 
 
 @pytest.fixture(scope="module")
@@ -39,6 +40,26 @@ def chat_lm() -> VLLM:
     cleanup_dist_env_and_memory()
 
 
+@pytest.fixture(scope="module")
+def chat_lm_for_tool_calling() -> VLLM:
+    tool_parser = DummyToolParser()
+    llm = VLLM(
+        model="sbintuitions/tiny-lm-chat",
+        model_kwargs={
+            "seed": 42,
+            "gpu_memory_utilization": 0.1,
+            "enforce_eager": True,
+            "disable_custom_all_reduce": True,
+        },
+        tokenizer_kwargs={"use_fast": False},
+        tool_parser=tool_parser,
+    )
+    yield llm
+    from vllm.distributed.parallel_state import cleanup_dist_env_and_memory
+
+    cleanup_dist_env_and_memory()
+
+
 @pytest.mark.skipif(not is_vllm_enabled(), reason="vllm library is not installed")
 class TestVLLM(BaseLanguageModelTest):
     @pytest.fixture()
@@ -48,3 +69,7 @@ class TestVLLM(BaseLanguageModelTest):
     @pytest.fixture()
     def chat_lm(self, chat_lm: VLLM) -> VLLM:
         return chat_lm
+
+    @pytest.fixture()
+    def chat_lm_for_tool_calling(self, chat_lm_for_tool_calling: VLLM) -> VLLM:
+        return chat_lm_for_tool_calling

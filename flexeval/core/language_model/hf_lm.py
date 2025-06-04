@@ -10,6 +10,7 @@ from loguru import logger
 from transformers import AutoModelForCausalLM, AutoTokenizer, BatchEncoding, PreTrainedModel, PreTrainedTokenizer
 
 from flexeval.core.string_processor import StringProcessor
+from flexeval.core.tool_parser.base import ToolParser
 from flexeval.utils.hf_utils import get_default_model_kwargs
 
 from .base import LanguageModel, LMOutput, normalize_stop_sequences
@@ -160,6 +161,7 @@ class HuggingFaceLM(LanguageModel):
             If this value is set to less than or equal to the model's capacity and the input exceeds it,
             an empty string is returned instead of raising an error.
             If set to “default”, the value will be automatically determined when possible.
+        tool_parser: A ToolParser object to extract the tool_calls from the model's output.
     """
 
     def __init__(
@@ -177,6 +179,7 @@ class HuggingFaceLM(LanguageModel):
         default_gen_kwargs: dict[str, Any] | None = None,
         string_processors: StringProcessor | list[StringProcessor] | None = None,
         model_limit_tokens: int | None | Literal["default"] = "default",
+        tool_parser: ToolParser | None = None,
     ) -> None:
         super().__init__(string_processors=string_processors)
         self._model_name_or_path = model
@@ -218,6 +221,7 @@ class HuggingFaceLM(LanguageModel):
                 )
                 logger.warning(msg)
         self.model_limit_tokens = model_limit_tokens
+        self.tool_parser = tool_parser
 
         transformers.set_seed(random_seed)
 
@@ -345,19 +349,36 @@ class HuggingFaceLM(LanguageModel):
     def _batch_generate_chat_response(
         self,
         chat_messages_list: list[list[dict[str, Any]]],
+        tools_list: list[list[dict[str, Any]]] | None = None,
         **kwargs,
     ) -> list[LMOutput]:
+        if tools_list and not self.tool_parser:
+            msg = "tool_parser is not set but tools are provided."
+            raise ValueError(msg)
+        if tools_list is None:
+            tools_list = [None] * len(chat_messages_list)
         chat_messages_as_string = [
             self.tokenizer.apply_chat_template(
                 chat_messages,
+                tools=tools,
                 tokenize=False,
                 add_generation_prompt=True,
                 chat_template=self.custom_chat_template,
                 **self.chat_template_kwargs,
             )
-            for chat_messages in chat_messages_list
+            for chat_messages, tools in zip(chat_messages_list, tools_list)
         ]
-        return self._batch_complete_text(chat_messages_as_string, **kwargs)
+        lm_outputs = self._batch_complete_text(chat_messages_as_string, **kwargs)
+        if self.tool_parser:
+            for lm_output, tools in zip(lm_outputs, tools_list):
+                if tools is None:
+                    continue
+                parsed_tool_calling_message = self.tool_parser(lm_output.text)
+                lm_output.tool_calls = parsed_tool_calling_message.tool_call_dicts
+                lm_output.raw_text = parsed_tool_calling_message.raw_text
+                lm_output.text = parsed_tool_calling_message.text
+
+        return lm_outputs
 
     @torch.inference_mode()
     def _batch_compute_log_probs(

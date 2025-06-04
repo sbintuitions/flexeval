@@ -44,6 +44,15 @@ class BaseLanguageModelTest:
         msg = "Subclasses must implement model fixture"
         raise NotImplementedError(msg)
 
+    @pytest.fixture()
+    @abstractmethod
+    def chat_lm_for_tool_calling(self, *args, **kwargs) -> LanguageModel:  # noqa: ANN002
+        """Return an instance of the LanguageModel.
+        This is supposed to be a chat lm supporting the tool calling.
+        """
+        msg = "Subclasses must implement model fixture"
+        raise NotImplementedError(msg)
+
     """
     Test if basic interfaces return the expected types.
     """
@@ -71,6 +80,7 @@ class BaseLanguageModelTest:
             assert isinstance(response, LMOutput)
             assert isinstance(response.text, str)
             assert isinstance(response.finish_reason, str)
+            assert response.tool_calls is None
         except NotImplementedError:
             pytest.skip("This model does not support chat responses")
 
@@ -85,6 +95,112 @@ class BaseLanguageModelTest:
             assert all(isinstance(r, LMOutput) for r in responses)
             assert all(isinstance(r.text, str) for r in responses)
             assert all(isinstance(r.finish_reason, str) for r in responses)
+            assert all(r.tool_calls is None for r in responses)
+        except NotImplementedError:
+            pytest.skip("This model does not support chat responses")
+
+    def test_generate_chat_response_single_input_with_tools(self, chat_lm_for_tool_calling: LanguageModel) -> None:
+        """Test that generate_chat_response works with a single input with tools."""
+        tools = [
+            {
+                "type": "function",
+                "function": {
+                    "name": "get_weather",
+                    "description": "Get current weather information for provided city in celsius.",
+                    "parameters": {
+                        "type": "object",
+                        "properties": {
+                            "city": {"type": "string"},
+                        },
+                        "required": ["city"],
+                    },
+                },
+            }
+        ]
+        try:
+            response = chat_lm_for_tool_calling.generate_chat_response(
+                [{"role": "user", "content": "What's the weather like in Paris today?"}],
+                tools=tools,
+            )
+            assert isinstance(response, LMOutput)
+            assert all(isinstance(tool_call, dict) for tool_call in response.tool_calls)
+            assert isinstance(response.finish_reason, str)
+        except NotImplementedError:
+            pytest.skip("This model does not support chat responses")
+
+    def test_generate_chat_response_batch_input_with_tools(self, chat_lm_for_tool_calling: LanguageModel) -> None:
+        """Test that generate_chat_response works with a batch input with tools."""
+        tools = [
+            [
+                {
+                    "type": "function",
+                    "function": {
+                        "name": "get_weather",
+                        "description": "Get current weather information for provided city in celsius.",
+                        "parameters": {
+                            "type": "object",
+                            "properties": {
+                                "city": {"type": "string"},
+                            },
+                            "required": ["city"],
+                        },
+                    },
+                }
+            ]
+            for _ in range(2)
+        ]
+        try:
+            responses = chat_lm_for_tool_calling.generate_chat_response(
+                [
+                    [{"role": "user", "content": "What's the weather like in Paris today?"}],
+                    [{"role": "user", "content": "What's the weather like in Tokyo today?"}],
+                ],
+                tools=tools,
+            )
+            assert isinstance(responses, list)
+            assert len(responses) == 2
+            assert all(isinstance(r, LMOutput) for r in responses)
+            assert all(
+                isinstance(r.tool_calls, list) and all(isinstance(tool_call, dict) for tool_call in r.tool_calls)
+                for r in responses
+            )
+            assert all(isinstance(r.finish_reason, str) for r in responses)
+        except NotImplementedError:
+            pytest.skip("This model does not support chat responses")
+
+    def test_generate_chat_response_if_number_of_tools_and_messages_not_equal(
+        self, chat_lm_for_tool_calling: LanguageModel
+    ) -> None:
+        """Test for warnings of mismatches between messages and tools counts."""
+        tools = [
+            [
+                {
+                    "type": "function",
+                    "function": {
+                        "name": "get_weather",
+                        "description": "Get current weather information for provided city in celsius.",
+                        "parameters": {
+                            "type": "object",
+                            "properties": {
+                                "city": {"type": "string"},
+                            },
+                            "required": ["city"],
+                        },
+                    },
+                }
+            ]
+        ]
+        try:
+            with pytest.raises(
+                ValueError, match="tools_list must be either None or a list of the same length as chat_messages_list."
+            ):
+                chat_lm_for_tool_calling.generate_chat_response(
+                    [
+                        [{"role": "user", "content": "What's the weather like in Paris today?"}],
+                        [{"role": "user", "content": "What's the weather like in Tokyo today?"}],
+                    ],
+                    tools=tools,
+                )
         except NotImplementedError:
             pytest.skip("This model does not support chat responses")
 

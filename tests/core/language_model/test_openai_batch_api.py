@@ -37,6 +37,10 @@ class TestOpenAIChatBatchAPI(BaseLanguageModelTest):
     def chat_lm(self, chat_lm: OpenAIChatBatchAPI) -> LanguageModel:
         return chat_lm
 
+    @pytest.fixture()
+    def chat_lm_for_tool_calling(self, chat_lm: OpenAIChatBatchAPI) -> OpenAIChatBatchAPI:
+        return chat_lm
+
     @pytest.mark.skip(reason="Even with temperature 0.0, the output is not deterministic via API.")
     def test_batch_complete_text_is_not_affected_by_batch(self, chat_lm: LanguageModel) -> None:
         pass
@@ -50,7 +54,7 @@ class TestOpenAIChatBatchAPI(BaseLanguageModelTest):
 @pytest.mark.batch_api()
 def test_create_batch_file(chat_lm: OpenAIChatBatchAPI) -> None:
     chat_lm.create_batch_file(
-        {str(i): [[{"role": "user", "content": "こんにちは。"}]] for i in range(10)},
+        {str(i): {"messages": [[{"role": "user", "content": "こんにちは。"}]], "tools": None} for i in range(10)},
         max_new_tokens=40,
     )
     with open(chat_lm.temp_jsonl_file.name) as f:
