@@ -7,5 +7,5 @@ class DummyToolParser(ToolParser):
             "CompleteToolCall",
             text,
             f"{text}<|tool_calls|>[{{'name': 'get_weather', 'arguments': {{'city': 'Paris'}}}}]",
-            [FunctionToolCall("get_weather", {"city": "Paris"}, "id1")],
+            [FunctionToolCall("get_weather", '{"city": "Paris"}', "id1")],
         )

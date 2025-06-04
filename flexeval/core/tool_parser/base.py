@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import random
 import string
 from abc import ABC, abstractmethod
@@ -39,16 +40,22 @@ class FunctionToolCall(ToolCall):
     Attributes:
         name: The name of the function to call.
         arguments: Arguments to pass to the function.
+            This is must be a JSON formatted string
         id: An optional identifier for the tool call.
     """
 
     name: str
-    arguments: dict[str, Any]
+    arguments: str
     id: int | None = None
 
     def __post_init__(self) -> None:
         if self.id is None:
             self.id = generate_tool_call_id()
+        try:
+            json.loads(self.arguments)
+        except json.JSONDecodeError as exc:
+            msg = "'arguments' must be a JSON formatted string"
+            raise ValueError(msg) from exc
 
     def to_dict(self) -> dict[str, Any]:
         """
