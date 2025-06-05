@@ -1,10 +1,12 @@
 import logging
+from unittest.mock import patch
 
 import pytest
 from transformers import AutoTokenizer
 
 from flexeval.core.language_model import VLLM, HuggingFaceLM, LanguageModel
 from tests.conftest import is_vllm_enabled
+from tests.dummy_modules.tool_parser import DummyToolParser
 
 
 @pytest.fixture(scope="module")
@@ -18,6 +20,26 @@ def chat_lm() -> VLLM:
             "disable_custom_all_reduce": True,
         },
         tokenizer_kwargs={"use_fast": False},
+    )
+    yield llm
+    from vllm.distributed.parallel_state import cleanup_dist_env_and_memory
+
+    cleanup_dist_env_and_memory()
+
+
+@pytest.fixture(scope="module")
+def chat_lm_for_tool_calling() -> VLLM:
+    tool_parser = DummyToolParser()
+    llm = VLLM(
+        model="sbintuitions/tiny-lm-chat",
+        model_kwargs={
+            "seed": 42,
+            "gpu_memory_utilization": 0.1,
+            "enforce_eager": True,
+            "disable_custom_all_reduce": True,
+        },
+        tokenizer_kwargs={"use_fast": False},
+        tool_parser=tool_parser,
     )
     yield llm
     from vllm.distributed.parallel_state import cleanup_dist_env_and_memory
@@ -89,3 +111,35 @@ def test_if_input_length_exceeds_model_limit_new_tokens(chat_lm: VLLM, caplog: p
     assert any(record.msg.startswith("Received input that is longer than") for record in caplog.records)
     caplog.clear()
     chat_lm.model_limit_tokens = None
+
+
+@pytest.mark.skipif(not is_vllm_enabled(), reason="vllm library is not installed")
+def test_apply_chat_template_arguments_when_tools_provided(chat_lm_for_tool_calling: VLLM) -> None:
+    tools = [
+        {
+            "type": "function",
+            "function": {
+                "name": "get_weather",
+                "description": "Get current weather information for provided city in celsius.",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "city": {"type": "string"},
+                    },
+                    "required": ["city"],
+                },
+            },
+        }
+    ]
+    chat_messages = [{"role": "user", "content": "What's the weather like in Paris today?"}]
+    with patch.object(chat_lm_for_tool_calling.tokenizer, "apply_chat_template", return_value="text") as mock_method:
+        chat_lm_for_tool_calling.generate_chat_response(chat_messages, max_new_tokens=1)
+        args, kwargs = mock_method.call_args
+        assert args[0] == chat_messages
+        assert kwargs["tools"] is None
+
+    with patch.object(chat_lm_for_tool_calling.tokenizer, "apply_chat_template", return_value="text") as mock_method:
+        chat_lm_for_tool_calling.generate_chat_response(chat_messages, tools=tools, max_new_tokens=1)
+        args, kwargs = mock_method.call_args
+        assert args[0] == chat_messages
+        assert kwargs["tools"] == tools
