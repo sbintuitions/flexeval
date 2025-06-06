@@ -42,7 +42,7 @@ def calc_label_dist(valid_labels: list[int], label_names: list[str]) -> dict[str
 
 def summarize_evaluator_labels(
     evaluator_label_list: list[int | None],
-    task_inputs_list: list[dict[str, str]],
+    extra_info_list: list[dict[str, str]],
     label_names: list[str],
     weights: list[float],
     category_key: str | None = None,
@@ -64,11 +64,11 @@ def summarize_evaluator_labels(
 
     # compute category-wise stats if category_key is given
     category2valid_labels: dict[str, list[str]] = defaultdict(list)
-    for label, task_inputs in zip(evaluator_label_list, task_inputs_list):
+    for label, extra_info in zip(evaluator_label_list, extra_info_list):
         if label is None or category_key is None:
             continue
-        if category_key in task_inputs:
-            category2valid_labels[task_inputs[category_key]].append(label)
+        if category_key in extra_info:
+            category2valid_labels[extra_info[category_key]].append(label)
 
     category2mean_score: dict[str, float] = {}
     category2dist: dict[str, float] = {}
@@ -101,7 +101,7 @@ class LLMLabel(Metric):
         batch_size: The batch size for the evaluator.
         disable_tqdm: Whether to disable the progress bar.
         category_key: A key to create category-wise mean score.
-            The category key is expected to be in task inputs.
+            The category key is expected to be in extra_info.
 
     Examples:
         >>> from flexeval import OpenAIChatAPI, Jinja2PromptTemplate, LLMLabel
@@ -167,15 +167,15 @@ class LLMLabel(Metric):
         self,
         lm_outputs: list[str],
         references_list: list[list[str]] | None = None,
-        task_inputs_list: list[dict[str, str]] | None = None,
+        extra_info_list: list[dict[str, str]] | None = None,
     ) -> MetricResult:
-        if task_inputs_list is None:
-            task_inputs_list = [{} for _ in lm_outputs]
+        if extra_info_list is None:
+            extra_info_list = [{} for _ in lm_outputs]
         if references_list is None:
             references_list = [[] for _ in lm_outputs]
 
         evaluator_input_list: list[str] = prepare_text_input_for_evaluator(
-            lm_outputs, references_list, task_inputs_list, self.prompt_template
+            lm_outputs, references_list, extra_info_list, self.prompt_template
         )
         evaluator_output_list: list[LMOutput] = generate_evaluations(
             evaluator_input_list, self.language_model, self.batch_size, self.disable_tqdm, "Calculating LLM score"
@@ -196,7 +196,7 @@ class LLMLabel(Metric):
 
         summary = summarize_evaluator_labels(
             evaluator_label_list,
-            task_inputs_list,
+            extra_info_list,
             self.label_names,
             self.weights,
             self.category_key,
@@ -239,7 +239,7 @@ class ChatLLMLabel(Metric):
         batch_size: The batch size for the evaluator.
         disable_tqdm: Whether to disable the progress bar.
         category_key: A key to create category-wise mean score.
-            The category key is expected to be in task inputs.
+            The category key is expected to be in extra_info.
 
     Examples:
         >>> from flexeval import ChatLLMScore, OpenAIChatAPI, Jinja2PromptTemplate
@@ -306,15 +306,15 @@ class ChatLLMLabel(Metric):
         self,
         lm_outputs: list[str],
         references_list: list[list[str]] | None = None,
-        task_inputs_list: list[dict[str, str]] | None = None,
+        extra_info_list: list[dict[str, str]] | None = None,
     ) -> MetricResult:
-        if task_inputs_list is None:
-            task_inputs_list = [{} for _ in lm_outputs]
+        if extra_info_list is None:
+            extra_info_list = [{} for _ in lm_outputs]
         if references_list is None:
             references_list = [[] for _ in lm_outputs]
 
         evaluator_input_list = prepare_chat_input_for_evaluator(
-            lm_outputs, references_list, task_inputs_list, self.prompt_template, self.system_message
+            lm_outputs, references_list, extra_info_list, self.prompt_template, self.system_message
         )
 
         evaluator_output_list: list[LMOutput] = generate_evaluations(
@@ -336,7 +336,7 @@ class ChatLLMLabel(Metric):
 
         summary = summarize_evaluator_labels(
             evaluator_label_list,
-            task_inputs_list,
+            extra_info_list,
             self.label_names,
             self.weights,
             self.category_key,

@@ -30,7 +30,7 @@ def parse_score_from_evaluator_output(evaluator_output: str, valid_score_range: 
 
 def summarize_evaluator_scores(
     evaluator_score_list: list[int | None],
-    task_inputs_list: list[dict[str, str]],
+    extra_info_list: list[dict[str, str]],
     category_key: str | None = None,
 ) -> dict[str, float]:
     """Summarize evaluator_score_list. If category_key is given, return
@@ -45,11 +45,11 @@ def summarize_evaluator_scores(
 
     # compute category-wise mean score if category_key is given
     category2valid_scores: dict[str, list[int]] = defaultdict(list)
-    for score, task_inputs in zip(evaluator_score_list, task_inputs_list):
+    for score, extra_info in zip(evaluator_score_list, extra_info_list):
         if score is None or category_key is None:
             continue
-        if category_key in task_inputs:
-            categories = task_inputs[category_key]
+        if category_key in extra_info:
+            categories = extra_info[category_key]
             if not isinstance(categories, (list, tuple, set)):
                 categories = [categories]
             for category in categories:
@@ -67,23 +67,23 @@ def summarize_evaluator_scores(
 def prepare_text_input_for_evaluator(
     lm_outputs: list[str],
     references_list: list[list[str]],
-    task_inputs_list: list[dict[str, str]],
+    extra_info_list: list[dict[str, str]],
     prompt_template: PromptTemplate,
 ) -> list[str]:
     """Create input texts for the evaluator
-    by integrating the task inputs, the model outputs, and the prompt template for evaluator.
+    by integrating the extra_info, the model outputs, and the prompt template for evaluator.
     """
 
     evaluator_input_list: list[str] = []
-    for lm_output, task_input, references in zip(
+    for lm_output, extra_info, references in zip(
         lm_outputs,
-        task_inputs_list,
+        extra_info_list,
         references_list,
     ):
         prompt_inputs = {
             "lm_output": lm_output,
             "references": references,
-            **task_input,
+            **extra_info,
         }
         evaluator_input = prompt_template.embed_inputs(prompt_inputs)
         evaluator_input_list.append(evaluator_input)
@@ -93,24 +93,24 @@ def prepare_text_input_for_evaluator(
 def prepare_chat_input_for_evaluator(
     lm_outputs: list[str],
     references_list: list[list[str]],
-    task_inputs_list: list[dict[str, str]],
+    extra_info_list: list[dict[str, str]],
     prompt_template: PromptTemplate,
     system_message: str | PromptTemplate | None = None,
 ) -> list[list[dict[str, str]]]:
     """Create input chat messages for the evaluator
-    by integrating the task inputs, the model outputs, and the prompt template for evaluator.
+    by integrating the extra_info, the model outputs, and the prompt template for evaluator.
     """
 
     evaluator_input_list: list[list[dict[str, str]]] = []
-    for lm_output, task_input, references in zip(
+    for lm_output, extra_info, references in zip(
         lm_outputs,
-        task_inputs_list,
+        extra_info_list,
         references_list,
     ):
         prompt_inputs = {
             "lm_output": lm_output,
             "references": references,
-            **task_input,
+            **extra_info,
         }
         evaluator_input = prompt_template.embed_inputs(prompt_inputs)
         input_chat_messages = [{"role": "user", "content": evaluator_input}]
@@ -179,7 +179,7 @@ class LLMScore(Metric):
         valid_score_range: A tuple of two integers representing the valid score range.
             If the parsed score is out of the range, it will be ignored.
         category_key: A key to create category-wise mean score.
-            The category key is expected to be in task inputs.
+            The category key is expected to be in extra_info.
 
     Examples:
         >>> from flexeval import LLMScore, OpenAIChatAPI, Jinja2PromptTemplate
@@ -225,15 +225,15 @@ class LLMScore(Metric):
         self,
         lm_outputs: list[str],
         references_list: list[list[str]] | None = None,
-        task_inputs_list: list[dict[str, str]] | None = None,
+        extra_info_list: list[dict[str, str]] | None = None,
     ) -> MetricResult:
-        if task_inputs_list is None:
-            task_inputs_list = [{} for _ in lm_outputs]
+        if extra_info_list is None:
+            extra_info_list = [{} for _ in lm_outputs]
         if references_list is None:
             references_list = [[] for _ in lm_outputs]
 
         evaluator_input_list: list[str] = prepare_text_input_for_evaluator(
-            lm_outputs, references_list, task_inputs_list, self.prompt_template
+            lm_outputs, references_list, extra_info_list, self.prompt_template
         )
         evaluator_output_list: list[LMOutput] = generate_evaluations(
             evaluator_input_list, self.language_model, self.batch_size, self.disable_tqdm, "Calculating LLM score"
@@ -251,7 +251,7 @@ class LLMScore(Metric):
 
         summary = summarize_evaluator_scores(
             evaluator_score_list,
-            task_inputs_list,
+            extra_info_list,
             self.category_key,
         )
 
@@ -286,7 +286,7 @@ class ChatLLMScore(Metric):
         valid_score_range: A tuple of two integers representing the valid score range.
             If the parsed score is out of the range, it will be ignored.
         category_key: A key to create category-wise mean score.
-            The category key is expected to be in task inputs.
+            The category key is expected to be in extra_info.
 
     Examples:
         >>> from flexeval import ChatLLMScore, OpenAIChatAPI, Jinja2PromptTemplate
@@ -335,15 +335,15 @@ class ChatLLMScore(Metric):
         self,
         lm_outputs: list[str],
         references_list: list[list[str]] | None = None,
-        task_inputs_list: list[dict[str, str]] | None = None,
+        extra_info_list: list[dict[str, str]] | None = None,
     ) -> MetricResult:
-        if task_inputs_list is None:
-            task_inputs_list = [{} for _ in lm_outputs]
+        if extra_info_list is None:
+            extra_info_list = [{} for _ in lm_outputs]
         if references_list is None:
             references_list = [[] for _ in lm_outputs]
 
         evaluator_input_list = prepare_chat_input_for_evaluator(
-            lm_outputs, references_list, task_inputs_list, self.prompt_template, self.system_message
+            lm_outputs, references_list, extra_info_list, self.prompt_template, self.system_message
         )
         evaluator_output_list: list[LMOutput] = generate_evaluations(
             evaluator_input_list, self.language_model, self.batch_size, self.disable_tqdm, "Calculating ChatLLM score"
@@ -361,7 +361,7 @@ class ChatLLMScore(Metric):
 
         summary = summarize_evaluator_scores(
             evaluator_score_list,
-            task_inputs_list,
+            extra_info_list,
             self.category_key,
         )
 

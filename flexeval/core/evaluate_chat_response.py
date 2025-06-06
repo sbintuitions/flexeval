@@ -149,6 +149,12 @@ def evaluate_chat_response(  # noqa: C901,PLR0912, PLR0915
 
             pbar.update(len(batch))
 
+    # Metric.evaluate() accepts only str, so if content is None, convert it to empty string
+    for messages in all_messages_list:
+        for mes in messages:
+            if mes["content"] is None:
+                mes["content"] = ""
+
     # Evaluate the generated responses
     metrics_summary_dict: dict[str, float] = {}
     instance_metrics_list: list[dict[str, Any]] = [{} for _ in range(len(all_messages_list))]
@@ -156,7 +162,7 @@ def evaluate_chat_response(  # noqa: C901,PLR0912, PLR0915
         metric_result = metric.evaluate(
             lm_outputs=[messages[-1]["content"] for messages in all_messages_list],
             references_list=references_list,
-            task_inputs_list=[
+            extra_info_list=[
                 {"messages": messages[:-1], **extra_info}
                 for messages, extra_info in zip(all_messages_list, extra_info_list)
             ],
@@ -185,17 +191,11 @@ def evaluate_chat_response(  # noqa: C901,PLR0912, PLR0915
         {
             "lm_output": messages[-1]["content"],
             "finish_reason": messages[-1]["finish_reason"],
-            "task_inputs": {"messages": messages[:-1], **extra_info},
+            "extra_info": {"messages": messages[:-1], **extra_info},
             "references": references,
             **instance_metrics,
         }
         | ({"raw_lm_output": messages[-1]["raw_content"]} if "raw_content" in messages[-1] else {})
-        | ({"tool_calls": messages[-1]["tool_calls"]} if "tool_calls" in messages[-1] else {})
-        | (
-            {"validation_tool_calls_parsing": messages[-1]["validation_tool_calls_parsing"]}
-            if "validation_tool_calls_parsing" in messages[-1]
-            else {}
-        )
         for messages, references, extra_info, instance_metrics in zip(
             all_messages_list,
             references_list,

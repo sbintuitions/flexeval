@@ -32,7 +32,7 @@ class Metric(ABC):
         self,
         lm_outputs: list[str],
         references_list: list[list[str]],
-        task_inputs_list: list[dict[str, str]] | None = None,
+        extra_info_list: list[dict[str, str]] | None = None,
     ) -> MetricResult:
         """
         Evaluate the outputs of `LanguageModel` against the references.
@@ -40,6 +40,6 @@ class Metric(ABC):
         Args:
             lm_outputs: List of model outputs.
             references_list: List of reference outputs.
-            task_inputs_list: List of task inputs.
+            extra_info_list: List of task inputs and some extra informations.
         """
         raise NotImplementedError

@@ -45,7 +45,7 @@ def test_exact_match_with_category_key() -> None:
     """Test ExactMatch metric with category_key parameter."""
     metric_w_cat_key = BLEU(tokenize_option="ja-mecab", category_key="category")
     metric_wo_cat_key = BLEU(tokenize_option="ja-mecab")
-    task_inputs_list = [
+    extra_info_list = [
         {"category": "commonsense", "text": "This is sentence1."},
         {"category": "commonsense", "text": "This is sentence2."},
         {"category": "science", "text": "This is very scientific sentence."},
@@ -53,8 +53,8 @@ def test_exact_match_with_category_key() -> None:
     lm_outputs = ["これは文1です。", "間違った訳", "これはすごく科学的な文です。"]
     references_list = [["これは文1です。"], ["これは文2です。"], ["これはすごく科学的な文です。"]]
 
-    result_w_cat_key = metric_w_cat_key.evaluate(lm_outputs, references_list, task_inputs_list)
-    result_wo_cat_key = metric_wo_cat_key.evaluate(lm_outputs, references_list, task_inputs_list)
+    result_w_cat_key = metric_w_cat_key.evaluate(lm_outputs, references_list, extra_info_list)
+    result_wo_cat_key = metric_wo_cat_key.evaluate(lm_outputs, references_list, extra_info_list)
 
     assert isinstance(result_w_cat_key, MetricResult)
     assert "bleu_score" in result_w_cat_key.summary

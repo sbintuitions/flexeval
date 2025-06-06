@@ -6,9 +6,9 @@ from flexeval.core.chat_dataset import ChatDataset, ChatInstance
 class DummyChatDataset(ChatDataset):
     def __init__(self, require_incremental_response: bool = False, use_tools: bool = False) -> None:
         self._data = [
-            [{"role": "sysmtem", "text": "You are a helpful assistant."}, {"role": "user", "text": "Help me!"}],
-            [{"role": "user", "text": "Hello, world!"}],
-            [{"role": "user", "text": "I'd like to book a flight to Paris."}],
+            [{"role": "sysmtem", "content": "You are a helpful assistant."}, {"role": "user", "content": "Help me!"}],
+            [{"role": "user", "content": "Hello, world!"}],
+            [{"role": "user", "content": "I'd like to book a flight to Paris."}],
         ]
         if use_tools:
             self._tools = [

@@ -12,9 +12,9 @@ Adapted from [lm-sys/FastChat](https://github.com/lm-sys/FastChat/blob/main/fast
       class_path: 'Jinja2PromptTemplate',
       init_args: {
         template: std.stripChars(|||
-          {% set question = model1_item["task_inputs"]["messages"][0]["content"] -%}
-          {% set model1_messages = model1_item["task_inputs"]["messages"] -%}
-          {% set model2_messages = model2_item["task_inputs"]["messages"] -%}
+          {% set question = model1_item["extra_info]["messages"][0]["content"] -%}
+          {% set model1_messages = model1_item["extra_info"]["messages"] -%}
+          {% set model2_messages = model2_item["extra_info"]["messages"] -%}
           [Instruction]
           {% if references|length > 0 -%}
           Please act as an impartial judge and evaluate the quality of the responses provided by two AI assistants to the user question displayed below. Your evaluation should consider correctness and helpfulness. You will be given a reference answer, assistant A's answer, and assistant B's answer. Your job is to evaluate which assistant's answer is better. Begin your evaluation by comparing both assistants' answers with the reference answer. Identify and correct any mistakes. Avoid any position biases and ensure that the order in which the responses were presented does not influence your decision. Do not allow the length of the responses to influence your evaluation. Do not favor certain names of the assistants. Be as objective as possible. After providing your explanation, output your final verdict by strictly following this format: "[[1]]" if assistant 1 is better, "[[2]]" if assistant 2 is better, and "[[3]]" for a tie.
