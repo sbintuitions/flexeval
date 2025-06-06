@@ -1,8 +1,10 @@
 from __future__ import annotations
 
-from typing import Any, Sequence
+from collections.abc import Sequence
+from typing import Any
 
 from loguru import logger
+from sklearn.metrics import f1_score
 from tqdm import tqdm
 
 from .few_shot_generator import FewShotGenerator
@@ -57,7 +59,7 @@ def evaluate_multiple_choice(
             if batch_id == 0:
                 logger.info("Example of the model inputs and outputs:")
                 logger.info(f"prefix: {batch_prefixes[0]}")
-                logger.info(f"choices: {batch_choices[:len(eval_instance.choices)]}")
+                logger.info(f"choices: {batch_choices[: len(eval_instance.choices)]}")
 
             batch_log_probs = language_model.compute_log_probs(
                 text_list=batch_choices,
@@ -104,6 +106,9 @@ def evaluate_multiple_choice(
     metrics_dict: dict[str, float] = {
         "accuracy": accuracy,
         "byte_norm_accuracy": byte_norm_accuracy,
+        "f1_score": f1_score(
+            [res["prediction"] for res in results], [res["answer_index"] for res in results], average="macro"
+        ),
     }
     logger.info(metrics_dict)
     return metrics_dict, results
