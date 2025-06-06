@@ -92,8 +92,8 @@ def evaluate_chat_response(  # noqa: C901,PLR0912, PLR0915
                             | ({"raw_content": lm_output.raw_text} if lm_output.raw_text else {})
                             | ({"tool_calls": lm_output.tool_calls} if lm_output.tool_calls else {})
                             | (
-                                {"validation_tool_calls_parsing": lm_output.tool_calls}
-                                if lm_output.validation_tool_calls_parsing
+                                {"validation_tool_calls": lm_output.validation_tool_calls}
+                                if lm_output.validation_tool_calls
                                 else {}
                             ),
                         ],
@@ -133,8 +133,8 @@ def evaluate_chat_response(  # noqa: C901,PLR0912, PLR0915
                             | ({"raw_content": lm_outputs[o_id].raw_text} if lm_outputs[o_id].raw_text else {})
                             | ({"tool_calls": lm_outputs[o_id].tool_calls} if lm_outputs[o_id].tool_calls else {})
                             | (
-                                {"validation_tool_calls_parsing": lm_outputs[o_id].tool_calls}
-                                if lm_outputs[o_id].validation_tool_calls_parsing
+                                {"validation_tool_calls": lm_outputs[o_id].validation_tool_calls}
+                                if lm_outputs[o_id].validation_tool_calls
                                 else {}
                             ),
                         )
@@ -142,6 +142,13 @@ def evaluate_chat_response(  # noqa: C901,PLR0912, PLR0915
 
             references_list += [chat_instance.references for chat_instance in batch]
             extra_info_list += [chat_instance.extra_info for chat_instance in batch]
+
+            for extra_info, messages in zip(extra_info_list, all_messages_list):
+                last_message = messages[-1]
+                if "tool_calls" in last_message:
+                    extra_info["tool_calls"] = last_message["tool_calls"]
+                if "validation_tool_calls" in last_message:
+                    extra_info["validation_tool_calls"] = last_message["validation_tool_calls"]
 
             if batch_id == 0:
                 logger.info("Example of the conversation")
@@ -178,10 +185,13 @@ def evaluate_chat_response(  # noqa: C901,PLR0912, PLR0915
 
     # Calculate the finish_reason statistics
     finish_reason_counter = Counter()
+    validation_tool_calls_counter = Counter()
     for messages in all_messages_list:
         for mes in messages:
             if "finish_reason" in mes:
                 finish_reason_counter[mes["finish_reason"]] += 1
+            if "validation_tool_calls" in mes:
+                validation_tool_calls_counter[mes["validation_tool_calls"]] += 1
     for finish_reason, count in finish_reason_counter.items():
         metrics_summary_dict[f"finish_reason_ratio-{finish_reason}"] = count / sum(finish_reason_counter.values())
 
