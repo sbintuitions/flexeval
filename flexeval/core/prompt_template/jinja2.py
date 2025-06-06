@@ -17,7 +17,7 @@ def instantiate_prompt_template_from_string(template_or_path: str) -> Jinja2Prom
 
 class Jinja2PromptTemplate(PromptTemplate):
     """
-    Embed extra_info using Jinja2 template engine.
+    Embed task inputs using Jinja2 template engine.
 
     Args:
         template: The Jinja2 template to use.

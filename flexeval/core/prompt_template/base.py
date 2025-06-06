@@ -6,7 +6,7 @@ from typing import Any
 
 class PromptTemplate(ABC):
     """
-    This class embeds extra_inforom `GenerationInstance` or `MultipleChoiceInstance` into a text that can be used
+    This class embeds task inputs `GenerationInstance` or `MultipleChoiceInstance` into a text that can be used
     as a prompt for `LanguageModel`.
     """
 
