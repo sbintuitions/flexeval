@@ -30,7 +30,7 @@ def _remove_redundant_keys_from_messages(
     return [{key: value for key, value in message.items() if key not in remove_keys} for message in messages]
 
 
-def evaluate_chat_response(  # noqa: C901,PLR0912
+def evaluate_chat_response(  # noqa: C901,PLR0912, PLR0915
     language_model: LanguageModel,
     gen_kwargs: dict[str, Any],
     eval_dataset: ChatDataset,
@@ -53,6 +53,9 @@ def evaluate_chat_response(  # noqa: C901,PLR0912
     with tqdm(total=len(eval_instances)) as pbar:
         for batch_id, batch in enumerate(batch_iter(eval_instances, batch_size)):
             input_messages_list = [chat_instance.messages for chat_instance in batch]
+            input_tools_list = [chat_instance.tools for chat_instance in batch]
+            if all(tools is None for tools in input_tools_list):
+                input_tools_list = None
 
             # Generate few-shot instances
             # The few-shot examples here follow a multi-turn format, interleaving user and assistant messages.
@@ -74,6 +77,7 @@ def evaluate_chat_response(  # noqa: C901,PLR0912
                 # Continue generation from the given conversation history
                 lm_outputs: list[LMOutput] = language_model.generate_chat_response(
                     input_messages_list,
+                    tools=input_tools_list,
                     **gen_kwargs,
                 )
                 for input_messages, lm_output in zip(input_messages_list, lm_outputs):
@@ -85,7 +89,13 @@ def evaluate_chat_response(  # noqa: C901,PLR0912
                                 "content": lm_output.text,
                                 "finish_reason": lm_output.finish_reason,
                             }
-                            | ({"raw_content": lm_output.raw_text} if lm_output.raw_text else {}),
+                            | ({"raw_content": lm_output.raw_text} if lm_output.raw_text else {})
+                            | ({"tool_calls": lm_output.tool_calls} if lm_output.tool_calls else {})
+                            | (
+                                {"validation_tool_calls_parsing": lm_output.tool_calls}
+                                if lm_output.validation_tool_calls_parsing
+                                else {}
+                            ),
                         ],
                     )
             else:
@@ -109,6 +119,7 @@ def evaluate_chat_response(  # noqa: C901,PLR0912
                     ]
                     lm_outputs = language_model.generate_chat_response(
                         current_model_inputs,
+                        tools=input_tools_list,
                         **gen_kwargs,
                     )
                     for o_id, b_id in enumerate(batch_ids_fed_to_model):
@@ -120,6 +131,12 @@ def evaluate_chat_response(  # noqa: C901,PLR0912
                                 "finish_reason": lm_outputs[o_id].finish_reason,
                             }
                             | ({"raw_content": lm_outputs[o_id].raw_text} if lm_outputs[o_id].raw_text else {})
+                            | ({"tool_calls": lm_outputs[o_id].tool_calls} if lm_outputs[o_id].tool_calls else {})
+                            | (
+                                {"validation_tool_calls_parsing": lm_outputs[o_id].tool_calls}
+                                if lm_outputs[o_id].validation_tool_calls_parsing
+                                else {}
+                            ),
                         )
                 all_messages_list += current_chat_history
 
@@ -173,6 +190,12 @@ def evaluate_chat_response(  # noqa: C901,PLR0912
             **instance_metrics,
         }
         | ({"raw_lm_output": messages[-1]["raw_content"]} if "raw_content" in messages[-1] else {})
+        | ({"tool_calls": messages[-1]["tool_calls"]} if "tool_calls" in messages[-1] else {})
+        | (
+            {"validation_tool_calls_parsing": messages[-1]["validation_tool_calls_parsing"]}
+            if "validation_tool_calls_parsing" in messages[-1]
+            else {}
+        )
         for messages, references, extra_info, instance_metrics in zip(
             all_messages_list,
             references_list,

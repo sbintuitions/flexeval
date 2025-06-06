@@ -19,6 +19,9 @@ class TemplateChatDataset(ChatDataset):
 
     Args:
         items: A list of items in a dict format.
+            The "tools" key for each item can contain the list of function definitions.
+            They should be in JSON Schema format as in the OpenAI Chat Completion API.
+            https://platform.openai.com/docs/guides/function-calling?api-mode=chat#defining-functions
         input_template: A Jinja2 template for the user input.
         reference_template: Specify the Jinja2 template to render the reference string
             if the dataset has a single reference.
@@ -118,7 +121,9 @@ class TemplateChatDataset(ChatDataset):
         }
         extra_info.update(extra_info_from_templates)
 
-        return ChatInstance(messages=messages, references=reference_list, extra_info=extra_info)
+        return ChatInstance(
+            messages=messages, tools=item.get("tools"), references=reference_list, extra_info=extra_info
+        )
 
 
 class HFChatDataset(TemplateChatDataset):
