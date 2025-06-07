@@ -50,10 +50,12 @@ def evaluate_chat_response(  # noqa: C901,PLR0912, PLR0915
     all_messages_list: list[list[dict[str, Any]]] = []
     references_list: list[list[str]] = []
     extra_info_list: list[dict[str, Any]] = []
+    all_input_tools_list: list[list[dict[str, Any]] | None] = []
     with tqdm(total=len(eval_instances)) as pbar:
         for batch_id, batch in enumerate(batch_iter(eval_instances, batch_size)):
             input_messages_list = [chat_instance.messages for chat_instance in batch]
             input_tools_list = [chat_instance.tools for chat_instance in batch]
+            all_input_tools_list += input_tools_list
             if all(tools is None for tools in input_tools_list):
                 input_tools_list = None
 
@@ -143,18 +145,20 @@ def evaluate_chat_response(  # noqa: C901,PLR0912, PLR0915
             references_list += [chat_instance.references for chat_instance in batch]
             extra_info_list += [chat_instance.extra_info for chat_instance in batch]
 
-            for extra_info, messages in zip(extra_info_list, all_messages_list):
-                last_message = messages[-1]
-                if "tool_calls" in last_message:
-                    extra_info["tool_calls"] = last_message["tool_calls"]
-                if "validation_tool_calls" in last_message:
-                    extra_info["validation_tool_calls"] = last_message["validation_tool_calls"]
-
             if batch_id == 0:
                 logger.info("Example of the conversation")
                 logger.info(f"{all_messages_list[0]}")
 
             pbar.update(len(batch))
+
+    for extra_info, messages, tools in zip(extra_info_list, all_messages_list, all_input_tools_list):
+        last_message = messages[-1]
+        if "tool_calls" in last_message:
+            extra_info["tool_calls"] = last_message["tool_calls"]
+        if "validation_tool_calls" in last_message:
+            extra_info["validation_tool_calls"] = last_message["validation_tool_calls"]
+        if tools:
+            extra_info["tools"] = tools
 
     # Metric.evaluate() accepts only str, so if content is None, convert it to empty string
     for messages in all_messages_list:
@@ -183,7 +187,7 @@ def evaluate_chat_response(  # noqa: C901,PLR0912, PLR0915
             ):
                 instance_metrics_list[instance_idx].update(instance_details)
 
-    # Calculate the finish_reason statistics
+    # Calculate the finish_reason and validation statistics
     finish_reason_counter = Counter()
     validation_tool_calls_counter = Counter()
     for messages in all_messages_list:
