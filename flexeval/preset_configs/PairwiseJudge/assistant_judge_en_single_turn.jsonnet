@@ -12,7 +12,7 @@ Adapted from [lm-sys/FastChat](https://github.com/lm-sys/FastChat/blob/main/fast
       class_path: 'Jinja2PromptTemplate',
       init_args: {
         template: std.stripChars(|||
-          {% set question = model1_item["extra_info]["messages"][0]["content"] -%}
+          {% set question = model1_item["extra_info"]["messages"][0]["content"] -%}
           {% set model1_messages = model1_item["extra_info"]["messages"] -%}
           {% set model2_messages = model2_item["extra_info"]["messages"] -%}
           [Instruction]
