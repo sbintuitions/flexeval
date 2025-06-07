@@ -9,7 +9,7 @@ class DummyEvalDataLoader(EvalDataLoader):
     def load(self) -> list[dict[str, Any]]:
         return [
             {
-                "task_inputs": {"input": f"dummy_input{i}"},
+                "extra_info": {"input": f"dummy_input{i}"},
                 "lm_output": f"dummy_output{i}",
                 "references": [f"dummy_reference{i}"],
             }

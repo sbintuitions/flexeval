@@ -76,7 +76,7 @@ def evaluate_generation(  # noqa: C901
         metric_result = metric.evaluate(
             lm_outputs=[lm_output.text for lm_output in lm_output_list],
             references_list=[i.references for i in eval_instances],
-            task_inputs_list=[i.inputs for i in eval_instances],
+            extra_info_list=[i.inputs for i in eval_instances],
         )
 
         metrics_summary_dict.update(metric_result.summary)
@@ -99,7 +99,7 @@ def evaluate_generation(  # noqa: C901
             "lm_prompt": lm_prompt,
             "lm_output": lm_output.text,
             "finish_reason": lm_output.finish_reason,
-            "task_inputs": eval_instance.inputs,
+            "extra_info": eval_instance.inputs,
             "references": eval_instance.references,
             **instance_metrics,
         }

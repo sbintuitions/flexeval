@@ -57,6 +57,6 @@ def test_incorrect_code(code: str, test_case: str) -> None:
 )
 def test_correct_code_with_prompt(prompt: str, code: str, test_case: str) -> None:
     code_eval = CodeEval(code_template="{{ prompt }}{{ lm_output }}")
-    metric_result = code_eval.evaluate([code], references_list=[[test_case]], task_inputs_list=[{"prompt": prompt}])
+    metric_result = code_eval.evaluate([code], references_list=[[test_case]], extra_info_list=[{"prompt": prompt}])
     assert metric_result.summary == {"pass@1": 1.0}
     assert metric_result.instance_details[0]["passed"]

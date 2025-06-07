@@ -29,6 +29,12 @@ class ChatInstance:
     ]
     ```
     """
+    tools: list[dict[str, Any]] | None = None
+    """
+    A list of definitions of tools in the chat.
+    The format of tools typically follows [OpenAI's Chat Completion API](https://platform.openai.com/docs/guides/function-calling#function-calling-steps)
+    Currently, only function calling (tools with type="function") is supported.
+    """
     references: list[str] = field(default_factory=list)
     """
     A list of reference responses to the user's last message.

@@ -13,23 +13,33 @@ DATASETS_TO_TEST = [
             "path": "tests/dummy_modules/hf_dataset",
             "split": "train",
         },
+        False,
     ),
     (
         JsonlChatDataset,
         {
             "path": "tests/dummy_modules/test.jsonl",
         },
+        False,
+    ),
+    (
+        JsonlChatDataset,
+        {
+            "path": "tests/dummy_modules/test_with_tools.jsonl",
+        },
+        True,
     ),
 ]
 
 
 @pytest.mark.parametrize(
-    ("dataset_class", "kwargs"),
+    ("dataset_class", "kwargs", "has_tools"),
     DATASETS_TO_TEST,
 )
 def test_template_dataset_with_reference(
     dataset_class: type[TemplateChatDataset],
     kwargs: dict[str, Any],
+    has_tools: bool,
 ) -> None:
     system_message = "You are a quiz player."
     chat_dataset = dataset_class(
@@ -51,15 +61,34 @@ def test_template_dataset_with_reference(
     ]
     assert chat_dataset[0].references == ["Mount Everest"]
     assert chat_dataset[0].extra_info["question"] == "What is the highest mountain in the world."
+    if has_tools:
+        assert chat_dataset[0].tools == [
+            {
+                "type": "function",
+                "function": {
+                    "name": "search_web",
+                    "description": "Search the Web for specified query.",
+                    "parameters": {
+                        "type": "object",
+                        "properties": {"query": {"type": "string", "description": "str - query for search"}},
+                        "required": ["query"],
+                    },
+                    "return": {"type": "string", "description": "snippets: list"},
+                },
+            }
+        ]
+    else:
+        assert chat_dataset[0].tools is None
 
 
 @pytest.mark.parametrize(
-    ("dataset_class", "kwargs"),
+    ("dataset_class", "kwargs", "has_tools"),
     DATASETS_TO_TEST,
 )
-def test_hf_dataset_with_reference_list(
+def test_template_dataset_with_reference_list(
     dataset_class: type[TemplateChatDataset],
     kwargs: dict[str, Any],
+    has_tools: bool,
 ) -> None:
     system_message = "You are a quiz player."
     chat_dataset = dataset_class(
@@ -81,15 +110,34 @@ def test_hf_dataset_with_reference_list(
     ]
     assert chat_dataset[0].references == ["Mount Everest", "Everest"]
     assert chat_dataset[0].extra_info["question"] == "What is the highest mountain in the world."
+    if has_tools:
+        assert chat_dataset[0].tools == [
+            {
+                "type": "function",
+                "function": {
+                    "name": "search_web",
+                    "description": "Search the Web for specified query.",
+                    "parameters": {
+                        "type": "object",
+                        "properties": {"query": {"type": "string", "description": "str - query for search"}},
+                        "required": ["query"],
+                    },
+                    "return": {"type": "string", "description": "snippets: list"},
+                },
+            }
+        ]
+    else:
+        assert chat_dataset[0].tools is None
 
 
 @pytest.mark.parametrize(
-    ("dataset_class", "kwargs"),
+    ("dataset_class", "kwargs", "has_tools"),
     DATASETS_TO_TEST,
 )
 def test_data_range(
     dataset_class: type[TemplateChatDataset],
     kwargs: dict[str, Any],
+    has_tools: bool,  # noqa: ARG001
 ) -> None:
     data_range = (2, 5)
     dataset = dataset_class(
@@ -102,12 +150,13 @@ def test_data_range(
 
 
 @pytest.mark.parametrize(
-    ("dataset_class", "kwargs"),
+    ("dataset_class", "kwargs", "has_tools"),
     DATASETS_TO_TEST,
 )
 def test_keep_conditions(
     dataset_class: type[TemplateChatDataset],
     kwargs: dict[str, Any],
+    has_tools: bool,  # noqa: ARG001
 ) -> None:
     original_dataset = dataset_class(
         **kwargs,
@@ -130,12 +179,13 @@ def test_keep_conditions(
 
 
 @pytest.mark.parametrize(
-    ("dataset_class", "kwargs"),
+    ("dataset_class", "kwargs", "has_tools"),
     DATASETS_TO_TEST,
 )
 def test_remove_conditions(
     dataset_class: type[TemplateChatDataset],
     kwargs: dict[str, Any],
+    has_tools: bool,  # noqa: ARG001
 ) -> None:
     original_dataset = dataset_class(
         **kwargs,

@@ -20,7 +20,7 @@ class CharF1(Metric):
         lm_output_processor: StringProcessor or list of Normalizers to apply to the model outputs before comparison.
         reference_processor: StringProcessor or list of Normalizers to apply to the references before comparison.
         category_key: A key to create category-wise mean score.
-            The category key is expected to be in task inputs.
+            The category key is expected to be in extra_info.
 
     Examples:
         >>> from flexeval import CharF1
@@ -51,7 +51,7 @@ class CharF1(Metric):
         self,
         lm_outputs: list[str],
         references_list: list[list[str]],
-        task_inputs_list: list[dict[str, str]] | None = None,
+        extra_info_list: list[dict[str, str]] | None = None,
     ) -> MetricResult:
         if self.lm_output_processors:
             lm_outputs = [
@@ -72,7 +72,7 @@ class CharF1(Metric):
         summary = {"char_f1": sum(char_f1_scores) / len(char_f1_scores)}
 
         if self.category_key:
-            categories = [task_input[self.category_key] for task_input in task_inputs_list]
+            categories = [extra_info[self.category_key] for extra_info in extra_info_list]
             category_wise_scores = aggregate_category_wise_scores(char_f1_scores, categories)
             for category, category_wise_score in category_wise_scores.items():
                 summary[f"char_f1/{category}"] = category_wise_score

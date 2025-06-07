@@ -5,31 +5,31 @@ model_items = {
     "modelA": [
         {
             "lm_output": "A_1",
-            "task_inputs": {"chat": [{"role": "user", "content": "A_1"}]},
+            "extra_info": {"chat": [{"role": "user", "content": "A_1"}]},
         },
         {
             "lm_output": "A_2",
-            "task_inputs": {"chat": [{"role": "user", "content": "A_2"}]},
+            "extra_info": {"chat": [{"role": "user", "content": "A_2"}]},
         },
     ],
     "modelB": [
         {
             "lm_output": "B_1",
-            "task_inputs": {"chat": [{"role": "user", "content": "B_1"}]},
+            "extra_info": {"chat": [{"role": "user", "content": "B_1"}]},
         },
         {
             "lm_output": "B_2",
-            "task_inputs": {"chat": [{"role": "user", "content": "B_2"}]},
+            "extra_info": {"chat": [{"role": "user", "content": "B_2"}]},
         },
     ],
     "modelC": [
         {
             "lm_output": "C_1",
-            "task_inputs": {"chat": [{"role": "user", "content": "C_1"}]},
+            "extra_info": {"chat": [{"role": "user", "content": "C_1"}]},
         },
         {
             "lm_output": "C_2",
-            "task_inputs": {"chat": [{"role": "user", "content": "C_2"}]},
+            "extra_info": {"chat": [{"role": "user", "content": "C_2"}]},
         },
     ],
 }
@@ -53,12 +53,12 @@ def test_if_cache_exists() -> None:
             "model1",
             {
                 "lm_output": "1_1",
-                "task_inputs": {"chat": [{"role": "user", "content": "1_1"}]},
+                "extra_info": {"chat": [{"role": "user", "content": "1_1"}]},
             },
             "model2",
             {
                 "lm_output": "2_1",
-                "task_inputs": {"chat": [{"role": "user", "content": "2_1"}]},
+                "extra_info": {"chat": [{"role": "user", "content": "2_1"}]},
             },
         ),
     ]

@@ -373,10 +373,12 @@ class HuggingFaceLM(LanguageModel):
             for lm_output, tools in zip(lm_outputs, tools_list):
                 if tools is None:
                     continue
+                lm_output: LMOutput
                 parsed_tool_calling_message = self.tool_parser(lm_output.text)
                 lm_output.tool_calls = parsed_tool_calling_message.tool_call_dicts
                 lm_output.raw_text = parsed_tool_calling_message.raw_text
                 lm_output.text = parsed_tool_calling_message.text
+                lm_output.validation_tool_calls = parsed_tool_calling_message.validation_result
 
         return lm_outputs
 

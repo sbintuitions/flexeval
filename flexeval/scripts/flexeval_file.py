@@ -25,9 +25,10 @@ class EvalDataLoader(ABC):
     """
     A class to load evaluation data.
     The evaluation data should be a list of dictionaries with the following keys:
-    - task_inputs (dict[str, Any]): A dictionary containing the input data for the task.
+    - extra_info (dict[str, Any]): A dictionary containing the input data for the task and any other informations.
     - lm_output (str): The output of the language model.
     - references (list[str]): A list of reference outputs.
+    - extra_info (dict[str, Any]): alias for "extra_info". Older versions used this key.
     """
 
     @abstractmethod
@@ -48,6 +49,8 @@ class JsonlEvalDataLoader(EvalDataLoader):
         with open(self.eval_file) as f:
             for line in f:
                 item = json.loads(line)
+                if "task_inputs" in item:
+                    item["extra_info"] = item.pop("task_inputs")
                 items.append(item)
         return items
 

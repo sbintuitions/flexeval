@@ -33,7 +33,7 @@ class SARI(Metric):
         tokenizer: An instance of `Tokenizer` to tokenize the input and output strings.
         max_ngrams: The maximum n-gram order to consider. Defaults to `4`.
         category_key: A key to create category-wise mean score.
-            The category key is expected to be in task inputs.
+            The category key is expected to be in extra_info.
         lm_output_processor:
             StringProcessor or a list of StringProcessor to be applied to the model outputs before comparison.
         reference_processor: StringProcessor or list of StringProcessor to apply to the references before comparison.
@@ -44,8 +44,8 @@ class SARI(Metric):
         >>> sari_scorer = SARI(source_key="source")
         >>> lm_outputs = ["About 95 you now get in."]
         >>> references_list = [["About 95 species are currently known.", "About 95 species are now accepted.", "95 species are now accepted."]]
-        >>> task_inputs_list = [{"source": "About 95 species are currently accepted."}]
-        >>> result = sari_scorer.evaluate(lm_outputs, references_list, task_inputs_list)
+        >>> extra_info_list = [{"source": "About 95 species are currently accepted."}]
+        >>> result = sari_scorer.evaluate(lm_outputs, references_list, extra_info_list)
         >>> print(result)
         MetricResult(
             summary={
@@ -90,11 +90,11 @@ class SARI(Metric):
         self.lm_output_processors = lm_output_processor
         self.reference_processors = reference_processor
 
-    def evaluate(self, lm_outputs, references_list, task_inputs_list=None) -> MetricResult:  # noqa: ANN001
-        if task_inputs_list is None:
-            msg = "SARI requires task_inputs_list"
+    def evaluate(self, lm_outputs, references_list, extra_info_list=None) -> MetricResult:  # noqa: ANN001
+        if extra_info_list is None:
+            msg = "SARI requires extra_info_list"
             raise ValueError(msg)
-        sources = [task_input[self.source_key] for task_input in task_inputs_list]
+        sources = [extra_info[self.source_key] for extra_info in extra_info_list]
 
         if not (len(sources) == len(lm_outputs) == len(references_list)):
             msg = (
@@ -132,7 +132,7 @@ class SARI(Metric):
         }
 
         if self.category_key:
-            categories = [task_input[self.category_key] for task_input in task_inputs_list]
+            categories = [extra_info[self.category_key] for extra_info in extra_info_list]
             for metric_name, score_list in metric_name2scores.items():
                 category_wise_scores = aggregate_category_wise_scores(score_list, categories)
                 for category, category_wise_score in category_wise_scores.items():

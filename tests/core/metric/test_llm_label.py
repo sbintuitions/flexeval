@@ -73,7 +73,7 @@ def test_llm_label_with_category() -> None:
         category_key="category",
     )
     lm_outputs = ["This is Good.", "This is Neutral.", "This is Bad.", "This is Great."]
-    task_inputs_list = [
+    extra_info_list = [
         {"category": "category-0"},
         {"category": "category-0"},
         {"category": "category-1"},
@@ -81,7 +81,7 @@ def test_llm_label_with_category() -> None:
     ]
     metric_output = metric.evaluate(
         lm_outputs=lm_outputs,
-        task_inputs_list=task_inputs_list,
+        extra_info_list=extra_info_list,
     )
 
     assert metric_output.summary == {
@@ -131,7 +131,7 @@ def test_chat_llm_label_with_category() -> None:
         category_key="category",
     )
     lm_outputs = ["This is Good.", "This is Neutral.", "This is Bad.", "This is Great."]
-    task_inputs_list = [
+    extra_info_list = [
         {"category": "category-0"},
         {"category": "category-0"},
         {"category": "category-1"},
@@ -139,7 +139,7 @@ def test_chat_llm_label_with_category() -> None:
     ]
     metric_output = metric.evaluate(
         lm_outputs=lm_outputs,
-        task_inputs_list=task_inputs_list,
+        extra_info_list=extra_info_list,
     )
 
     assert metric_output.summary == {

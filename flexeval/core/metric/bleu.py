@@ -21,7 +21,7 @@ class BLEU(Metric):
             StringProcessor or a list of StringProcessor to be applied to the model outputs before comparison.
         reference_processor: StringProcessor or list of StringProcessor to apply to the references before comparison.
         category_key: A key to create category-wise mean score.
-            The category key is expected to be in task inputs.
+            The category key is expected to be in extra_info.
 
     Examples:
         >>> from flexeval import BLEU
@@ -66,7 +66,7 @@ class BLEU(Metric):
         self,
         lm_outputs: list[str],
         references_list: list[list[str]],
-        task_inputs_list: list[dict[str, str]] | None = None,
+        extra_info_list: list[dict[str, str]] | None = None,
     ) -> MetricResult:
         if len(lm_outputs) != len(references_list):
             msg = (
@@ -110,7 +110,7 @@ class BLEU(Metric):
         }
 
         if self.category_key:
-            categories = [task_input[self.category_key] for task_input in task_inputs_list]
+            categories = [extra_info[self.category_key] for extra_info in extra_info_list]
             sentence_bleu_score_list = [b.score / 100 for b in sentence_bleu_list]
             category_wise_scores = aggregate_category_wise_scores(sentence_bleu_score_list, categories)
             for category, category_wise_score in category_wise_scores.items():

@@ -12,9 +12,9 @@ Translated and adapted from [lm-sys/FastChat](https://github.com/lm-sys/FastChat
       class_path: 'Jinja2PromptTemplate',
       init_args: {
         template: std.stripChars(|||
-          {% set question = model1_item["task_inputs"]["messages"][0]["content"] -%}
-          {% set model1_messages = model1_item["task_inputs"]["messages"] -%}
-          {% set model2_messages = model2_item["task_inputs"]["messages"] -%}
+          {% set question = model1_item["extra_info"]["messages"][0]["content"] -%}
+          {% set model1_messages = model1_item["extra_info"]["messages"] -%}
+          {% set model2_messages = model2_item["extra_info"]["messages"] -%}
 
           [ユーザの質問]
           {{ question }}

@@ -55,7 +55,7 @@ def calculate_weighted_average(
 
 def summarize_evaluator_geval_scores(
     evaluator_score_list: list[float | None],
-    task_inputs_list: list[dict[str, str]],
+    extra_info_list: list[dict[str, str]],
     category_key: str | None = None,
 ) -> dict[str, float]:
     """Summarize evaluator_score_list. If category_key is given, return
@@ -70,11 +70,11 @@ def summarize_evaluator_geval_scores(
 
     # compute category-wise mean score if category_key is given
     category2valid_scores: dict[str, list[int]] = defaultdict(list)
-    for score, task_inputs in zip(evaluator_score_list, task_inputs_list):
+    for score, extra_info in zip(evaluator_score_list, extra_info_list):
         if score is None or category_key is None:
             continue
-        if category_key in task_inputs:
-            category2valid_scores[task_inputs[category_key]].append(score)
+        if category_key in extra_info:
+            category2valid_scores[extra_info[category_key]].append(score)
 
     category2mean_score: dict[str, float] = {}
     for category, valid_scores in category2valid_scores.items():
@@ -146,7 +146,7 @@ class LLMGEvalScore(Metric):
         batch_size: The batch size for the evaluator.
         disable_tqdm: Whether to disable the progress bar.
         category_key: A key to create category-wise mean score.
-            The category key is expected to be in task inputs.
+            The category key is expected to be in extra_info.
         prob_threshold: For considering low probability among all of valid scores,
             return None (invalid) if sum of the all probability among vaild scores is less than this value.
 
@@ -225,15 +225,15 @@ class LLMGEvalScore(Metric):
         self,
         lm_outputs: list[str],
         references_list: list[list[str]] | None = None,
-        task_inputs_list: list[dict[str, str]] | None = None,
+        extra_info_list: list[dict[str, str]] | None = None,
     ) -> MetricResult:
-        if task_inputs_list is None:
-            task_inputs_list = [{} for _ in lm_outputs]
+        if extra_info_list is None:
+            extra_info_list = [{} for _ in lm_outputs]
         if references_list is None:
             references_list = [[] for _ in lm_outputs]
 
         evaluator_input_list: list[str] = prepare_text_input_for_evaluator(
-            lm_outputs, references_list, task_inputs_list, self.prompt_template
+            lm_outputs, references_list, extra_info_list, self.prompt_template
         )
         evaluator_logprobs_list: list[dict[str, float]] = generate_evaluation_logprobs(
             evaluator_input_list,
@@ -259,7 +259,7 @@ class LLMGEvalScore(Metric):
 
         summary = summarize_evaluator_geval_scores(
             evaluator_score_list,
-            task_inputs_list,
+            extra_info_list,
             self.category_key,
         )
 
@@ -302,7 +302,7 @@ class ChatLLMGEvalScore(Metric):
         system_message: A system message to be prepended to the input for the evaluator.
         disable_tqdm: Whether to disable the progress bar.
         category_key: A key to create category-wise mean score.
-            The category key is expected to be in task inputs.
+            The category key is expected to be in extra_info.
         prob_threshold: For considering low probability among all of valid scores,
             return None (invalid) if sum of the all probability among vaild scores is less than this value.
 
@@ -390,15 +390,15 @@ class ChatLLMGEvalScore(Metric):
         self,
         lm_outputs: list[str],
         references_list: list[list[str]] | None = None,
-        task_inputs_list: list[dict[str, str]] | None = None,
+        extra_info_list: list[dict[str, str]] | None = None,
     ) -> MetricResult:
-        if task_inputs_list is None:
-            task_inputs_list = [{} for _ in lm_outputs]
+        if extra_info_list is None:
+            extra_info_list = [{} for _ in lm_outputs]
         if references_list is None:
             references_list = [[] for _ in lm_outputs]
 
         evaluator_input_list = prepare_chat_input_for_evaluator(
-            lm_outputs, references_list, task_inputs_list, self.prompt_template, self.system_message
+            lm_outputs, references_list, extra_info_list, self.prompt_template, self.system_message
         )
         evaluator_logprobs_list: list[dict[str, float]] = generate_evaluation_logprobs(
             evaluator_input_list,
@@ -424,7 +424,7 @@ class ChatLLMGEvalScore(Metric):
 
         summary = summarize_evaluator_geval_scores(
             evaluator_score_list,
-            task_inputs_list,
+            extra_info_list,
             self.category_key,
         )
 

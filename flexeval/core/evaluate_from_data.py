@@ -14,23 +14,23 @@ def evaluate_from_data(
     metrics: list[Metric],
     eval_dataset: GenerationDataset | ChatDataset | None = None,
 ) -> tuple[dict[str, float], list[dict[str, Any]]]:
-    task_inputs_list: list[dict[str, Any]] = []
+    extra_info_list: list[dict[str, Any]] = []
     lm_output_list: list[str] = []
     references_list: list[list[str]] = []
     for item in eval_data:
-        # ignore task inputs if empty for backward compatibility
-        # it is OK with some metrics that do not require task inputs
-        if "task_inputs" not in item:
-            item["task_inputs"] = {}
-        task_inputs_list.append(item["task_inputs"])
+        # ignore extra info if empty for backward compatibility
+        # it is OK with some metrics that do not require extra info
+        if "extra_info" not in item:
+            item["extra_info"] = {}
+        extra_info_list.append(item["extra_info"])
         lm_output_list.append(item["lm_output"])
         references_list.append(item["references"])
 
     if eval_dataset is not None:
-        if len(eval_dataset) != len(task_inputs_list):
+        if len(eval_dataset) != len(extra_info_list):
             msg = (
                 f"The number of instances in the generation_dataset ({len(eval_dataset)}) "
-                f"and the eval_file ({len(task_inputs_list)}) do not match."
+                f"and the eval_file ({len(extra_info_list)}) do not match."
             )
             raise ValueError(msg)
         # override the references_list with the data from the generation_dataset
@@ -38,12 +38,12 @@ def evaluate_from_data(
             references_list[i] = eval_instance.references
 
     metrics_summary_dict: dict[str, float] = {}
-    instance_metrics_list: list[dict[str, Any]] = [{} for _ in range(len(task_inputs_list))]
+    instance_metrics_list: list[dict[str, Any]] = [{} for _ in range(len(extra_info_list))]
     for metric in metrics:
         metric_result = metric.evaluate(
             lm_outputs=lm_output_list,
             references_list=references_list,
-            task_inputs_list=task_inputs_list,
+            extra_info_list=extra_info_list,
         )
 
         metrics_summary_dict.update(metric_result.summary)

@@ -284,7 +284,7 @@ class MyCustomMetric(Metric):
     def evaluate(
         self,
         lm_outputs,
-        task_inputs_list,
+        extra_info_list,
         references_list,
     ) -> MetricResult:
         length_ratios = [

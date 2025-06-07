@@ -71,7 +71,7 @@ class PerspectiveAPI(Metric):
         self,
         lm_outputs: list[str],
         references_list: list[list[str]] | None = None,
-        task_inputs_list: list[dict[str, str]] | None = None,
+        extra_info_list: list[dict[str, str]] | None = None,
     ) -> MetricResult:
         instance_details = []
         for lm_output in lm_outputs:
