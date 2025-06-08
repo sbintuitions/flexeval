@@ -59,8 +59,10 @@ def test_evaluate_chat_response(
 
     if use_tools:
         assert isinstance(outputs[0]["extra_info"]["tool_calls"], list)
+        assert isinstance(outputs[0]["extra_info"]["tools"], list)
     else:
         assert "tool_calls" not in outputs[0]["extra_info"]
+        assert "tools" not in outputs[0]["extra_info"]
 
 
 @pytest.mark.parametrize("use_few_shot", [True, False])
