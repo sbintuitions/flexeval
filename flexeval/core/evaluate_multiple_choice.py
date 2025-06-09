@@ -109,6 +109,9 @@ def evaluate_multiple_choice(
         "macro_f1_score": f1_score(
             [res["prediction"] for res in results], [res["answer_index"] for res in results], average="macro"
         ),
+        "micro_f1_score": f1_score(
+            [res["prediction"] for res in results], [res["answer_index"] for res in results], average="micro"
+        ),
     }
     logger.info(metrics_dict)
     return metrics_dict, results
