@@ -103,7 +103,7 @@ def evaluate_multiple_choice(
     accuracy = sum(res["prediction"] == res["answer_index"] for res in results) / len(results)
     byte_norm_accuracy = sum(res["byte_norm_prediction"] == res["answer_index"] for res in results) / len(results)
 
-    y_true = [res["prediction"] for res in results]
+    y_true = [res["answer_index"] for res in results]
     y_pred = [res["prediction"] for res in results]
     metrics_dict: dict[str, float] = {
         "accuracy": accuracy,
