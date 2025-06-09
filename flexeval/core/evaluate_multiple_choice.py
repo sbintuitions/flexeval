@@ -106,7 +106,7 @@ def evaluate_multiple_choice(
     metrics_dict: dict[str, float] = {
         "accuracy": accuracy,
         "byte_norm_accuracy": byte_norm_accuracy,
-        "f1_score": f1_score(
+        "macro_f1_score": f1_score(
             [res["prediction"] for res in results], [res["answer_index"] for res in results], average="macro"
         ),
     }
