@@ -103,15 +103,13 @@ def evaluate_multiple_choice(
     accuracy = sum(res["prediction"] == res["answer_index"] for res in results) / len(results)
     byte_norm_accuracy = sum(res["byte_norm_prediction"] == res["answer_index"] for res in results) / len(results)
 
+    y_true = [res["prediction"] for res in results]
+    y_pred = [res["prediction"] for res in results]
     metrics_dict: dict[str, float] = {
         "accuracy": accuracy,
         "byte_norm_accuracy": byte_norm_accuracy,
-        "macro_f1_score": f1_score(
-            [res["prediction"] for res in results], [res["answer_index"] for res in results], average="macro"
-        ),
-        "micro_f1_score": f1_score(
-            [res["prediction"] for res in results], [res["answer_index"] for res in results], average="micro"
-        ),
+        "macro_f1_score": f1_score(y_true=y_true, y_pred=y_pred, average="macro"),
+        "micro_f1_score": f1_score(y_true=y_true, y_pred=y_pred, average="micro"),
     }
     logger.info(metrics_dict)
     return metrics_dict, results
