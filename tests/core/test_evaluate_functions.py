@@ -103,6 +103,8 @@ def test_evaluate_multiple_choice(use_few_shot: bool, max_instances: int) -> Non
     if max_instances is not None:
         assert len(outputs) <= max_instances
 
+    assert set(metrics.keys()) == {"accuracy", "byte_norm_accuracy", "macro_f1_score", "micro_f1_score"}
+
 
 @pytest.mark.parametrize(
     "max_instances",
