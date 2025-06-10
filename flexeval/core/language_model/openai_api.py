@@ -8,6 +8,7 @@ import openai
 import tiktoken
 from loguru import logger
 from openai import AsyncOpenAI, BaseModel
+from openai._types import NotGiven
 from openai.types.chat import ChatCompletion, ChatCompletionMessage
 from openai.types.chat.chat_completion import Choice
 
@@ -157,7 +158,7 @@ class OpenAIChatAPI(LanguageModel):
                     model=self.model,
                     messages=messages,
                     tools=tools,
-                    stop=stop_sequences,
+                    stop=stop_sequences or NotGiven(),
                     **gen_kwargs,
                 ),
                 empty_response=self.empty_response,
@@ -372,7 +373,7 @@ class OpenAICompletionAPI(LanguageModel):
                 openai_call=lambda x=ms: self.api_call_func(
                     model=self.model,
                     prompt=x,
-                    stop=stop_sequences,
+                    stop=stop_sequences or NotGiven(),
                     **gen_kwargs,
                 ),
                 empty_response=self.empty_response,
