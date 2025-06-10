@@ -115,7 +115,7 @@ def evaluate_chat_response(  # noqa: C901,PLR0912, PLR0915
                     current_model_inputs = [
                         _remove_redundant_keys_from_messages(
                             current_chat_history[b_id] + [input_messages_list[b_id][turn]],
-                            remove_keys={"finish_reason", "raw_content"},
+                            remove_keys={"finish_reason", "raw_content", "validation_tool_calls"},
                         )
                         for b_id in batch_ids_fed_to_model
                     ]
