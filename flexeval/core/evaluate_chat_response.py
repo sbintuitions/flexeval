@@ -94,8 +94,8 @@ def evaluate_chat_response(  # noqa: C901,PLR0912, PLR0915
                             | ({"raw_content": lm_output.raw_text} if lm_output.raw_text else {})
                             | ({"tool_calls": lm_output.tool_calls} if lm_output.tool_calls else {})
                             | (
-                                {"validation_tool_calls": lm_output.validation_tool_calls}
-                                if lm_output.validation_tool_calls
+                                {"tool_call_validation_result": lm_output.tool_call_validation_result}
+                                if lm_output.tool_call_validation_result
                                 else {}
                             ),
                         ],
@@ -115,7 +115,7 @@ def evaluate_chat_response(  # noqa: C901,PLR0912, PLR0915
                     current_model_inputs = [
                         _remove_redundant_keys_from_messages(
                             current_chat_history[b_id] + [input_messages_list[b_id][turn]],
-                            remove_keys={"finish_reason", "raw_content", "validation_tool_calls"},
+                            remove_keys={"finish_reason", "raw_content", "tool_call_validation_result"},
                         )
                         for b_id in batch_ids_fed_to_model
                     ]
@@ -135,8 +135,8 @@ def evaluate_chat_response(  # noqa: C901,PLR0912, PLR0915
                             | ({"raw_content": lm_outputs[o_id].raw_text} if lm_outputs[o_id].raw_text else {})
                             | ({"tool_calls": lm_outputs[o_id].tool_calls} if lm_outputs[o_id].tool_calls else {})
                             | (
-                                {"validation_tool_calls": lm_outputs[o_id].validation_tool_calls}
-                                if lm_outputs[o_id].validation_tool_calls
+                                {"tool_call_validation_result": lm_outputs[o_id].tool_call_validation_result}
+                                if lm_outputs[o_id].tool_call_validation_result
                                 else {}
                             ),
                         )
@@ -155,8 +155,8 @@ def evaluate_chat_response(  # noqa: C901,PLR0912, PLR0915
         last_message = messages[-1]
         if "tool_calls" in last_message:
             extra_info["tool_calls"] = last_message["tool_calls"]
-        if "validation_tool_calls" in last_message:
-            extra_info["validation_tool_calls"] = last_message["validation_tool_calls"]
+        if "tool_call_validation_result" in last_message:
+            extra_info["tool_call_validation_result"] = last_message["tool_call_validation_result"]
         if tools:
             extra_info["tools"] = tools
 
@@ -189,13 +189,13 @@ def evaluate_chat_response(  # noqa: C901,PLR0912, PLR0915
 
     # Calculate the finish_reason and validation statistics
     finish_reason_counter = Counter()
-    validation_tool_calls_counter = Counter()
+    tool_call_validation_result_counter = Counter()
     for messages in all_messages_list:
         for mes in messages:
             if "finish_reason" in mes:
                 finish_reason_counter[mes["finish_reason"]] += 1
-            if "validation_tool_calls" in mes:
-                validation_tool_calls_counter[mes["validation_tool_calls"]] += 1
+            if "tool_call_validation_result" in mes:
+                tool_call_validation_result_counter[mes["tool_call_validation_result"]] += 1
     for finish_reason, count in finish_reason_counter.items():
         metrics_summary_dict[f"finish_reason_ratio-{finish_reason}"] = count / sum(finish_reason_counter.values())
 

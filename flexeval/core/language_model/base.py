@@ -28,7 +28,7 @@ class LMOutput:
     """
     the tools called by the language model
     """
-    validation_tool_calls: str | None = None
+    tool_call_validation_result: str | None = None
     """
     validation results of parsing for tool_calls
     """

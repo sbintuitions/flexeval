@@ -239,7 +239,7 @@ class VLLM(LanguageModel):
                 lm_output.tool_calls = parsed_tool_calling_message.tool_call_dicts
                 lm_output.raw_text = parsed_tool_calling_message.raw_text
                 lm_output.text = parsed_tool_calling_message.text
-                lm_output.validation_tool_calls = parsed_tool_calling_message.validation_result
+                lm_output.tool_call_validation_result = parsed_tool_calling_message.validation_result
 
         return lm_outputs
 
