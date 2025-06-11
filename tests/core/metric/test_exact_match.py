@@ -43,7 +43,7 @@ def test_exact_match_with_category_key() -> None:
     """Test ExactMatch metric with category_key parameter."""
     metric = ExactMatch(category_key="category")
 
-    task_inputs_list = [
+    extra_info_list = [
         {"category": "binary", "text": "Is this true?"},
         {"category": "binary", "text": "Is this false?"},
         {"category": "binary", "text": "Is this correct?"},
@@ -52,7 +52,7 @@ def test_exact_match_with_category_key() -> None:
     lm_outputs = ["yes", "no", "yes", "maybe"]
     references_list = [["yes"], ["no"], ["no"], ["maybe"]]
 
-    result = metric.evaluate(lm_outputs, references_list, task_inputs_list)
+    result = metric.evaluate(lm_outputs, references_list, extra_info_list)
 
     assert isinstance(result, MetricResult)
     assert "exact_match" in result.summary

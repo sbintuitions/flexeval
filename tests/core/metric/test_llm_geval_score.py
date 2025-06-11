@@ -97,14 +97,14 @@ def test_llm_geval_score_with_category() -> None:
         "[B] Output a number from 1 to 5.",
         "[C] Output a number from 1 to 5.",
     ]
-    task_inputs_list = [
+    extra_info_list = [
         {"category": "category-0"},
         {"category": "category-1"},
         {"category": "category-0"},
     ]
     metric_output = metric.evaluate(
         lm_outputs=lm_outputs,
-        task_inputs_list=task_inputs_list,
+        extra_info_list=extra_info_list,
     )
 
     assert len(metric_output.summary) == 4
@@ -153,14 +153,14 @@ def test_chat_llm_geval_score_with_category() -> None:
         "[B] Output a number from 1 to 5.",
         "[C] Output a number from 1 to 5.",
     ]
-    task_inputs_list = [
+    extra_info_list = [
         {"category": "category-0"},
         {"category": "category-1"},
         {"category": "category-0"},
     ]
     metric_output = metric.evaluate(
         lm_outputs=lm_outputs,
-        task_inputs_list=task_inputs_list,
+        extra_info_list=extra_info_list,
     )
 
     assert len(metric_output.summary) == 4

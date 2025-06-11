@@ -6,7 +6,7 @@ from flexeval.core.metric.sari import SARI
 
 
 @pytest.mark.parametrize(
-    ("lm_outputs", "expected_outputs", "task_inputs_list", "expected_score"),
+    ("lm_outputs", "expected_outputs", "extra_info_list", "expected_score"),
     [
         (
             ["About 95 you now get in."],
@@ -43,12 +43,12 @@ from flexeval.core.metric.sari import SARI
 def test_sari(
     lm_outputs: list[str],
     expected_outputs: list[list[str]],
-    task_inputs_list: list[dict[str, str]],
+    extra_info_list: list[dict[str, str]],
     expected_score: float,
 ) -> None:
     sari_flexeval = SARI(source_key="source")
     metric_result = sari_flexeval.evaluate(
-        lm_outputs=lm_outputs, references_list=expected_outputs, task_inputs_list=task_inputs_list
+        lm_outputs=lm_outputs, references_list=expected_outputs, extra_info_list=extra_info_list
     )
 
     assert pytest.approx(metric_result.summary["sari_score"], abs=1e-3) == expected_score

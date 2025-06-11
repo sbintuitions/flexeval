@@ -61,7 +61,7 @@ class RepetitionCount(Metric):
         self,
         lm_outputs: list[str],
         references_list: list[list[str]],  # Not used in this metric
-        task_inputs_list: list[dict[str, str]] | None = None,  # Not used in this metric
+        extra_info_list: list[dict[str, str]] | None = None,  # Not used in this metric
     ) -> MetricResult:
         if self.lm_output_processors:
             lm_outputs = [

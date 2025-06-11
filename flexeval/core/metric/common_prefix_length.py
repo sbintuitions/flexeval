@@ -34,7 +34,7 @@ class CommonPrefixLength(Metric):
         self,
         lm_outputs: list[str],
         references_list: list[list[str]],
-        task_inputs_list: list[dict[str, str]] | None = None,
+        extra_info_list: list[dict[str, str]] | None = None,
     ) -> MetricResult:
         common_prefix_length_list: list[int] = []
         for lm_output, references in zip(lm_outputs, references_list):

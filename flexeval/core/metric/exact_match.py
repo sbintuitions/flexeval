@@ -18,7 +18,7 @@ class ExactMatch(Metric):
             StringProcessor or a list of StringProcessor to be applied to the model outputs before comparison.
         reference_processor: StringProcessor or list of StringProcessor to apply to the references before comparison.
         category_key: A key to create category-wise mean score.
-            The category key is expected to be in task inputs.
+            The category key is expected to be in extra_info.
 
     Examples:
         >>> from flexeval import ExactMatch
@@ -52,7 +52,7 @@ class ExactMatch(Metric):
         self,
         lm_outputs: list[str],
         references_list: list[list[str]],
-        task_inputs_list: list[dict[str, str]] | None = None,
+        extra_info_list: list[dict[str, str]] | None = None,
     ) -> MetricResult:
         if len(lm_outputs) != len(references_list):
             msg = (
@@ -78,7 +78,7 @@ class ExactMatch(Metric):
         summary = {"exact_match": sum(exact_match_list) / len(exact_match_list)}
 
         if self.category_key:
-            categories = [task_input[self.category_key] for task_input in task_inputs_list]
+            categories = [extra_info[self.category_key] for extra_info in extra_info_list]
             category_wise_scores = aggregate_category_wise_scores(exact_match_list, categories)
             for category, category_wise_score in category_wise_scores.items():
                 summary[f"exact_match/{category}"] = category_wise_score

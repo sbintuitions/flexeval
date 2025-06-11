@@ -20,7 +20,7 @@ class CodeEval(Metric):
 
     Args:
         code_template: A Jinja2 template string to make the generated code.
-            The template can contain variables from task inputs.
+            The template can contain variables from extra_info.
             If `None`, the code prompt will be the generated text itself.
         lm_output_processor: String processors applied to model outputs before evaluation.
         evaluate_module: An evaluate module to use.
@@ -61,10 +61,10 @@ class CodeEval(Metric):
         self,
         lm_outputs: list[str],
         references_list: list[list[str]],
-        task_inputs_list: list[dict[str, str]] | None = None,
+        extra_info_list: list[dict[str, str]] | None = None,
     ) -> MetricResult:
-        if task_inputs_list is None:
-            task_inputs_list = [{} for _ in lm_outputs]
+        if extra_info_list is None:
+            extra_info_list = [{} for _ in lm_outputs]
 
         if self.lm_output_processors:
             lm_outputs = [
@@ -74,12 +74,12 @@ class CodeEval(Metric):
         generated_code_list: list[str] = []
         test_case_list: list[str] = []
         # in code generation tasks, references_list contains the test cases
-        for lm_output, task_inputs, test_cases in zip(
+        for lm_output, extra_info, test_cases in zip(
             lm_outputs,
-            task_inputs_list,
+            extra_info_list,
             references_list,
         ):
-            generated_code = self.code_template.render(lm_output=lm_output, **task_inputs)
+            generated_code = self.code_template.render(lm_output=lm_output, **extra_info)
             generated_code_list.append(generated_code)
             test_case_list.append("\n".join(test_cases))
         pass_at_k, results = self.code_eval.compute(

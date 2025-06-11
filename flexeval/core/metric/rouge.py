@@ -40,7 +40,7 @@ class ROUGE(Metric):
         self,
         lm_outputs: list[str],
         references_list: list[list[str]],
-        task_inputs_list: list[dict[str, str]] | None = None,
+        extra_info_list: list[dict[str, str]] | None = None,
     ) -> MetricResult:
         if len(lm_outputs) != len(references_list):
             msg = (

@@ -68,7 +68,7 @@ def test_llm_score() -> None:
 
 
 @pytest.mark.parametrize(
-    ("lm_outputs", "task_inputs_list", "expected_summary"),
+    ("lm_outputs", "extra_info_list", "expected_summary"),
     [
         (
             ["This score is 1.", "This score is 2.", "This is a good one."],
@@ -101,7 +101,7 @@ def test_llm_score() -> None:
     ],
 )
 def test_llm_score_with_category(
-    lm_outputs: list[str], task_inputs_list: list[dict[str, str | list[str]]], expected_summary: dict[str, float]
+    lm_outputs: list[str], extra_info_list: list[dict[str, str | list[str]]], expected_summary: dict[str, float]
 ) -> None:
     metric = LLMScore(
         language_model=EchoBackLanguageModel(),
@@ -110,7 +110,7 @@ def test_llm_score_with_category(
     )
     metric_output = metric.evaluate(
         lm_outputs=lm_outputs,
-        task_inputs_list=task_inputs_list,
+        extra_info_list=extra_info_list,
     )
 
     assert metric_output.summary == expected_summary
@@ -138,7 +138,7 @@ def test_chat_llm_score() -> None:
 
 
 @pytest.mark.parametrize(
-    ("lm_outputs", "task_inputs_list", "expected_summary"),
+    ("lm_outputs", "extra_info_list", "expected_summary"),
     [
         (
             ["This score is 1.", "This score is 2.", "This is a good one."],
@@ -171,7 +171,7 @@ def test_chat_llm_score() -> None:
     ],
 )
 def test_chat_llm_score_with_category(
-    lm_outputs: list[str], task_inputs_list: list[dict[str, str | list[str]]], expected_summary: dict[str, float]
+    lm_outputs: list[str], extra_info_list: list[dict[str, str | list[str]]], expected_summary: dict[str, float]
 ) -> None:
     metric = ChatLLMScore(
         language_model=EchoBackLanguageModel(),
@@ -180,7 +180,7 @@ def test_chat_llm_score_with_category(
     )
     metric_output = metric.evaluate(
         lm_outputs=lm_outputs,
-        task_inputs_list=task_inputs_list,
+        extra_info_list=extra_info_list,
     )
 
     assert metric_output.summary == expected_summary
@@ -196,7 +196,7 @@ def test_prepare_chat_input_for_evaluator() -> None:
         ["Reference1"],
         [],
     ]
-    task_inputs_list = [
+    extra_info_list = [
         {"messages": [{"role": "user", "content": "Input1"}]},
         {"messages": [{"role": "user", "content": "Input2"}]},
     ]
@@ -208,7 +208,7 @@ def test_prepare_chat_input_for_evaluator() -> None:
     )
 
     evaluator_input_list = prepare_chat_input_for_evaluator(
-        lm_outputs, references_list, task_inputs_list, prompt_template, system_messsage
+        lm_outputs, references_list, extra_info_list, prompt_template, system_messsage
     )
 
     assert evaluator_input_list[0][0] == {"role": "system", "content": "With Reference"}

@@ -42,7 +42,7 @@ def test_exact_match_with_category_key() -> None:
     """Test ExactMatch metric with category_key parameter."""
     metric = CharF1(category_key="category")
 
-    task_inputs_list = [
+    extra_info_list = [
         {"category": "commonsense", "text": "This is sentence1."},
         {"category": "commonsense", "text": "This is sentence2."},
         {"category": "science", "text": "This is very scientific sentence."},
@@ -50,7 +50,7 @@ def test_exact_match_with_category_key() -> None:
     lm_outputs = ["これは文1です。", "間違った訳", "これはすごく科学的な文です。"]
     references_list = [["これは文1です。"], ["これは文2です。"], ["これはすごく科学的な文です。"]]
 
-    result = metric.evaluate(lm_outputs, references_list, task_inputs_list)
+    result = metric.evaluate(lm_outputs, references_list, extra_info_list)
 
     assert isinstance(result, MetricResult)
     assert "char_f1" in result.summary

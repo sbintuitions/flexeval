@@ -21,6 +21,10 @@ class Match:
     def __post_init__(self) -> None:
         if isinstance(self.winner, str):
             self.winner = Winner(self.winner)
+        if "task_inputs" in self.model1_item:
+            self.model1_item["extra_info"] = self.model1_item.pop("task_inputs")
+        if "task_inputs" in self.model2_item:
+            self.model2_item["extra_info"] = self.model2_item.pop("task_inputs")
 
     def is_judged(self) -> bool:
         return isinstance(self.winner, Winner)

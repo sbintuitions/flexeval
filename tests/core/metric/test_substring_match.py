@@ -76,7 +76,7 @@ def test_substring_match_with_category_key() -> None:
     """Test SubstringMatch metric with category_key parameter."""
     metric = SubstringMatch(category_key="category")
 
-    task_inputs_list = [
+    extra_info_list = [
         {"category": "binary", "text": "Is this true?"},
         {"category": "binary", "text": "Is this false?"},
         {"category": "binary", "text": "Is this correct?"},
@@ -95,7 +95,7 @@ def test_substring_match_with_category_key() -> None:
         ["maybe", "think"],
     ]
 
-    result = metric.evaluate(lm_outputs, references_list, task_inputs_list)
+    result = metric.evaluate(lm_outputs, references_list, extra_info_list)
 
     assert isinstance(result, MetricResult)
     assert "substring_match-any" in result.summary
