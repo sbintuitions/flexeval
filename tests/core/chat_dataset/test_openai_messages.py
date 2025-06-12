@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import tempfile
+from copy import deepcopy
 from typing import Any, Callable
 
 import pytest
@@ -13,16 +14,17 @@ TEST_CHAT_MESSAGES = [
         {"role": "user", "content": "How can I find the best 401k plan for my needs?"},
         {"role": "assistant", "content": "The first step is to research your options. You should look at ..."},
         {"role": "user", "content": "Thank you for your help!"},
+        {"role": "assistant", "content": "You're welcome!"},
     ]
 ]
 
 
 @pytest.fixture()
 def jsonl_data_factory(tmp_path) -> Callable:  # noqa: ANN001
-    def _create(message_key: str, num_samples: int = 10) -> str:
+    def _create(message_key: str, messages_list: list[dict], num_samples: int = 10) -> str:
         file_path = tmp_path / f"mock_data_{message_key}.jsonl"
         with open(file_path, "w") as f:
-            for messages in TEST_CHAT_MESSAGES * num_samples:
+            for messages in messages_list * num_samples:
                 f.write(json.dumps({message_key: messages}) + "\n")
         return str(file_path)
 
@@ -31,13 +33,46 @@ def jsonl_data_factory(tmp_path) -> Callable:  # noqa: ANN001
 
 @pytest.mark.parametrize("message_key", ["conversations", "messages", "chat", "dialog"])
 def test_load_dataset_with_messages_key(jsonl_data_factory, message_key: str) -> None:  # noqa: ANN001
-    tmp_jsonl_path = jsonl_data_factory(message_key)
+    tmp_jsonl_path = jsonl_data_factory(message_key, TEST_CHAT_MESSAGES)
 
     dataset = OpenAIMessagesDataset(file_path=tmp_jsonl_path, message_key=message_key)
 
     assert len(dataset) == 10
 
     assert dataset[0] == ChatInstance(
+        messages=[
+            {"role": TEST_CHAT_MESSAGES[0][0]["role"], "content": TEST_CHAT_MESSAGES[0][0]["content"]},
+            {"role": TEST_CHAT_MESSAGES[0][1]["role"], "content": TEST_CHAT_MESSAGES[0][1]["content"]},
+            {"role": TEST_CHAT_MESSAGES[0][2]["role"], "content": TEST_CHAT_MESSAGES[0][2]["content"]},
+            {"role": TEST_CHAT_MESSAGES[0][3]["role"], "content": TEST_CHAT_MESSAGES[0][3]["content"]},
+        ]
+    )
+
+
+def test_load_dataset_with_drop_if_last_from_assistant(jsonl_data_factory) -> None:  # noqa: ANN001
+    tmp_jsonl_path = jsonl_data_factory("messages", TEST_CHAT_MESSAGES)
+
+    dataset = OpenAIMessagesDataset(file_path=tmp_jsonl_path, message_key="messages", drop_if_last_from_assistant=True)
+
+    assert len(dataset) == 10
+
+    # If last message is from an assistant, drop it.
+    assert dataset[0] == ChatInstance(
+        messages=[
+            {"role": TEST_CHAT_MESSAGES[0][0]["role"], "content": TEST_CHAT_MESSAGES[0][0]["content"]},
+            {"role": TEST_CHAT_MESSAGES[0][1]["role"], "content": TEST_CHAT_MESSAGES[0][1]["content"]},
+            {"role": TEST_CHAT_MESSAGES[0][2]["role"], "content": TEST_CHAT_MESSAGES[0][2]["content"]},
+        ]
+    )
+
+    test_chat_messages_with_last_user = deepcopy(TEST_CHAT_MESSAGES)
+    test_chat_messages_with_last_user[0].pop(-1)
+    tmp_jsonl_path_with_last_user = jsonl_data_factory("messages", test_chat_messages_with_last_user)
+    dataset_with_last_user = OpenAIMessagesDataset(
+        file_path=tmp_jsonl_path_with_last_user, message_key="messages", drop_if_last_from_assistant=True
+    )
+    # The last utterance is kept intact if not from an assistant.
+    assert dataset_with_last_user[0] == ChatInstance(
         messages=[
             {"role": TEST_CHAT_MESSAGES[0][0]["role"], "content": TEST_CHAT_MESSAGES[0][0]["content"]},
             {"role": TEST_CHAT_MESSAGES[0][1]["role"], "content": TEST_CHAT_MESSAGES[0][1]["content"]},

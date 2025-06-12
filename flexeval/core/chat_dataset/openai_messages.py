@@ -50,7 +50,7 @@ class OpenAIMessagesDataset(ChatDataset):
         file_path: str | None = None,
         message_key: str = "messages",
         tool_definitions_key: str | None = None,
-        drop_if_last_from_assistant: bool = False
+        drop_if_last_from_assistant: bool = False,
     ) -> None:
         self.conversations: list[ChatInstance] = []
         with open(file_path) as f:
