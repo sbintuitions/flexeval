@@ -979,6 +979,28 @@
   
   
     <li class="md-nav__item">
+      <a href="../../api_reference/FunctionToolCall/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    FunctionToolCall
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../api_reference/GenerationDataset/" class="md-nav__link">
         
   
@@ -1381,9 +1403,9 @@ Originally used to generate scores for MT-bench or Vicuna-bench.</p>
       class_path: &#39;Jinja2PromptTemplate&#39;,
       init_args: {
         template: std.stripChars(|||
-          {% set question = model1_item[&quot;task_inputs&quot;][&quot;messages&quot;][0][&quot;content&quot;] -%}
-          {% set model1_messages = model1_item[&quot;task_inputs&quot;][&quot;messages&quot;] -%}
-          {% set model2_messages = model2_item[&quot;task_inputs&quot;][&quot;messages&quot;] -%}
+          {% set question = model1_item[&quot;extra_info&quot;][&quot;messages&quot;][0][&quot;content&quot;] -%}
+          {% set model1_messages = model1_item[&quot;extra_info&quot;][&quot;messages&quot;] -%}
+          {% set model2_messages = model2_item[&quot;extra_info&quot;][&quot;messages&quot;] -%}
           [Instruction]
           {% if references|length &gt; 0 -%}
           Please act as an impartial judge and evaluate the quality of the responses provided by two AI assistants to the user question displayed below. Your evaluation should consider correctness and helpfulness. You will be given a reference answer, assistant A&#39;s answer, and assistant B&#39;s answer. Your job is to evaluate which assistant&#39;s answer is better. Begin your evaluation by comparing both assistants&#39; answers with the reference answer. Identify and correct any mistakes. Avoid any position biases and ensure that the order in which the responses were presented does not influence your decision. Do not allow the length of the responses to influence your evaluation. Do not favor certain names of the assistants. Be as objective as possible. After providing your explanation, output your final verdict by strictly following this format: &quot;[[1]]&quot; if assistant 1 is better, &quot;[[2]]&quot; if assistant 2 is better, and &quot;[[3]]&quot; for a tie.
@@ -1423,9 +1445,9 @@ Originally used to generate scores for the Japanese versions of MT-bench or Vicu
       class_path: &#39;Jinja2PromptTemplate&#39;,
       init_args: {
         template: std.stripChars(|||
-          {% set question = model1_item[&quot;task_inputs&quot;][&quot;messages&quot;][0][&quot;content&quot;] -%}
-          {% set model1_messages = model1_item[&quot;task_inputs&quot;][&quot;messages&quot;] -%}
-          {% set model2_messages = model2_item[&quot;task_inputs&quot;][&quot;messages&quot;] -%}
+          {% set question = model1_item[&quot;extra_info&quot;][&quot;messages&quot;][0][&quot;content&quot;] -%}
+          {% set model1_messages = model1_item[&quot;extra_info&quot;][&quot;messages&quot;] -%}
+          {% set model2_messages = model2_item[&quot;extra_info&quot;][&quot;messages&quot;] -%}
 
           [ユーザの質問]
           {{ question }}
