@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import json
-from typing import Iterator
+from typing import Any, Iterator
 
 from .base import ChatDataset, ChatInstance
 
@@ -21,6 +21,7 @@ class OpenAIMessagesDataset(ChatDataset):
         message_key (str): Key used to extract the list of messages from each JSON object.
         tool_definitions_key (str | None): Key used to extract the list of tool definitions from each JSON object.
             Set to `None` (default) for data without tool_calls.
+        drop_if_last_from_assistant (bool): If true, when the last utterance is given by assistant, drop it.
 
     In Jsonl, each line must have a following structure:
 
@@ -49,6 +50,7 @@ class OpenAIMessagesDataset(ChatDataset):
         file_path: str | None = None,
         message_key: str = "messages",
         tool_definitions_key: str | None = None,
+        drop_if_last_from_assistant: bool = False
     ) -> None:
         self.conversations: list[ChatInstance] = []
         with open(file_path) as f:
@@ -58,7 +60,10 @@ class OpenAIMessagesDataset(ChatDataset):
             if tool_definitions_key is not None:
                 tool_dicts = sample.get(tool_definitions_key, None)
 
-            self.conversations.append(ChatInstance(messages=sample[message_key], tools=tool_dicts))
+            messages: list[dict[str, Any]] = sample[message_key]
+            if drop_if_last_from_assistant and messages[-1]["role"] == "assistant":
+                messages = messages[:-1]
+            self.conversations.append(ChatInstance(messages=messages, tools=tool_dicts))
 
     def __len__(self) -> int:
         return len(self.conversations)
