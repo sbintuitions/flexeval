@@ -51,6 +51,7 @@ class OpenAIMessagesDataset(ChatDataset):
         message_key: str = "messages",
         tool_definitions_key: str | None = None,
         drop_if_last_from_assistant: bool = False,
+        require_incremental_response: bool = False
     ) -> None:
         self.conversations: list[ChatInstance] = []
         with open(file_path) as f:
@@ -64,9 +65,13 @@ class OpenAIMessagesDataset(ChatDataset):
             if drop_if_last_from_assistant and messages[-1]["role"] == "assistant":
                 messages = messages[:-1]
             self.conversations.append(ChatInstance(messages=messages, tools=tool_dicts))
+        self.require_incremental_response = require_incremental_response
 
     def __len__(self) -> int:
         return len(self.conversations)
 
     def __getitem__(self, idx: int) -> ChatInstance:
         return self.conversations[idx]
+
+    def require_incremental_response(self) -> bool:
+        return self.require_incremental_response
