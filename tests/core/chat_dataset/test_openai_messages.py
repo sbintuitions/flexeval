@@ -81,6 +81,16 @@ def test_load_dataset_with_drop_if_last_from_assistant(jsonl_data_factory) -> No
     )
 
 
+def test_load_dataset_with_require_incremental_response(jsonl_data_factory) -> None:  # noqa: ANN001
+    tmp_jsonl_path = jsonl_data_factory("messages")
+
+    dataset = OpenAIMessagesDataset(file_path=tmp_jsonl_path)
+    assert dataset.require_incremental_response is False
+
+    dataset = OpenAIMessagesDataset(file_path=tmp_jsonl_path, require_incremental_response=True)
+    assert dataset.require_incremental_response is True
+
+
 TEST_CHAT_MESSAGES_WITH_TOOLS = [
     {
         "messages": [
