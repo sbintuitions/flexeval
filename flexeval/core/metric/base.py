@@ -40,6 +40,6 @@ class Metric(ABC):
         Args:
             lm_outputs: List of model outputs.
             references_list: List of reference outputs.
-            extra_info_list: List of task inputs and some extra informations.
+            extra_info_list: List of task inputs and some extra information.
         """
         raise NotImplementedError
