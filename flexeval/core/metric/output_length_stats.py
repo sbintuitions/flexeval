@@ -25,6 +25,7 @@ class OutputLengthStats(Metric):
         references_list: list[list[str]] | None = None,
         extra_info_list: list[dict[str, str]] | None = None,
     ) -> MetricResult:
+        # Compute metrics
         output_length_list = [len(output) for output in lm_outputs]
         return MetricResult(
             {

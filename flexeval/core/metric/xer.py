@@ -5,6 +5,7 @@ from jiwer import cer, wer
 from flexeval.core.tokenizer import Tokenizer
 
 from .base import Metric, MetricResult
+from .utils import validate_inputs
 
 
 class XER(Metric):
@@ -38,14 +39,9 @@ class XER(Metric):
         references_list: list[list[str]],
         extra_info_list: list[dict[str, str]] | None = None,
     ) -> MetricResult:
-        if len(lm_outputs) != len(references_list):
-            msg = (
-                f"lm_outputs and references_list must have the same length, "
-                f"but got {len(lm_outputs)} and {len(references_list)}."
-            )
-            raise ValueError(msg)
+        validate_inputs(lm_outputs, references_list, extra_info_list)
 
-        # we only need the first reference
+        # Normalize text data - we only need the first reference
         references = [references[0] for references in references_list]
 
         if self.tokenizer:
@@ -55,6 +51,7 @@ class XER(Metric):
             tokenized_lm_outputs = lm_outputs
             tokenized_references = references
 
+        # Compute metrics
         cer_score = cer(references, lm_outputs)
         wer_score = wer(tokenized_references, tokenized_lm_outputs)
 

@@ -49,12 +49,14 @@ class ExactMatch(Metric):
     ) -> MetricResult:
         validate_inputs(lm_outputs, references_list, extra_info_list)
 
+        # Normalize text data
         lm_outputs = [apply_string_processors(output, self.lm_output_processors) for output in lm_outputs]
         references_list = [
             [apply_string_processors(ref, self.reference_processors) for ref in references]
             for references in references_list
         ]
 
+        # Compute metrics
         exact_match_list = [
             lm_output in expected_output for lm_output, expected_output in zip(lm_outputs, references_list)
         ]

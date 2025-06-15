@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import functools
 import os
 from typing import Any
 
@@ -9,6 +8,8 @@ import evaluate
 from flexeval.core.metric.base import Metric, MetricResult
 from flexeval.core.string_processor import StringProcessor
 from flexeval.core.utils.jinja2_utils import JINJA2_ENV
+
+from .utils import apply_string_processors, validate_inputs
 
 # by default, the program is not allowed to execute code and we need to set this environment variable
 os.environ["HF_ALLOW_CODE_EVAL"] = "1"
@@ -53,8 +54,6 @@ class CodeEval(Metric):
         self.code_template = JINJA2_ENV.from_string(code_template)
         self.code_eval = evaluate.load(evaluate_module)
 
-        if isinstance(lm_output_processor, StringProcessor):
-            lm_output_processor = [lm_output_processor]
         self.lm_output_processors = lm_output_processor
 
     def evaluate(
@@ -66,11 +65,12 @@ class CodeEval(Metric):
         if extra_info_list is None:
             extra_info_list = [{} for _ in lm_outputs]
 
-        if self.lm_output_processors:
-            lm_outputs = [
-                functools.reduce(lambda x, norm: norm(x), self.lm_output_processors, output) for output in lm_outputs
-            ]
+        validate_inputs(lm_outputs, references_list, extra_info_list)
 
+        # Normalize text data
+        lm_outputs = [apply_string_processors(output, self.lm_output_processors) for output in lm_outputs]
+
+        # Compute metrics
         generated_code_list: list[str] = []
         test_case_list: list[str] = []
         # in code generation tasks, references_list contains the test cases

@@ -1,10 +1,8 @@
 from __future__ import annotations
 
-import functools
-
 from fuzzywuzzy import fuzz
 
-from flexeval.core.metric.utils import aggregate_category_wise_scores
+from flexeval.core.metric.utils import aggregate_category_wise_scores, apply_string_processors, validate_inputs
 from flexeval.core.string_processor import StringProcessor
 
 from .base import Metric, MetricResult
@@ -38,11 +36,6 @@ class CharF1(Metric):
         reference_processor: StringProcessor | list[StringProcessor] | None = None,
         category_key: str | None = None,
     ) -> None:
-        if isinstance(lm_output_processor, StringProcessor):
-            lm_output_processor = [lm_output_processor]
-        if isinstance(reference_processor, StringProcessor):
-            reference_processor = [reference_processor]
-
         self.lm_output_processors = lm_output_processor
         self.reference_processors = reference_processor
         self.category_key = category_key
@@ -53,17 +46,16 @@ class CharF1(Metric):
         references_list: list[list[str]],
         extra_info_list: list[dict[str, str]] | None = None,
     ) -> MetricResult:
-        if self.lm_output_processors:
-            lm_outputs = [
-                functools.reduce(lambda x, norm: norm(x), self.lm_output_processors, output) for output in lm_outputs
-            ]
+        validate_inputs(lm_outputs, references_list, extra_info_list)
 
-        if self.reference_processors:
-            references_list = [
-                [functools.reduce(lambda x, norm: norm(x), self.reference_processors, ref) for ref in references]
-                for references in references_list
-            ]
+        # Normalize text data
+        lm_outputs = [apply_string_processors(output, self.lm_output_processors) for output in lm_outputs]
+        references_list = [
+            [apply_string_processors(ref, self.reference_processors) for ref in references]
+            for references in references_list
+        ]
 
+        # Compute metrics
         char_f1_scores: list[float] = []
         for lm_output, expected_output in zip(lm_outputs, references_list):
             score = max(fuzz.ratio(lm_output, o) for o in expected_output) / 100
