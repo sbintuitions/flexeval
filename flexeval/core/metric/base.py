@@ -25,6 +25,10 @@ class MetricResult:
 class Metric(ABC):
     """
     Base class for metrics.
+
+    Subclasses must implement the `evaluate` method to perform metric computation.
+    Use utility functions from `flexeval.core.metric.utils` for common patterns
+    like string processing and category-wise aggregation.
     """
 
     @abstractmethod
@@ -42,4 +46,3 @@ class Metric(ABC):
             references_list: List of reference outputs.
             extra_info_list: List of task inputs and some extra information.
         """
-        raise NotImplementedError
