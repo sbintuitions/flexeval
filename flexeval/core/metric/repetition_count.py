@@ -1,12 +1,12 @@
 from __future__ import annotations
 
-import functools
 from collections import Counter
 from typing import Any
 
 from flexeval.core.string_processor import StringProcessor
 
 from .base import Metric, MetricResult
+from .utils import apply_string_processors, validate_inputs
 
 
 def get_most_repeated_pattern(text: str, threshold_length: int = 10) -> tuple[str, int]:
@@ -52,9 +52,6 @@ class RepetitionCount(Metric):
     ) -> None:
         self.count_threshold = count_threshold
         self.threshold_length = threshold_length
-
-        if isinstance(lm_output_processor, StringProcessor):
-            lm_output_processor = [lm_output_processor]
         self.lm_output_processors = lm_output_processor
 
     def evaluate(
@@ -63,11 +60,11 @@ class RepetitionCount(Metric):
         references_list: list[list[str]],  # Not used in this metric
         extra_info_list: list[dict[str, str]] | None = None,  # Not used in this metric
     ) -> MetricResult:
-        if self.lm_output_processors:
-            lm_outputs = [
-                functools.reduce(lambda x, norm: norm(x), self.lm_output_processors, output) for output in lm_outputs
-            ]
+        validate_inputs(lm_outputs, references_list, extra_info_list)
+        # Normalize text data
+        lm_outputs = [apply_string_processors(output, self.lm_output_processors) for output in lm_outputs]
 
+        # Compute metrics
         repetition_details: list[dict[str, Any]] = []
         num_repetitions = 0
         for output in lm_outputs:

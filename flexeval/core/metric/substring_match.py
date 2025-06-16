@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Literal
 
 from .base import Metric, MetricResult
-from .utils import aggregate_category_wise_scores
+from .utils import aggregate_category_wise_scores, validate_inputs
 
 
 class SubstringMatch(Metric):
@@ -46,13 +46,9 @@ class SubstringMatch(Metric):
         references_list: list[list[str]],
         extra_info_list: list[dict[str, str]] | None = None,
     ) -> MetricResult:
-        if len(lm_outputs) != len(references_list):
-            msg = (
-                f"lm_outputs and references_list must have the same length, "
-                f"but got {len(lm_outputs)} and {len(references_list)}."
-            )
-            raise ValueError(msg)
+        validate_inputs(lm_outputs, references_list, extra_info_list)
 
+        # Compute metrics
         match_list = [
             self.match_func(substring in lm_output for substring in expected_output)
             for lm_output, expected_output in zip(lm_outputs, references_list)

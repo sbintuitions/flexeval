@@ -73,6 +73,7 @@ class PerspectiveAPI(Metric):
         references_list: list[list[str]] | None = None,
         extra_info_list: list[dict[str, str]] | None = None,
     ) -> MetricResult:
+        # Compute metrics
         instance_details = []
         for lm_output in lm_outputs:
             if lm_output == "":

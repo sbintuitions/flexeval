@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from .base import Metric, MetricResult
+from .utils import validate_inputs
 
 
 def get_longest_common_substring(s1: str, s2: str) -> str:
@@ -60,6 +61,9 @@ class CommonStringLength(Metric):
         references_list: list[list[str]],
         extra_info_list: list[dict[str, str]] | None = None,
     ) -> MetricResult:
+        validate_inputs(lm_outputs, references_list, extra_info_list)
+
+        # Compute metrics
         common_string_length_list: list[int] = []
         for lm_output, references in zip(lm_outputs, references_list):
             common_string_length = max(len(get_longest_common_substring(lm_output, gt)) for gt in references)
