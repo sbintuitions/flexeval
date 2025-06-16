@@ -21,11 +21,16 @@ TEST_CHAT_MESSAGES = [
 
 @pytest.fixture()
 def jsonl_data_factory(tmp_path) -> Callable:  # noqa: ANN001
-    def _create(message_key: str, messages_list: list[dict], num_samples: int = 10) -> str:
+    def _create(
+        message_key: str, messages_list: list[dict], num_samples: int = 10, extra_info: dict | None = None
+    ) -> str:
         file_path = tmp_path / f"mock_data_{message_key}.jsonl"
         with open(file_path, "w") as f:
             for messages in messages_list * num_samples:
-                f.write(json.dumps({message_key: messages}) + "\n")
+                sample = {message_key: messages}
+                if extra_info is not None:
+                    sample = {**extra_info, **sample}
+                f.write(json.dumps(sample) + "\n")
         return str(file_path)
 
     return _create
@@ -78,6 +83,23 @@ def test_load_dataset_with_drop_if_last_from_assistant(jsonl_data_factory) -> No
             {"role": TEST_CHAT_MESSAGES[0][1]["role"], "content": TEST_CHAT_MESSAGES[0][1]["content"]},
             {"role": TEST_CHAT_MESSAGES[0][2]["role"], "content": TEST_CHAT_MESSAGES[0][2]["content"]},
         ]
+    )
+
+
+def test_load_dataset_with_extra_info(jsonl_data_factory) -> None:  # noqa: ANN001
+    tmp_jsonl_path = jsonl_data_factory("messages", TEST_CHAT_MESSAGES, extra_info={"extra_info": "some_info"})
+
+    dataset = OpenAIMessagesDataset(file_path=tmp_jsonl_path, message_key="messages", drop_if_last_from_assistant=True)
+
+    assert len(dataset) == 10
+
+    assert dataset[0] == ChatInstance(
+        messages=[
+            {"role": TEST_CHAT_MESSAGES[0][0]["role"], "content": TEST_CHAT_MESSAGES[0][0]["content"]},
+            {"role": TEST_CHAT_MESSAGES[0][1]["role"], "content": TEST_CHAT_MESSAGES[0][1]["content"]},
+            {"role": TEST_CHAT_MESSAGES[0][2]["role"], "content": TEST_CHAT_MESSAGES[0][2]["content"]},
+        ],
+        extra_info={"extra_info": "some_info"},
     )
 
 
