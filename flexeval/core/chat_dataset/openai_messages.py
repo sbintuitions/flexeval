@@ -60,10 +60,10 @@ class OpenAIMessagesDataset(ChatDataset):
             if tool_definitions_key is not None:
                 tool_dicts = sample.get(tool_definitions_key, None)
 
-            messages: list[dict[str, Any]] = sample[message_key]
+            messages: list[dict[str, Any]] = sample.pop(message_key)
             if drop_if_last_from_assistant and messages[-1]["role"] == "assistant":
                 messages = messages[:-1]
-            self.conversations.append(ChatInstance(messages=messages, tools=tool_dicts))
+            self.conversations.append(ChatInstance(messages=messages, tools=tool_dicts, extra_info=sample))
 
     def __len__(self) -> int:
         return len(self.conversations)
