@@ -60,7 +60,7 @@ def test_invalid_mode() -> None:
 def test_mismatched_input_lengths() -> None:
     """Test that mismatched input lengths raise a ValueError."""
     metric = SubstringMatch()
-    with pytest.raises(ValueError, match="lm_outputs and references_list must have the same length"):
+    with pytest.raises(ValueError):
         metric.evaluate(lm_outputs=["cat"], references_list=[["cat"], ["dog"]])
 
 

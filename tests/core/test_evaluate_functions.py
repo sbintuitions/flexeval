@@ -132,8 +132,8 @@ def test_evaluate_perplexity(max_instances: int) -> None:
 
 def test_evaluate_from_data() -> None:
     items = [
-        {"lm_output": "This is test", "references": "This is test"},
-        {"lm_output": "This is test", "references": "This is not test"},
+        {"lm_output": "This is test", "references": ["This is test"]},
+        {"lm_output": "This is test", "references": ["This is not test"]},
     ]
     metrics_summary_dict, instance_metrics_list = evaluate_from_data(
         eval_data=items,
