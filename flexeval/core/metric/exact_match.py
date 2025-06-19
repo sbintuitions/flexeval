@@ -1,11 +1,9 @@
 from __future__ import annotations
 
-import functools
-
 from flexeval.core.string_processor import StringProcessor
 
 from .base import Metric, MetricResult
-from .utils import aggregate_category_wise_scores
+from .utils import aggregate_category_wise_scores, apply_string_processors, validate_inputs
 
 
 class ExactMatch(Metric):
@@ -18,7 +16,7 @@ class ExactMatch(Metric):
             StringProcessor or a list of StringProcessor to be applied to the model outputs before comparison.
         reference_processor: StringProcessor or list of StringProcessor to apply to the references before comparison.
         category_key: A key to create category-wise mean score.
-            The category key is expected to be in task inputs.
+            The category key is expected to be in extra_info.
 
     Examples:
         >>> from flexeval import ExactMatch
@@ -39,11 +37,6 @@ class ExactMatch(Metric):
         reference_processor: StringProcessor | list[StringProcessor] | None = None,
         category_key: str | None = None,
     ) -> None:
-        if isinstance(lm_output_processor, StringProcessor):
-            lm_output_processor = [lm_output_processor]
-        if isinstance(reference_processor, StringProcessor):
-            reference_processor = [reference_processor]
-
         self.lm_output_processors = lm_output_processor
         self.reference_processors = reference_processor
         self.category_key = category_key
@@ -52,33 +45,25 @@ class ExactMatch(Metric):
         self,
         lm_outputs: list[str],
         references_list: list[list[str]],
-        task_inputs_list: list[dict[str, str]] | None = None,
+        extra_info_list: list[dict[str, str]] | None = None,
     ) -> MetricResult:
-        if len(lm_outputs) != len(references_list):
-            msg = (
-                f"Number of model outputs ({len(lm_outputs)}) and number of references ({len(references_list)}) "
-                "should be the same."
-            )
-            raise ValueError(msg)
+        validate_inputs(lm_outputs, references_list, extra_info_list)
 
-        if self.lm_output_processors:
-            lm_outputs = [
-                functools.reduce(lambda x, norm: norm(x), self.lm_output_processors, output) for output in lm_outputs
-            ]
+        # Normalize text data
+        lm_outputs = [apply_string_processors(output, self.lm_output_processors) for output in lm_outputs]
+        references_list = [
+            [apply_string_processors(ref, self.reference_processors) for ref in references]
+            for references in references_list
+        ]
 
-        if self.reference_processors:
-            references_list = [
-                [functools.reduce(lambda x, norm: norm(x), self.reference_processors, ref) for ref in references]
-                for references in references_list
-            ]
-
+        # Compute metrics
         exact_match_list = [
             lm_output in expected_output for lm_output, expected_output in zip(lm_outputs, references_list)
         ]
         summary = {"exact_match": sum(exact_match_list) / len(exact_match_list)}
 
         if self.category_key:
-            categories = [task_input[self.category_key] for task_input in task_inputs_list]
+            categories = [extra_info[self.category_key] for extra_info in extra_info_list]
             category_wise_scores = aggregate_category_wise_scores(exact_match_list, categories)
             for category, category_wise_score in category_wise_scores.items():
                 summary[f"exact_match/{category}"] = category_wise_score

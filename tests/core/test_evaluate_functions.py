@@ -28,10 +28,12 @@ from tests.dummy_modules.reward_lm import DummyRewardLanguageModel
 
 
 @pytest.mark.parametrize(
-    ("require_incremental_response", "use_few_shot", "max_instances"),
-    list(itertools.product([True, False], [True, False], [None, 1])),
+    ("require_incremental_response", "use_few_shot", "max_instances", "use_tools"),
+    list(itertools.product([True, False], [True, False], [None, 1], [True, False])),
 )
-def test_evaluate_chat_response(require_incremental_response: bool, use_few_shot: bool, max_instances: int) -> None:
+def test_evaluate_chat_response(
+    require_incremental_response: bool, use_few_shot: bool, max_instances: int, use_tools: bool
+) -> None:
     few_shot_generator = None
     if use_few_shot:
         few_shot_generator = RandomFewShotGenerator(dataset=DummyChatDataset(), num_shots=1, num_trials_to_avoid_leak=0)
@@ -41,6 +43,7 @@ def test_evaluate_chat_response(require_incremental_response: bool, use_few_shot
         gen_kwargs={},
         eval_dataset=DummyChatDataset(
             require_incremental_response=require_incremental_response,
+            use_tools=use_tools,
         ),
         few_shot_generator=few_shot_generator,
         metrics=[],
@@ -53,6 +56,13 @@ def test_evaluate_chat_response(require_incremental_response: bool, use_few_shot
 
     if max_instances is not None:
         assert len(outputs) <= max_instances
+
+    if use_tools:
+        assert isinstance(outputs[0]["extra_info"]["tool_calls"], list)
+        assert isinstance(outputs[0]["extra_info"]["tools"], list)
+    else:
+        assert "tool_calls" not in outputs[0]["extra_info"]
+        assert "tools" not in outputs[0]["extra_info"]
 
 
 @pytest.mark.parametrize("use_few_shot", [True, False])
@@ -103,6 +113,8 @@ def test_evaluate_multiple_choice(use_few_shot: bool, max_instances: int) -> Non
     if max_instances is not None:
         assert len(outputs) <= max_instances
 
+    assert set(metrics.keys()) == {"accuracy", "byte_norm_accuracy", "macro_f1_score", "micro_f1_score"}
+
 
 @pytest.mark.parametrize(
     "max_instances",
@@ -120,8 +132,8 @@ def test_evaluate_perplexity(max_instances: int) -> None:
 
 def test_evaluate_from_data() -> None:
     items = [
-        {"lm_output": "This is test", "references": "This is test"},
-        {"lm_output": "This is test", "references": "This is not test"},
+        {"lm_output": "This is test", "references": ["This is test"]},
+        {"lm_output": "This is test", "references": ["This is not test"]},
     ]
     metrics_summary_dict, instance_metrics_list = evaluate_from_data(
         eval_data=items,

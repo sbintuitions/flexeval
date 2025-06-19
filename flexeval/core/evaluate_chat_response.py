@@ -30,7 +30,7 @@ def _remove_redundant_keys_from_messages(
     return [{key: value for key, value in message.items() if key not in remove_keys} for message in messages]
 
 
-def evaluate_chat_response(  # noqa: C901,PLR0912
+def evaluate_chat_response(  # noqa: C901,PLR0912, PLR0915
     language_model: LanguageModel,
     gen_kwargs: dict[str, Any],
     eval_dataset: ChatDataset,
@@ -50,9 +50,14 @@ def evaluate_chat_response(  # noqa: C901,PLR0912
     all_messages_list: list[list[dict[str, Any]]] = []
     references_list: list[list[str]] = []
     extra_info_list: list[dict[str, Any]] = []
+    all_input_tools_list: list[list[dict[str, Any]] | None] = []
     with tqdm(total=len(eval_instances)) as pbar:
         for batch_id, batch in enumerate(batch_iter(eval_instances, batch_size)):
             input_messages_list = [chat_instance.messages for chat_instance in batch]
+            input_tools_list = [chat_instance.tools for chat_instance in batch]
+            all_input_tools_list += input_tools_list
+            if all(tools is None for tools in input_tools_list):
+                input_tools_list = None
 
             # Generate few-shot instances
             # The few-shot examples here follow a multi-turn format, interleaving user and assistant messages.
@@ -74,6 +79,7 @@ def evaluate_chat_response(  # noqa: C901,PLR0912
                 # Continue generation from the given conversation history
                 lm_outputs: list[LMOutput] = language_model.generate_chat_response(
                     input_messages_list,
+                    tools=input_tools_list,
                     **gen_kwargs,
                 )
                 for input_messages, lm_output in zip(input_messages_list, lm_outputs):
@@ -85,7 +91,13 @@ def evaluate_chat_response(  # noqa: C901,PLR0912
                                 "content": lm_output.text,
                                 "finish_reason": lm_output.finish_reason,
                             }
-                            | ({"raw_content": lm_output.raw_text} if lm_output.raw_text else {}),
+                            | ({"raw_content": lm_output.raw_text} if lm_output.raw_text else {})
+                            | ({"tool_calls": lm_output.tool_calls} if lm_output.tool_calls else {})
+                            | (
+                                {"tool_call_validation_result": lm_output.tool_call_validation_result}
+                                if lm_output.tool_call_validation_result
+                                else {}
+                            ),
                         ],
                     )
             else:
@@ -103,12 +115,13 @@ def evaluate_chat_response(  # noqa: C901,PLR0912
                     current_model_inputs = [
                         _remove_redundant_keys_from_messages(
                             current_chat_history[b_id] + [input_messages_list[b_id][turn]],
-                            remove_keys={"finish_reason", "raw_content"},
+                            remove_keys={"finish_reason", "raw_content", "tool_call_validation_result"},
                         )
                         for b_id in batch_ids_fed_to_model
                     ]
                     lm_outputs = language_model.generate_chat_response(
                         current_model_inputs,
+                        tools=input_tools_list,
                         **gen_kwargs,
                     )
                     for o_id, b_id in enumerate(batch_ids_fed_to_model):
@@ -120,6 +133,12 @@ def evaluate_chat_response(  # noqa: C901,PLR0912
                                 "finish_reason": lm_outputs[o_id].finish_reason,
                             }
                             | ({"raw_content": lm_outputs[o_id].raw_text} if lm_outputs[o_id].raw_text else {})
+                            | ({"tool_calls": lm_outputs[o_id].tool_calls} if lm_outputs[o_id].tool_calls else {})
+                            | (
+                                {"tool_call_validation_result": lm_outputs[o_id].tool_call_validation_result}
+                                if lm_outputs[o_id].tool_call_validation_result
+                                else {}
+                            ),
                         )
                 all_messages_list += current_chat_history
 
@@ -132,6 +151,21 @@ def evaluate_chat_response(  # noqa: C901,PLR0912
 
             pbar.update(len(batch))
 
+    for extra_info, messages, tools in zip(extra_info_list, all_messages_list, all_input_tools_list):
+        last_message = messages[-1]
+        if "tool_calls" in last_message:
+            extra_info["tool_calls"] = last_message["tool_calls"]
+        if "tool_call_validation_result" in last_message:
+            extra_info["tool_call_validation_result"] = last_message["tool_call_validation_result"]
+        if tools:
+            extra_info["tools"] = tools
+
+    # Metric.evaluate() accepts only str, so if content is None, convert it to empty string
+    for messages in all_messages_list:
+        for mes in messages:
+            if mes["content"] is None:
+                mes["content"] = ""
+
     # Evaluate the generated responses
     metrics_summary_dict: dict[str, float] = {}
     instance_metrics_list: list[dict[str, Any]] = [{} for _ in range(len(all_messages_list))]
@@ -139,7 +173,7 @@ def evaluate_chat_response(  # noqa: C901,PLR0912
         metric_result = metric.evaluate(
             lm_outputs=[messages[-1]["content"] for messages in all_messages_list],
             references_list=references_list,
-            task_inputs_list=[
+            extra_info_list=[
                 {"messages": messages[:-1], **extra_info}
                 for messages, extra_info in zip(all_messages_list, extra_info_list)
             ],
@@ -153,12 +187,15 @@ def evaluate_chat_response(  # noqa: C901,PLR0912
             ):
                 instance_metrics_list[instance_idx].update(instance_details)
 
-    # Calculate the finish_reason statistics
+    # Calculate the finish_reason and validation statistics
     finish_reason_counter = Counter()
+    tool_call_validation_result_counter = Counter()
     for messages in all_messages_list:
         for mes in messages:
             if "finish_reason" in mes:
                 finish_reason_counter[mes["finish_reason"]] += 1
+            if "tool_call_validation_result" in mes:
+                tool_call_validation_result_counter[mes["tool_call_validation_result"]] += 1
     for finish_reason, count in finish_reason_counter.items():
         metrics_summary_dict[f"finish_reason_ratio-{finish_reason}"] = count / sum(finish_reason_counter.values())
 
@@ -168,7 +205,7 @@ def evaluate_chat_response(  # noqa: C901,PLR0912
         {
             "lm_output": messages[-1]["content"],
             "finish_reason": messages[-1]["finish_reason"],
-            "task_inputs": {"messages": messages[:-1], **extra_info},
+            "extra_info": {"messages": messages[:-1], **extra_info},
             "references": references,
             **instance_metrics,
         }

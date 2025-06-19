@@ -1,10 +1,8 @@
 from __future__ import annotations
 
-import functools
-
 import sacrebleu
 
-from flexeval.core.metric.utils import aggregate_category_wise_scores
+from flexeval.core.metric.utils import aggregate_category_wise_scores, apply_string_processors, validate_inputs
 from flexeval.core.string_processor.base import StringProcessor
 
 from .base import Metric, MetricResult
@@ -21,7 +19,7 @@ class BLEU(Metric):
             StringProcessor or a list of StringProcessor to be applied to the model outputs before comparison.
         reference_processor: StringProcessor or list of StringProcessor to apply to the references before comparison.
         category_key: A key to create category-wise mean score.
-            The category key is expected to be in task inputs.
+            The category key is expected to be in extra_info.
 
     Examples:
         >>> from flexeval import BLEU
@@ -53,11 +51,6 @@ class BLEU(Metric):
         # For sentence BLEU, we need to set `effective_order=True` as recommended by sacrebleu.
         self._sentence_bleu = sacrebleu.metrics.BLEU(tokenize=tokenize_option, effective_order=True)
 
-        if isinstance(lm_output_processor, StringProcessor):
-            lm_output_processor = [lm_output_processor]
-        if isinstance(reference_processor, StringProcessor):
-            reference_processor = [reference_processor]
-
         self.lm_output_processors = lm_output_processor
         self.reference_processors = reference_processor
         self.category_key = category_key
@@ -66,27 +59,18 @@ class BLEU(Metric):
         self,
         lm_outputs: list[str],
         references_list: list[list[str]],
-        task_inputs_list: list[dict[str, str]] | None = None,
+        extra_info_list: list[dict[str, str]] | None = None,
     ) -> MetricResult:
-        if len(lm_outputs) != len(references_list):
-            msg = (
-                f"lm_outputs and references_list must have the same length, "
-                f"but got {len(lm_outputs)} and {len(references_list)}."
-            )
-            raise ValueError(msg)
+        validate_inputs(lm_outputs, references_list, extra_info_list)
 
-        if self.lm_output_processors:
-            lm_outputs = [
-                functools.reduce(lambda x, norm: norm(x), self.lm_output_processors, output) for output in lm_outputs
-            ]
+        # Normalize text data
+        lm_outputs = [apply_string_processors(output, self.lm_output_processors) for output in lm_outputs]
+        references_list = [
+            [apply_string_processors(ref, self.reference_processors) for ref in references]
+            for references in references_list
+        ]
 
-        if self.reference_processors:
-            references_list = [
-                [functools.reduce(lambda x, norm: norm(x), self.reference_processors, ref) for ref in references]
-                for references in references_list
-            ]
-
-        # we need restructure the references to match the format expected by sacrebleu
+        # Restructure references for sacrebleu format
         max_num_refs = max(len(refs) for refs in references_list)
         references_for_sacrebleu: list[list[str]] = []
         for i in range(max_num_refs):
@@ -98,6 +82,7 @@ class BLEU(Metric):
                     set_of_references.append("")
             references_for_sacrebleu.append(set_of_references)
 
+        # Compute metrics
         bleu = self._corpus_bleu.corpus_score([o.strip() for o in lm_outputs], references_for_sacrebleu)
         sentence_bleu_list = [
             self._sentence_bleu.sentence_score(o.strip(), refs) for o, refs in zip(lm_outputs, references_list)
@@ -110,7 +95,7 @@ class BLEU(Metric):
         }
 
         if self.category_key:
-            categories = [task_input[self.category_key] for task_input in task_inputs_list]
+            categories = [extra_info[self.category_key] for extra_info in extra_info_list]
             sentence_bleu_score_list = [b.score / 100 for b in sentence_bleu_list]
             category_wise_scores = aggregate_category_wise_scores(sentence_bleu_score_list, categories)
             for category, category_wise_score in category_wise_scores.items():

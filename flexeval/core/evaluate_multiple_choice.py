@@ -1,8 +1,10 @@
 from __future__ import annotations
 
-from typing import Any, Sequence
+from collections.abc import Sequence
+from typing import Any
 
 from loguru import logger
+from sklearn.metrics import f1_score
 from tqdm import tqdm
 
 from .few_shot_generator import FewShotGenerator
@@ -101,9 +103,13 @@ def evaluate_multiple_choice(
     accuracy = sum(res["prediction"] == res["answer_index"] for res in results) / len(results)
     byte_norm_accuracy = sum(res["byte_norm_prediction"] == res["answer_index"] for res in results) / len(results)
 
+    y_true = [res["answer_index"] for res in results]
+    y_pred = [res["prediction"] for res in results]
     metrics_dict: dict[str, float] = {
         "accuracy": accuracy,
         "byte_norm_accuracy": byte_norm_accuracy,
+        "macro_f1_score": f1_score(y_true=y_true, y_pred=y_pred, average="macro"),
+        "micro_f1_score": f1_score(y_true=y_true, y_pred=y_pred, average="micro"),
     }
     logger.info(metrics_dict)
     return metrics_dict, results

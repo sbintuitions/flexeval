@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 from os import PathLike
 from pathlib import Path
+from typing import Any
 
 from .base import ChatDataset, ChatInstance
 
@@ -31,6 +32,26 @@ class ChatbotBench(ChatDataset):
             "Compose an engaging travel blog post about a recent trip to Hawaii.",
             "Rewrite your previous response. Start every sentence with the letter A."
           ]
+          # 'tools' key is optional.
+          # It should be in the same format as FunctionCalling in the OpenAI ChatCompletion API.
+          # https://platform.openai.com/docs/guides/function-calling?api-mode=chat#defining-functions
+          "tools": [
+            {
+              "type": "function",
+              "function": {
+                "name": "get_weather",
+                "description": "Get current temperature for a given location.",
+                "parameters": {
+                  "type": "object",
+                  "properties": {
+                    "location": {"type": "string", "description": "City and country e.g. Bogotá, Colombia"},
+                  },
+                  "required": ["location"],
+                  "additionalProperties": False},
+                "strict": True
+              },
+            },
+          ]
         }
     """
 
@@ -46,6 +67,7 @@ class ChatbotBench(ChatDataset):
         self._id_to_question_id: list[int | str] = []
         self._id_to_category: list[str] = []
         self._messages_dict: dict[int | str, list[dict[str, str]]] = {}
+        self._tools_dict: dict[int | str, list[dict[str, Any] | None]] = {}
         with open(file_path) as f:
             for line in f:
                 item = json.loads(line)
@@ -55,6 +77,7 @@ class ChatbotBench(ChatDataset):
                 if load_only_first_n is not None:
                     input_messages = input_messages[:load_only_first_n]
                 self._messages_dict[item["question_id"]] = input_messages
+                self._tools_dict[item["question_id"]] = item.get("tools")
 
         self._references_dict: dict[int | str, list[str]] = {}
         if ref_path_or_name is not None:
@@ -82,4 +105,9 @@ class ChatbotBench(ChatDataset):
         references: list[str] = []
         if category in self.need_ref_categories:
             references = self._references_dict.get(question_id, [])
-        return ChatInstance(self._messages_dict[question_id], references=references, extra_info={"category": category})
+        return ChatInstance(
+            self._messages_dict[question_id],
+            tools=self._tools_dict[question_id],
+            references=references,
+            extra_info={"category": category},
+        )

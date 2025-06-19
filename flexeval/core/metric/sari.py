@@ -1,11 +1,10 @@
 from __future__ import annotations
 
-import functools
 from collections import Counter
 from typing import Literal
 
 from flexeval.core.metric.base import Metric, MetricResult
-from flexeval.core.metric.utils import aggregate_category_wise_scores
+from flexeval.core.metric.utils import aggregate_category_wise_scores, apply_string_processors, validate_inputs
 from flexeval.core.string_processor.base import StringProcessor
 from flexeval.core.string_processor.lower import StringLower
 from flexeval.core.tokenizer.base import Tokenizer
@@ -14,6 +13,9 @@ from flexeval.core.tokenizer.sacrebleu_tokenizer import SacreBleuTokenizer
 
 def to_ngram(words: list[str], n: int) -> list[str]:
     return ["__".join(words[i : i + n]) for i in range(len(words) - n + 1)]
+
+
+DEFAULT_STRING_PROCESSOR = StringLower()
 
 
 class SARI(Metric):
@@ -33,7 +35,7 @@ class SARI(Metric):
         tokenizer: An instance of `Tokenizer` to tokenize the input and output strings.
         max_ngrams: The maximum n-gram order to consider. Defaults to `4`.
         category_key: A key to create category-wise mean score.
-            The category key is expected to be in task inputs.
+            The category key is expected to be in extra_info.
         lm_output_processor:
             StringProcessor or a list of StringProcessor to be applied to the model outputs before comparison.
         reference_processor: StringProcessor or list of StringProcessor to apply to the references before comparison.
@@ -44,8 +46,8 @@ class SARI(Metric):
         >>> sari_scorer = SARI(source_key="source")
         >>> lm_outputs = ["About 95 you now get in."]
         >>> references_list = [["About 95 species are currently known.", "About 95 species are now accepted.", "95 species are now accepted."]]
-        >>> task_inputs_list = [{"source": "About 95 species are currently accepted."}]
-        >>> result = sari_scorer.evaluate(lm_outputs, references_list, task_inputs_list)
+        >>> extra_info_list = [{"source": "About 95 species are currently accepted."}]
+        >>> result = sari_scorer.evaluate(lm_outputs, references_list, extra_info_list)
         >>> print(result)
         MetricResult(
             summary={
@@ -64,9 +66,9 @@ class SARI(Metric):
         tokenizer: Tokenizer | Literal["default"] = "default",
         max_ngrams: int = 4,
         category_key: str | None = None,
-        source_processor: StringProcessor | list[StringProcessor] | None | Literal["default"] = "default",
-        lm_output_processor: StringProcessor | list[StringProcessor] | None | Literal["default"] = "default",
-        reference_processor: StringProcessor | list[StringProcessor] | None | Literal["default"] = "default",
+        source_processor: StringProcessor | list[StringProcessor] | None = DEFAULT_STRING_PROCESSOR,
+        lm_output_processor: StringProcessor | list[StringProcessor] | None = DEFAULT_STRING_PROCESSOR,
+        reference_processor: StringProcessor | list[StringProcessor] | None = DEFAULT_STRING_PROCESSOR,
     ) -> None:
         if tokenizer == "default":
             tokenizer = SacreBleuTokenizer("13a")
@@ -74,49 +76,28 @@ class SARI(Metric):
         self.source_key = source_key
         self.max_ngrams = max_ngrams
         self.category_key = category_key
-        if source_processor == "default":
-            source_processor = StringLower()
-        if lm_output_processor == "default":
-            lm_output_processor = StringLower()
-        if reference_processor == "default":
-            reference_processor = StringLower()
-        if isinstance(source_processor, StringProcessor):
-            source_processor = [source_processor]
-        if isinstance(lm_output_processor, StringProcessor):
-            lm_output_processor = [lm_output_processor]
-        if isinstance(reference_processor, StringProcessor):
-            reference_processor = [reference_processor]
+
         self.source_processors = source_processor
         self.lm_output_processors = lm_output_processor
         self.reference_processors = reference_processor
 
-    def evaluate(self, lm_outputs, references_list, task_inputs_list=None) -> MetricResult:  # noqa: ANN001
-        if task_inputs_list is None:
-            msg = "SARI requires task_inputs_list"
+    def evaluate(self, lm_outputs, references_list, extra_info_list=None) -> MetricResult:  # noqa: ANN001
+        validate_inputs(lm_outputs, references_list, extra_info_list)
+
+        if extra_info_list is None:
+            msg = "SARI requires extra_info_list"
             raise ValueError(msg)
-        sources = [task_input[self.source_key] for task_input in task_inputs_list]
+        sources = [extra_info[self.source_key] for extra_info in extra_info_list]
 
-        if not (len(sources) == len(lm_outputs) == len(references_list)):
-            msg = (
-                f"sources, lm_outputs and references_list must have the same length, "
-                f"but got {len(sources)}, {len(lm_outputs)} and {len(references_list)}."
-            )
-            raise ValueError(msg)
+        # Normalize text data
+        sources = [apply_string_processors(src, self.source_processors) for src in sources]
+        lm_outputs = [apply_string_processors(output, self.lm_output_processors) for output in lm_outputs]
+        references_list = [
+            [apply_string_processors(ref, self.reference_processors) for ref in references]
+            for references in references_list
+        ]
 
-        if self.source_processors:
-            sources = [functools.reduce(lambda x, norm: norm(x), self.source_processors, src) for src in sources]
-
-        if self.lm_output_processors:
-            lm_outputs = [
-                functools.reduce(lambda x, norm: norm(x), self.lm_output_processors, output) for output in lm_outputs
-            ]
-
-        if self.reference_processors:
-            references_list = [
-                [functools.reduce(lambda x, norm: norm(x), self.reference_processors, ref) for ref in references]
-                for references in references_list
-            ]
-
+        # Compute metrics
         sari_instance_list = [
             self._calc_sentence_sari(source, lm_output, references)
             for source, lm_output, references in zip(sources, lm_outputs, references_list)
@@ -132,7 +113,7 @@ class SARI(Metric):
         }
 
         if self.category_key:
-            categories = [task_input[self.category_key] for task_input in task_inputs_list]
+            categories = [extra_info[self.category_key] for extra_info in extra_info_list]
             for metric_name, score_list in metric_name2scores.items():
                 category_wise_scores = aggregate_category_wise_scores(score_list, categories)
                 for category, category_wise_score in category_wise_scores.items():

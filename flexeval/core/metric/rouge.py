@@ -5,6 +5,7 @@ from rouge import Rouge as RougeCalculator
 from flexeval.core.tokenizer import Tokenizer
 
 from .base import Metric, MetricResult
+from .utils import validate_inputs
 
 
 class ROUGE(Metric):
@@ -40,16 +41,11 @@ class ROUGE(Metric):
         self,
         lm_outputs: list[str],
         references_list: list[list[str]],
-        task_inputs_list: list[dict[str, str]] | None = None,
+        extra_info_list: list[dict[str, str]] | None = None,
     ) -> MetricResult:
-        if len(lm_outputs) != len(references_list):
-            msg = (
-                f"lm_outputs and references_list must have the same length, "
-                f"but got {len(lm_outputs)} and {len(references_list)}."
-            )
-            raise ValueError(msg)
+        validate_inputs(lm_outputs, references_list, extra_info_list)
 
-        # we only need the first reference
+        # Normalize text data - we only need the first reference
         target_summaries = [references[0] for references in references_list]
 
         tokenized_lm_outputs = [" ".join(self._tokenizer.tokenize(lm_output)) for lm_output in lm_outputs]
@@ -60,6 +56,7 @@ class ROUGE(Metric):
         # replace empty string with " " to avoid "ValueError: Hypothesis is empty" from rouge
         tokenized_lm_outputs = [o if o else " " for o in tokenized_lm_outputs]
 
+        # Compute metrics
         rouge = RougeCalculator()
         score_outputs = rouge.get_scores(
             tokenized_lm_outputs,
