@@ -7,6 +7,7 @@ from loguru import logger
 from tqdm import tqdm
 
 from flexeval.core.language_model.base import LMOutput
+from flexeval.core.utils.chat_util import find_first_turn_for_response
 
 from .chat_dataset import ChatDataset, ChatInstance
 from .few_shot_generator import FewShotGenerator
@@ -61,12 +62,7 @@ def evaluate_chat_response(  # noqa: C901,PLR0912, PLR0915
 
             # For the `require_incremental_response==True` case,
             # it is necessary to identify the first turn that should be responded, excluding system messages, etc.
-            offsets_to_first_turn: list[int] = [0 for _ in batch]
-            for input_id, input_message in enumerate(input_messages_list):
-                for i, m in enumerate(input_message):  # noqa: B007
-                    if m["role"] not in {"system", "developer"}:
-                        break
-                offsets_to_first_turn[input_id] = i
+            offsets_to_first_turn = [find_first_turn_for_response(messages) for messages in input_messages_list]
 
             # Generate few-shot instances
             # The few-shot examples here follow a multi-turn format, interleaving user and assistant messages.
