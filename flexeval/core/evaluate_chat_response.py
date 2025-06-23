@@ -7,6 +7,7 @@ from loguru import logger
 from tqdm import tqdm
 
 from flexeval.core.language_model.base import LMOutput
+from flexeval.core.utils.chat_util import find_first_turn_for_response
 
 from .chat_dataset import ChatDataset, ChatInstance
 from .few_shot_generator import FewShotGenerator
@@ -59,6 +60,10 @@ def evaluate_chat_response(  # noqa: C901,PLR0912, PLR0915
             if all(tools is None for tools in input_tools_list):
                 input_tools_list = None
 
+            # For the `require_incremental_response==True` case,
+            # it is necessary to identify the first turn that should be responded, excluding system messages, etc.
+            offsets_to_first_turn = [find_first_turn_for_response(messages) for messages in input_messages_list]
+
             # Generate few-shot instances
             # The few-shot examples here follow a multi-turn format, interleaving user and assistant messages.
             if few_shot_generator is not None:
@@ -73,7 +78,12 @@ def evaluate_chat_response(  # noqa: C901,PLR0912, PLR0915
                         if few_shot_instance.references:
                             # use the first reference as the assistant message
                             few_shot_messages += [{"role": "assistant", "content": few_shot_instance.references[0]}]
-                    input_messages_list[input_id] = [*few_shot_messages, *input_messages_list[input_id]]
+
+                    offset = offsets_to_first_turn[input_id]
+                    meta_messages = input_messages_list[input_id][:offset]
+                    real_messages = input_messages_list[input_id][offset:]
+                    input_messages_list[input_id] = [*meta_messages, *few_shot_messages, *real_messages]
+                    offsets_to_first_turn[input_id] += len(few_shot_messages)
 
             if not eval_dataset.require_incremental_response():
                 # Continue generation from the given conversation history
@@ -105,16 +115,24 @@ def evaluate_chat_response(  # noqa: C901,PLR0912, PLR0915
                 # the input messages are supposed to be the user messages across turns.
                 # The model first responses to the first user message, then add its response to the chat history,
                 # and responses to the next user message, and so on.
-                max_num_turns = max(len(messages) for messages in input_messages_list)
-                current_chat_history: list[list[dict[str, Any]]] = [[] for _ in input_messages_list]
+                max_num_turns = max(
+                    len(messages) - offset for messages, offset in zip(input_messages_list, offsets_to_first_turn)
+                )
+                current_chat_history: list[list[dict[str, Any]]] = [
+                    input_messages[:offset]
+                    for input_messages, offset in zip(input_messages_list, offsets_to_first_turn)
+                ]
                 # perform generation for each turn
                 for turn in range(max_num_turns):
                     batch_ids_fed_to_model = [
-                        b_id for b_id, messages in enumerate(input_messages_list) if turn < len(messages)
+                        b_id
+                        for b_id, messages in enumerate(input_messages_list)
+                        if turn < (len(messages) - offsets_to_first_turn[b_id])
                     ]
                     current_model_inputs = [
                         _remove_redundant_keys_from_messages(
-                            current_chat_history[b_id] + [input_messages_list[b_id][turn]],
+                            current_chat_history[b_id]
+                            + [input_messages_list[b_id][turn + offsets_to_first_turn[b_id]]],
                             remove_keys={"finish_reason", "raw_content", "tool_call_validation_result"},
                         )
                         for b_id in batch_ids_fed_to_model
@@ -125,7 +143,8 @@ def evaluate_chat_response(  # noqa: C901,PLR0912, PLR0915
                         **gen_kwargs,
                     )
                     for o_id, b_id in enumerate(batch_ids_fed_to_model):
-                        current_chat_history[b_id].append(input_messages_list[b_id][turn])
+                        offset = offsets_to_first_turn[b_id]
+                        current_chat_history[b_id].append(input_messages_list[b_id][turn + offset])
                         current_chat_history[b_id].append(
                             {
                                 "role": "assistant",
