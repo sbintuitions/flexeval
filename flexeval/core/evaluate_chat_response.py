@@ -137,7 +137,7 @@ def evaluate_chat_response(  # noqa: C901,PLR0912, PLR0915
                     ]
                     lm_outputs = language_model.generate_chat_response(
                         current_model_inputs,
-                        tools=input_tools_list,
+                        tools=[input_tools_list[b_id] for b_id in batch_ids_fed_to_model] if input_tools_list else None,
                         **gen_kwargs,
                     )
                     for o_id, b_id in enumerate(batch_ids_fed_to_model):

@@ -51,7 +51,10 @@ class ChatbotBench(ChatDataset):
                 "strict": True
               },
             },
-          ]
+          ],
+          # 'system_message' key is optional.
+          # If set, it will be inserted in the first turn as a system prompt
+          "system_message": "You are a helpful assistant."
         }
     """
 
@@ -74,6 +77,8 @@ class ChatbotBench(ChatDataset):
                 self._id_to_question_id.append(item["question_id"])
                 self._id_to_category.append(item["category"])
                 input_messages = [{"role": "user", "content": turn} for turn in item["turns"]]
+                if item.get("system_message"):
+                    input_messages = [{"role": "system", "content": item["system_message"]}, *input_messages]
                 if load_only_first_n is not None:
                     input_messages = input_messages[:load_only_first_n]
                 self._messages_dict[item["question_id"]] = input_messages
