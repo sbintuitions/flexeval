@@ -125,7 +125,9 @@ def evaluate_chat_response(  # noqa: C901,PLR0912, PLR0915
                 # perform generation for each turn
                 for turn in range(max_num_turns):
                     batch_ids_fed_to_model = [
-                        b_id for b_id, messages in enumerate(input_messages_list) if turn < len(messages)
+                        b_id
+                        for b_id, messages in enumerate(input_messages_list)
+                        if turn < (len(messages) - offsets_to_first_turn[b_id])
                     ]
                     current_model_inputs = [
                         _remove_redundant_keys_from_messages(
