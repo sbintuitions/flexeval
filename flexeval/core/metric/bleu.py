@@ -89,19 +89,19 @@ class BLEU(Metric):
         ]
 
         summary = {
-            "bleu_score": bleu.score / 100,
+            "bleu_score": bleu.score,
             "bleu_bp": bleu.bp,
             "bleu_signature": self._corpus_bleu.get_signature(),
         }
 
         if self.category_key:
             categories = [extra_info[self.category_key] for extra_info in extra_info_list]
-            sentence_bleu_score_list = [b.score / 100 for b in sentence_bleu_list]
+            sentence_bleu_score_list = [b.score for b in sentence_bleu_list]
             category_wise_scores = aggregate_category_wise_scores(sentence_bleu_score_list, categories)
             for category, category_wise_score in category_wise_scores.items():
                 summary[f"sentence_bleu_score/{category}"] = category_wise_score
 
         return MetricResult(
             summary,
-            instance_details=[{"bleu_score": b.score / 100, "bleu_bp": b.bp} for b in sentence_bleu_list],
+            instance_details=[{"bleu_score": b.score, "bleu_bp": b.bp} for b in sentence_bleu_list],
         )
