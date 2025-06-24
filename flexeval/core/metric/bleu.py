@@ -15,6 +15,8 @@ class BLEU(Metric):
     Args:
         tokenize_option: Tokenization option for sacrebleu.
             If `None`, sacrebleu will use the default tokenization.
+            For details, see sacreBLEU
+            https://github.com/mjpost/sacrebleu/blob/aa3cc4351af6/sacrebleu/sacrebleu.py#L121-L124
         lm_output_processor:
             StringProcessor or a list of StringProcessor to be applied to the model outputs before comparison.
         reference_processor: StringProcessor or list of StringProcessor to apply to the references before comparison.
