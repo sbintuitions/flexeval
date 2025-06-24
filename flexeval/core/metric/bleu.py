@@ -30,12 +30,12 @@ class BLEU(Metric):
         >>> print(result)
         MetricResult(
             summary={
-                'bleu_score': 1.0,
+                'bleu_score': 100.0,
                 'bleu_bp': 1.0,
                 'bleu_signature': nrefs:1|case:mixed|eff:no|tok:13a|smooth:exp|version:2.4.1},
                 instance_details=[
-                    {'bleu_score': 1.0, 'bleu_bp': 1.0},
-                    {'bleu_score': 1.0, 'bleu_bp': 1.0}
+                    {'bleu_score': 100.0, 'bleu_bp': 1.0},
+                    {'bleu_score': 100.0, 'bleu_bp': 1.0}
                 ]
             )
     """
