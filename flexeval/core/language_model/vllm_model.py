@@ -99,7 +99,7 @@ class VLLM(LanguageModel):
         add_special_tokens: bool = False,
         custom_chat_template: str | None = None,
         chat_template_kwargs: dict[str, Any] | None = None,
-        system_message: str = None,
+        system_message: str | None = None,
         default_gen_kwargs: dict[str, Any] | None = None,
         string_processors: StringProcessor | list[StringProcessor] | None = None,
         model_limit_tokens: int | None | Literal["default"] = "default",
