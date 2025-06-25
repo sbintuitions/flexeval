@@ -99,6 +99,7 @@ class VLLM(LanguageModel):
         add_special_tokens: bool = False,
         custom_chat_template: str | None = None,
         chat_template_kwargs: dict[str, Any] | None = None,
+        system_message: str = None,
         default_gen_kwargs: dict[str, Any] | None = None,
         string_processors: StringProcessor | list[StringProcessor] | None = None,
         model_limit_tokens: int | None | Literal["default"] = "default",
@@ -111,6 +112,7 @@ class VLLM(LanguageModel):
         self.tokenizer: PreTrainedTokenizer = AutoTokenizer.from_pretrained(tokenizer, **tokenizer_kwargs)
         self.custom_chat_template = custom_chat_template
         self.chat_template_kwargs = chat_template_kwargs or {}
+        self.system_message = system_message
         self.add_special_tokens = add_special_tokens
         # use greedy decoding by default to make it consistent with `HuggingFaceLM`
         self.default_gen_kwargs = default_gen_kwargs or {"temperature": 0.0}
@@ -219,6 +221,9 @@ class VLLM(LanguageModel):
     ) -> list[LMOutput]:
         if tools_list is None:
             tools_list = [None] * len(chat_messages_list)
+        if self.system_message is not None:
+            for chat_messages in chat_messages_list:
+                chat_messages.insert(0, {"role": "system", "content": self.system_message})
         chat_messages_as_string = [
             self.tokenizer.apply_chat_template(
                 chat_messages,
