@@ -80,6 +80,8 @@ class VLLM(LanguageModel):
             Note that whether BOS or EOS tokens are added depends on the tokenizer.
         custom_chat_template: A custom chat template for chatbot models.
             If specified, this overrides the default chat template of the tokenizer.
+        system_message: System messages to be prepended to given messages. It applies only for
+            chat response.
         default_gen_kwargs: Default generation kwargs to use when calling the model.
         string_processors: A single or a list of StringProcessor objects to process the model's output.
         model_limit_tokens: An upper limit on the number of tokens (input + output) the model can handle.

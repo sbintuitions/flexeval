@@ -181,10 +181,7 @@ def test_system_message_is_prepended_to_chat_messages(chat_lm_with_system_messag
 @pytest.mark.skipif(not is_vllm_enabled(), reason="vllm library is not installed")
 def test_system_message_prepended_to_batch_chat_messages(chat_lm_with_system_message: VLLM) -> None:
     """Test that system message is prepended to each conversation in batch generate_chat_response."""
-    chat_messages_list = [
-        [{"role": "user", "content": "Hello"}],
-        [{"role": "user", "content": "Hi there"}]
-    ]
+    chat_messages_list = [[{"role": "user", "content": "Hello"}], [{"role": "user", "content": "Hi there"}]]
 
     # Mock the tokenizer's apply_chat_template to capture the messages
     original_apply_chat_template = chat_lm_with_system_message.tokenizer.apply_chat_template
