@@ -1,4 +1,7 @@
+from __future__ import annotations
+
 import logging
+from typing import Any, Callable
 from unittest.mock import patch
 
 import pytest
@@ -143,3 +146,64 @@ def test_apply_chat_template_arguments_when_tools_provided(chat_lm_for_tool_call
         args, kwargs = mock_method.call_args
         assert args[0] == chat_messages
         assert kwargs["tools"] == tools
+
+
+@pytest.mark.skipif(not is_vllm_enabled(), reason="vllm library is not installed")
+def test_system_message_is_prepended_to_chat_messages(chat_lm_with_system_message: VLLM) -> None:
+    """Test that system message is prepended to chat messages in generate_chat_response."""
+    chat_messages = [{"role": "user", "content": "Hello"}]
+
+    # Mock the tokenizer's apply_chat_template to capture the messages
+    original_apply_chat_template = chat_lm_with_system_message.tokenizer.apply_chat_template
+    captured_messages = None
+
+    def mock_apply_chat_template(messages: list[list[dict[str, Any]]], **kwargs) -> Callable:
+        nonlocal captured_messages
+        captured_messages = messages
+        return original_apply_chat_template(messages, **kwargs)
+
+    chat_lm_with_system_message.tokenizer.apply_chat_template = mock_apply_chat_template
+
+    try:
+        chat_lm_with_system_message.generate_chat_response(chat_messages, max_new_tokens=1)
+
+        # Check that system message was prepended
+        assert len(captured_messages) == 2
+        assert captured_messages[0]["role"] == "system"
+        assert captured_messages[0]["content"] == "You are a helpful assistant."
+        assert captured_messages[1]["role"] == "user"
+        assert captured_messages[1]["content"] == "Hello"
+    finally:
+        # Restore original method
+        chat_lm_with_system_message.tokenizer.apply_chat_template = original_apply_chat_template
+
+
+@pytest.mark.skipif(not is_vllm_enabled(), reason="vllm library is not installed")
+def test_system_message_prepended_to_batch_chat_messages(chat_lm_with_system_message: VLLM) -> None:
+    """Test that system message is prepended to each conversation in batch generate_chat_response."""
+    chat_messages_list = [[{"role": "user", "content": "Hello"}], [{"role": "user", "content": "Hi there"}]]
+
+    # Mock the tokenizer's apply_chat_template to capture the messages
+    original_apply_chat_template = chat_lm_with_system_message.tokenizer.apply_chat_template
+    captured_messages_list = []
+
+    def mock_apply_chat_template(messages: list[list[dict[str, Any]]], **kwargs) -> Callable:
+        captured_messages_list.append(messages.copy())
+        return original_apply_chat_template(messages, **kwargs)
+
+    chat_lm_with_system_message.tokenizer.apply_chat_template = mock_apply_chat_template
+
+    try:
+        chat_lm_with_system_message.generate_chat_response(chat_messages_list, max_new_tokens=1)
+
+        # Check that system message was prepended to both conversations
+        assert len(captured_messages_list) == 2
+
+        for captured_messages in captured_messages_list:
+            assert len(captured_messages) == 2
+            assert captured_messages[0]["role"] == "system"
+            assert captured_messages[0]["content"] == "You are a helpful assistant."
+            assert captured_messages[1]["role"] == "user"
+    finally:
+        # Restore original method
+        chat_lm_with_system_message.tokenizer.apply_chat_template = original_apply_chat_template
