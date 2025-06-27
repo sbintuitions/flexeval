@@ -2119,7 +2119,9 @@ The calculation is based on the <a href="https://github.com/mjpost/sacrebleu">sa
           –
           <div class="doc-md-description">
             <p>Tokenization option for sacrebleu.
-If <code>None</code>, sacrebleu will use the default tokenization.</p>
+If <code>None</code>, sacrebleu will use the default tokenization.
+For details, see sacreBLEU
+https://github.com/mjpost/sacrebleu/blob/aa3cc4351af6/sacrebleu/sacrebleu.py#L121-L124</p>
           </div>
         </li>
         <li class="doc-section-item field-body">
@@ -2165,12 +2167,12 @@ The category key is expected to be in extra_info.</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
 <span class="go">MetricResult(</span>
 <span class="go">    summary={</span>
-<span class="go">        &#39;bleu_score&#39;: 1.0,</span>
+<span class="go">        &#39;bleu_score&#39;: 100.0,</span>
 <span class="go">        &#39;bleu_bp&#39;: 1.0,</span>
 <span class="go">        &#39;bleu_signature&#39;: nrefs:1|case:mixed|eff:no|tok:13a|smooth:exp|version:2.4.1},</span>
 <span class="go">        instance_details=[</span>
-<span class="go">            {&#39;bleu_score&#39;: 1.0, &#39;bleu_bp&#39;: 1.0},</span>
-<span class="go">            {&#39;bleu_score&#39;: 1.0, &#39;bleu_bp&#39;: 1.0}</span>
+<span class="go">            {&#39;bleu_score&#39;: 100.0, &#39;bleu_bp&#39;: 1.0},</span>
+<span class="go">            {&#39;bleu_score&#39;: 100.0, &#39;bleu_bp&#39;: 1.0}</span>
 <span class="go">        ]</span>
 <span class="go">    )</span>
 </code></pre></div>
@@ -2279,13 +2281,17 @@ The category key is expected to be in extra_info.</p>
 <span class="normal">104</span>
 <span class="normal">105</span>
 <span class="normal">106</span>
-<span class="normal">107</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">BLEU</span><span class="p">(</span><span class="n">Metric</span><span class="p">):</span>
+<span class="normal">107</span>
+<span class="normal">108</span>
+<span class="normal">109</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">BLEU</span><span class="p">(</span><span class="n">Metric</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;An implementation of [BLEU](https://aclanthology.org/P02-1040/).</span>
 <span class="sd">    The calculation is based on the [sacrebleu](https://github.com/mjpost/sacrebleu) library.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        tokenize_option: Tokenization option for sacrebleu.</span>
 <span class="sd">            If `None`, sacrebleu will use the default tokenization.</span>
+<span class="sd">            For details, see sacreBLEU</span>
+<span class="sd">            https://github.com/mjpost/sacrebleu/blob/aa3cc4351af6/sacrebleu/sacrebleu.py#L121-L124</span>
 <span class="sd">        lm_output_processor:</span>
 <span class="sd">            StringProcessor or a list of StringProcessor to be applied to the model outputs before comparison.</span>
 <span class="sd">        reference_processor: StringProcessor or list of StringProcessor to apply to the references before comparison.</span>
@@ -2301,12 +2307,12 @@ The category key is expected to be in extra_info.</p>
 <span class="sd">        &gt;&gt;&gt; print(result)</span>
 <span class="sd">        MetricResult(</span>
 <span class="sd">            summary={</span>
-<span class="sd">                &#39;bleu_score&#39;: 1.0,</span>
+<span class="sd">                &#39;bleu_score&#39;: 100.0,</span>
 <span class="sd">                &#39;bleu_bp&#39;: 1.0,</span>
 <span class="sd">                &#39;bleu_signature&#39;: nrefs:1|case:mixed|eff:no|tok:13a|smooth:exp|version:2.4.1},</span>
 <span class="sd">                instance_details=[</span>
-<span class="sd">                    {&#39;bleu_score&#39;: 1.0, &#39;bleu_bp&#39;: 1.0},</span>
-<span class="sd">                    {&#39;bleu_score&#39;: 1.0, &#39;bleu_bp&#39;: 1.0}</span>
+<span class="sd">                    {&#39;bleu_score&#39;: 100.0, &#39;bleu_bp&#39;: 1.0},</span>
+<span class="sd">                    {&#39;bleu_score&#39;: 100.0, &#39;bleu_bp&#39;: 1.0}</span>
 <span class="sd">                ]</span>
 <span class="sd">            )</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -2360,21 +2366,21 @@ The category key is expected to be in extra_info.</p>
         <span class="p">]</span>
 
         <span class="n">summary</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s2">&quot;bleu_score&quot;</span><span class="p">:</span> <span class="n">bleu</span><span class="o">.</span><span class="n">score</span> <span class="o">/</span> <span class="mi">100</span><span class="p">,</span>
+            <span class="s2">&quot;bleu_score&quot;</span><span class="p">:</span> <span class="n">bleu</span><span class="o">.</span><span class="n">score</span><span class="p">,</span>
             <span class="s2">&quot;bleu_bp&quot;</span><span class="p">:</span> <span class="n">bleu</span><span class="o">.</span><span class="n">bp</span><span class="p">,</span>
             <span class="s2">&quot;bleu_signature&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_corpus_bleu</span><span class="o">.</span><span class="n">get_signature</span><span class="p">(),</span>
         <span class="p">}</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">category_key</span><span class="p">:</span>
             <span class="n">categories</span> <span class="o">=</span> <span class="p">[</span><span class="n">extra_info</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">category_key</span><span class="p">]</span> <span class="k">for</span> <span class="n">extra_info</span> <span class="ow">in</span> <span class="n">extra_info_list</span><span class="p">]</span>
-            <span class="n">sentence_bleu_score_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">b</span><span class="o">.</span><span class="n">score</span> <span class="o">/</span> <span class="mi">100</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">sentence_bleu_list</span><span class="p">]</span>
+            <span class="n">sentence_bleu_score_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">b</span><span class="o">.</span><span class="n">score</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">sentence_bleu_list</span><span class="p">]</span>
             <span class="n">category_wise_scores</span> <span class="o">=</span> <span class="n">aggregate_category_wise_scores</span><span class="p">(</span><span class="n">sentence_bleu_score_list</span><span class="p">,</span> <span class="n">categories</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">category</span><span class="p">,</span> <span class="n">category_wise_score</span> <span class="ow">in</span> <span class="n">category_wise_scores</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
                 <span class="n">summary</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;sentence_bleu_score/</span><span class="si">{</span><span class="n">category</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">category_wise_score</span>
 
         <span class="k">return</span> <span class="n">MetricResult</span><span class="p">(</span>
             <span class="n">summary</span><span class="p">,</span>
-            <span class="n">instance_details</span><span class="o">=</span><span class="p">[{</span><span class="s2">&quot;bleu_score&quot;</span><span class="p">:</span> <span class="n">b</span><span class="o">.</span><span class="n">score</span> <span class="o">/</span> <span class="mi">100</span><span class="p">,</span> <span class="s2">&quot;bleu_bp&quot;</span><span class="p">:</span> <span class="n">b</span><span class="o">.</span><span class="n">bp</span><span class="p">}</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">sentence_bleu_list</span><span class="p">],</span>
+            <span class="n">instance_details</span><span class="o">=</span><span class="p">[{</span><span class="s2">&quot;bleu_score&quot;</span><span class="p">:</span> <span class="n">b</span><span class="o">.</span><span class="n">score</span><span class="p">,</span> <span class="s2">&quot;bleu_bp&quot;</span><span class="p">:</span> <span class="n">b</span><span class="o">.</span><span class="n">bp</span><span class="p">}</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">sentence_bleu_list</span><span class="p">],</span>
         <span class="p">)</span>
 </code></pre></div></td></tr></table></div>
               </details>
@@ -2482,9 +2488,7 @@ The category key is expected to be in extra_info.</p>
 
             <details class="quote">
               <summary>Source code in <code>flexeval/core/metric/bleu.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">43</span>
-<span class="normal">44</span>
-<span class="normal">45</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">45</span>
 <span class="normal">46</span>
 <span class="normal">47</span>
 <span class="normal">48</span>
@@ -2495,7 +2499,9 @@ The category key is expected to be in extra_info.</p>
 <span class="normal">53</span>
 <span class="normal">54</span>
 <span class="normal">55</span>
-<span class="normal">56</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+<span class="normal">56</span>
+<span class="normal">57</span>
+<span class="normal">58</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">tokenize_option</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">lm_output_processor</span><span class="p">:</span> <span class="n">StringProcessor</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="n">StringProcessor</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -2535,9 +2541,7 @@ The category key is expected to be in extra_info.</p>
 
             <details class="quote">
               <summary>Source code in <code>flexeval/core/metric/bleu.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 58</span>
-<span class="normal"> 59</span>
-<span class="normal"> 60</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 60</span>
 <span class="normal"> 61</span>
 <span class="normal"> 62</span>
 <span class="normal"> 63</span>
@@ -2584,7 +2588,9 @@ The category key is expected to be in extra_info.</p>
 <span class="normal">104</span>
 <span class="normal">105</span>
 <span class="normal">106</span>
-<span class="normal">107</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">evaluate</span><span class="p">(</span>
+<span class="normal">107</span>
+<span class="normal">108</span>
+<span class="normal">109</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">evaluate</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">lm_outputs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
     <span class="n">references_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span>
@@ -2618,21 +2624,21 @@ The category key is expected to be in extra_info.</p>
     <span class="p">]</span>
 
     <span class="n">summary</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s2">&quot;bleu_score&quot;</span><span class="p">:</span> <span class="n">bleu</span><span class="o">.</span><span class="n">score</span> <span class="o">/</span> <span class="mi">100</span><span class="p">,</span>
+        <span class="s2">&quot;bleu_score&quot;</span><span class="p">:</span> <span class="n">bleu</span><span class="o">.</span><span class="n">score</span><span class="p">,</span>
         <span class="s2">&quot;bleu_bp&quot;</span><span class="p">:</span> <span class="n">bleu</span><span class="o">.</span><span class="n">bp</span><span class="p">,</span>
         <span class="s2">&quot;bleu_signature&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_corpus_bleu</span><span class="o">.</span><span class="n">get_signature</span><span class="p">(),</span>
     <span class="p">}</span>
 
     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">category_key</span><span class="p">:</span>
         <span class="n">categories</span> <span class="o">=</span> <span class="p">[</span><span class="n">extra_info</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">category_key</span><span class="p">]</span> <span class="k">for</span> <span class="n">extra_info</span> <span class="ow">in</span> <span class="n">extra_info_list</span><span class="p">]</span>
-        <span class="n">sentence_bleu_score_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">b</span><span class="o">.</span><span class="n">score</span> <span class="o">/</span> <span class="mi">100</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">sentence_bleu_list</span><span class="p">]</span>
+        <span class="n">sentence_bleu_score_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">b</span><span class="o">.</span><span class="n">score</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">sentence_bleu_list</span><span class="p">]</span>
         <span class="n">category_wise_scores</span> <span class="o">=</span> <span class="n">aggregate_category_wise_scores</span><span class="p">(</span><span class="n">sentence_bleu_score_list</span><span class="p">,</span> <span class="n">categories</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">category</span><span class="p">,</span> <span class="n">category_wise_score</span> <span class="ow">in</span> <span class="n">category_wise_scores</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="n">summary</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;sentence_bleu_score/</span><span class="si">{</span><span class="n">category</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">category_wise_score</span>
 
     <span class="k">return</span> <span class="n">MetricResult</span><span class="p">(</span>
         <span class="n">summary</span><span class="p">,</span>
-        <span class="n">instance_details</span><span class="o">=</span><span class="p">[{</span><span class="s2">&quot;bleu_score&quot;</span><span class="p">:</span> <span class="n">b</span><span class="o">.</span><span class="n">score</span> <span class="o">/</span> <span class="mi">100</span><span class="p">,</span> <span class="s2">&quot;bleu_bp&quot;</span><span class="p">:</span> <span class="n">b</span><span class="o">.</span><span class="n">bp</span><span class="p">}</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">sentence_bleu_list</span><span class="p">],</span>
+        <span class="n">instance_details</span><span class="o">=</span><span class="p">[{</span><span class="s2">&quot;bleu_score&quot;</span><span class="p">:</span> <span class="n">b</span><span class="o">.</span><span class="n">score</span><span class="p">,</span> <span class="s2">&quot;bleu_bp&quot;</span><span class="p">:</span> <span class="n">b</span><span class="o">.</span><span class="n">bp</span><span class="p">}</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">sentence_bleu_list</span><span class="p">],</span>
     <span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>

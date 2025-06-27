@@ -2751,6 +2751,17 @@ If specified, this overrides the default chat template of the tokenizer.</p>
           </div>
         </li>
         <li class="doc-section-item field-body">
+            <b><code>system_message</code></b>
+              (<code><span title="str">str</span> | None</code>, default:
+                  <code>None</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>System messages to be prepended to given messages. It applies only for
+chat response.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
             <b><code>default_gen_kwargs</code></b>
               (<code><span title="dict">dict</span>[<span title="str">str</span>, <span title="typing.Any">Any</span>] | None</code>, default:
                   <code>None</code>
@@ -3172,7 +3183,14 @@ If set to “default”, the value will be automatically determined when possibl
 <span class="normal">506</span>
 <span class="normal">507</span>
 <span class="normal">508</span>
-<span class="normal">509</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">HuggingFaceLM</span><span class="p">(</span><span class="n">LanguageModel</span><span class="p">):</span>
+<span class="normal">509</span>
+<span class="normal">510</span>
+<span class="normal">511</span>
+<span class="normal">512</span>
+<span class="normal">513</span>
+<span class="normal">514</span>
+<span class="normal">515</span>
+<span class="normal">516</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">HuggingFaceLM</span><span class="p">(</span><span class="n">LanguageModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    LanguageModel implementation using Hugging Face Transformers.</span>
 
@@ -3188,6 +3206,8 @@ If set to “default”, the value will be automatically determined when possibl
 <span class="sd">        load_peft: Should be set to True when loading the model from PEFT weights.</span>
 <span class="sd">        custom_chat_template: A custom chat template for chatbot models.</span>
 <span class="sd">            If specified, this overrides the default chat template of the tokenizer.</span>
+<span class="sd">        system_message: System messages to be prepended to given messages. It applies only for</span>
+<span class="sd">            chat response.</span>
 <span class="sd">        default_gen_kwargs: Default generation kwargs to use when calling the API.</span>
 <span class="sd">        string_processors: A single or a list of StringProcessor objects to process the model&#39;s output.</span>
 <span class="sd">        model_limit_tokens: An upper limit on the number of tokens (input + output) the model can handle.</span>
@@ -3210,6 +3230,7 @@ If set to “default”, the value will be automatically determined when possibl
         <span class="n">load_peft</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">custom_chat_template</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">chat_template_kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">system_message</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">default_gen_kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">string_processors</span><span class="p">:</span> <span class="n">StringProcessor</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="n">StringProcessor</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">model_limit_tokens</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">|</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;default&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;default&quot;</span><span class="p">,</span>
@@ -3221,6 +3242,7 @@ If set to “default”, the value will be automatically determined when possibl
         <span class="n">tokenizer_kwargs</span> <span class="o">=</span> <span class="n">tokenizer_kwargs</span> <span class="ow">or</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tokenizer</span><span class="p">:</span> <span class="n">PreTrainedTokenizer</span> <span class="o">=</span> <span class="n">AutoTokenizer</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="n">tokenizer</span><span class="p">,</span> <span class="o">**</span><span class="n">tokenizer_kwargs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">custom_chat_template</span> <span class="o">=</span> <span class="n">custom_chat_template</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">system_message</span> <span class="o">=</span> <span class="n">system_message</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">chat_template_kwargs</span> <span class="o">=</span> <span class="n">chat_template_kwargs</span> <span class="ow">or</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_special_tokens</span> <span class="o">=</span> <span class="n">add_special_tokens</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">default_gen_kwargs</span> <span class="o">=</span> <span class="n">default_gen_kwargs</span> <span class="ow">or</span> <span class="p">{}</span>
@@ -3391,6 +3413,9 @@ If set to “default”, the value will be automatically determined when possibl
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">tools_list</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">tools_list</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">chat_messages_list</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">system_message</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">chat_messages</span> <span class="ow">in</span> <span class="n">chat_messages_list</span><span class="p">:</span>
+                <span class="n">chat_messages</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;system&quot;</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">system_message</span><span class="p">})</span>
         <span class="n">chat_messages_as_string</span> <span class="o">=</span> <span class="p">[</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">tokenizer</span><span class="o">.</span><span class="n">apply_chat_template</span><span class="p">(</span>
                 <span class="n">chat_messages</span><span class="p">,</span>
@@ -3604,6 +3629,28 @@ If set to “default”, the value will be automatically determined when possibl
 
 
 
+<h3 id="flexeval.core.language_model.hf_lm.HuggingFaceLM.system_message" class="doc doc-heading">
+            <span class="doc doc-object-name doc-attribute-name">system_message</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+<a href="#flexeval.core.language_model.hf_lm.HuggingFaceLM.system_message" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">system_message</span> <span class="o">=</span> <span class="n">system_message</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
 <h3 id="flexeval.core.language_model.hf_lm.HuggingFaceLM.chat_template_kwargs" class="doc doc-heading">
             <span class="doc doc-object-name doc-attribute-name">chat_template_kwargs</span>
 
@@ -3777,6 +3824,7 @@ If set to “default”, the value will be automatically determined when possibl
     <span class="n">load_peft</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">custom_chat_template</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">chat_template_kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">system_message</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">default_gen_kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">string_processors</span><span class="p">:</span> <span class="n">StringProcessor</span>
     <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="n">StringProcessor</span><span class="p">]</span>
@@ -3793,9 +3841,7 @@ If set to “default”, the value will be automatically determined when possibl
 
             <details class="quote">
               <summary>Source code in <code>flexeval/core/language_model/hf_lm.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">167</span>
-<span class="normal">168</span>
-<span class="normal">169</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">169</span>
 <span class="normal">170</span>
 <span class="normal">171</span>
 <span class="normal">172</span>
@@ -3857,7 +3903,11 @@ If set to “default”, the value will be automatically determined when possibl
 <span class="normal">228</span>
 <span class="normal">229</span>
 <span class="normal">230</span>
-<span class="normal">231</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+<span class="normal">231</span>
+<span class="normal">232</span>
+<span class="normal">233</span>
+<span class="normal">234</span>
+<span class="normal">235</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">model</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">model_kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -3869,6 +3919,7 @@ If set to “default”, the value will be automatically determined when possibl
     <span class="n">load_peft</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">custom_chat_template</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">chat_template_kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">system_message</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">default_gen_kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">string_processors</span><span class="p">:</span> <span class="n">StringProcessor</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="n">StringProcessor</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">model_limit_tokens</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">|</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;default&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;default&quot;</span><span class="p">,</span>
@@ -3880,6 +3931,7 @@ If set to “default”, the value will be automatically determined when possibl
     <span class="n">tokenizer_kwargs</span> <span class="o">=</span> <span class="n">tokenizer_kwargs</span> <span class="ow">or</span> <span class="p">{}</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">tokenizer</span><span class="p">:</span> <span class="n">PreTrainedTokenizer</span> <span class="o">=</span> <span class="n">AutoTokenizer</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="n">tokenizer</span><span class="p">,</span> <span class="o">**</span><span class="n">tokenizer_kwargs</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">custom_chat_template</span> <span class="o">=</span> <span class="n">custom_chat_template</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">system_message</span> <span class="o">=</span> <span class="n">system_message</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">chat_template_kwargs</span> <span class="o">=</span> <span class="n">chat_template_kwargs</span> <span class="ow">or</span> <span class="p">{}</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">add_special_tokens</span> <span class="o">=</span> <span class="n">add_special_tokens</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">default_gen_kwargs</span> <span class="o">=</span> <span class="n">default_gen_kwargs</span> <span class="ow">or</span> <span class="p">{}</span>
@@ -3944,8 +3996,8 @@ If set to “default”, the value will be automatically determined when possibl
 
             <details class="quote">
               <summary>Source code in <code>flexeval/core/language_model/hf_lm.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">508</span>
-<span class="normal">509</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">515</span>
+<span class="normal">516</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">(model=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_model_name_or_path</span><span class="si">!r}</span><span class="s2">)&quot;</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -6876,6 +6928,17 @@ If specified, this overrides the default chat template of the tokenizer.</p>
           </div>
         </li>
         <li class="doc-section-item field-body">
+            <b><code>system_message</code></b>
+              (<code><span title="str">str</span> | None</code>, default:
+                  <code>None</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>System messages to be prepended to given messages. It applies only for
+chat response.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
             <b><code>default_gen_kwargs</code></b>
               (<code><span title="dict">dict</span>[<span title="str">str</span>, <span title="typing.Any">Any</span>] | None</code>, default:
                   <code>None</code>
@@ -7200,7 +7263,14 @@ If set to “default”, the value will be automatically determined when possibl
 <span class="normal">339</span>
 <span class="normal">340</span>
 <span class="normal">341</span>
-<span class="normal">342</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VLLM</span><span class="p">(</span><span class="n">LanguageModel</span><span class="p">):</span>
+<span class="normal">342</span>
+<span class="normal">343</span>
+<span class="normal">344</span>
+<span class="normal">345</span>
+<span class="normal">346</span>
+<span class="normal">347</span>
+<span class="normal">348</span>
+<span class="normal">349</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VLLM</span><span class="p">(</span><span class="n">LanguageModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;LanguageModel implementation using VLLM.</span>
 
 <span class="sd">    Args:</span>
@@ -7212,6 +7282,8 @@ If set to “default”, the value will be automatically determined when possibl
 <span class="sd">            Note that whether BOS or EOS tokens are added depends on the tokenizer.</span>
 <span class="sd">        custom_chat_template: A custom chat template for chatbot models.</span>
 <span class="sd">            If specified, this overrides the default chat template of the tokenizer.</span>
+<span class="sd">        system_message: System messages to be prepended to given messages. It applies only for</span>
+<span class="sd">            chat response.</span>
 <span class="sd">        default_gen_kwargs: Default generation kwargs to use when calling the model.</span>
 <span class="sd">        string_processors: A single or a list of StringProcessor objects to process the model&#39;s output.</span>
 <span class="sd">        model_limit_tokens: An upper limit on the number of tokens (input + output) the model can handle.</span>
@@ -7231,6 +7303,7 @@ If set to “default”, the value will be automatically determined when possibl
         <span class="n">add_special_tokens</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">custom_chat_template</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">chat_template_kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">system_message</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">default_gen_kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">string_processors</span><span class="p">:</span> <span class="n">StringProcessor</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="n">StringProcessor</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">model_limit_tokens</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">|</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;default&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;default&quot;</span><span class="p">,</span>
@@ -7243,6 +7316,7 @@ If set to “default”, the value will be automatically determined when possibl
         <span class="bp">self</span><span class="o">.</span><span class="n">tokenizer</span><span class="p">:</span> <span class="n">PreTrainedTokenizer</span> <span class="o">=</span> <span class="n">AutoTokenizer</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="n">tokenizer</span><span class="p">,</span> <span class="o">**</span><span class="n">tokenizer_kwargs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">custom_chat_template</span> <span class="o">=</span> <span class="n">custom_chat_template</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">chat_template_kwargs</span> <span class="o">=</span> <span class="n">chat_template_kwargs</span> <span class="ow">or</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">system_message</span> <span class="o">=</span> <span class="n">system_message</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_special_tokens</span> <span class="o">=</span> <span class="n">add_special_tokens</span>
         <span class="c1"># use greedy decoding by default to make it consistent with `HuggingFaceLM`</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">default_gen_kwargs</span> <span class="o">=</span> <span class="n">default_gen_kwargs</span> <span class="ow">or</span> <span class="p">{</span><span class="s2">&quot;temperature&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">}</span>
@@ -7351,6 +7425,9 @@ If set to “default”, the value will be automatically determined when possibl
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">LMOutput</span><span class="p">]:</span>
         <span class="k">if</span> <span class="n">tools_list</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">tools_list</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">chat_messages_list</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">system_message</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">chat_messages</span> <span class="ow">in</span> <span class="n">chat_messages_list</span><span class="p">:</span>
+                <span class="n">chat_messages</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;system&quot;</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">system_message</span><span class="p">})</span>
         <span class="n">chat_messages_as_string</span> <span class="o">=</span> <span class="p">[</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">tokenizer</span><span class="o">.</span><span class="n">apply_chat_template</span><span class="p">(</span>
                 <span class="n">chat_messages</span><span class="p">,</span>
@@ -7579,6 +7656,28 @@ If set to “default”, the value will be automatically determined when possibl
 
 
 
+<h3 id="flexeval.core.language_model.vllm_model.VLLM.system_message" class="doc doc-heading">
+            <span class="doc doc-object-name doc-attribute-name">system_message</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+<a href="#flexeval.core.language_model.vllm_model.VLLM.system_message" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">system_message</span> <span class="o">=</span> <span class="n">system_message</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
 <h3 id="flexeval.core.language_model.vllm_model.VLLM.add_special_tokens" class="doc doc-heading">
             <span class="doc doc-object-name doc-attribute-name">add_special_tokens</span>
 
@@ -7705,6 +7804,7 @@ If set to “default”, the value will be automatically determined when possibl
     <span class="n">add_special_tokens</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">custom_chat_template</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">chat_template_kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">system_message</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">default_gen_kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">string_processors</span><span class="p">:</span> <span class="n">StringProcessor</span>
     <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="n">StringProcessor</span><span class="p">]</span>
@@ -7721,9 +7821,7 @@ If set to “default”, the value will be automatically determined when possibl
 
             <details class="quote">
               <summary>Source code in <code>flexeval/core/language_model/vllm_model.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 93</span>
-<span class="normal"> 94</span>
-<span class="normal"> 95</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 95</span>
 <span class="normal"> 96</span>
 <span class="normal"> 97</span>
 <span class="normal"> 98</span>
@@ -7764,7 +7862,11 @@ If set to “default”, the value will be automatically determined when possibl
 <span class="normal">133</span>
 <span class="normal">134</span>
 <span class="normal">135</span>
-<span class="normal">136</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+<span class="normal">136</span>
+<span class="normal">137</span>
+<span class="normal">138</span>
+<span class="normal">139</span>
+<span class="normal">140</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">model</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">model_kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -7773,6 +7875,7 @@ If set to “default”, the value will be automatically determined when possibl
     <span class="n">add_special_tokens</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">custom_chat_template</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">chat_template_kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">system_message</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">default_gen_kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">string_processors</span><span class="p">:</span> <span class="n">StringProcessor</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="n">StringProcessor</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">model_limit_tokens</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">|</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;default&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;default&quot;</span><span class="p">,</span>
@@ -7785,6 +7888,7 @@ If set to “default”, the value will be automatically determined when possibl
     <span class="bp">self</span><span class="o">.</span><span class="n">tokenizer</span><span class="p">:</span> <span class="n">PreTrainedTokenizer</span> <span class="o">=</span> <span class="n">AutoTokenizer</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="n">tokenizer</span><span class="p">,</span> <span class="o">**</span><span class="n">tokenizer_kwargs</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">custom_chat_template</span> <span class="o">=</span> <span class="n">custom_chat_template</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">chat_template_kwargs</span> <span class="o">=</span> <span class="n">chat_template_kwargs</span> <span class="ow">or</span> <span class="p">{}</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">system_message</span> <span class="o">=</span> <span class="n">system_message</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">add_special_tokens</span> <span class="o">=</span> <span class="n">add_special_tokens</span>
     <span class="c1"># use greedy decoding by default to make it consistent with `HuggingFaceLM`</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">default_gen_kwargs</span> <span class="o">=</span> <span class="n">default_gen_kwargs</span> <span class="ow">or</span> <span class="p">{</span><span class="s2">&quot;temperature&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">}</span>
@@ -7830,8 +7934,8 @@ If set to “default”, the value will be automatically determined when possibl
 
             <details class="quote">
               <summary>Source code in <code>flexeval/core/language_model/vllm_model.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">341</span>
-<span class="normal">342</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">348</span>
+<span class="normal">349</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;VLLM(model_name=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">model_name</span><span class="si">}</span><span class="s2">)&quot;</span>
 </code></pre></div></td></tr></table></div>
             </details>

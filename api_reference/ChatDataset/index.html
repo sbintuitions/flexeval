@@ -3379,7 +3379,10 @@ MT-Bench (Multi-turn Benchmark) or Vicuna QA Benchmark.</p>
         "strict": True
       },
     },
-  ]
+  ],
+  # 'system_message' key is optional.
+  # If set, it will be inserted in the first turn as a system prompt
+  "system_message": "You are a helpful assistant."
 }</p>
 </details>
 
@@ -3480,7 +3483,12 @@ MT-Bench (Multi-turn Benchmark) or Vicuna QA Benchmark.</p>
 <span class="normal">110</span>
 <span class="normal">111</span>
 <span class="normal">112</span>
-<span class="normal">113</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ChatbotBench</span><span class="p">(</span><span class="n">ChatDataset</span><span class="p">):</span>
+<span class="normal">113</span>
+<span class="normal">114</span>
+<span class="normal">115</span>
+<span class="normal">116</span>
+<span class="normal">117</span>
+<span class="normal">118</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ChatbotBench</span><span class="p">(</span><span class="n">ChatDataset</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;This class loads data with the jsonl format used in chat evaluation benchmarks such as</span>
 <span class="sd">    MT-Bench (Multi-turn Benchmark) or Vicuna QA Benchmark.</span>
 
@@ -3511,7 +3519,10 @@ MT-Bench (Multi-turn Benchmark) or Vicuna QA Benchmark.</p>
 <span class="sd">                &quot;strict&quot;: True</span>
 <span class="sd">              },</span>
 <span class="sd">            },</span>
-<span class="sd">          ]</span>
+<span class="sd">          ],</span>
+<span class="sd">          # &#39;system_message&#39; key is optional.</span>
+<span class="sd">          # If set, it will be inserted in the first turn as a system prompt</span>
+<span class="sd">          &quot;system_message&quot;: &quot;You are a helpful assistant.&quot;</span>
 <span class="sd">        }</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -3534,6 +3545,8 @@ MT-Bench (Multi-turn Benchmark) or Vicuna QA Benchmark.</p>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_id_to_question_id</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">item</span><span class="p">[</span><span class="s2">&quot;question_id&quot;</span><span class="p">])</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_id_to_category</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">item</span><span class="p">[</span><span class="s2">&quot;category&quot;</span><span class="p">])</span>
                 <span class="n">input_messages</span> <span class="o">=</span> <span class="p">[{</span><span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;user&quot;</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="n">turn</span><span class="p">}</span> <span class="k">for</span> <span class="n">turn</span> <span class="ow">in</span> <span class="n">item</span><span class="p">[</span><span class="s2">&quot;turns&quot;</span><span class="p">]]</span>
+                <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;system_message&quot;</span><span class="p">):</span>
+                    <span class="n">input_messages</span> <span class="o">=</span> <span class="p">[{</span><span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;system&quot;</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="n">item</span><span class="p">[</span><span class="s2">&quot;system_message&quot;</span><span class="p">]},</span> <span class="o">*</span><span class="n">input_messages</span><span class="p">]</span>
                 <span class="k">if</span> <span class="n">load_only_first_n</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="n">input_messages</span> <span class="o">=</span> <span class="n">input_messages</span><span class="p">[:</span><span class="n">load_only_first_n</span><span class="p">]</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_messages_dict</span><span class="p">[</span><span class="n">item</span><span class="p">[</span><span class="s2">&quot;question_id&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">input_messages</span>
@@ -3633,10 +3646,7 @@ MT-Bench (Multi-turn Benchmark) or Vicuna QA Benchmark.</p>
 
             <details class="quote">
               <summary>Source code in <code>flexeval/core/chat_dataset/chatbot_bench.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">58</span>
-<span class="normal">59</span>
-<span class="normal">60</span>
-<span class="normal">61</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">61</span>
 <span class="normal">62</span>
 <span class="normal">63</span>
 <span class="normal">64</span>
@@ -3669,7 +3679,12 @@ MT-Bench (Multi-turn Benchmark) or Vicuna QA Benchmark.</p>
 <span class="normal">91</span>
 <span class="normal">92</span>
 <span class="normal">93</span>
-<span class="normal">94</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+<span class="normal">94</span>
+<span class="normal">95</span>
+<span class="normal">96</span>
+<span class="normal">97</span>
+<span class="normal">98</span>
+<span class="normal">99</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">path_or_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">ref_path_or_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -3688,6 +3703,8 @@ MT-Bench (Multi-turn Benchmark) or Vicuna QA Benchmark.</p>
             <span class="bp">self</span><span class="o">.</span><span class="n">_id_to_question_id</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">item</span><span class="p">[</span><span class="s2">&quot;question_id&quot;</span><span class="p">])</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_id_to_category</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">item</span><span class="p">[</span><span class="s2">&quot;category&quot;</span><span class="p">])</span>
             <span class="n">input_messages</span> <span class="o">=</span> <span class="p">[{</span><span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;user&quot;</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="n">turn</span><span class="p">}</span> <span class="k">for</span> <span class="n">turn</span> <span class="ow">in</span> <span class="n">item</span><span class="p">[</span><span class="s2">&quot;turns&quot;</span><span class="p">]]</span>
+            <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;system_message&quot;</span><span class="p">):</span>
+                <span class="n">input_messages</span> <span class="o">=</span> <span class="p">[{</span><span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;system&quot;</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="n">item</span><span class="p">[</span><span class="s2">&quot;system_message&quot;</span><span class="p">]},</span> <span class="o">*</span><span class="n">input_messages</span><span class="p">]</span>
             <span class="k">if</span> <span class="n">load_only_first_n</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">input_messages</span> <span class="o">=</span> <span class="n">input_messages</span><span class="p">[:</span><span class="n">load_only_first_n</span><span class="p">]</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_messages_dict</span><span class="p">[</span><span class="n">item</span><span class="p">[</span><span class="s2">&quot;question_id&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">input_messages</span>
@@ -3728,8 +3745,8 @@ MT-Bench (Multi-turn Benchmark) or Vicuna QA Benchmark.</p>
 
             <details class="quote">
               <summary>Source code in <code>flexeval/core/chat_dataset/chatbot_bench.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">96</span>
-<span class="normal">97</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">require_incremental_response</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">101</span>
+<span class="normal">102</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">require_incremental_response</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
     <span class="k">return</span> <span class="kc">True</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -3753,8 +3770,8 @@ MT-Bench (Multi-turn Benchmark) or Vicuna QA Benchmark.</p>
 
             <details class="quote">
               <summary>Source code in <code>flexeval/core/chat_dataset/chatbot_bench.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 99</span>
-<span class="normal">100</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">104</span>
+<span class="normal">105</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
     <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_id_to_question_id</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -3778,18 +3795,18 @@ MT-Bench (Multi-turn Benchmark) or Vicuna QA Benchmark.</p>
 
             <details class="quote">
               <summary>Source code in <code>flexeval/core/chat_dataset/chatbot_bench.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">102</span>
-<span class="normal">103</span>
-<span class="normal">104</span>
-<span class="normal">105</span>
-<span class="normal">106</span>
-<span class="normal">107</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">107</span>
 <span class="normal">108</span>
 <span class="normal">109</span>
 <span class="normal">110</span>
 <span class="normal">111</span>
 <span class="normal">112</span>
-<span class="normal">113</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ChatInstance</span><span class="p">:</span>
+<span class="normal">113</span>
+<span class="normal">114</span>
+<span class="normal">115</span>
+<span class="normal">116</span>
+<span class="normal">117</span>
+<span class="normal">118</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ChatInstance</span><span class="p">:</span>
     <span class="n">question_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_id_to_question_id</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
     <span class="n">category</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_id_to_category</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
     <span class="n">references</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
