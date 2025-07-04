@@ -1,6 +1,5 @@
 from .aio import AIONormalizer
 from .base import StringProcessor
-from .json import JsonNormalizer
 from .last_line import LastLineExtractor
 from .lower import StringLower
 from .nfkc import NFKCNormalizer
