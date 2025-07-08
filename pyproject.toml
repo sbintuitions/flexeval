@@ -65,6 +65,22 @@ mkdocs-gen-files = "^0.5.0"
 mkdocs-literate-nav = "^0.6.1"
 mkdocs-section-index = "^0.3.9"
 
+
+[tool.poetry.group.format_following.dependencies]
+langdetect = "^1.0.9"
+jsonschema = "^4.23.0"
+nltk = "^3.9.1"
+defusedxml = "^0.7.1"
+pyyaml = "^6.0.2"
+mecab-python3 = "^1.0.10"
+unidic = "^1.1.0"
+ja-sentence-segmenter = "^0.0.2"
+janome = "^0.5.0"
+spacy = "^3.8.4"
+tomli = "^2.2.1"
+pydantic = {version = "^2.11.7", extras = ["email"]}
+jinja2 = "^3.1.6"
+
 [build-system]
 requires = ["poetry-core", "poetry-dynamic-versioning"]
 build-backend = "poetry_dynamic_versioning.backend"
