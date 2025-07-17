@@ -4,7 +4,7 @@ from flexeval.core.reward_model.pairwise_judge_reward_model import PairwiseChoic
 
 
 @pytest.mark.parametrize(
-    "model_output,gold_label,expected",
+    ("model_output", "gold_label,expected"),
     [
         # contains only correct label --> OK
         ("This answer is [[A]] because it's better.", PairwiseChoice.A, True),
@@ -20,6 +20,6 @@ from flexeval.core.reward_model.pairwise_judge_reward_model import PairwiseChoic
         ("Neither seems particularly good.", PairwiseChoice.B, False),
     ],
 )
-def test_evaluate_model_output(model_output, gold_label, expected):
+def test_evaluate_model_output(model_output: str, gold_label: PairwiseChoice, expected: bool) -> None:
     result = evaluate_model_output(model_output, gold_label)
     assert result is expected
