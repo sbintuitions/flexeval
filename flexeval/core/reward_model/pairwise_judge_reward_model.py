@@ -34,7 +34,7 @@ def evaluate_model_output(model_output: str, gold_label: PairwiseChoice) -> bool
     if PairwiseChoice.A.value in model_output and PairwiseChoice.B.value in model_output:
         return False
 
-    # If only gold label is in model output, then output is *correct**
+    # If only gold label is in model output, then output is **correct**
     if gold_label.value in model_output:
         return True
     return False
