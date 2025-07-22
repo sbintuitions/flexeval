@@ -15,7 +15,7 @@ jobs:
     strategy:
       matrix:
         # 3.11.9, which is picked up by GithubAction by default, doesn't work because of argparse or something...
-        python-version: ["3.9", "3.10", "3.11.6"]
+        python-version: ["3.10", "3.11.6", "3.12"]
     env:
       OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY || null }}
     steps:
@@ -45,7 +45,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.9", "3.10", "3.11"]
+        python-version: ["3.10", "3.11", "3.12"]
     steps:
       - uses: actions/checkout@v3
 
