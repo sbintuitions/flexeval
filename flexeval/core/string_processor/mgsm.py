@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import re
 
-from flexeval import StringProcessor
+from .base import StringProcessor
 
 
 class SimpleEvalMGSMProcessor(StringProcessor):
