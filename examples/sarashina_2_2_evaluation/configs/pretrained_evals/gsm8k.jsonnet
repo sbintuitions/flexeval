@@ -57,11 +57,11 @@ local template = |||
       {
         class_path: 'ExactMatch',
         init_args: {
-          lm_output_processor: [{ class_path: 'plugins.simple_evals_processors.SimpleEvalMGSMProcessor' }],
-          reference_processor: [{ class_path: 'plugins.simple_evals_processors.RemoveCommaProcessor' }],
+          lm_output_processor: [{ class_path: 'flexeval.core.string_processor.SimpleEvalMGSMProcessor' }],
+          reference_processor: [{ class_path: 'flexeval.core.string_processor.RemoveCommaProcessor' }],
         },
       },
-      { class_path: 'plugins.math_verify_metric.MathVerify' },
+      { class_path: 'flexeval.core.metric.MathVerify' },
     ],
     gen_kwargs: { max_new_tokens: 512, stop_sequences: ['Q:'] },
     batch_size: 1,
