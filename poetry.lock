@@ -189,6 +189,18 @@ files = [
 ]
 
 [[package]]
+name = "antlr4-python3-runtime"
+version = "4.13.2"
+description = "ANTLR 4.13.2 runtime for Python 3"
+optional = false
+python-versions = "*"
+groups = ["main"]
+files = [
+    {file = "antlr4_python3_runtime-4.13.2-py3-none-any.whl", hash = "sha256:fe3835eb8d33daece0e799090eda89719dbccee7aa39ef94eed3818cafa5a7e8"},
+    {file = "antlr4_python3_runtime-4.13.2.tar.gz", hash = "sha256:909b647e1d2fc2b70180ac586df3933e38919c85f98ccc656a96cd3f25ef3916"},
+]
+
+[[package]]
 name = "anyio"
 version = "4.8.0"
 description = "High level compatibility layer for multiple asynchronous event loop implementations"
@@ -2098,6 +2110,31 @@ nearley = ["js2py"]
 regex = ["regex"]
 
 [[package]]
+name = "latex2sympy2-extended"
+version = "1.10.1"
+description = "Convert LaTeX math to SymPy expressions"
+optional = false
+python-versions = ">=3.10"
+groups = ["main"]
+files = [
+    {file = "latex2sympy2_extended-1.10.1-py3-none-any.whl", hash = "sha256:917a23e8f3b6edea88a56978fbbe87ed9fca4197f8277646be57b4660710347c"},
+    {file = "latex2sympy2_extended-1.10.1.tar.gz", hash = "sha256:e365f0cb8807296c9d1f1661be926859bebd922a6139ce4be1e6572ca183ca57"},
+]
+
+[package.dependencies]
+antlr4-python3-runtime = [
+    {version = ">=4.9.3,<=4.13.2"},
+    {version = "4.13.2", optional = true, markers = "extra == \"antlr4-13-2\""},
+]
+sympy = "*"
+
+[package.extras]
+antlr4-11-0 = ["antlr4-python3-runtime (==4.11.0)"]
+antlr4-13-2 = ["antlr4-python3-runtime (==4.13.2)"]
+antlr4-9-3 = ["antlr4-python3-runtime (==4.9.3)"]
+dev = ["pytest"]
+
+[[package]]
 name = "levenshtein"
 version = "0.23.0"
 description = "Python extension for computing string edit distances and similarities."
@@ -2603,6 +2640,33 @@ files = [
     {file = "MarkupSafe-3.0.2-cp39-cp39-win_amd64.whl", hash = "sha256:6e296a513ca3d94054c2c881cc913116e90fd030ad1c656b3869762b754f5f8a"},
     {file = "markupsafe-3.0.2.tar.gz", hash = "sha256:ee55d3edf80167e48ea11a923c7386f4669df67d7994554387f84e7d8b0a2bf0"},
 ]
+
+[[package]]
+name = "math-verify"
+version = "0.7.0"
+description = "HuggingFace library for verifying mathematical answers"
+optional = false
+python-versions = ">=3.10"
+groups = ["main"]
+files = [
+    {file = "math_verify-0.7.0-py3-none-any.whl", hash = "sha256:bbdd491b511f6ceef27c5e08543affa1735807b6e3abb6f005bf493dc0eb485b"},
+    {file = "math_verify-0.7.0.tar.gz", hash = "sha256:b7459c7b9f1c503b7df32566a95f1e6a33a6cad8cbb759eaa6f100d401112024"},
+]
+
+[package.dependencies]
+latex2sympy2_extended = [
+    {version = "1.10.1"},
+    {version = "*", extras = ["antlr4-13-2"], optional = true, markers = "extra == \"antlr4-13-2\""},
+]
+
+[package.extras]
+antlr4-11-0 = ["latex2sympy2_extended[antlr4-11-0]"]
+antlr4-13-2 = ["latex2sympy2_extended[antlr4-13-2]"]
+antlr4-9-3 = ["latex2sympy2_extended[antlr4-9-3]"]
+dev = ["math-verify[format]", "math-verify[test]"]
+format = ["ruff"]
+inference = ["lighteval[math]"]
+test = ["pytest"]
 
 [[package]]
 name = "mdurl"
@@ -7526,4 +7590,4 @@ wandb = ["wandb"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.10,<3.13"
-content-hash = "7a83ab7426e8433ed302a5083e94eb3c5aa3265d2e2749da9b19ddd3cef1247d"
+content-hash = "78da539c21ad946be733ce09ec1fe2fe834edda2cfdac15dc27990fa7f6540ae"
