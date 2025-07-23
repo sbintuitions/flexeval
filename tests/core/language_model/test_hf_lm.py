@@ -12,6 +12,7 @@ from flexeval.core.language_model.hf_lm import (
     HuggingFaceLM,
     LanguageModel,
     decode_for_lm_continuation,
+    deserialize_tool_calls_in_messages,
     get_prefix_and_completion_from_chat,
     tokenize_text_for_lm_continuation,
     tokenize_text_for_lm_prefix,
@@ -379,3 +380,37 @@ def test_apply_chat_template_arguments_when_tools_provided(chat_lm_for_tool_call
         args, kwargs = mock_method.call_args
         assert args[0] == chat_messages
         assert kwargs["tools"] == tools
+
+
+@pytest.mark.parametrize(
+    ("messages", "expected", "shoulbe_modified"),
+    [
+        (
+            [
+                {
+                    "role": "assistant",
+                    "content": "'arguments' in tool_call should be deserialized in HF format.",
+                    "tool_calls": [{"id": "call_1", "function": {"name": "add", "arguments": '{"x": 1, "y": 2}'}}],
+                }
+            ],
+            [
+                {
+                    "role": "assistant",
+                    "content": "'arguments' in tool_call should be deserialized in HF format.",
+                    "tool_calls": [{"id": "call_1", "function": {"name": "add", "arguments": {"x": 1, "y": 2}}}],
+                }
+            ],
+            True,
+        ),
+        (
+            [{"role": "assistant", "content": "no tool calling messages should not be modified"}],
+            [{"role": "assistant", "content": "no tool calling messages should not be modified"}],
+            False,
+        ),
+    ],
+)
+def test_deserialize_tool_calls_in_messages(messages: list, expected: list, shoulbe_modified: bool) -> None:
+    actual = deserialize_tool_calls_in_messages(messages)
+    assert actual == expected
+    if shoulbe_modified:
+        assert messages != expected  # Ensure the original messages are not modified
