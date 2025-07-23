@@ -154,9 +154,7 @@ def deserialize_tool_calls_in_messages(messages: list[dict[str, Any]]) -> None:
     for message in deserialized_messages:
         if message["role"] == "assistant" and "tool_calls" in message:
             for item in message["tool_calls"]:
-                item["function"]["arguments"] = json.loads(
-                    item["function"]["arguments"]
-                )
+                item["function"]["arguments"] = json.loads(item["function"]["arguments"])
     return deserialized_messages
 
 
