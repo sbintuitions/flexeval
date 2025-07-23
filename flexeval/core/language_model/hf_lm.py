@@ -142,11 +142,12 @@ def decode_for_lm_continuation(
 
 def deserialize_tool_calls_in_messages(messages: list[dict[str, Any]]) -> None:
     """
-    huggingface/transformers expects the 'arguments' field in tool_calls to be a dict,
-    whereas the standard OpenAI format expects it to be a JSON string.
+    We adopt the standard OpenAI format, where the 'arguments' field in tool_calls is expected to be a JSON string.
+    However, huggingface/transformers expects the 'arguments' field to be a dict.
     https://huggingface.co/docs/transformers/v4.48.2/chat_templating#a-complete-tool-use-example
 
     To resolve this mismatch, this function deserializes 'arguments' before passing messages to apply_chat_template.
+
     Args:
         messages: A list of messages to deserialize.
     """
