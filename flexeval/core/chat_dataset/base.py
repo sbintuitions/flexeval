@@ -55,7 +55,7 @@ class ChatInstance:
         "name": "search_web", # Optional, Some HuggingFace models require this field.
         "content": "[{\"title\": \"sbintuitions/flexeval: Flexible evaluation tool...\", \"description\": \"...\"}]",
     }
-    """
+    """  # noqa: E501
     tools: list[dict[str, Any]] | None = None
     """
     A list of definitions of tools in the chat.
