@@ -28,6 +28,33 @@ class ChatInstance:
         }
     ]
     ```
+
+    Tool-Calling message must follow the same format as the OpenAI ChatCompletion API.
+    https://platform.openai.com/docs/guides/function-calling?api-mode=chat#defining-functions
+    ```json
+    {
+        "role": "assistant",
+        "content": "content", # `None` is also allowed if `tool_calls` exists.
+        "tool_calls": [
+            {
+                "id": "dummy1",
+                "function": {
+                    "name": "search_web",
+                    "arguments": "{\"query\": \"flexeval developer\"}"
+                }
+            }
+        ]
+    }
+    ```
+
+    The results from tools should be represented as messages with the role "tool":
+    ```
+    {
+        "role": "tool",
+        "tool_call_id": "dummy1", # Optional, models on OpenAI APIs requires this field.
+        "name": "search_web", # Optional, Some HuggingFace models require this field.
+        "content": "[{\"title\": \"sbintuitions/flexeval: Flexible evaluation tool...\", \"description\": \"...\"}]",
+    }
     """
     tools: list[dict[str, Any]] | None = None
     """
