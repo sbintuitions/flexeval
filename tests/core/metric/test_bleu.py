@@ -12,17 +12,17 @@ from flexeval.core.string_processor.string_strip import StringStrip
 @pytest.mark.parametrize(
     ("lm_outputs", "expected_outputs", "lm_output_processor", "reference_processor", "score"),
     [
-        (["これはテストです"], [["これはテストです"]], None, None, 1.0),
+        (["これはテストです"], [["これはテストです"]], None, None, 100.0),
         (
             ["これはテストです", "あれもテストです"],
             [["これはテストです", "これもテストでした"], ["あれもテストです", "あれはテスト"]],
             None,
             None,
-            1.0,
+            100.0,
         ),
         (["こんにちは、世界！"], [["こんばんわ, 地方？"]], None, None, 0.0),
         ([""], [["empty"]], None, None, 0.0),
-        (["訳: これはテストです"], [["これはテストです "]], RegexExtractor(r"訳:\s*(.+)"), StringStrip(), 1.0),
+        (["訳: これはテストです"], [["これはテストです "]], RegexExtractor(r"訳:\s*(.+)"), StringStrip(), 100.0),
     ],
 )
 def test_bleu(
@@ -64,5 +64,5 @@ def test_exact_match_with_category_key() -> None:
     # Confirm that the overall bleu_score do not change with or without the category key
     assert pytest.approx(result_w_cat_key.summary["bleu_score"]) == result_wo_cat_key.summary["bleu_score"]
 
-    assert pytest.approx(result_w_cat_key.summary["sentence_bleu_score/commonsense"]) == 0.5
-    assert pytest.approx(result_w_cat_key.summary["sentence_bleu_score/science"]) == 1.0
+    assert pytest.approx(result_w_cat_key.summary["sentence_bleu_score/commonsense"]) == 50.0
+    assert pytest.approx(result_w_cat_key.summary["sentence_bleu_score/science"]) == 100.0

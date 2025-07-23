@@ -1,6 +1,8 @@
+from __future__ import annotations
+
 import functools
 import logging
-from typing import Callable
+from typing import Any, Callable
 from unittest.mock import patch
 
 import pytest
@@ -62,6 +64,25 @@ def chat_lm_for_tool_calling(model_name: str = "sbintuitions/tiny-lm-chat") -> H
         model_kwargs={"torch_dtype": "float32"},
         default_gen_kwargs={"do_sample": False},
         tool_parser=tool_parser,
+    )
+
+
+@pytest.fixture(scope="module")
+def chat_lm_with_system_message(model_name: str = "sbintuitions/tiny-lm-chat") -> HuggingFaceLM:
+    return HuggingFaceLM(
+        model=model_name,
+        model_kwargs={"torch_dtype": "float32"},
+        default_gen_kwargs={"do_sample": False},
+        system_message="You are a helpful assistant.",
+    )
+
+
+@pytest.fixture(scope="module")
+def chat_lm_without_system_message(model_name: str = "sbintuitions/tiny-lm-chat") -> HuggingFaceLM:
+    return HuggingFaceLM(
+        model=model_name,
+        model_kwargs={"torch_dtype": "float32"},
+        default_gen_kwargs={"do_sample": False},
     )
 
 
@@ -414,3 +435,62 @@ def test_deserialize_tool_calls_in_messages(messages: list, expected: list, shou
     assert actual == expected
     if shoulbe_modified:
         assert messages != expected  # Ensure the original messages are not modified
+
+
+def test_system_message_is_prepended_to_chat_messages(chat_lm_with_system_message: HuggingFaceLM) -> None:
+    """Test that system message is prepended to chat messages in generate_chat_response."""
+    chat_messages = [{"role": "user", "content": "Hello"}]
+
+    # Mock the tokenizer's apply_chat_template to capture the messages
+    original_apply_chat_template = chat_lm_with_system_message.tokenizer.apply_chat_template
+    captured_messages = None
+
+    def mock_apply_chat_template(messages: list[list[dict[str, Any]]], **kwargs) -> Callable:
+        nonlocal captured_messages
+        captured_messages = messages
+        return original_apply_chat_template(messages, **kwargs)
+
+    chat_lm_with_system_message.tokenizer.apply_chat_template = mock_apply_chat_template
+
+    try:
+        chat_lm_with_system_message.generate_chat_response(chat_messages, max_new_tokens=1)
+
+        # Check that system message was prepended
+        assert len(captured_messages) == 2
+        assert captured_messages[0]["role"] == "system"
+        assert captured_messages[0]["content"] == "You are a helpful assistant."
+        assert captured_messages[1]["role"] == "user"
+        assert captured_messages[1]["content"] == "Hello"
+    finally:
+        # Restore original method
+        chat_lm_with_system_message.tokenizer.apply_chat_template = original_apply_chat_template
+
+
+def test_system_message_prepended_to_batch_chat_messages(chat_lm_with_system_message: HuggingFaceLM) -> None:
+    """Test that system message is prepended to each conversation in batch generate_chat_response."""
+    chat_messages_list = [[{"role": "user", "content": "Hello"}], [{"role": "user", "content": "Hi there"}]]
+
+    # Mock the tokenizer's apply_chat_template to capture the messages
+    original_apply_chat_template = chat_lm_with_system_message.tokenizer.apply_chat_template
+    captured_messages_list = []
+
+    def mock_apply_chat_template(messages: list[list[dict[str, Any]]], **kwargs) -> Callable:
+        captured_messages_list.append(messages.copy())
+        return original_apply_chat_template(messages, **kwargs)
+
+    chat_lm_with_system_message.tokenizer.apply_chat_template = mock_apply_chat_template
+
+    try:
+        chat_lm_with_system_message.generate_chat_response(chat_messages_list, max_new_tokens=1)
+
+        # Check that system message was prepended to both conversations
+        assert len(captured_messages_list) == 2
+
+        for captured_messages in captured_messages_list:
+            assert len(captured_messages) == 2
+            assert captured_messages[0]["role"] == "system"
+            assert captured_messages[0]["content"] == "You are a helpful assistant."
+            assert captured_messages[1]["role"] == "user"
+    finally:
+        # Restore original method
+        chat_lm_with_system_message.tokenizer.apply_chat_template = original_apply_chat_template

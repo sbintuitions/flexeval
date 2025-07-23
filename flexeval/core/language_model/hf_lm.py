@@ -174,6 +174,8 @@ class HuggingFaceLM(LanguageModel):
         load_peft: Should be set to True when loading the model from PEFT weights.
         custom_chat_template: A custom chat template for chatbot models.
             If specified, this overrides the default chat template of the tokenizer.
+        system_message: System messages to be prepended to given messages. It applies only for
+            chat response.
         default_gen_kwargs: Default generation kwargs to use when calling the API.
         string_processors: A single or a list of StringProcessor objects to process the model's output.
         model_limit_tokens: An upper limit on the number of tokens (input + output) the model can handle.
@@ -196,6 +198,7 @@ class HuggingFaceLM(LanguageModel):
         load_peft: bool = False,
         custom_chat_template: str | None = None,
         chat_template_kwargs: dict[str, Any] | None = None,
+        system_message: str | None = None,
         default_gen_kwargs: dict[str, Any] | None = None,
         string_processors: StringProcessor | list[StringProcessor] | None = None,
         model_limit_tokens: int | None | Literal["default"] = "default",
@@ -207,6 +210,7 @@ class HuggingFaceLM(LanguageModel):
         tokenizer_kwargs = tokenizer_kwargs or {}
         self.tokenizer: PreTrainedTokenizer = AutoTokenizer.from_pretrained(tokenizer, **tokenizer_kwargs)
         self.custom_chat_template = custom_chat_template
+        self.system_message = system_message
         self.chat_template_kwargs = chat_template_kwargs or {}
         self.add_special_tokens = add_special_tokens
         self.default_gen_kwargs = default_gen_kwargs or {}
@@ -377,6 +381,9 @@ class HuggingFaceLM(LanguageModel):
             raise ValueError(msg)
         if tools_list is None:
             tools_list = [None] * len(chat_messages_list)
+        if self.system_message is not None:
+            for chat_messages in chat_messages_list:
+                chat_messages.insert(0, {"role": "system", "content": self.system_message})
         chat_messages_as_string = [
             self.tokenizer.apply_chat_template(
                 deserialize_tool_calls_in_messages(chat_messages),

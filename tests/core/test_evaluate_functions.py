@@ -28,11 +28,11 @@ from tests.dummy_modules.reward_lm import DummyRewardLanguageModel
 
 
 @pytest.mark.parametrize(
-    ("require_incremental_response", "use_few_shot", "max_instances", "use_tools"),
-    list(itertools.product([True, False], [True, False], [None, 1], [True, False])),
+    ("require_incremental_response", "use_few_shot", "max_instances", "use_tools", "batch_size"),
+    list(itertools.product([True, False], [True, False], [None, 1], [True, False], [1, 3])),
 )
 def test_evaluate_chat_response(
-    require_incremental_response: bool, use_few_shot: bool, max_instances: int, use_tools: bool
+    require_incremental_response: bool, use_few_shot: bool, max_instances: int, use_tools: bool, batch_size: int
 ) -> None:
     few_shot_generator = None
     if use_few_shot:
@@ -47,7 +47,7 @@ def test_evaluate_chat_response(
         ),
         few_shot_generator=few_shot_generator,
         metrics=[],
-        batch_size=1,
+        batch_size=batch_size,
         max_instances=max_instances,
     )
     assert isinstance(metrics, dict)
@@ -56,6 +56,10 @@ def test_evaluate_chat_response(
 
     if max_instances is not None:
         assert len(outputs) <= max_instances
+
+    # If the system message in "messages", few-shot examples should be inserted after the system message.
+    # Therefore, in any case the system message should be in the first turn.
+    assert outputs[0]["extra_info"]["messages"][0]["role"] == "system"
 
     if use_tools:
         assert isinstance(outputs[0]["extra_info"]["tool_calls"], list)
