@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import contextlib
+import copy
+import json
 from typing import Any, Literal, TypeVar
 
 import torch
@@ -136,6 +138,26 @@ def decode_for_lm_continuation(
     entire_text = tokenizer.decode(input_tokens + output_tokens, skip_special_tokens=False)
     input_text = tokenizer.decode(input_tokens, skip_special_tokens=False)
     return entire_text[len(input_text) :]
+
+
+def deserialize_tool_calls_in_messages(messages: list[dict[str, Any]]) -> None:
+    """
+    huggingface/transformers expects the 'arguments' field in tool_calls to be a dict,
+    whereas the standard OpenAI format expects it to be a JSON string.
+    https://huggingface.co/docs/transformers/v4.48.2/chat_templating#a-complete-tool-use-example
+
+    To resolve this mismatch, this function deserializes 'arguments' before passing messages to apply_chat_template.
+    Args:
+        messages: A list of messages to deserialize.
+    """
+    deserialized_messages = copy.deepcopy(messages)
+    for message in deserialized_messages:
+        if message["role"] == "assistant" and "tool_calls" in message:
+            for item in message["tool_calls"]:
+                item["function"]["arguments"] = json.loads(
+                    item["function"]["arguments"]
+                )
+    return deserialized_messages
 
 
 class HuggingFaceLM(LanguageModel):
@@ -359,7 +381,7 @@ class HuggingFaceLM(LanguageModel):
             tools_list = [None] * len(chat_messages_list)
         chat_messages_as_string = [
             self.tokenizer.apply_chat_template(
-                chat_messages,
+                deserialize_tool_calls_in_messages(chat_messages),
                 tools=tools,
                 tokenize=False,
                 add_generation_prompt=True,
