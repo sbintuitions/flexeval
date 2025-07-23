@@ -40,7 +40,7 @@ class ChatInstance:
                 "id": "dummy1",
                 "function": {
                     "name": "search_web",
-                    "arguments": "{\"query\": \"flexeval developer\"}"
+                    "arguments": "{\"query\": \"flexeval developer\"}"  # Note that this is a json string, not a dictionary.
                 }
             }
         ]
