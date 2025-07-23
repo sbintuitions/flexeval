@@ -404,7 +404,7 @@ def test_apply_chat_template_arguments_when_tools_provided(chat_lm_for_tool_call
 
 
 @pytest.mark.parametrize(
-    ("messages", "expected", "shoulbe_modified"),
+    ("messages", "expected", "should_be_modified"),
     [
         (
             [
@@ -430,10 +430,10 @@ def test_apply_chat_template_arguments_when_tools_provided(chat_lm_for_tool_call
         ),
     ],
 )
-def test_deserialize_tool_calls_in_messages(messages: list, expected: list, shoulbe_modified: bool) -> None:
+def test_deserialize_tool_calls_in_messages(messages: list, expected: list, should_be_modified: bool) -> None:
     actual = deserialize_tool_calls_in_messages(messages)
     assert actual == expected
-    if shoulbe_modified:
+    if should_be_modified:
         assert messages != expected  # Ensure the original messages are not modified
 
 
