@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import logging
-from typing import Any, Callable
+from typing import Any, Callable, Generator
 from unittest.mock import patch
 
 import pytest
@@ -13,13 +13,14 @@ from tests.dummy_modules.tool_parser import DummyToolParser
 
 
 @pytest.fixture(scope="module")
-def chat_lm() -> VLLM:
+def chat_lm() -> Generator[VLLM, None, None]:
     llm = VLLM(
         model="sbintuitions/tiny-lm-chat",
         model_kwargs={
             "seed": 42,
             "gpu_memory_utilization": 0.1,
             "enforce_eager": True,
+            "dtype": "float32",
             "disable_custom_all_reduce": True,
         },
         tokenizer_kwargs={"use_fast": False},
@@ -31,7 +32,7 @@ def chat_lm() -> VLLM:
 
 
 @pytest.fixture(scope="module")
-def chat_lm_for_tool_calling() -> VLLM:
+def chat_lm_for_tool_calling() -> Generator[VLLM, None, None]:
     tool_parser = DummyToolParser()
     llm = VLLM(
         model="sbintuitions/tiny-lm-chat",
@@ -39,6 +40,7 @@ def chat_lm_for_tool_calling() -> VLLM:
             "seed": 42,
             "gpu_memory_utilization": 0.1,
             "enforce_eager": True,
+            "dtype": "float32",
             "disable_custom_all_reduce": True,
         },
         tokenizer_kwargs={"use_fast": False},
