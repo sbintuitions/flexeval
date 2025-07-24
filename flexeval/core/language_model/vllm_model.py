@@ -10,7 +10,7 @@ from flexeval.core.string_processor import StringProcessor
 from flexeval.core.tool_parser.base import ToolParser
 
 from .base import LanguageModel, LMOutput, normalize_stop_sequences
-from .hf_lm import decode_for_lm_continuation, get_prefix_and_completion_from_chat
+from .hf_lm import decode_for_lm_continuation, deserialize_tool_calls_in_messages, get_prefix_and_completion_from_chat
 
 
 def tokenize_text_for_lm_prefix(
@@ -228,7 +228,7 @@ class VLLM(LanguageModel):
                 chat_messages.insert(0, {"role": "system", "content": self.system_message})
         chat_messages_as_string = [
             self.tokenizer.apply_chat_template(
-                chat_messages,
+                deserialize_tool_calls_in_messages(chat_messages),
                 tools=tools,
                 tokenize=False,
                 add_generation_prompt=True,
