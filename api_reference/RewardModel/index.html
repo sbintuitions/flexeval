@@ -1927,18 +1927,7 @@ outputs.</p>
 
               <details class="quote">
                 <summary>Source code in <code>flexeval/core/reward_model/pairwise_judge_reward_model.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 32</span>
-<span class="normal"> 33</span>
-<span class="normal"> 34</span>
-<span class="normal"> 35</span>
-<span class="normal"> 36</span>
-<span class="normal"> 37</span>
-<span class="normal"> 38</span>
-<span class="normal"> 39</span>
-<span class="normal"> 40</span>
-<span class="normal"> 41</span>
-<span class="normal"> 42</span>
-<span class="normal"> 43</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 43</span>
 <span class="normal"> 44</span>
 <span class="normal"> 45</span>
 <span class="normal"> 46</span>
@@ -2029,7 +2018,10 @@ outputs.</p>
 <span class="normal">131</span>
 <span class="normal">132</span>
 <span class="normal">133</span>
-<span class="normal">134</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">PairwiseJudgeRewardModel</span><span class="p">(</span><span class="n">RewardModel</span><span class="p">):</span>
+<span class="normal">134</span>
+<span class="normal">135</span>
+<span class="normal">136</span>
+<span class="normal">137</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">PairwiseJudgeRewardModel</span><span class="p">(</span><span class="n">RewardModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Pairwise judge using a chat language model to compare two model or human</span>
 <span class="sd">    outputs.</span>
 
@@ -2074,14 +2066,6 @@ outputs.</p>
             <span class="p">)</span>
         <span class="k">return</span> <span class="n">input_chat_messages</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_is_correct_llm_answer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">llm_answer</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">pairwise_choice</span><span class="p">:</span> <span class="n">PairwiseChoice</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="c1"># Check if the answer is one of the valid choices.</span>
-        <span class="k">if</span> <span class="n">PairwiseChoice</span><span class="o">.</span><span class="n">A</span><span class="o">.</span><span class="n">value</span> <span class="ow">in</span> <span class="n">PairwiseChoice</span><span class="o">.</span><span class="n">B</span> <span class="ow">in</span> <span class="n">llm_answer</span> <span class="ow">and</span> <span class="n">PairwiseChoice</span><span class="o">.</span><span class="n">B</span> <span class="ow">in</span> <span class="n">llm_answer</span><span class="p">:</span>
-            <span class="k">return</span> <span class="kc">False</span>
-        <span class="k">if</span> <span class="n">pairwise_choice</span><span class="o">.</span><span class="n">value</span> <span class="ow">in</span> <span class="n">llm_answer</span><span class="p">:</span>
-            <span class="k">return</span> <span class="kc">True</span>
-        <span class="k">return</span> <span class="kc">False</span>
-
     <span class="k">def</span><span class="w"> </span><span class="nf">batch_judge</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">batch_reward_bench_instances</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">RewardBenchInstance</span><span class="p">],</span>
@@ -2118,20 +2102,20 @@ outputs.</p>
             <span class="p">}</span>
             <span class="n">outputs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">output</span><span class="p">)</span>
         <span class="n">judge_outputs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">language_model</span><span class="o">.</span><span class="n">generate_chat_response</span><span class="p">(</span><span class="n">input_chat_messages_list</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">gen_kwargs</span><span class="p">)</span>
-        <span class="n">chosen_is_betters</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_is_correct_llm_answer</span><span class="p">(</span><span class="n">judge_output</span><span class="o">.</span><span class="n">text</span><span class="p">,</span> <span class="n">shuffle_pairwise_instance</span><span class="o">.</span><span class="n">answer_label</span><span class="p">)</span>
-            <span class="k">for</span> <span class="n">judge_output</span><span class="p">,</span> <span class="n">shuffle_pairwise_instance</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">judge_outputs</span><span class="p">,</span> <span class="n">all_pairwise_instances</span><span class="p">)</span>
+        <span class="n">chosen_is_better_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">evaluate_model_output</span><span class="p">(</span><span class="n">judge_output</span><span class="o">.</span><span class="n">text</span><span class="p">,</span> <span class="n">pairwise_instance</span><span class="o">.</span><span class="n">answer_label</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">judge_output</span><span class="p">,</span> <span class="n">pairwise_instance</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">judge_outputs</span><span class="p">,</span> <span class="n">all_pairwise_instances</span><span class="p">)</span>
         <span class="p">]</span>
 
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">outputs</span><span class="p">)</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">chosen_is_betters</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">outputs</span><span class="p">)</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">chosen_is_better_list</span><span class="p">):</span>
             <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;The number of outputs should be twice the number of inputs.&quot;</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">outputs</span><span class="p">)):</span>
             <span class="n">outputs</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s2">&quot;llm_outputs&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">judge_outputs</span><span class="p">[</span><span class="n">i</span> <span class="o">*</span> <span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">text</span><span class="p">,</span> <span class="n">judge_outputs</span><span class="p">[</span><span class="n">i</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">text</span><span class="p">]</span>
-            <span class="n">outputs</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s2">&quot;evaluation_results&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">chosen_is_betters</span><span class="p">[</span><span class="n">i</span> <span class="o">*</span> <span class="mi">2</span><span class="p">],</span> <span class="n">chosen_is_betters</span><span class="p">[</span><span class="n">i</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]]</span>
+            <span class="n">outputs</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s2">&quot;evaluation_results&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">chosen_is_better_list</span><span class="p">[</span><span class="n">i</span> <span class="o">*</span> <span class="mi">2</span><span class="p">],</span> <span class="n">chosen_is_better_list</span><span class="p">[</span><span class="n">i</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]]</span>
 
-        <span class="k">return</span> <span class="n">chosen_is_betters</span><span class="p">,</span> <span class="n">outputs</span>
+        <span class="k">return</span> <span class="n">chosen_is_better_list</span><span class="p">,</span> <span class="n">outputs</span>
 </code></pre></div></td></tr></table></div>
               </details>
 
@@ -2256,19 +2240,19 @@ outputs.</p>
 
             <details class="quote">
               <summary>Source code in <code>flexeval/core/reward_model/pairwise_judge_reward_model.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">45</span>
-<span class="normal">46</span>
-<span class="normal">47</span>
-<span class="normal">48</span>
-<span class="normal">49</span>
-<span class="normal">50</span>
-<span class="normal">51</span>
-<span class="normal">52</span>
-<span class="normal">53</span>
-<span class="normal">54</span>
-<span class="normal">55</span>
-<span class="normal">56</span>
-<span class="normal">57</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">56</span>
+<span class="normal">57</span>
+<span class="normal">58</span>
+<span class="normal">59</span>
+<span class="normal">60</span>
+<span class="normal">61</span>
+<span class="normal">62</span>
+<span class="normal">63</span>
+<span class="normal">64</span>
+<span class="normal">65</span>
+<span class="normal">66</span>
+<span class="normal">67</span>
+<span class="normal">68</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">language_model</span><span class="p">:</span> <span class="n">LanguageModel</span><span class="p">,</span>
     <span class="n">prompt_template</span><span class="p">:</span> <span class="n">PromptTemplate</span><span class="p">,</span>
@@ -2305,10 +2289,7 @@ outputs.</p>
 
             <details class="quote">
               <summary>Source code in <code>flexeval/core/reward_model/pairwise_judge_reward_model.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 85</span>
-<span class="normal"> 86</span>
-<span class="normal"> 87</span>
-<span class="normal"> 88</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 88</span>
 <span class="normal"> 89</span>
 <span class="normal"> 90</span>
 <span class="normal"> 91</span>
@@ -2354,7 +2335,10 @@ outputs.</p>
 <span class="normal">131</span>
 <span class="normal">132</span>
 <span class="normal">133</span>
-<span class="normal">134</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">batch_judge</span><span class="p">(</span>
+<span class="normal">134</span>
+<span class="normal">135</span>
+<span class="normal">136</span>
+<span class="normal">137</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">batch_judge</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">batch_reward_bench_instances</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">RewardBenchInstance</span><span class="p">],</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">bool</span><span class="p">],</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]]:</span>
@@ -2390,20 +2374,20 @@ outputs.</p>
         <span class="p">}</span>
         <span class="n">outputs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">output</span><span class="p">)</span>
     <span class="n">judge_outputs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">language_model</span><span class="o">.</span><span class="n">generate_chat_response</span><span class="p">(</span><span class="n">input_chat_messages_list</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">gen_kwargs</span><span class="p">)</span>
-    <span class="n">chosen_is_betters</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_is_correct_llm_answer</span><span class="p">(</span><span class="n">judge_output</span><span class="o">.</span><span class="n">text</span><span class="p">,</span> <span class="n">shuffle_pairwise_instance</span><span class="o">.</span><span class="n">answer_label</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">judge_output</span><span class="p">,</span> <span class="n">shuffle_pairwise_instance</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">judge_outputs</span><span class="p">,</span> <span class="n">all_pairwise_instances</span><span class="p">)</span>
+    <span class="n">chosen_is_better_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">evaluate_model_output</span><span class="p">(</span><span class="n">judge_output</span><span class="o">.</span><span class="n">text</span><span class="p">,</span> <span class="n">pairwise_instance</span><span class="o">.</span><span class="n">answer_label</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">judge_output</span><span class="p">,</span> <span class="n">pairwise_instance</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">judge_outputs</span><span class="p">,</span> <span class="n">all_pairwise_instances</span><span class="p">)</span>
     <span class="p">]</span>
 
-    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">outputs</span><span class="p">)</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">chosen_is_betters</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">outputs</span><span class="p">)</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">chosen_is_better_list</span><span class="p">):</span>
         <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;The number of outputs should be twice the number of inputs.&quot;</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">outputs</span><span class="p">)):</span>
         <span class="n">outputs</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s2">&quot;llm_outputs&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">judge_outputs</span><span class="p">[</span><span class="n">i</span> <span class="o">*</span> <span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">text</span><span class="p">,</span> <span class="n">judge_outputs</span><span class="p">[</span><span class="n">i</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">text</span><span class="p">]</span>
-        <span class="n">outputs</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s2">&quot;evaluation_results&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">chosen_is_betters</span><span class="p">[</span><span class="n">i</span> <span class="o">*</span> <span class="mi">2</span><span class="p">],</span> <span class="n">chosen_is_betters</span><span class="p">[</span><span class="n">i</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]]</span>
+        <span class="n">outputs</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s2">&quot;evaluation_results&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">chosen_is_better_list</span><span class="p">[</span><span class="n">i</span> <span class="o">*</span> <span class="mi">2</span><span class="p">],</span> <span class="n">chosen_is_better_list</span><span class="p">[</span><span class="n">i</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]]</span>
 
-    <span class="k">return</span> <span class="n">chosen_is_betters</span><span class="p">,</span> <span class="n">outputs</span>
+    <span class="k">return</span> <span class="n">chosen_is_better_list</span><span class="p">,</span> <span class="n">outputs</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
