@@ -47,17 +47,17 @@ local template_ = |||
         init_args: {
           lm_output_processor: [
             {
-              class_path: 'plugins.simple_evals_processors.SimpleEvalMGSMProcessor',
+              class_path: 'flexeval.core.string_processor.SimpleEvalMGSMProcessor',
               init_args: {
                 answer_prefix: '答えは',
               },
             },
           ],
-          reference_processor: [{ class_path: 'plugins.simple_evals_processors.RemoveCommaProcessor' }],
+          reference_processor: [{ class_path: 'flexeval.core.string_processor.RemoveCommaProcessor' }],
         },
 
       },
-      { class_path: 'plugins.math_verify_metric.MathVerify' },
+      { class_path: 'flexeval.core.metric.MathVerify' },
     ],
     gen_kwargs: { max_new_tokens: 512, stop_sequences: ['\n\n'] },
     batch_size: 1,
