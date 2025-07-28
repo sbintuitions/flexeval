@@ -29,6 +29,17 @@ class PairwiseInstance:
     answer_label: PairwiseChoice
 
 
+def evaluate_model_output(model_output: str, gold_label: PairwiseChoice) -> bool:
+    # If both choices are in model output, then output is **wrong**
+    if PairwiseChoice.A.value in model_output and PairwiseChoice.B.value in model_output:
+        return False
+
+    # If only gold label is in model output, then output is **correct**
+    if gold_label.value in model_output:
+        return True
+    return False
+
+
 class PairwiseJudgeRewardModel(RewardModel):
     """Pairwise judge using a chat language model to compare two model or human
     outputs.
@@ -74,14 +85,6 @@ class PairwiseJudgeRewardModel(RewardModel):
             )
         return input_chat_messages
 
-    def _is_correct_llm_answer(self, llm_answer: str, pairwise_choice: PairwiseChoice) -> bool:
-        # Check if the answer is one of the valid choices.
-        if PairwiseChoice.A.value in PairwiseChoice.B in llm_answer and PairwiseChoice.B in llm_answer:
-            return False
-        if pairwise_choice.value in llm_answer:
-            return True
-        return False
-
     def batch_judge(
         self,
         batch_reward_bench_instances: list[RewardBenchInstance],
@@ -118,17 +121,17 @@ class PairwiseJudgeRewardModel(RewardModel):
             }
             outputs.append(output)
         judge_outputs = self.language_model.generate_chat_response(input_chat_messages_list, **self.gen_kwargs)
-        chosen_is_betters: list[bool] = [
-            self._is_correct_llm_answer(judge_output.text, shuffle_pairwise_instance.answer_label)
-            for judge_output, shuffle_pairwise_instance in zip(judge_outputs, all_pairwise_instances)
+        chosen_is_better_list: list[bool] = [
+            evaluate_model_output(judge_output.text, pairwise_instance.answer_label)
+            for judge_output, pairwise_instance in zip(judge_outputs, all_pairwise_instances)
         ]
 
-        if len(outputs) * 2 != len(chosen_is_betters):
+        if len(outputs) * 2 != len(chosen_is_better_list):
             msg = "The number of outputs should be twice the number of inputs."
             raise ValueError(msg)
 
         for i in range(len(outputs)):
             outputs[i]["llm_outputs"] = [judge_outputs[i * 2].text, judge_outputs[i * 2 + 1].text]
-            outputs[i]["evaluation_results"] = [chosen_is_betters[i * 2], chosen_is_betters[i * 2 + 1]]
+            outputs[i]["evaluation_results"] = [chosen_is_better_list[i * 2], chosen_is_better_list[i * 2 + 1]]
 
-        return chosen_is_betters, outputs
+        return chosen_is_better_list, outputs

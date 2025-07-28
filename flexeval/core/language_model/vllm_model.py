@@ -10,7 +10,7 @@ from flexeval.core.string_processor import StringProcessor
 from flexeval.core.tool_parser.base import ToolParser
 
 from .base import LanguageModel, LMOutput, normalize_stop_sequences
-from .hf_lm import decode_for_lm_continuation, get_prefix_and_completion_from_chat
+from .hf_lm import decode_for_lm_continuation, deserialize_tool_calls_in_messages, get_prefix_and_completion_from_chat
 
 
 def tokenize_text_for_lm_prefix(
@@ -80,6 +80,8 @@ class VLLM(LanguageModel):
             Note that whether BOS or EOS tokens are added depends on the tokenizer.
         custom_chat_template: A custom chat template for chatbot models.
             If specified, this overrides the default chat template of the tokenizer.
+        system_message: System messages to be prepended to given messages. It applies only for
+            chat response.
         default_gen_kwargs: Default generation kwargs to use when calling the model.
         string_processors: A single or a list of StringProcessor objects to process the model's output.
         model_limit_tokens: An upper limit on the number of tokens (input + output) the model can handle.
@@ -99,6 +101,7 @@ class VLLM(LanguageModel):
         add_special_tokens: bool = False,
         custom_chat_template: str | None = None,
         chat_template_kwargs: dict[str, Any] | None = None,
+        system_message: str | None = None,
         default_gen_kwargs: dict[str, Any] | None = None,
         string_processors: StringProcessor | list[StringProcessor] | None = None,
         model_limit_tokens: int | None | Literal["default"] = "default",
@@ -111,6 +114,7 @@ class VLLM(LanguageModel):
         self.tokenizer: PreTrainedTokenizer = AutoTokenizer.from_pretrained(tokenizer, **tokenizer_kwargs)
         self.custom_chat_template = custom_chat_template
         self.chat_template_kwargs = chat_template_kwargs or {}
+        self.system_message = system_message
         self.add_special_tokens = add_special_tokens
         # use greedy decoding by default to make it consistent with `HuggingFaceLM`
         self.default_gen_kwargs = default_gen_kwargs or {"temperature": 0.0}
@@ -219,9 +223,12 @@ class VLLM(LanguageModel):
     ) -> list[LMOutput]:
         if tools_list is None:
             tools_list = [None] * len(chat_messages_list)
+        if self.system_message is not None:
+            for chat_messages in chat_messages_list:
+                chat_messages.insert(0, {"role": "system", "content": self.system_message})
         chat_messages_as_string = [
             self.tokenizer.apply_chat_template(
-                chat_messages,
+                deserialize_tool_calls_in_messages(chat_messages),
                 tools=tools,
                 tokenize=False,
                 add_generation_prompt=True,

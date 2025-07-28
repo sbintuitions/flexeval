@@ -60,6 +60,25 @@ def chat_lm_for_tool_calling() -> VLLM:
     cleanup_dist_env_and_memory()
 
 
+@pytest.fixture(scope="module")
+def chat_lm_with_system_message() -> VLLM:
+    llm = VLLM(
+        model="sbintuitions/tiny-lm-chat",
+        model_kwargs={
+            "seed": 42,
+            "gpu_memory_utilization": 0.1,
+            "enforce_eager": True,
+            "disable_custom_all_reduce": True,
+        },
+        tokenizer_kwargs={"use_fast": False},
+        system_message="You are a helpful assistant.",
+    )
+    yield llm
+    from vllm.distributed.parallel_state import cleanup_dist_env_and_memory
+
+    cleanup_dist_env_and_memory()
+
+
 @pytest.mark.skipif(not is_vllm_enabled(), reason="vllm library is not installed")
 class TestVLLM(BaseLanguageModelTest):
     @pytest.fixture()

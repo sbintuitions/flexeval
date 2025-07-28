@@ -15,6 +15,8 @@ class BLEU(Metric):
     Args:
         tokenize_option: Tokenization option for sacrebleu.
             If `None`, sacrebleu will use the default tokenization.
+            For details, see sacreBLEU
+            https://github.com/mjpost/sacrebleu/blob/aa3cc4351af6/sacrebleu/sacrebleu.py#L121-L124
         lm_output_processor:
             StringProcessor or a list of StringProcessor to be applied to the model outputs before comparison.
         reference_processor: StringProcessor or list of StringProcessor to apply to the references before comparison.
@@ -30,12 +32,12 @@ class BLEU(Metric):
         >>> print(result)
         MetricResult(
             summary={
-                'bleu_score': 1.0,
+                'bleu_score': 100.0,
                 'bleu_bp': 1.0,
                 'bleu_signature': nrefs:1|case:mixed|eff:no|tok:13a|smooth:exp|version:2.4.1},
                 instance_details=[
-                    {'bleu_score': 1.0, 'bleu_bp': 1.0},
-                    {'bleu_score': 1.0, 'bleu_bp': 1.0}
+                    {'bleu_score': 100.0, 'bleu_bp': 1.0},
+                    {'bleu_score': 100.0, 'bleu_bp': 1.0}
                 ]
             )
     """
@@ -89,19 +91,19 @@ class BLEU(Metric):
         ]
 
         summary = {
-            "bleu_score": bleu.score / 100,
+            "bleu_score": bleu.score,
             "bleu_bp": bleu.bp,
             "bleu_signature": self._corpus_bleu.get_signature(),
         }
 
         if self.category_key:
             categories = [extra_info[self.category_key] for extra_info in extra_info_list]
-            sentence_bleu_score_list = [b.score / 100 for b in sentence_bleu_list]
+            sentence_bleu_score_list = [b.score for b in sentence_bleu_list]
             category_wise_scores = aggregate_category_wise_scores(sentence_bleu_score_list, categories)
             for category, category_wise_score in category_wise_scores.items():
                 summary[f"sentence_bleu_score/{category}"] = category_wise_score
 
         return MetricResult(
             summary,
-            instance_details=[{"bleu_score": b.score / 100, "bleu_bp": b.bp} for b in sentence_bleu_list],
+            instance_details=[{"bleu_score": b.score, "bleu_bp": b.bp} for b in sentence_bleu_list],
         )

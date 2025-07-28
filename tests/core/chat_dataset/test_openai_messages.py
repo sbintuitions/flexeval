@@ -116,7 +116,7 @@ TEST_CHAT_MESSAGES_WITH_TOOLS = [
                         "id": "dummy1",
                         "function": {
                             "name": "get_weather",
-                            "arguments": {"city": "Takeshiba"},
+                            "arguments": '{"city": "Takeshiba"}',
                         },
                     },
                     {
@@ -124,7 +124,7 @@ TEST_CHAT_MESSAGES_WITH_TOOLS = [
                         "id": "dummy2",
                         "function": {
                             "name": "get_weather",
-                            "arguments": {"city": "Izu Oshima"},
+                            "arguments": '{"city": "Izu Oshima"}',
                         },
                     },
                 ],
@@ -132,12 +132,12 @@ TEST_CHAT_MESSAGES_WITH_TOOLS = [
             {
                 "role": "tool",
                 "tool_call_id": "dummy1",
-                "content": '{"weather": "sunny"}',  #  JSON string is the standard tool-response format on OpenAI API
+                "content": '{"weather": "sunny"}',
             },
             {
                 "role": "tool",
                 "tool_call_id": "dummy2",
-                "content": {"weather": "cloudy"},  #  For convenience, dict and list are also allowed.
+                "content": '{"weather": "cloudy"}',
             },
             {"role": "assistant", "content": "It will be sunny in Takeshiba and cloudy in Izu Oshima."},
         ],
