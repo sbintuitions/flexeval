@@ -43,6 +43,11 @@ class DummyLanguageModel(LanguageModel):
                     tool_calls_list[i] = tool_calls
 
         return [
-            LMOutput(text=m + kwargs_as_text, finish_reason="length", tool_calls=tc)
+            LMOutput(
+                text=m + kwargs_as_text,
+                finish_reason="length",
+                tool_calls=tc,
+                tool_call_validation_result="CompleteToolCall" if tc else "TextOnly",
+            )
             for m, tc in zip(messages_as_text, tool_calls_list)
         ]
