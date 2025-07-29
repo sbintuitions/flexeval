@@ -217,6 +217,10 @@ def evaluate_chat_response(  # noqa: C901,PLR0912, PLR0915
                 tool_call_validation_result_counter[mes["tool_call_validation_result"]] += 1
     for finish_reason, count in finish_reason_counter.items():
         metrics_summary_dict[f"finish_reason_ratio-{finish_reason}"] = count / sum(finish_reason_counter.values())
+    for validation_result, count in tool_call_validation_result_counter.items():
+        metrics_summary_dict[f"tool_call_validation_result_ratio-{validation_result}"] = count / sum(
+            tool_call_validation_result_counter.values()
+        )
 
     logger.info(metrics_summary_dict)
 
@@ -229,6 +233,11 @@ def evaluate_chat_response(  # noqa: C901,PLR0912, PLR0915
             **instance_metrics,
         }
         | ({"raw_lm_output": messages[-1]["raw_content"]} if "raw_content" in messages[-1] else {})
+        | (
+            {"tool_call_validation_result": messages[-1]["tool_call_validation_result"]}
+            if "tool_call_validation_result" in messages[-1]
+            else {}
+        )
         for messages, references, extra_info, instance_metrics in zip(
             all_messages_list,
             references_list,
