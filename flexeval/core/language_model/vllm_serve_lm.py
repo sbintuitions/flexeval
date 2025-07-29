@@ -162,7 +162,7 @@ class VLLMServeLM(OpenAIChatAPI):
 
     def __init__(
         self,
-        model: str = "openai/gpt-3.5-turbo",
+        model: str = "sbintuitions/sarashina2.2-3b-instruct-v0.1",
         api_headers: dict[str, str] | None = None,
         model_kwargs: dict[str, Any] | None = None,
         booting_timeout: int = 3600,
