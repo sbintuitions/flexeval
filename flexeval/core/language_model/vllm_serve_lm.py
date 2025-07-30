@@ -156,13 +156,13 @@ class VLLMServeLM(OpenAIChatAPI):
         developer_message: Instructions to the model that are prioritized ahead of user messages.
             Previously called the system prompt.
         string_processors: A single or a list of StringProcessor objects to process the model's output.
-        model_limit_completion_tokens: An upper limit on the number of tokens the model can generate.
+        model_limit_new_tokens: An upper limit on the number of tokens the model can generate.
             For example, if a too-large `max_new_tokens` is given to generate_chat_response(), this value will cap it.
     """
 
     def __init__(
         self,
-        model: str = "sbintuitions/sarashina2.2-3b-instruct-v0.1",
+        model: str,
         api_headers: dict[str, str] | None = None,
         model_kwargs: dict[str, Any] | None = None,
         booting_timeout: int = 3600,
@@ -204,5 +204,5 @@ class VLLMServeLM(OpenAIChatAPI):
         return f"{self.__class__.__name__}(model={self.model})"
 
     def __del__(self) -> None:
-        if hasattr(self, "_manager"):
-            self._manager.stop()
+        if hasattr(self, "manager"):
+            self.manager.stop()
