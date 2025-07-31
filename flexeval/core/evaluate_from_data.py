@@ -45,6 +45,7 @@ def evaluate_from_data(
             references_list=references_list,
             extra_info_list=extra_info_list,
         )
+        metric.resource_cleanup()
 
         metrics_summary_dict.update(metric_result.summary)
 

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, Literal
+from typing import TYPE_CHECKING, Any, Literal
 
 import torch
 from loguru import logger
@@ -12,6 +12,8 @@ from flexeval.core.tool_parser.base import ToolParser
 from .base import LanguageModel, LMOutput, normalize_stop_sequences
 from .hf_lm import decode_for_lm_continuation, deserialize_tool_calls_in_messages, get_prefix_and_completion_from_chat
 
+if TYPE_CHECKING:
+    from vllm import LLM
 
 def tokenize_text_for_lm_prefix(
     text_list: list[str],
@@ -122,9 +124,6 @@ class VLLM(LanguageModel):
         if "max_new_tokens" in self.default_gen_kwargs:
             self.default_gen_kwargs["max_tokens"] = self.default_gen_kwargs.pop("max_new_tokens")
 
-        # import from vllm here because it is an extra dependency
-        from vllm import LLM
-
         model_kwargs = model_kwargs or {}
         # automatically set tensor_parallel_size to the number of GPUs
         if "tensor_parallel_size" not in model_kwargs:
@@ -132,12 +131,21 @@ class VLLM(LanguageModel):
         if "enable_chunked_prefill" not in model_kwargs:
             model_kwargs["enable_chunked_prefill"] = True
             model_kwargs["disable_sliding_window"] = True
-        self.llm = LLM(model, **model_kwargs)
+        self.model_kwargs = model_kwargs
+        # `self.llm` is initialized lazily to avoid unnecessary memory usage.
+        self._llm = None
 
         if model_limit_tokens == "default":
             model_limit_tokens = self.llm.llm_engine.get_model_config().max_model_len
         self.model_limit_tokens = model_limit_tokens
         self.tool_parser = tool_parser
+
+    @property
+    def llm(self) -> LLM:
+        if self._llm is None:
+            from vllm import LLM
+            self._llm = LLM(model=self.model_name, **self.model_kwargs)
+        return self._llm
 
     def _batch_complete_text(
         self,
@@ -344,6 +352,11 @@ class VLLM(LanguageModel):
             prompt_as_string.append(prompt_as_string_i)
             response_as_string.append(response_as_string_i)
         return self._batch_compute_log_probs(response_as_string, prefix_list=prompt_as_string)
+
+    def resource_cleanup(self) -> None:
+        from vllm.distributed import cleanup_dist_env_and_memory
+        del self._llm
+        cleanup_dist_env_and_memory()
 
     def __repr__(self) -> str:
         return f"VLLM(model_name={self.model_name})"

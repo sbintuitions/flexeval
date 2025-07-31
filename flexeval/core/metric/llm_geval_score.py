@@ -285,6 +285,9 @@ class LLMGEvalScore(Metric):
             ],
         )
 
+    def resource_cleanup(self) -> None:
+        self.language_model.resource_cleanup()
+
     def __repr__(self) -> str:
         return (
             f"{self.__class__.__name__}(language_model={self.language_model}, prompt_template={self.prompt_template})"
@@ -450,6 +453,9 @@ class ChatLLMGEvalScore(Metric):
                 )
             ],
         )
+
+    def resource_cleanup(self) -> None:
+        self.language_model.resource_cleanup()
 
     def __repr__(self) -> str:
         return (

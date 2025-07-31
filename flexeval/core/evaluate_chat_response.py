@@ -185,6 +185,8 @@ def evaluate_chat_response(  # noqa: C901,PLR0912, PLR0915
             if mes["content"] is None:
                 mes["content"] = ""
 
+    language_model.resource_cleanup()
+
     # Evaluate the generated responses
     metrics_summary_dict: dict[str, float] = {}
     instance_metrics_list: list[dict[str, Any]] = [{} for _ in range(len(all_messages_list))]
@@ -197,6 +199,7 @@ def evaluate_chat_response(  # noqa: C901,PLR0912, PLR0915
                 for messages, extra_info in zip(all_messages_list, extra_info_list)
             ],
         )
+        metric.resource_cleanup()
 
         metrics_summary_dict.update(metric_result.summary)
 
