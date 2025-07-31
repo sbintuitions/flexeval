@@ -72,3 +72,38 @@ def test_exact_match_with_category_key() -> None:
     assert result.instance_details[1]["exact_match"] is True  # "no" matches
     assert result.instance_details[2]["exact_match"] is False  # "yes" doesn't match "no"
     assert result.instance_details[3]["exact_match"] is True  # "maybe" matches
+
+
+def test_exact_match_with_metric_key() -> None:
+    """Test ExactMatch metric with metric_key parameter."""
+    metric = ExactMatch(category_key="category", metric_key="exact_match_alt")
+
+    extra_info_list = [
+        {"category": "binary", "text": "Is this true?"},
+        {"category": "binary", "text": "Is this false?"},
+        {"category": "binary", "text": "Is this correct?"},
+        {"category": "open", "text": "What do you think?"},
+    ]
+    lm_outputs = ["yes", "no", "yes", "maybe"]
+    references_list = [["yes"], ["no"], ["no"], ["maybe"]]
+
+    result = metric.evaluate(lm_outputs, references_list, extra_info_list)
+
+    assert isinstance(result, MetricResult)
+    assert "exact_match_alt" in result.summary
+    assert "exact_match_alt/binary" in result.summary
+    assert "exact_match_alt/open" in result.summary
+
+    # Overall accuracy: 3/4 = 0.75 (yes, no, maybe matched correctly)
+    assert result.summary["exact_match_alt"] == 0.75
+    # Binary category accuracy: 2/3 = ~0.67 (2 correct out of 3)
+    assert pytest.approx(result.summary["exact_match_alt/binary"]) == 2 / 3
+    # Open category accuracy: 1/1 = 1.0 (1 correct out of 1)
+    assert result.summary["exact_match_alt/open"] == 1.0
+
+    # Check instance details
+    assert len(result.instance_details) == 4
+    assert result.instance_details[0]["exact_match_alt"] is True  # "yes" matches
+    assert result.instance_details[1]["exact_match_alt"] is True  # "no" matches
+    assert result.instance_details[2]["exact_match_alt"] is False  # "yes" doesn't match "no"
+    assert result.instance_details[3]["exact_match_alt"] is True  # "maybe" matches
