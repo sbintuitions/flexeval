@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import time
 from typing import TYPE_CHECKING, Any, Callable, Literal
 
 import torch
@@ -369,6 +370,7 @@ class VLLM(LanguageModel):
         del self.llm
         logger.info("cleaning up vLLM resources...")
         cleanup_dist_env_and_memory()
+        time.sleep(10)  # wait for the vLLM server to release resources
         self.llm = None
 
     def __repr__(self) -> str:
