@@ -236,6 +236,6 @@ class VLLMServeLM(OpenAIChatAPI):
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(model={self.model})"
 
-    def resource_cleanup(self) -> None:
+    def cleanup_resources(self) -> None:
         if hasattr(self, "manager"):
             self.manager.stop()

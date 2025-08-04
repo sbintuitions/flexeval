@@ -363,7 +363,7 @@ class VLLM(LanguageModel):
             response_as_string.append(response_as_string_i)
         return self._batch_compute_log_probs(response_as_string, prefix_list=prompt_as_string)
 
-    def resource_cleanup(self) -> None:
+    def cleanup_resources(self) -> None:
         from vllm.distributed import cleanup_dist_env_and_memory
 
         del self.llm

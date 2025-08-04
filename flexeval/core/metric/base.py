@@ -47,7 +47,7 @@ class Metric(ABC):
             extra_info_list: List of task inputs and some extra information.
         """
 
-    def resource_cleanup(self) -> None:  # noqa: B027
+    def cleanup_resources(self) -> None:  # noqa: B027
         """
         Clean up resources if necessary.
         This method is called when the metric is no longer needed.

@@ -227,8 +227,8 @@ class LLMLabel(Metric):
             ],
         )
 
-    def resource_cleanup(self) -> None:
-        self.language_model.resource_cleanup()
+    def cleanup_resources(self) -> None:
+        self.language_model.cleanup_resources()
 
     def __repr__(self) -> str:
         return (
@@ -376,8 +376,8 @@ class ChatLLMLabel(Metric):
             ],
         )
 
-    def resource_cleanup(self) -> None:
-        self.language_model.resource_cleanup()
+    def cleanup_resources(self) -> None:
+        self.language_model.cleanup_resources()
 
     def __repr__(self) -> str:
         return (

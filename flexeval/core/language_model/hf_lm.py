@@ -549,7 +549,7 @@ class HuggingFaceLM(LanguageModel):
             response_as_string.append(response_as_string_i)
         return self._batch_compute_log_probs(response_as_string, prefix_list=prompt_as_string)
 
-    def resource_cleanup(self) -> None:
+    def cleanup_resources(self) -> None:
         del self._model
         self._model = None
         gc.collect()

@@ -240,14 +240,14 @@ class LanguageModel:
             return self._batch_compute_chat_log_probs([prompt], [response])[0]
         return self._batch_compute_chat_log_probs(prompt, response)
 
-    def resource_cleanup(self) -> None:
+    def cleanup_resources(self) -> None:
         """
         Clean up resources if necessary.
         This method is called when the language model is no longer needed.
         """
 
     def __del__(self) -> None:
-        self.resource_cleanup()
+        self.cleanup_resources()
 
 
 def normalize_stop_sequences(

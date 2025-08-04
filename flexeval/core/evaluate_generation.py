@@ -69,7 +69,7 @@ def evaluate_generation(  # noqa: C901
 
             pbar.update(len(batch))
 
-    language_model.resource_cleanup()
+    language_model.cleanup_resources()
 
     # Evaluate the generated continuations
     metrics_summary_dict: dict[str, float] = {}
@@ -80,7 +80,7 @@ def evaluate_generation(  # noqa: C901
             references_list=[i.references for i in eval_instances],
             extra_info_list=[i.inputs for i in eval_instances],
         )
-        metric.resource_cleanup()
+        metric.cleanup_resources()
 
         metrics_summary_dict.update(metric_result.summary)
 
