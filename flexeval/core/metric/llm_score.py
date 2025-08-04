@@ -181,6 +181,7 @@ class LLMScore(Metric):
             If the parsed score is out of the range, it will be ignored.
         category_key: A key to create category-wise mean score.
             The category key is expected to be in extra_info.
+        metric_prefix: A prefix to be added to the metric keys in the summary and instance details.
 
     Examples:
         >>> from flexeval import LLMScore, OpenAIChatAPI, Jinja2PromptTemplate
@@ -214,6 +215,7 @@ class LLMScore(Metric):
         disable_tqdm: bool = False,
         valid_score_range: tuple[int, int] | None = None,
         category_key: str | None = None,
+        metric_prefix: str | None = None,
     ) -> None:
         self.language_model = language_model
         self.prompt_template = prompt_template
@@ -221,6 +223,7 @@ class LLMScore(Metric):
         self.disable_tqdm = disable_tqdm
         self.valid_score_range = valid_score_range
         self.category_key = category_key
+        self.metric_prefix = f"{metric_prefix}-" if metric_prefix else ""
 
     def evaluate(
         self,
@@ -260,9 +263,13 @@ class LLMScore(Metric):
         )
 
         return MetricResult(
-            summary,
+            {self.metric_prefix + key: value for key, value in summary.items()},
             instance_details=[
-                {"llm_score": eval_score, "llm_score_input": eval_in, "llm_score_output": eval_out.text}
+                {
+                    f"{self.metric_prefix}llm_score": eval_score,
+                    f"{self.metric_prefix}llm_score_input": eval_in,
+                    f"{self.metric_prefix}llm_score_output": eval_out.text,
+                }
                 for eval_score, eval_in, eval_out in zip(
                     evaluator_score_list,
                     evaluator_input_list,
@@ -294,6 +301,7 @@ class ChatLLMScore(Metric):
             If the parsed score is out of the range, it will be ignored.
         category_key: A key to create category-wise mean score.
             The category key is expected to be in extra_info.
+        metric_prefix: A prefix to be added to the metric keys in the summary and instance details.
 
     Examples:
         >>> from flexeval import ChatLLMScore, OpenAIChatAPI, Jinja2PromptTemplate
@@ -329,6 +337,7 @@ class ChatLLMScore(Metric):
         disable_tqdm: bool = False,
         valid_score_range: tuple[int, int] | None = None,
         category_key: str | None = None,
+        metric_prefix: str | None = None,
     ) -> None:
         self.language_model = language_model
         self.prompt_template = prompt_template
@@ -337,6 +346,7 @@ class ChatLLMScore(Metric):
         self.disable_tqdm = disable_tqdm
         self.valid_score_range = valid_score_range
         self.category_key = category_key
+        self.metric_prefix = f"{metric_prefix}-" if metric_prefix else ""
 
     def evaluate(
         self,
@@ -374,9 +384,13 @@ class ChatLLMScore(Metric):
         )
 
         return MetricResult(
-            summary,
+            {self.metric_prefix + key: value for key, value in summary.items()},
             instance_details=[
-                {"llm_score": eval_score, "llm_score_input": eval_in, "llm_score_output": eval_out.text}
+                {
+                    f"{self.metric_prefix}llm_score": eval_score,
+                    f"{self.metric_prefix}llm_score_input": eval_in,
+                    f"{self.metric_prefix}llm_score_output": eval_out.text,
+                }
                 for eval_score, eval_in, eval_out in zip(
                     evaluator_score_list,
                     evaluator_input_list,

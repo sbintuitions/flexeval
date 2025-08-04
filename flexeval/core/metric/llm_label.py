@@ -103,6 +103,7 @@ class LLMLabel(Metric):
         disable_tqdm: Whether to disable the progress bar.
         category_key: A key to create category-wise mean score.
             The category key is expected to be in extra_info.
+        metric_prefix: A prefix to be added to the metric keys in the summary and instance details.
 
     Examples:
         >>> from flexeval import OpenAIChatAPI, Jinja2PromptTemplate, LLMLabel
@@ -144,6 +145,7 @@ class LLMLabel(Metric):
         disable_tqdm: bool = False,
         valid_score_range: tuple[int, int] | None = None,
         category_key: str | None = None,
+        metric_prefix: str | None = None,
     ) -> None:
         self.language_model = language_model
         self.prompt_template = prompt_template
@@ -163,6 +165,7 @@ class LLMLabel(Metric):
         self.disable_tqdm = disable_tqdm
         self.valid_score_range = valid_score_range
         self.category_key = category_key
+        self.metric_prefix = f"{metric_prefix}-" if metric_prefix else ""
 
     def evaluate(
         self,
@@ -207,13 +210,13 @@ class LLMLabel(Metric):
         )
 
         return MetricResult(
-            summary,
+            {self.metric_prefix + key: value for key, value in summary.items()},
             instance_details=[
                 {
-                    "llm_label": eval_label,
-                    "llm_score": eval_score,
-                    "llm_label_input": eval_in,
-                    "llm_label_output": eval_out.text,
+                    f"{self.metric_prefix}llm_label": eval_label,
+                    f"{self.metric_prefix}llm_score": eval_score,
+                    f"{self.metric_prefix}llm_label_input": eval_in,
+                    f"{self.metric_prefix}llm_label_output": eval_out.text,
                 }
                 for eval_label, eval_score, eval_in, eval_out in zip(
                     evaluator_label_list,
@@ -247,6 +250,7 @@ class ChatLLMLabel(Metric):
         disable_tqdm: Whether to disable the progress bar.
         category_key: A key to create category-wise mean score.
             The category key is expected to be in extra_info.
+        metric_prefix: A prefix to be added to the metric keys in the summary and instance details.
 
     Examples:
         >>> from flexeval import ChatLLMScore, OpenAIChatAPI, Jinja2PromptTemplate
@@ -289,6 +293,7 @@ class ChatLLMLabel(Metric):
         batch_size: int = 4,
         disable_tqdm: bool = False,
         category_key: str | None = None,
+        metric_prefix: str | None = None,
     ) -> None:
         self.language_model = language_model
         self.prompt_template = prompt_template
@@ -308,6 +313,7 @@ class ChatLLMLabel(Metric):
         self.batch_size = batch_size
         self.disable_tqdm = disable_tqdm
         self.category_key = category_key
+        self.metric_prefix = f"{metric_prefix}-" if metric_prefix else ""
 
     def evaluate(
         self,
@@ -353,13 +359,13 @@ class ChatLLMLabel(Metric):
         )
 
         return MetricResult(
-            summary,
+            {self.metric_prefix + key: value for key, value in summary.items()},
             instance_details=[
                 {
-                    "llm_label": eval_label,
-                    "llm_score": eval_score,
-                    "llm_label_input": eval_in,
-                    "llm_label_output": eval_out.text,
+                    f"{self.metric_prefix}llm_label": eval_label,
+                    f"{self.metric_prefix}llm_score": eval_score,
+                    f"{self.metric_prefix}llm_label_input": eval_in,
+                    f"{self.metric_prefix}llm_label_output": eval_out.text,
                 }
                 for eval_label, eval_score, eval_in, eval_out in zip(
                     evaluator_label_list,

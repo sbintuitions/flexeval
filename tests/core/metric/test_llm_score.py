@@ -50,21 +50,24 @@ def test_parse_score_from_evaluator_output(
     assert score == expected_score
 
 
-def test_llm_score() -> None:
+@pytest.mark.parametrize("metric_prefix", [None, "prefix"])
+def test_llm_score(metric_prefix: str | None) -> None:
     metric = LLMScore(
         language_model=EchoBackLanguageModel(),
         prompt_template=Jinja2PromptTemplate("{{ lm_output }}"),
+        metric_prefix=metric_prefix,
     )
     lm_outputs = ["This score is 1.", "This score is 2.", "This is a good one."]
     metric_output = metric.evaluate(
         lm_outputs=lm_outputs,
     )
 
-    assert metric_output.summary == {"llm_score": 1.5, "num_failed_score_parses": 1}
+    metric_prefix = metric_prefix + "-" if metric_prefix else ""
+    assert metric_output.summary == {f"{metric_prefix}llm_score": 1.5, f"{metric_prefix}num_failed_score_parses": 1}
 
     for lm_output, instance_detail in zip(lm_outputs, metric_output.instance_details):
-        assert instance_detail["llm_score_input"] == lm_output
-        assert instance_detail["llm_score_output"] == lm_output
+        assert instance_detail[f"{metric_prefix}llm_score_input"] == lm_output
+        assert instance_detail[f"{metric_prefix}llm_score_output"] == lm_output
 
 
 @pytest.mark.parametrize(
@@ -120,21 +123,24 @@ def test_llm_score_with_category(
         assert instance_detail["llm_score_output"] == lm_output
 
 
-def test_chat_llm_score() -> None:
+@pytest.mark.parametrize("metric_prefix", [None, "prefix"])
+def test_chat_llm_score(metric_prefix: str | None) -> None:
     metric = ChatLLMScore(
         language_model=EchoBackLanguageModel(),
         prompt_template=Jinja2PromptTemplate("{{ lm_output }}"),
+        metric_prefix=metric_prefix,
     )
     lm_outputs = ["This score is 1.", "This score is 2.", "This is a good one."]
     metric_output = metric.evaluate(
         lm_outputs=lm_outputs,
     )
 
-    assert metric_output.summary == {"llm_score": 1.5, "num_failed_score_parses": 1}
+    metric_prefix = metric_prefix + "-" if metric_prefix else ""
+    assert metric_output.summary == {f"{metric_prefix}llm_score": 1.5, f"{metric_prefix}num_failed_score_parses": 1}
 
     for lm_output, instance_detail in zip(lm_outputs, metric_output.instance_details):
-        assert instance_detail["llm_score_input"] == [{"role": "user", "content": lm_output}]
-        assert instance_detail["llm_score_output"] == lm_output
+        assert instance_detail[f"{metric_prefix}llm_score_input"] == [{"role": "user", "content": lm_output}]
+        assert instance_detail[f"{metric_prefix}llm_score_output"] == lm_output
 
 
 @pytest.mark.parametrize(
