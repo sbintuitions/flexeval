@@ -249,6 +249,7 @@ class LanguageModel:
     def __del__(self) -> None:
         self.resource_cleanup()
 
+
 def normalize_stop_sequences(
     stop_sequences_list: list[str | list[str] | None],
     bos_token: str | None = None,

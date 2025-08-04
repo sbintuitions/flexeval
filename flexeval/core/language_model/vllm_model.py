@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Literal
+from typing import TYPE_CHECKING, Any, Callable, Literal
 
 import torch
 from loguru import logger
@@ -14,6 +14,7 @@ from .hf_lm import decode_for_lm_continuation, deserialize_tool_calls_in_message
 
 if TYPE_CHECKING:
     from vllm import LLM
+
 
 def tokenize_text_for_lm_prefix(
     text_list: list[str],
@@ -133,20 +134,26 @@ class VLLM(LanguageModel):
             model_kwargs["disable_sliding_window"] = True
         self.model_kwargs = model_kwargs
         # `self.llm` is initialized lazily to avoid unnecessary memory usage.
-        self._llm = None
-
-        if model_limit_tokens == "default":
-            model_limit_tokens = self.llm.llm_engine.get_model_config().max_model_len
+        self.llm: LLM | None = None
         self.model_limit_tokens = model_limit_tokens
         self.tool_parser = tool_parser
 
-    @property
-    def llm(self) -> LLM:
-        if self._llm is None:
-            from vllm import LLM
-            self._llm = LLM(model=self.model_name, **self.model_kwargs)
-        return self._llm
+    @staticmethod
+    def load_model(method: Callable) -> Callable:
+        """Decorator to load the model lazily."""
 
+        def wrapper(self: VLLM, *args: tuple, **kwargs: dict) -> Callable:
+            if self.llm is None:
+                from vllm import LLM
+
+                self.llm = LLM(self.model_name, **self.model_kwargs)
+                if self.model_limit_tokens == "default":
+                    self.model_limit_tokens = self.llm.llm_engine.get_model_config().max_model_len
+            return method(self, *args, **kwargs)
+
+        return wrapper
+
+    @load_model
     def _batch_complete_text(
         self,
         text_list: list[str],
@@ -223,6 +230,7 @@ class VLLM(LanguageModel):
             outputs.append(LMOutput(text=decoded_text, finish_reason=finish_reason))
         return outputs
 
+    @load_model
     def _batch_generate_chat_response(
         self,
         chat_messages_list: list[list[dict[str, Any]]],
@@ -258,6 +266,7 @@ class VLLM(LanguageModel):
 
         return lm_outputs
 
+    @load_model
     def _batch_compute_log_probs(
         self, text_list: list[str], prefix_list: list[str] | None = None, stride: int | None = None
     ) -> list[float]:
@@ -337,6 +346,7 @@ class VLLM(LanguageModel):
 
         return batch_logprobs
 
+    @load_model
     def _batch_compute_chat_log_probs(
         self, prompt_list: list[list[dict[str, Any]]], response_list: list[dict[str, Any]]
     ) -> list[float]:
@@ -355,8 +365,11 @@ class VLLM(LanguageModel):
 
     def resource_cleanup(self) -> None:
         from vllm.distributed import cleanup_dist_env_and_memory
-        del self._llm
+
+        del self.llm
+        logger.info("cleaning up vLLM resources...")
         cleanup_dist_env_and_memory()
+        self.llm = None
 
     def __repr__(self) -> str:
         return f"VLLM(model_name={self.model_name})"
