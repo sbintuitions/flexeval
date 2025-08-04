@@ -6,7 +6,7 @@ import socket
 import subprocess
 import threading
 import time
-from typing import IO, Any
+from typing import IO, Any, Callable
 
 import requests
 import torch
@@ -198,6 +198,18 @@ class VLLMServeLM(OpenAIChatAPI):
             model_limit_new_tokens=model_limit_new_tokens,
         )
 
+    @staticmethod
+    def load_model(method: Callable) -> Callable:
+        """Decorator to load the model lazily."""
+
+        def wrapper(self: VLLMServeLM, *args: tuple, **kwargs: dict) -> Callable:
+            if not self.manager.is_ready():
+                self.manager.start()
+            return method(self, *args, **kwargs)
+
+        return wrapper
+
+    @load_model
     def _batch_complete_text(
         self,
         text_list: list[str],
@@ -205,18 +217,15 @@ class VLLMServeLM(OpenAIChatAPI):
         max_new_tokens: int | None = None,
         **kwargs,
     ) -> list[LMOutput]:
-        if not self.manager.is_ready():
-            self.manager.start()
         return super()._batch_complete_text(text_list, stop_sequences, max_new_tokens, **kwargs)
 
+    @load_model
     def _batch_generate_chat_response(
         self,
         chat_messages_list: list[list[dict[str, Any]]],
         tools_list: list[list[dict[str, Any]]] | None = None,
         **kwargs,
     ) -> list[LMOutput]:
-        if not self.manager.is_ready():
-            self.manager.start()
         return super()._batch_generate_chat_response(
             chat_messages_list,
             tools_list=tools_list,
