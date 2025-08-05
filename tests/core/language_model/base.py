@@ -411,3 +411,10 @@ class BaseLanguageModelTest:
             chat_lm.string_processors = original_string_processors
         except NotImplementedError:
             pytest.skip("This model does not support generate_chat_response")
+
+    def test_cleanup_resources(self, lm: LanguageModel) -> None:
+        """
+        Test that cleanup_resources does not raise an error.
+        This test must be run after all other tests.
+        """
+        lm.cleanup_resources()

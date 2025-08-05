@@ -550,8 +550,8 @@ class HuggingFaceLM(LanguageModel):
         return self._batch_compute_log_probs(response_as_string, prefix_list=prompt_as_string)
 
     def cleanup_resources(self) -> None:
-        del self._model
-        self._model = None
+        del self.model
+        self.model = None
         gc.collect()
         if torch.cuda.is_available():
             logger.info("Cleaning up CUDA resources...")
