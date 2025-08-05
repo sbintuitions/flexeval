@@ -2,8 +2,9 @@ from __future__ import annotations
 
 import contextlib
 import copy
+import gc
 import json
-from typing import Any, Literal, TypeVar
+from typing import Any, Callable, Literal, TypeVar
 
 import torch
 import torch.nn.functional as F  # noqa: N812
@@ -215,45 +216,56 @@ class HuggingFaceLM(LanguageModel):
         self.chat_template_kwargs = chat_template_kwargs or {}
         self.add_special_tokens = add_special_tokens
         self.default_gen_kwargs = default_gen_kwargs or {}
-
-        model_kwargs = get_default_model_kwargs(model_kwargs)
-        if not load_peft:
-            self.model: PreTrainedModel = AutoModelForCausalLM.from_pretrained(
-                model,
-                **model_kwargs,
-            )
-        else:
-            from peft import AutoPeftModelForCausalLM
-
-            self.model = AutoPeftModelForCausalLM.from_pretrained(
-                model,
-                **model_kwargs,
-            )
-
-        self.model.eval()
-
+        # `self.model` is initialized lazily to avoid unnecessary memory usage.
+        self.model: PreTrainedModel | None = None
+        self.model_kwargs = get_default_model_kwargs(model_kwargs)
+        self.load_peft = load_peft
         self.amp_dtype = amp_dtype
-        if model_limit_tokens == "default":
-            hf_config = self.model.config.to_dict()
-            if "n_positions" in hf_config:
-                model_limit_tokens = hf_config["n_positions"]
-            elif "max_position_embeddings" in hf_config:
-                model_limit_tokens = hf_config["max_position_embeddings"]
-            else:
-                msg = (
-                    "`model_limit_tokens` was set to “default”, but the default max_position_embedeings "
-                    "could not be found in the config. Set it to `None`."
-                )
-                logger.warning(msg)
         self.model_limit_tokens = model_limit_tokens
         self.tool_parser = tool_parser
-
-        transformers.set_seed(random_seed)
-
-        logger.info(f"model device: {self.model.device}")
-        logger.info(f"model dtype: {self.model.dtype}")
         logger.info(f"amp_dtype: {amp_dtype}")
         logger.info(f"random seed: {random_seed}")
+        transformers.set_seed(random_seed)
+
+    @staticmethod
+    def load_model(method: Callable) -> Callable:
+        """Decorator to load the model lazily."""
+
+        def wrapper(self: HuggingFaceLM, *args: tuple, **kwargs: dict) -> Callable:
+            if self.model is None:
+                if not self.load_peft:
+                    self.model = AutoModelForCausalLM.from_pretrained(
+                        self._model_name_or_path,
+                        **self.model_kwargs,
+                    )
+                else:
+                    from peft import AutoPeftModelForCausalLM
+
+                    self.model = AutoPeftModelForCausalLM.from_pretrained(
+                        self._model_name_or_path,
+                        **self.model_kwargs,
+                    )
+
+                self.model.eval()
+
+                if self.model_limit_tokens == "default":
+                    hf_config = self.model.config.to_dict()
+                    if "n_positions" in hf_config:
+                        self.model_limit_tokens = hf_config["n_positions"]
+                    elif "max_position_embeddings" in hf_config:
+                        self.model_limit_tokens = hf_config["max_position_embeddings"]
+                    else:
+                        msg = (
+                            "`model_limit_tokens` was set to “default”, but the default max_position_embedeings "
+                            "could not be found in the config. Set it to `None`."
+                        )
+                        logger.warning(msg)
+
+                logger.info(f"model device: {self.model.device}")
+                logger.info(f"model dtype: {self.model.dtype}")
+            return method(self, *args, **kwargs)
+
+        return wrapper
 
     def _get_amp_context(self) -> contextlib.AbstractContextManager:
         if self.amp_dtype is None:
@@ -297,6 +309,7 @@ class HuggingFaceLM(LanguageModel):
         return stop_token_ids
 
     @torch.inference_mode()
+    @load_model
     def _batch_complete_text(
         self,
         text_list: list[str],
@@ -371,6 +384,7 @@ class HuggingFaceLM(LanguageModel):
             lm_outputs.append(LMOutput(text=decoded_text, finish_reason=finish_reason))
         return lm_outputs
 
+    @load_model
     def _batch_generate_chat_response(
         self,
         chat_messages_list: list[list[dict[str, Any]]],
@@ -411,6 +425,7 @@ class HuggingFaceLM(LanguageModel):
         return lm_outputs
 
     @torch.inference_mode()
+    @load_model
     def _batch_compute_log_probs(
         self,
         text_list: list[str],
@@ -517,6 +532,7 @@ class HuggingFaceLM(LanguageModel):
             total_log_probs = (log_prob_of_next * log_prob_mask).sum(dim=-1)
         return total_log_probs.tolist()
 
+    @load_model
     def _batch_compute_chat_log_probs(
         self, prompt_list: list[list[dict[str, Any]]], response_list: list[dict[str, Any]]
     ) -> list[float]:
@@ -532,6 +548,14 @@ class HuggingFaceLM(LanguageModel):
             prompt_as_string.append(prompt_as_string_i)
             response_as_string.append(response_as_string_i)
         return self._batch_compute_log_probs(response_as_string, prefix_list=prompt_as_string)
+
+    def cleanup_resources(self) -> None:
+        del self._model
+        self._model = None
+        gc.collect()
+        if torch.cuda.is_available():
+            logger.info("Cleaning up CUDA resources...")
+            torch.cuda.empty_cache()
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(model={self._model_name_or_path!r})"

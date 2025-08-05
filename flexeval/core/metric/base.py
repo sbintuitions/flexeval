@@ -46,3 +46,10 @@ class Metric(ABC):
             references_list: List of reference outputs.
             extra_info_list: List of task inputs and some extra information.
         """
+
+    def cleanup_resources(self) -> None:  # noqa: B027
+        """
+        Clean up resources if necessary.
+        This method is called when the metric is no longer needed.
+        """
+        pass  # noqa: PIE790

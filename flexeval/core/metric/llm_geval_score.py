@@ -150,6 +150,7 @@ class LLMGEvalScore(Metric):
             The category key is expected to be in extra_info.
         prob_threshold: For considering low probability among all of valid scores,
             return None (invalid) if sum of the all probability among vaild scores is less than this value.
+        metric_prefix: A prefix to be added to the metric keys in the summary and instance details.
 
     Examples:
         >>> from flexeval import LLMGEvalScore, HuggingFaceLM, Jinja2PromptTemplate
@@ -211,6 +212,7 @@ class LLMGEvalScore(Metric):
         disable_tqdm: bool = False,
         category_key: str | None = None,
         prob_threshold: float = 0,
+        metric_prefix: str | None = None,
     ) -> None:
         self.language_model = language_model
         self.prompt_template = prompt_template
@@ -219,7 +221,7 @@ class LLMGEvalScore(Metric):
         self.valid_score_range = valid_score_range
         self.category_key = category_key
         self.prob_threshold = prob_threshold
-
+        self.metric_prefix = f"{metric_prefix}-" if metric_prefix else ""
         self.valid_labels = [str(score) for score in range(valid_score_range[0], valid_score_range[1] + 1)]
 
     def evaluate(
@@ -268,13 +270,13 @@ class LLMGEvalScore(Metric):
         )
 
         return MetricResult(
-            summary,
+            {self.metric_prefix + key: value for key, value in summary.items()},
             instance_details=[
                 {
-                    "llm_geval_score": eval_score,
-                    "llm_geval_score_input": eval_in,
-                    "llm_geval_score_logprobs": eval_logprobs,
-                    "llm_geval_score_generation_probs": eval_probs,
+                    f"{self.metric_prefix}llm_geval_score": eval_score,
+                    f"{self.metric_prefix}llm_geval_score_input": eval_in,
+                    f"{self.metric_prefix}llm_geval_score_logprobs": eval_logprobs,
+                    f"{self.metric_prefix}llm_geval_score_generation_probs": eval_probs,
                 }
                 for eval_score, eval_in, eval_logprobs, eval_probs in zip(
                     evaluator_score_list,
@@ -284,6 +286,9 @@ class LLMGEvalScore(Metric):
                 )
             ],
         )
+
+    def cleanup_resources(self) -> None:
+        self.language_model.cleanup_resources()
 
     def __repr__(self) -> str:
         return (
@@ -309,6 +314,7 @@ class ChatLLMGEvalScore(Metric):
             The category key is expected to be in extra_info.
         prob_threshold: For considering low probability among all of valid scores,
             return None (invalid) if sum of the all probability among vaild scores is less than this value.
+        metric_prefix: A prefix to be added to the metric keys in the summary and instance details.
 
 
     Examples:
@@ -378,6 +384,7 @@ class ChatLLMGEvalScore(Metric):
         disable_tqdm: bool = False,
         category_key: str | None = None,
         prob_threshold: float = 0,
+        metric_prefix: str | None = None,
     ) -> None:
         self.language_model = language_model
         self.prompt_template = prompt_template
@@ -387,7 +394,7 @@ class ChatLLMGEvalScore(Metric):
         self.valid_score_range = valid_score_range
         self.category_key = category_key
         self.prob_threshold = prob_threshold
-
+        self.metric_prefix = f"{metric_prefix}-" if metric_prefix else ""
         self.valid_labels = [str(score) for score in range(valid_score_range[0], valid_score_range[1] + 1)]
 
     def evaluate(
@@ -434,13 +441,13 @@ class ChatLLMGEvalScore(Metric):
         )
 
         return MetricResult(
-            summary,
+            {self.metric_prefix + key: value for key, value in summary.items()},
             instance_details=[
                 {
-                    "llm_geval_score": eval_score,
-                    "llm_geval_score_input": eval_in,
-                    "llm_geval_score_logprobs": eval_logprobs,
-                    "llm_geval_score_generation_probs": eval_probs,
+                    f"{self.metric_prefix}llm_geval_score": eval_score,
+                    f"{self.metric_prefix}llm_geval_score_input": eval_in,
+                    f"{self.metric_prefix}llm_geval_score_logprobs": eval_logprobs,
+                    f"{self.metric_prefix}llm_geval_score_generation_probs": eval_probs,
                 }
                 for eval_score, eval_in, eval_logprobs, eval_probs in zip(
                     evaluator_score_list,
@@ -450,6 +457,9 @@ class ChatLLMGEvalScore(Metric):
                 )
             ],
         )
+
+    def cleanup_resources(self) -> None:
+        self.language_model.cleanup_resources()
 
     def __repr__(self) -> str:
         return (

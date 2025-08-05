@@ -6,12 +6,13 @@ import socket
 import subprocess
 import threading
 import time
-from typing import IO, Any
+from typing import IO, Any, Callable
 
 import requests
 import torch
 from loguru import logger
 
+from flexeval.core.language_model.base import LMOutput
 from flexeval.core.string_processor import StringProcessor
 
 from .openai_api import OpenAIChatAPI
@@ -42,6 +43,7 @@ class VLLMServerManager:
         self.model_kwargs = model_kwargs or {}
         self.host = "localhost"
         self.port = find_free_port()
+        self.base_url = f"http://{self.host}:{self.port}/v1"
         self.timeout = timeout
         self.process: subprocess.Popen | None = None
         self._log_threads: list[threading.Thread] = []
@@ -50,6 +52,9 @@ class VLLMServerManager:
         """
         Start the `vllm serve` process and wait until it is ready.
         """
+        if self.is_ready():
+            logger.warning("vLLM server is already running. Skipping start.")
+            return self.host, self.port
 
         cmd = [
             "vllm",
@@ -94,21 +99,13 @@ class VLLMServerManager:
             t.start()
             self._log_threads.append(t)
 
-        url = f"http://{self.host}:{self.port}/v1/models"
-        logger.info("Waiting for server to become available at {}", url)
+        logger.info("Waiting for server to become available")
 
         interval_second = 1
         for _ in range(self.timeout // interval_second):
-            if self.process.poll() is not None:
-                msg = "vLLM server process terminated unexpectedly."
-                raise RuntimeError(msg)
-            try:
-                response = requests.get(url, timeout=1)
-                if response.status_code == 200:
-                    logger.success("vLLM server is up and responding at {}", url)
-                    return self.host, self.port
-            except requests.RequestException:
-                pass
+            if self.is_ready():
+                logger.info(f"vLLM server is ready at {self.base_url}")
+                return self.host, self.port
             time.sleep(interval_second)
 
         self.stop()
@@ -130,6 +127,18 @@ class VLLMServerManager:
                 self.process.kill()
         self.process = None
         self._log_threads.clear()
+
+    def is_ready(self) -> bool:
+        """
+        Check if the vLLM server is ready to accept requests.
+        """
+        if self.process is None or self.process.poll() is not None:
+            return False
+        try:
+            response = requests.get(f"{self.base_url}/models", timeout=1)
+            return response.status_code == 200  # noqa: TRY300
+        except requests.RequestException:
+            return False
 
 
 class VLLMServeLM(OpenAIChatAPI):
@@ -177,10 +186,9 @@ class VLLMServeLM(OpenAIChatAPI):
         if "tensor_parallel_size" not in model_kwargs:
             model_kwargs["tensor_parallel_size"] = torch.cuda.device_count()
         self.manager = VLLMServerManager(model=model, model_kwargs=model_kwargs, timeout=booting_timeout)
-        host, port = self.manager.start()
         if api_headers is None:
             api_headers = {}
-        api_headers["base_url"] = f"http://{host}:{port}/v1"
+        api_headers["base_url"] = self.manager.base_url
         super().__init__(
             model=model,
             api_headers=api_headers,
@@ -188,6 +196,40 @@ class VLLMServeLM(OpenAIChatAPI):
             developer_message=developer_message,
             string_processors=string_processors,
             model_limit_new_tokens=model_limit_new_tokens,
+        )
+
+    @staticmethod
+    def load_model(method: Callable) -> Callable:
+        """Decorator to load the model lazily."""
+
+        def wrapper(self: VLLMServeLM, *args: tuple, **kwargs: dict) -> Callable:
+            if not self.manager.is_ready():
+                self.manager.start()
+            return method(self, *args, **kwargs)
+
+        return wrapper
+
+    @load_model
+    def _batch_complete_text(
+        self,
+        text_list: list[str],
+        stop_sequences: str | list[str] | None = None,
+        max_new_tokens: int | None = None,
+        **kwargs,
+    ) -> list[LMOutput]:
+        return super()._batch_complete_text(text_list, stop_sequences, max_new_tokens, **kwargs)
+
+    @load_model
+    def _batch_generate_chat_response(
+        self,
+        chat_messages_list: list[list[dict[str, Any]]],
+        tools_list: list[list[dict[str, Any]]] | None = None,
+        **kwargs,
+    ) -> list[LMOutput]:
+        return super()._batch_generate_chat_response(
+            chat_messages_list,
+            tools_list=tools_list,
+            **kwargs,
         )
 
     def _batch_compute_chat_log_probs(
@@ -203,6 +245,6 @@ class VLLMServeLM(OpenAIChatAPI):
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(model={self.model})"
 
-    def __del__(self) -> None:
+    def cleanup_resources(self) -> None:
         if hasattr(self, "manager"):
             self.manager.stop()

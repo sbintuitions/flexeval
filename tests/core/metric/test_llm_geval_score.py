@@ -61,11 +61,13 @@ def test_calculate_weighted_average(
     assert score == expected_score
 
 
-def test_llm_geval_score() -> None:
+@pytest.mark.parametrize("metric_prefix", [None, "prefix"])
+def test_llm_geval_score(metric_prefix: str | None) -> None:
     metric = LLMGEvalScore(
         language_model=EchoBackLanguageModel(),
         prompt_template=Jinja2PromptTemplate("{{ lm_output }}"),
         valid_score_range=(1, 5),
+        metric_prefix=metric_prefix,
     )
     lm_outputs = [
         "[A] Output a number from 1 to 5.",
@@ -77,12 +79,13 @@ def test_llm_geval_score() -> None:
         lm_outputs=lm_outputs,
     )
 
+    metric_prefix = metric_prefix + "-" if metric_prefix else ""
     assert len(metric_output.summary) == 2
-    assert metric_output.summary["llm_geval_score"] == pytest.approx(3.0, rel=1e-5)
-    assert metric_output.summary["num_failed_score_parses"] == 1
+    assert metric_output.summary[f"{metric_prefix}llm_geval_score"] == pytest.approx(3.0, rel=1e-5)
+    assert metric_output.summary[f"{metric_prefix}num_failed_score_parses"] == 1
 
     for lm_output, instance_detail in zip(lm_outputs, metric_output.instance_details):
-        assert instance_detail["llm_geval_score_input"] == lm_output
+        assert instance_detail[f"{metric_prefix}llm_geval_score_input"] == lm_output
 
 
 def test_llm_geval_score_with_category() -> None:
@@ -117,11 +120,13 @@ def test_llm_geval_score_with_category() -> None:
         assert instance_detail["llm_geval_score_input"] == lm_output
 
 
-def test_chat_llm_geval_score() -> None:
+@pytest.mark.parametrize("metric_prefix", [None, "prefix"])
+def test_chat_llm_geval_score(metric_prefix: str | None) -> None:
     metric = ChatLLMGEvalScore(
         language_model=EchoBackLanguageModel(),
         prompt_template=Jinja2PromptTemplate("{{ lm_output }}"),
         valid_score_range=(1, 5),
+        metric_prefix=metric_prefix,
     )
     lm_outputs = [
         "[A] Output a number from 1 to 5.",
@@ -133,12 +138,13 @@ def test_chat_llm_geval_score() -> None:
         lm_outputs=lm_outputs,
     )
 
+    metric_prefix = metric_prefix + "-" if metric_prefix else ""
     assert len(metric_output.summary) == 2
-    assert metric_output.summary["llm_geval_score"] == pytest.approx(3.0, rel=1e-5)
-    assert metric_output.summary["num_failed_score_parses"] == 1
+    assert metric_output.summary[f"{metric_prefix}llm_geval_score"] == pytest.approx(3.0, rel=1e-5)
+    assert metric_output.summary[f"{metric_prefix}num_failed_score_parses"] == 1
 
     for lm_output, instance_detail in zip(lm_outputs, metric_output.instance_details):
-        assert instance_detail["llm_geval_score_input"] == [{"role": "user", "content": lm_output}]
+        assert instance_detail[f"{metric_prefix}llm_geval_score_input"] == [{"role": "user", "content": lm_output}]
 
 
 def test_chat_llm_geval_score_with_category() -> None:
