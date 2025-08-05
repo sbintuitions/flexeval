@@ -3698,8 +3698,8 @@ If set to “default”, the value will be automatically determined when possibl
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_batch_compute_log_probs</span><span class="p">(</span><span class="n">response_as_string</span><span class="p">,</span> <span class="n">prefix_list</span><span class="o">=</span><span class="n">prompt_as_string</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">cleanup_resources</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_model</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">gc</span><span class="o">.</span><span class="n">collect</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span><span class="p">():</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Cleaning up CUDA resources...&quot;</span><span class="p">)</span>
@@ -4233,8 +4233,8 @@ If set to “default”, the value will be automatically determined when possibl
 <span class="normal">556</span>
 <span class="normal">557</span>
 <span class="normal">558</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">cleanup_resources</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">_model</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">gc</span><span class="o">.</span><span class="n">collect</span><span class="p">()</span>
     <span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span><span class="p">():</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Cleaning up CUDA resources...&quot;</span><span class="p">)</span>
