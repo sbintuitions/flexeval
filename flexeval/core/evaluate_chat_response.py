@@ -80,7 +80,7 @@ def evaluate_chat_response(  # noqa: C901,PLR0912, PLR0915
                     input_messages_list[input_id] = [*meta_messages, *few_shot_messages, *real_messages]
                     offsets_to_first_turn[input_id] += len(few_shot_messages)
 
-            if not eval_dataset.require_incremental_response():
+            if not require_incremental_response:
                 # Continue generation from the given conversation history
                 lm_outputs: list[LMOutput] = language_model.generate_chat_response(
                     input_messages_list,
