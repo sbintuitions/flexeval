@@ -31,6 +31,31 @@ def _remove_redundant_keys_from_messages(
     return [{key: value for key, value in message.items() if key not in remove_keys} for message in messages]
 
 
+def add_few_shot_messages_to_chat_instance(chat_instance: ChatInstance, few_shot_generator: FewShotGenerator) -> None:
+    """Add few-shot examples to a chat instance by inserting them before the first user message.
+    Note that it updates ChatInstance in-place.
+    """
+    few_shot_instances = few_shot_generator(eval_inputs=chat_instance.messages)
+    if not all(isinstance(inst, ChatInstance) for inst in few_shot_instances):
+        msg = "few_shot_instances must only contain ChatInstance, but it does not"
+        raise TypeError(msg)
+
+    few_shot_messages: list[dict[str, Any]] = []
+    for few_shot_instance in few_shot_instances:
+        few_shot_messages += few_shot_instance.messages
+        if few_shot_instance.references:
+            # use the first reference as the assistant message
+            few_shot_messages += [{"role": "assistant", "content": few_shot_instance.references[0]}]
+
+    # Insert few_shot_messages before the first user message
+    first_turn_idx = find_first_turn_for_response(chat_instance.messages)
+    chat_instance.messages = [
+        *chat_instance.messages[:first_turn_idx],
+        *few_shot_messages,
+        *chat_instance.messages[first_turn_idx:],
+    ]
+
+
 def evaluate_chat_response(  # noqa: C901,PLR0912, PLR0915
     language_model: LanguageModel,
     gen_kwargs: dict[str, Any],
@@ -41,6 +66,10 @@ def evaluate_chat_response(  # noqa: C901,PLR0912, PLR0915
     few_shot_generator: FewShotGenerator | None = None,
 ) -> tuple[dict[str, float], list[dict[str, Any]]]:
     logger.info(f"Evaluate the model with gen_kwargs: {gen_kwargs}")
+
+    if few_shot_generator:
+        for eval_instance in eval_instances:
+            add_few_shot_messages_to_chat_instance(eval_instance, few_shot_generator)
 
     # Generate responses for each instance
     all_messages_list: list[list[dict[str, Any]]] = []
@@ -58,27 +87,6 @@ def evaluate_chat_response(  # noqa: C901,PLR0912, PLR0915
             # For the `require_incremental_response==True` case,
             # it is necessary to identify the first turn that should be responded, excluding system messages, etc.
             offsets_to_first_turn = [find_first_turn_for_response(messages) for messages in input_messages_list]
-
-            # Generate few-shot instances
-            # The few-shot examples here follow a multi-turn format, interleaving user and assistant messages.
-            if few_shot_generator is not None:
-                for input_id in range(len(input_messages_list)):
-                    few_shot_instances = few_shot_generator(eval_inputs=input_messages_list[input_id])
-                    few_shot_messages: list[dict[str, Any]] = []
-                    for few_shot_instance in few_shot_instances:
-                        if not isinstance(few_shot_instance, ChatInstance):
-                            msg = f"Invalid instance type: {type(few_shot_instance)}"
-                            raise TypeError(msg)
-                        few_shot_messages += few_shot_instance.messages
-                        if few_shot_instance.references:
-                            # use the first reference as the assistant message
-                            few_shot_messages += [{"role": "assistant", "content": few_shot_instance.references[0]}]
-
-                    offset = offsets_to_first_turn[input_id]
-                    meta_messages = input_messages_list[input_id][:offset]
-                    real_messages = input_messages_list[input_id][offset:]
-                    input_messages_list[input_id] = [*meta_messages, *few_shot_messages, *real_messages]
-                    offsets_to_first_turn[input_id] += len(few_shot_messages)
 
             if not require_incremental_response:
                 # Continue generation from the given conversation history
