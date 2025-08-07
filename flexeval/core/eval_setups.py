@@ -67,6 +67,7 @@ class ChatResponse(EvalSetup):
             language_model=language_model,
             gen_kwargs=self.gen_kwargs,
             eval_instances=eval_instances,
+            require_incremental_response=self.eval_dataset.require_incremental_response(),
             metrics=metrics,
             batch_size=self.batch_size,
             max_instances=self.max_instances,

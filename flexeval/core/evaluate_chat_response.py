@@ -35,6 +35,7 @@ def evaluate_chat_response(  # noqa: C901,PLR0912, PLR0915
     language_model: LanguageModel,
     gen_kwargs: dict[str, Any],
     eval_instances: Sequence[ChatInstance],
+    require_incremental_response: bool,
     metrics: list[Metric],
     batch_size: int,
     few_shot_generator: FewShotGenerator | None = None,
