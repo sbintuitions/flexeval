@@ -30,7 +30,7 @@ def _remove_redundant_keys_from_messages(
     return [{key: value for key, value in message.items() if key not in remove_keys} for message in messages]
 
 
-def add_few_shot_messages_to_chat_instance(chat_instance: ChatInstance, few_shot_generator: FewShotGenerator) -> None:
+def _add_few_shot_messages_to_chat_instance(chat_instance: ChatInstance, few_shot_generator: FewShotGenerator) -> None:
     """Add few-shot examples to a chat instance by inserting them before the first user message.
     Note that it updates ChatInstance in-place.
     """
@@ -55,7 +55,7 @@ def add_few_shot_messages_to_chat_instance(chat_instance: ChatInstance, few_shot
     ]
 
 
-def find_response_context_index(incomplete_messages: list[dict[str, Any]]) -> int | None:
+def _find_response_context_index(incomplete_messages: list[dict[str, Any]]) -> int | None:
     """
     Finds the index after the earliest message that requires an assistant response.
 
@@ -98,7 +98,7 @@ def evaluate_chat_response(  # noqa: C901,PLR0912, PLR0915
 
     if few_shot_generator:
         for eval_instance in eval_instances:
-            add_few_shot_messages_to_chat_instance(eval_instance, few_shot_generator)
+            _add_few_shot_messages_to_chat_instance(eval_instance, few_shot_generator)
 
     # Generate responses for each instance
     all_messages_list: list[list[dict[str, Any]]] = []
@@ -111,7 +111,7 @@ def evaluate_chat_response(  # noqa: C901,PLR0912, PLR0915
             # We will populate this history with llm
             current_chat_history: list[list[dict[str, Any]]] = [[*chat_instance.messages] for chat_instance in batch]
             response_context_indices = [
-                find_response_context_index(chat_history) for chat_history in current_chat_history
+                _find_response_context_index(chat_history) for chat_history in current_chat_history
             ]
             while any(idx is not None for idx in response_context_indices):
                 batch_inputs = [
@@ -145,7 +145,7 @@ def evaluate_chat_response(  # noqa: C901,PLR0912, PLR0915
                     )
                     current_chat_history[batch_i].insert(response_context_indices[batch_i], lm_output_message)
                 response_context_indices = [
-                    find_response_context_index(chat_history) for chat_history in current_chat_history
+                    _find_response_context_index(chat_history) for chat_history in current_chat_history
                 ]
 
             all_messages_list += current_chat_history
