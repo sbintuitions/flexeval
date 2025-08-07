@@ -9,7 +9,7 @@ from tqdm import tqdm
 from flexeval.core.language_model.base import LMOutput
 from flexeval.core.utils.chat_util import find_first_turn_for_response
 
-from .chat_dataset import ChatDataset, ChatInstance
+from .chat_dataset import ChatInstance
 from .few_shot_generator import FewShotGenerator
 from .language_model import LanguageModel
 from .metric import Metric
@@ -34,18 +34,12 @@ def _remove_redundant_keys_from_messages(
 def evaluate_chat_response(  # noqa: C901,PLR0912, PLR0915
     language_model: LanguageModel,
     gen_kwargs: dict[str, Any],
-    eval_dataset: ChatDataset,
+    eval_instances: Sequence[ChatInstance],
     metrics: list[Metric],
     batch_size: int,
-    max_instances: int | None = None,
     few_shot_generator: FewShotGenerator | None = None,
 ) -> tuple[dict[str, float], list[dict[str, Any]]]:
     logger.info(f"Evaluate the model with gen_kwargs: {gen_kwargs}")
-
-    # Load the evaluation dataset
-    eval_instances: Sequence[ChatInstance] = eval_dataset
-    if max_instances is not None:
-        eval_instances = [eval_dataset[i] for i in range(min(max_instances, len(eval_dataset)))]
 
     # Generate responses for each instance
     all_messages_list: list[list[dict[str, Any]]] = []
