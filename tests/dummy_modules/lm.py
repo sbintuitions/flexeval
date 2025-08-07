@@ -29,7 +29,6 @@ class DummyLanguageModel(LanguageModel):
         tools_list: list[list[dict[str, Any]]] | None = None,
         **kwargs,
     ) -> list[LMOutput]:
-
         tool_calls_list = [None for _ in chat_messages_list]
         if tools_list:
             for i, tools in enumerate(tools_list):
