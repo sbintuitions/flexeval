@@ -2,10 +2,10 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import Any, Sequence
+from typing import Any
 
 from .chat_dataset import ChatDataset
-from .evaluate_chat_response import ChatInstance, evaluate_chat_response
+from .evaluate_chat_response import evaluate_chat_response
 from .evaluate_generation import evaluate_generation
 from .evaluate_multiple_choice import evaluate_multiple_choice
 from .evaluate_perplexity import evaluate_perplexity
@@ -59,15 +59,10 @@ class ChatResponse(EvalSetup):
         if isinstance(metrics, Metric):
             metrics = [metrics]
 
-        eval_instances: Sequence[ChatInstance] = self.eval_dataset
-        if self.max_instances is not None:
-            eval_instances = [self.eval_dataset[i] for i in range(min(self.max_instances, len(self.eval_dataset)))]
-
         return evaluate_chat_response(
             language_model=language_model,
             gen_kwargs=self.gen_kwargs,
-            eval_instances=eval_instances,
-            require_incremental_response=self.eval_dataset.require_incremental_response(),
+            eval_dataset=self.eval_dataset,
             metrics=metrics,
             batch_size=self.batch_size,
             max_instances=self.max_instances,

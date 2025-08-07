@@ -109,13 +109,5 @@ class ChatDataset(Sequence[ChatInstance], ABC):
         """
         raise NotImplementedError
 
-    def require_incremental_response(self) -> bool:
-        """If true, the inputs consist of multiple user utterances and the
-        model should generate responses for each utterance incrementally.
-
-        Otherwise, the model just has to continue the conversation from the last user utterance.
-        """
-        return False
-
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(num_instances={len(self)})"

@@ -28,12 +28,10 @@ from tests.dummy_modules.reward_lm import DummyRewardLanguageModel
 
 
 @pytest.mark.parametrize(
-    ("require_incremental_response", "use_few_shot", "max_instances", "use_tools", "batch_size"),
-    list(itertools.product([True, False], [True, False], [None, 1], [True, False], [1, 3])),
+    ("use_few_shot", "max_instances", "use_tools", "batch_size"),
+    list(itertools.product([True, False], [None, 1], [True, False], [1, 3])),
 )
-def test_evaluate_chat_response(
-    require_incremental_response: bool, use_few_shot: bool, max_instances: int, use_tools: bool, batch_size: int
-) -> None:
+def test_evaluate_chat_response(use_few_shot: bool, max_instances: int, use_tools: bool, batch_size: int) -> None:
     few_shot_generator = None
     if use_few_shot:
         few_shot_generator = RandomFewShotGenerator(dataset=DummyChatDataset(), num_shots=1, num_trials_to_avoid_leak=0)
@@ -42,7 +40,6 @@ def test_evaluate_chat_response(
         language_model=DummyLanguageModel(),
         gen_kwargs={},
         eval_dataset=DummyChatDataset(
-            require_incremental_response=require_incremental_response,
             use_tools=use_tools,
         ),
         few_shot_generator=few_shot_generator,

@@ -27,7 +27,6 @@ class TemplateChatDataset(ChatDataset):
             if the dataset has a single reference.
         reference_list_template: Specify the Jinja2 template to render a list of reference strings
             if the dataset has multiple references.
-        require_incremental_response: Whether the dataset requires incremental response.
         extra_info_templates: A dictionary of Jinja2 templates for extra information.
         system_message_template: A Jinja2 template for the system message.
         data_range: The range of data to use.
@@ -43,7 +42,6 @@ class TemplateChatDataset(ChatDataset):
         input_template: str,
         reference_template: str | None = None,
         reference_list_template: str | None = None,
-        require_incremental_response: bool = False,
         extra_info_templates: dict[str, str] | None = None,
         system_message_template: str | None = None,
         data_range: tuple[int, int] | None = None,
@@ -83,11 +81,6 @@ class TemplateChatDataset(ChatDataset):
         self._system_message_template: Template | None = (
             JINJA2_ENV.from_string(system_message_template) if system_message_template else None
         )
-
-        self._require_incremental_response = require_incremental_response
-
-    def require_incremental_response(self) -> bool:
-        return self._require_incremental_response
 
     def __len__(self) -> int:
         return len(self.items)
@@ -146,7 +139,6 @@ class HFChatDataset(TemplateChatDataset):
         dataset_kwargs: dict[str, Any] | None = None,
         reference_template: str | None = None,
         reference_list_template: str | None = None,
-        require_incremental_response: bool = False,
         extra_info_templates: dict[str, str] | None = None,
         system_message_template: str | None = None,
         data_range: tuple[int, int] | None = None,
@@ -162,7 +154,6 @@ class HFChatDataset(TemplateChatDataset):
             input_template=input_template,
             reference_template=reference_template,
             reference_list_template=reference_list_template,
-            require_incremental_response=require_incremental_response,
             extra_info_templates=extra_info_templates,
             system_message_template=system_message_template,
             data_range=data_range,
@@ -185,7 +176,6 @@ class JsonlChatDataset(TemplateChatDataset):
         input_template: str,
         reference_template: str | None = None,
         reference_list_template: str | None = None,
-        require_incremental_response: bool = False,
         extra_info_templates: dict[str, str] | None = None,
         system_message_template: str | None = None,
         data_range: tuple[int, int] | None = None,
@@ -200,7 +190,6 @@ class JsonlChatDataset(TemplateChatDataset):
             input_template=input_template,
             reference_template=reference_template,
             reference_list_template=reference_list_template,
-            require_incremental_response=require_incremental_response,
             extra_info_templates=extra_info_templates,
             system_message_template=system_message_template,
             data_range=data_range,
