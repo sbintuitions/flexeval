@@ -211,6 +211,8 @@ def evaluate_chat_response(  # noqa: C901, PLR0912
                 metric_result.instance_details,
             ):
                 instance_metrics_list[instance_idx].update(instance_details)
+    for instance_metrics, output in zip(instance_metrics_list, outputs):
+        output.update(instance_metrics)
 
     # Calculate the finish_reason and validation statistics
     finish_reason_counter = Counter()
