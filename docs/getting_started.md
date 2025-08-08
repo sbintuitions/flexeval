@@ -109,9 +109,9 @@ export OPENAI_API_KEY="YOUR_API_KEY"
 
 flexeval_lm \
   --language_model OpenAIChatAPI \
-  --language_model.model "gpt-3.5-turbo" \
+  --language_model.model "gpt-4o-mini" \
   --eval_setup "mt-en" \
-  --save_dir "results/mt-en/gpt-3.5-turbo"
+  --save_dir "results/mt-en/gpt-4o-mini"
 ```
 
 !!! note
@@ -132,9 +132,9 @@ To run automatic evaluation with LLMs, you can use `outputs.jsonl` from the prev
 
 ```bash
 flexeval_file \
-  --eval_file "results/mt-en/gpt-3.5-turbo/outputs.jsonl" \
+  --eval_file "results/mt-en/gpt-4o-mini/outputs.jsonl" \
   --metrics "assistant_eval_en_single_turn" \
-  --save_dir "results/mt-en/gpt-3.5-turbo/eval_by_gpt"
+  --save_dir "results/mt-en/gpt-4o-mini/eval_by_gpt"
 ```
 
 In the results, you can see the evaluation result like `{"llm_score": 7.795}`.
