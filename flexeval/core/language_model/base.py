@@ -3,6 +3,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any, final
 
+from loguru import logger
+
 from flexeval.core.string_processor import StringProcessor
 
 
@@ -34,9 +36,11 @@ class LMOutput:
     """
 
     def __post_init__(self) -> None:
-        if self.tool_calls is None and self.text is None:
-            msg = "It is not allowed for both `text` and `tool_calls` to be None."
-            raise ValueError(msg)
+        if self.text is None:
+            self.text = ""
+            if self.tool_calls is None:
+                msg = "Both `text` and `tool_calls` are empty."
+                logger.warning(msg)
 
 
 class LanguageModel:
