@@ -365,6 +365,8 @@ class OpenAICompletionAPI(LanguageModel):
                 gen_kwargs.pop("stop_sequences", None),  # This is a common variable name used in flexeval
             ],
         )
+        if stop_sequences:
+            gen_kwargs["stop"] = stop_sequences
 
         tasks = [
             _retry_on_error(
@@ -373,7 +375,6 @@ class OpenAICompletionAPI(LanguageModel):
                 openai_call=lambda x=ms: self.api_call_func(
                     model=self.model,
                     prompt=x,
-                    stop=stop_sequences or NotGiven(),
                     **gen_kwargs,
                 ),
                 empty_response=self.empty_response,
