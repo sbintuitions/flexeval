@@ -18,9 +18,6 @@ class SacreBleuChatDataset(ChatDataset):
             msg = "The number of source and reference pairs should be the same."
             raise ValueError(msg)
 
-    def require_incremental_response(self) -> bool:
-        return False
-
     def __len__(self) -> int:
         return len(self._source_list)
 

@@ -6,10 +6,9 @@ from typing import Any, Iterable, Sequence
 from loguru import logger
 from tqdm import tqdm
 
-from flexeval.core.language_model.base import LMOutput
 from flexeval.core.utils.chat_util import find_first_turn_for_response
 
-from .chat_dataset import ChatDataset, ChatInstance
+from .chat_dataset import ChatInstance
 from .few_shot_generator import FewShotGenerator
 from .language_model import LanguageModel
 from .metric import Metric
@@ -31,21 +30,75 @@ def _remove_redundant_keys_from_messages(
     return [{key: value for key, value in message.items() if key not in remove_keys} for message in messages]
 
 
+def _add_few_shot_messages_to_chat_instance(chat_instance: ChatInstance, few_shot_generator: FewShotGenerator) -> None:
+    """Add few-shot examples to a chat instance by inserting them before the first user message.
+    Note that it updates ChatInstance in-place.
+    """
+    few_shot_instances = few_shot_generator(eval_inputs=chat_instance.messages)
+    if not all(isinstance(inst, ChatInstance) for inst in few_shot_instances):
+        msg = "few_shot_instances must only contain ChatInstance, but it does not"
+        raise TypeError(msg)
+
+    few_shot_messages: list[dict[str, Any]] = []
+    for few_shot_instance in few_shot_instances:
+        few_shot_messages += few_shot_instance.messages
+        if few_shot_instance.references:
+            # use the first reference as the assistant message
+            few_shot_messages += [{"role": "assistant", "content": few_shot_instance.references[0]}]
+
+    # Insert few_shot_messages before the first user message
+    first_turn_idx = find_first_turn_for_response(chat_instance.messages)
+    chat_instance.messages = [
+        *chat_instance.messages[:first_turn_idx],
+        *few_shot_messages,
+        *chat_instance.messages[first_turn_idx:],
+    ]
+
+
+def _find_response_context_index(incomplete_messages: list[dict[str, Any]]) -> int | None:
+    """
+    Finds the index after the earliest message that requires an assistant response.
+
+    Specifically, it looks for the first message from a role that expects an assistant reply
+    ('user' or 'tool') that is not followed by an 'assistant' message.
+
+    Returns:
+        The index to slice messages up to (exclusive of that index), or None if no reply is needed.
+        Use as: incomplete_messages[:index]
+    """
+    expected_roles = {"user", "tool"}
+
+    for i in range(len(incomplete_messages) - 1):
+        current = incomplete_messages[i]
+        next_msg = incomplete_messages[i + 1]
+        if current["role"] in expected_roles and next_msg["role"] != "assistant":
+            return i + 1
+
+    # Check if the last message expects a response
+    if incomplete_messages and incomplete_messages[-1]["role"] in expected_roles:
+        return len(incomplete_messages)
+
+    return None
+
+
 def evaluate_chat_response(  # noqa: C901,PLR0912, PLR0915
     language_model: LanguageModel,
     gen_kwargs: dict[str, Any],
-    eval_dataset: ChatDataset,
+    eval_dataset: Sequence[ChatInstance],
     metrics: list[Metric],
     batch_size: int,
-    max_instances: int | None = None,
     few_shot_generator: FewShotGenerator | None = None,
+    max_instances: int | None = None,
 ) -> tuple[dict[str, float], list[dict[str, Any]]]:
     logger.info(f"Evaluate the model with gen_kwargs: {gen_kwargs}")
 
-    # Load the evaluation dataset
     eval_instances: Sequence[ChatInstance] = eval_dataset
     if max_instances is not None:
-        eval_instances = [eval_dataset[i] for i in range(min(max_instances, len(eval_dataset)))]
+        eval_instances = [eval_dataset[i] for i in range(min(max_instances, len(eval_instances)))]
+
+    if few_shot_generator:
+        for eval_instance in eval_instances:
+            _add_few_shot_messages_to_chat_instance(eval_instance, few_shot_generator)
 
     # Generate responses for each instance
     all_messages_list: list[list[dict[str, Any]]] = []
@@ -54,113 +107,49 @@ def evaluate_chat_response(  # noqa: C901,PLR0912, PLR0915
     all_input_tools_list: list[list[dict[str, Any]] | None] = []
     with tqdm(total=len(eval_instances)) as pbar:
         for batch_id, batch in enumerate(batch_iter(eval_instances, batch_size)):
-            input_messages_list = [chat_instance.messages for chat_instance in batch]
-            input_tools_list = [chat_instance.tools for chat_instance in batch]
-            all_input_tools_list += input_tools_list
-            if all(tools is None for tools in input_tools_list):
-                input_tools_list = None
-
-            # For the `require_incremental_response==True` case,
-            # it is necessary to identify the first turn that should be responded, excluding system messages, etc.
-            offsets_to_first_turn = [find_first_turn_for_response(messages) for messages in input_messages_list]
-
-            # Generate few-shot instances
-            # The few-shot examples here follow a multi-turn format, interleaving user and assistant messages.
-            if few_shot_generator is not None:
-                for input_id in range(len(input_messages_list)):
-                    few_shot_instances = few_shot_generator(eval_inputs=input_messages_list[input_id])
-                    few_shot_messages: list[dict[str, Any]] = []
-                    for few_shot_instance in few_shot_instances:
-                        if not isinstance(few_shot_instance, ChatInstance):
-                            msg = f"Invalid instance type: {type(few_shot_instance)}"
-                            raise TypeError(msg)
-                        few_shot_messages += few_shot_instance.messages
-                        if few_shot_instance.references:
-                            # use the first reference as the assistant message
-                            few_shot_messages += [{"role": "assistant", "content": few_shot_instance.references[0]}]
-
-                    offset = offsets_to_first_turn[input_id]
-                    meta_messages = input_messages_list[input_id][:offset]
-                    real_messages = input_messages_list[input_id][offset:]
-                    input_messages_list[input_id] = [*meta_messages, *few_shot_messages, *real_messages]
-                    offsets_to_first_turn[input_id] += len(few_shot_messages)
-
-            if not eval_dataset.require_incremental_response():
-                # Continue generation from the given conversation history
-                lm_outputs: list[LMOutput] = language_model.generate_chat_response(
-                    input_messages_list,
-                    tools=input_tools_list,
+            # Copy the input messages as current_chat_history
+            # We will populate this history with llm
+            current_chat_history: list[list[dict[str, Any]]] = [[*chat_instance.messages] for chat_instance in batch]
+            response_context_indices = [
+                _find_response_context_index(chat_history) for chat_history in current_chat_history
+            ]
+            while any(idx is not None for idx in response_context_indices):
+                batch_inputs = [
+                    _remove_redundant_keys_from_messages(
+                        current_chat_history[batch_i][:message_i],
+                        remove_keys={"finish_reason", "raw_content", "tool_call_validation_result"},
+                    )
+                    for batch_i, message_i in enumerate(response_context_indices)
+                    if message_i is not None
+                ]
+                ids_fed_to_lm = [i for i, idx in enumerate(response_context_indices) if idx is not None]
+                lm_outputs = language_model.generate_chat_response(
+                    batch_inputs,
+                    tools=[batch[i].tools for i in ids_fed_to_lm],
                     **gen_kwargs,
                 )
-                for input_messages, lm_output in zip(input_messages_list, lm_outputs):
-                    all_messages_list.append(
-                        [
-                            *input_messages,
-                            {
-                                "role": "assistant",
-                                "content": lm_output.text,
-                                "finish_reason": lm_output.finish_reason,
-                            }
-                            | ({"raw_content": lm_output.raw_text} if lm_output.raw_text else {})
-                            | ({"tool_calls": lm_output.tool_calls} if lm_output.tool_calls else {})
-                            | (
-                                {"tool_call_validation_result": lm_output.tool_call_validation_result}
-                                if lm_output.tool_call_validation_result
-                                else {}
-                            ),
-                        ],
+                for lm_output, batch_i in zip(lm_outputs, ids_fed_to_lm):
+                    lm_output_message = (
+                        {
+                            "role": "assistant",
+                            "content": lm_output.text,
+                            "finish_reason": lm_output.finish_reason,
+                        }
+                        | ({"raw_content": lm_output.raw_text} if lm_output.raw_text else {})
+                        | ({"tool_calls": lm_output.tool_calls} if lm_output.tool_calls else {})
+                        | (
+                            {"tool_call_validation_result": lm_output.tool_call_validation_result}
+                            if lm_output.tool_call_validation_result
+                            else {}
+                        )
                     )
-            else:
-                # In incremental response generation,
-                # the input messages are supposed to be the user messages across turns.
-                # The model first responses to the first user message, then add its response to the chat history,
-                # and responses to the next user message, and so on.
-                max_num_turns = max(
-                    len(messages) - offset for messages, offset in zip(input_messages_list, offsets_to_first_turn)
-                )
-                current_chat_history: list[list[dict[str, Any]]] = [
-                    input_messages[:offset]
-                    for input_messages, offset in zip(input_messages_list, offsets_to_first_turn)
+                    current_chat_history[batch_i].insert(response_context_indices[batch_i], lm_output_message)
+                response_context_indices = [
+                    _find_response_context_index(chat_history) for chat_history in current_chat_history
                 ]
-                # perform generation for each turn
-                for turn in range(max_num_turns):
-                    batch_ids_fed_to_model = [
-                        b_id
-                        for b_id, messages in enumerate(input_messages_list)
-                        if turn < (len(messages) - offsets_to_first_turn[b_id])
-                    ]
-                    current_model_inputs = [
-                        _remove_redundant_keys_from_messages(
-                            current_chat_history[b_id]
-                            + [input_messages_list[b_id][turn + offsets_to_first_turn[b_id]]],
-                            remove_keys={"finish_reason", "raw_content", "tool_call_validation_result"},
-                        )
-                        for b_id in batch_ids_fed_to_model
-                    ]
-                    lm_outputs = language_model.generate_chat_response(
-                        current_model_inputs,
-                        tools=[input_tools_list[b_id] for b_id in batch_ids_fed_to_model] if input_tools_list else None,
-                        **gen_kwargs,
-                    )
-                    for o_id, b_id in enumerate(batch_ids_fed_to_model):
-                        offset = offsets_to_first_turn[b_id]
-                        current_chat_history[b_id].append(input_messages_list[b_id][turn + offset])
-                        current_chat_history[b_id].append(
-                            {
-                                "role": "assistant",
-                                "content": lm_outputs[o_id].text,
-                                "finish_reason": lm_outputs[o_id].finish_reason,
-                            }
-                            | ({"raw_content": lm_outputs[o_id].raw_text} if lm_outputs[o_id].raw_text else {})
-                            | ({"tool_calls": lm_outputs[o_id].tool_calls} if lm_outputs[o_id].tool_calls else {})
-                            | (
-                                {"tool_call_validation_result": lm_outputs[o_id].tool_call_validation_result}
-                                if lm_outputs[o_id].tool_call_validation_result
-                                else {}
-                            ),
-                        )
-                all_messages_list += current_chat_history
 
+            all_messages_list += current_chat_history
+            all_input_tools_list += [chat_instance.tools for chat_instance in batch]
             references_list += [chat_instance.references for chat_instance in batch]
             extra_info_list += [chat_instance.extra_info for chat_instance in batch]
 
