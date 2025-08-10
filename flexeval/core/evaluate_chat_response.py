@@ -83,7 +83,7 @@ def _find_response_context_index(incomplete_messages: list[dict[str, Any]]) -> i
 
 
 def execute_conversation_flow(
-    language_model: LanguageModel, eval_instances: list[ChatInstance], batch_size: int, gen_kwargs: dict[str, Any]
+    language_model: LanguageModel, eval_instances: Sequence[ChatInstance], batch_size: int, gen_kwargs: dict[str, Any]
 ) -> Iterator[dict[str, Any]]:
     """
     Execute complete conversation flows for a batch of chat instances.
