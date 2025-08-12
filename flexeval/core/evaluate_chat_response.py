@@ -1,7 +1,8 @@
 from __future__ import annotations
 
+import json
 from collections import Counter
-from typing import Any, Iterable, Sequence
+from typing import Any, Iterable, Iterator, Sequence
 
 from loguru import logger
 from tqdm import tqdm
@@ -81,7 +82,79 @@ def _find_response_context_index(incomplete_messages: list[dict[str, Any]]) -> i
     return None
 
 
-def evaluate_chat_response(  # noqa: C901,PLR0912, PLR0915
+def execute_conversation_flow(
+    language_model: LanguageModel, eval_instances: Sequence[ChatInstance], batch_size: int, gen_kwargs: dict[str, Any]
+) -> Iterator[dict[str, Any]]:
+    """
+    Execute complete conversation flows for a batch of chat instances.
+
+    Processes multi-turn conversations by iteratively finding response points,
+    generating language model responses, and building complete conversation histories.
+    Handles tool calls and continues conversations until all instances are complete.
+    """
+    for batch in batch_iter(eval_instances, batch_size):
+        # Copy the input messages as current_chat_history
+        # We will populate this history with llm
+        current_chat_history: list[list[dict[str, Any]]] = [[*chat_instance.messages] for chat_instance in batch]
+        response_context_indices = [_find_response_context_index(chat_history) for chat_history in current_chat_history]
+        while any(idx is not None for idx in response_context_indices):
+            batch_inputs = [
+                _remove_redundant_keys_from_messages(
+                    current_chat_history[batch_i][:message_i],
+                    remove_keys={"finish_reason", "raw_content", "tool_call_validation_result"},
+                )
+                for batch_i, message_i in enumerate(response_context_indices)
+                if message_i is not None
+            ]
+            ids_fed_to_lm = [i for i, idx in enumerate(response_context_indices) if idx is not None]
+            lm_outputs = language_model.generate_chat_response(
+                batch_inputs,
+                tools=[batch[i].tools for i in ids_fed_to_lm],
+                **gen_kwargs,
+            )
+            for lm_output, batch_i in zip(lm_outputs, ids_fed_to_lm):
+                lm_output_message = (
+                    {
+                        "role": "assistant",
+                        "content": lm_output.text,
+                        "finish_reason": lm_output.finish_reason,
+                    }
+                    | ({"raw_content": lm_output.raw_text} if lm_output.raw_text else {})
+                    | ({"tool_calls": lm_output.tool_calls} if lm_output.tool_calls else {})
+                    | (
+                        {"tool_call_validation_result": lm_output.tool_call_validation_result}
+                        if lm_output.tool_call_validation_result
+                        else {}
+                    )
+                )
+                current_chat_history[batch_i].insert(response_context_indices[batch_i], lm_output_message)
+            response_context_indices = [
+                _find_response_context_index(chat_history) for chat_history in current_chat_history
+            ]
+
+        for messages, chat_instance in zip(current_chat_history, batch):
+            extra_info = chat_instance.extra_info
+            last_message = messages[-1]
+            if "tool_calls" in last_message:
+                extra_info["tool_calls"] = last_message["tool_calls"]
+            if "tool_call_validation_result" in last_message:
+                extra_info["tool_call_validation_result"] = last_message["tool_call_validation_result"]
+            if chat_instance.tools:
+                extra_info["tools"] = chat_instance.tools
+            output = {
+                "lm_output": messages[-1]["content"],
+                "finish_reason": messages[-1]["finish_reason"],
+                "extra_info": {"messages": messages, **extra_info},
+                "references": chat_instance.references,
+            }
+            if "raw_content" in messages[-1]:
+                output["raw_lm_output"] = messages[-1]["raw_content"]
+            if "tool_call_validation_result" in messages[-1]:
+                output["tool_call_validation_result"] = messages[-1]["tool_call_validation_result"]
+            yield output
+
+
+def evaluate_chat_response(  # noqa: C901, PLR0912
     language_model: LanguageModel,
     gen_kwargs: dict[str, Any],
     eval_dataset: Sequence[ChatInstance],
@@ -101,92 +174,33 @@ def evaluate_chat_response(  # noqa: C901,PLR0912, PLR0915
             _add_few_shot_messages_to_chat_instance(eval_instance, few_shot_generator)
 
     # Generate responses for each instance
-    all_messages_list: list[list[dict[str, Any]]] = []
-    references_list: list[list[str]] = []
-    extra_info_list: list[dict[str, Any]] = []
-    all_input_tools_list: list[list[dict[str, Any]] | None] = []
-    with tqdm(total=len(eval_instances)) as pbar:
-        for batch_id, batch in enumerate(batch_iter(eval_instances, batch_size)):
-            # Copy the input messages as current_chat_history
-            # We will populate this history with llm
-            current_chat_history: list[list[dict[str, Any]]] = [[*chat_instance.messages] for chat_instance in batch]
-            response_context_indices = [
-                _find_response_context_index(chat_history) for chat_history in current_chat_history
-            ]
-            while any(idx is not None for idx in response_context_indices):
-                batch_inputs = [
-                    _remove_redundant_keys_from_messages(
-                        current_chat_history[batch_i][:message_i],
-                        remove_keys={"finish_reason", "raw_content", "tool_call_validation_result"},
-                    )
-                    for batch_i, message_i in enumerate(response_context_indices)
-                    if message_i is not None
-                ]
-                ids_fed_to_lm = [i for i, idx in enumerate(response_context_indices) if idx is not None]
-                lm_outputs = language_model.generate_chat_response(
-                    batch_inputs,
-                    tools=[batch[i].tools for i in ids_fed_to_lm],
-                    **gen_kwargs,
-                )
-                for lm_output, batch_i in zip(lm_outputs, ids_fed_to_lm):
-                    lm_output_message = (
-                        {
-                            "role": "assistant",
-                            "content": lm_output.text,
-                            "finish_reason": lm_output.finish_reason,
-                        }
-                        | ({"raw_content": lm_output.raw_text} if lm_output.raw_text else {})
-                        | ({"tool_calls": lm_output.tool_calls} if lm_output.tool_calls else {})
-                        | (
-                            {"tool_call_validation_result": lm_output.tool_call_validation_result}
-                            if lm_output.tool_call_validation_result
-                            else {}
-                        )
-                    )
-                    current_chat_history[batch_i].insert(response_context_indices[batch_i], lm_output_message)
-                response_context_indices = [
-                    _find_response_context_index(chat_history) for chat_history in current_chat_history
-                ]
-
-            all_messages_list += current_chat_history
-            all_input_tools_list += [chat_instance.tools for chat_instance in batch]
-            references_list += [chat_instance.references for chat_instance in batch]
-            extra_info_list += [chat_instance.extra_info for chat_instance in batch]
-
-            if batch_id == 0:
-                logger.info("Example of the conversation")
-                logger.info(f"{all_messages_list[0]}")
-
-            pbar.update(len(batch))
-
-    for extra_info, messages, tools in zip(extra_info_list, all_messages_list, all_input_tools_list):
-        last_message = messages[-1]
-        if "tool_calls" in last_message:
-            extra_info["tool_calls"] = last_message["tool_calls"]
-        if "tool_call_validation_result" in last_message:
-            extra_info["tool_call_validation_result"] = last_message["tool_call_validation_result"]
-        if tools:
-            extra_info["tools"] = tools
-
-    # Metric.evaluate() accepts only str, so if content is None, convert it to empty string
-    for messages in all_messages_list:
-        for mes in messages:
-            if mes["content"] is None:
-                mes["content"] = ""
+    outputs: list[dict[str, Any]] = []
+    for i, output in enumerate(
+        tqdm(
+            execute_conversation_flow(
+                language_model=language_model,
+                eval_instances=eval_instances,
+                batch_size=batch_size,
+                gen_kwargs=gen_kwargs,
+            ),
+            total=len(eval_instances),
+        )
+    ):
+        if i == 0:
+            logger.info("Example of the output")
+            logger.info(json.dumps(output, ensure_ascii=False, indent=4))
+        outputs.append(output)
 
     language_model.cleanup_resources()
 
     # Evaluate the generated responses
     metrics_summary_dict: dict[str, float] = {}
-    instance_metrics_list: list[dict[str, Any]] = [{} for _ in range(len(all_messages_list))]
+    instance_metrics_list: list[dict[str, Any]] = [{} for _ in range(len(outputs))]
     for metric in metrics:
         metric_result = metric.evaluate(
-            lm_outputs=[messages[-1]["content"] for messages in all_messages_list],
-            references_list=references_list,
-            extra_info_list=[
-                {"messages": messages[:-1], **extra_info}
-                for messages, extra_info in zip(all_messages_list, extra_info_list)
-            ],
+            lm_outputs=[output["lm_output"] for output in outputs],
+            references_list=[output["references"] for output in outputs],
+            extra_info_list=[output["extra_info"] for output in outputs],
         )
         metric.cleanup_resources()
 
@@ -197,11 +211,14 @@ def evaluate_chat_response(  # noqa: C901,PLR0912, PLR0915
                 metric_result.instance_details,
             ):
                 instance_metrics_list[instance_idx].update(instance_details)
+    for instance_metrics, output in zip(instance_metrics_list, outputs):
+        output.update(instance_metrics)
 
     # Calculate the finish_reason and validation statistics
     finish_reason_counter = Counter()
     tool_call_validation_result_counter = Counter()
-    for messages in all_messages_list:
+    for output in outputs:
+        messages = output["extra_info"]["messages"]
         for mes in messages:
             if "finish_reason" in mes:
                 finish_reason_counter[mes["finish_reason"]] += 1
@@ -215,26 +232,4 @@ def evaluate_chat_response(  # noqa: C901,PLR0912, PLR0915
         )
 
     logger.info(metrics_summary_dict)
-
-    outputs = [
-        {
-            "lm_output": messages[-1]["content"],
-            "finish_reason": messages[-1]["finish_reason"],
-            "extra_info": {"messages": messages[:-1], **extra_info},
-            "references": references,
-            **instance_metrics,
-        }
-        | ({"raw_lm_output": messages[-1]["raw_content"]} if "raw_content" in messages[-1] else {})
-        | (
-            {"tool_call_validation_result": messages[-1]["tool_call_validation_result"]}
-            if "tool_call_validation_result" in messages[-1]
-            else {}
-        )
-        for messages, references, extra_info, instance_metrics in zip(
-            all_messages_list,
-            references_list,
-            extra_info_list,
-            instance_metrics_list,
-        )
-    ]
     return metrics_summary_dict, outputs
