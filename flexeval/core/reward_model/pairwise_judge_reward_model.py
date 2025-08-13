@@ -46,7 +46,8 @@ def aggregate_judge_results(
     chosen_is_better_list: list[bool],
 ) -> tuple[list[bool], list[dict]]:
     """
-    Aggregates the doubled-length `judge_outputs` and `chosen_is_better_list` into final results for each individual instance.
+    Aggregates the doubled-length `judge_outputs` and `chosen_is_better_list`
+    into final results for each individual instance.
 
     Returns:
         final_results: list[bool]

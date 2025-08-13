@@ -34,7 +34,7 @@ def test_evaluate_model_output(model_output: str, gold_label: PairwiseChoice, ex
 
 
 @pytest.mark.parametrize(("num_samples"), [1, 10, 100])
-def test_pairwise_judge_reward_model(num_samples: int):
+def test_pairwise_judge_reward_model(num_samples: int) -> None:
     reward_model = PairwiseJudgeRewardModel(
         language_model=DummyRewardLanguageModel(),
         prompt_template=Jinja2PromptTemplate(template="{{ prompt }}\t{{ answer_a }}\t{{ answer_b }}"),
@@ -57,7 +57,7 @@ def test_pairwise_judge_reward_model(num_samples: int):
 class _MockOut:
     """dummy judge_output element with text field"""
 
-    def __init__(self, text: str):
+    def __init__(self, text: str) -> None:
         self.text = text
 
 
@@ -76,7 +76,7 @@ class _MockOut:
         ),
     ],
 )
-def test_aggregate_multiple_instances(pairs: list, expected_finals: list, expected_consistencies: list):
+def test_aggregate_multiple_instances(pairs: list, expected_finals: list, expected_consistencies: list) -> None:
     n = len(pairs)
     outputs = [{"llm_inputs": [f"ab_{i}", f"ba_{i}"]} for i in range(n)]
 
