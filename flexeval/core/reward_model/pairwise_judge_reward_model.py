@@ -63,18 +63,18 @@ def aggregate_judge_results(
         ba_eval = chosen_is_better_list[i * 2 + 1]
 
         consistent = ab_eval == ba_eval
-        final_is_correct = consistent and ab_eval
+        is_correct = consistent and ab_eval
 
         aggregated_outputs.append(
             {
                 "llm_outputs": [ab_output_text, ba_output_text],
                 "evaluation_results": [ab_eval, ba_eval],
                 "consistent": consistent,
-                "final_is_correct": final_is_correct,
+                "is_correct": is_correct,
                 **output,
             }
         )
-        aggregated_results.append(final_is_correct)
+        aggregated_results.append(is_correct)
 
     return aggregated_results, aggregated_outputs
 
