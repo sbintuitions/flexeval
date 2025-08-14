@@ -82,6 +82,20 @@ def aggregate_judge_results(
 class PairwiseJudgeRewardModel(RewardModel):
     """Pairwise judge using a chat language model to compare two model or human
     outputs.
+    The reward model’s judgment is counted as **correct only if it is order‑invariant**:
+    when given (A = chosen, B = rejected) it prefers **A**, and when the inputs are swapped
+    (A = rejected, B = chosen) it prefers **B**.
+
+    Examples:
+    - ✅ Correct (order‑invariant):
+      - judge(prompt, A=chosen, B=rejected) → **A**
+      - judge(prompt, A=rejected, B=chosen) → **B**
+    - ❌ Incorrect (position bias; same answer regardless of order):
+      - judge(prompt, A=chosen, B=rejected) → **A**
+      - judge(prompt, A=rejected, B=chosen) → **A**
+    - ❌ Incorrect (both wrong):
+      - judge(prompt, A=chosen, B=rejected) → **B**
+      - judge(prompt, A=rejected, B=chosen) → **A**
 
     Args:
         language_model: The language model to use for pairwise comparison.
