@@ -160,8 +160,8 @@ def test_evaluate_reward_model() -> None:
         batch_size=1,
     )
 
-    assert metrics["accuracy"] == 0.5
-    assert metrics["accuracy-dummy"] == 0.5  # the score computed with the category key
+    assert metrics["accuracy"] == 0.0
+    assert metrics["accuracy-dummy"] == 0.0  # the score computed with the category key
     assert outputs[0] == {
         "prompt": [{"role": "user", "content": "prompt_text_0"}],
         "chosen": [{"role": "user", "content": "chosen_text_0"}],
@@ -185,6 +185,8 @@ def test_evaluate_reward_model() -> None:
         "llm_outputs": ["[[A]]", "[[A]]"],
         "evaluation_results": [True, False],
         "id": 0,
+        "consistent": False,
+        "is_correct": False,
     }
 
     # Check DummyRewardLanguageModel generate prefix-text
@@ -200,7 +202,7 @@ def test_evaluate_reward_model() -> None:
         batch_size=1,
     )
 
-    assert metrics["accuracy"] == 0.5
+    assert metrics["accuracy"] == 0.0
     assert outputs[0] == {
         "prompt": [{"role": "user", "content": "prompt_text_0"}],
         "chosen": [{"role": "user", "content": "chosen_text_0"}],
@@ -224,4 +226,6 @@ def test_evaluate_reward_model() -> None:
         "llm_outputs": ["Results: [[B]]", "Results: [[B]]"],
         "evaluation_results": [False, True],
         "id": 0,
+        "consistent": False,
+        "is_correct": False,
     }
