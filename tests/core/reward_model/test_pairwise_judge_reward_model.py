@@ -92,6 +92,6 @@ def test_aggregate_multiple_instances(pairs: list, expected_finals: list, expect
     assert final_results == expected_finals
     for i in range(n):
         assert final_outputs[i]["consistent"] == expected_consistencies[i]
-        assert final_outputs[i]["final_is_correct"] == expected_finals[i]
+        assert final_outputs[i]["is_correct"] == expected_finals[i]
         assert final_outputs[i]["llm_outputs"] == [f"ab_text_{i}", f"ba_text_{i}"]
         assert final_outputs[i]["evaluation_results"] == list(pairs[i])
