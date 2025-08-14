@@ -1423,7 +1423,7 @@ In this example, we use ChatGPT with the following command:</p>
 
 flexeval_lm<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--language_model<span class="w"> </span>OpenAIChatAPI<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--language_model.model<span class="w"> </span><span class="s2">&quot;gpt-3.5-turbo&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--language_model.model<span class="w"> </span><span class="s2">&quot;gpt-4o-mini&quot;</span><span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--eval_setup<span class="w"> </span><span class="s2">&quot;mt-en&quot;</span><span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--save_dir<span class="w"> </span><span class="s2">&quot;results/mt-en_gpt3.5-turbo&quot;</span>
 </code></pre></div>
@@ -1459,7 +1459,7 @@ The evaluation for each response is stored in <code>results/mt-en-gpt3.5-turbo/e
 So, theoretically, you can perform the same evaluation with <code>flexeval_lm</code> in one go:</p>
 <div class="highlight"><pre><span></span><code>flexeval_lm<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--language_model<span class="w"> </span>OpenAIChatAPI<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--language_model.model<span class="w"> </span><span class="s2">&quot;gpt-3.5-turbo&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--language_model.model<span class="w"> </span><span class="s2">&quot;gpt-4o-mini&quot;</span><span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--eval_setup<span class="w"> </span><span class="s2">&quot;mt-en&quot;</span><span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--metrics+<span class="o">=</span><span class="s2">&quot;assistant_eval_en_single_turn&quot;</span><span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--save_dir<span class="w"> </span><span class="s2">&quot;results/mt-en_gpt3.5-turbo&quot;</span>
@@ -1477,7 +1477,7 @@ You can skip this if you have already generated the responses.</p>
 
 flexeval_lm<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--language_model<span class="w"> </span>OpenAIChatAPI<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--language_model.model<span class="w"> </span><span class="s2">&quot;gpt-3.5-turbo&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--language_model.model<span class="w"> </span><span class="s2">&quot;gpt-4o-mini&quot;</span><span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--eval_setup<span class="w"> </span><span class="s2">&quot;mt-en&quot;</span><span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--save_dir<span class="w"> </span><span class="s2">&quot;results/mt-en_gpt3.5-turbo&quot;</span>
 </code></pre></div>

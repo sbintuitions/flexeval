@@ -1532,9 +1532,9 @@ Evaluating chat models may require a different setup.</p>
 
 flexeval_lm<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--language_model<span class="w"> </span>OpenAIChatAPI<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--language_model.model<span class="w"> </span><span class="s2">&quot;gpt-3.5-turbo&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--language_model.model<span class="w"> </span><span class="s2">&quot;gpt-4o-mini&quot;</span><span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--eval_setup<span class="w"> </span><span class="s2">&quot;mt-en&quot;</span><span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--save_dir<span class="w"> </span><span class="s2">&quot;results/mt-en/gpt-3.5-turbo&quot;</span>
+<span class="w">  </span>--save_dir<span class="w"> </span><span class="s2">&quot;results/mt-en/gpt-4o-mini&quot;</span>
 </code></pre></div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -1552,9 +1552,9 @@ flexeval_lm<span class="w"> </span><span class="se">\</span>
 The preset config only defines simple metrics such as length statistics.</p>
 <p>To run automatic evaluation with LLMs, you can use <code>outputs.jsonl</code> from the previous command and run the following command:</p>
 <div class="highlight"><pre><span></span><code>flexeval_file<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--eval_file<span class="w"> </span><span class="s2">&quot;results/mt-en/gpt-3.5-turbo/outputs.jsonl&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--eval_file<span class="w"> </span><span class="s2">&quot;results/mt-en/gpt-4o-mini/outputs.jsonl&quot;</span><span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--metrics<span class="w"> </span><span class="s2">&quot;assistant_eval_en_single_turn&quot;</span><span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--save_dir<span class="w"> </span><span class="s2">&quot;results/mt-en/gpt-3.5-turbo/eval_by_gpt&quot;</span>
+<span class="w">  </span>--save_dir<span class="w"> </span><span class="s2">&quot;results/mt-en/gpt-4o-mini/eval_by_gpt&quot;</span>
 </code></pre></div>
 <p>In the results, you can see the evaluation result like <code>{"llm_score": 7.795}</code>.
 You can also check the entire output of the judge LLM including the rationale of the evaluation in <code>llm_score_output</code> in <code>outputs.jsonl</code>.</p>
