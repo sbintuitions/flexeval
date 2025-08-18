@@ -8,17 +8,15 @@ from flexeval import Correlation, MetricResult
 @pytest.mark.parametrize(
     ("method", "lm_outputs", "references", "expected_correlation"),
     [
-        ("pearson", [1, 2, 3, 4, 5], [1, 2, 3, 4, 5], 1.0),
-        ("pearson", [1, 2, 3, 4, 5], [5, 4, 3, 2, 1], -1.0),
-        ("spearman", [1, 2, 3, 4, 5], [1, 20, 30, 400, 500], 1.0),
-        ("spearman", [1, 2, 3, 4, 5], [500, 400, 30, 20, 1], -1.0),
-        ("kendall", [1, 2, 3, 4, 5], [1, 2, 3, 4, 5], 1.0),
-        ("kendall", [1, 2, 3, 4, 5], [5, 4, 3, 2, 1], -1.0),
+        ("pearson", ["1", "2", "3", "4", "5"], ["1", "2", "3", "4", "5"], 1.0),
+        ("pearson", ["1", "2", "3", "4", "5"], ["5", "4", "3", "2", "1"], -1.0),
+        ("spearman", ["1", "2", "3", "4", "5"], ["1", "20", "30", "400", "500"], 1.0),
+        ("spearman", ["1", "2", "3", "4", "5"], ["500", "400", "30", "20", "1"], -1.0),
+        ("kendall", ["1", "2", "3", "4", "5"], ["1", "2", "3", "4", "5"], 1.0),
+        ("kendall", ["1", "2", "3", "4", "5"], ["5", "4", "3", "2", "1"], -1.0),
     ],
 )
-def test_correlation(
-    method: str, lm_outputs: list[float], references: list[float], expected_correlation: float
-) -> None:
+def test_correlation(method: str, lm_outputs: list[str], references: list[float], expected_correlation: float) -> None:
     correlation = Correlation(method=method)
     references_list = [[ref] for ref in references]  # Wrap references in a list for each instance
 
