@@ -1,7 +1,9 @@
 from __future__ import annotations
 
+from flexeval.core.language_model.base import LMOutput
+
 from .base import Metric, MetricResult
-from .utils import validate_inputs
+from .utils import extract_text_from_outputs, validate_inputs
 
 
 def get_longest_common_substring(s1: str, s2: str) -> str:
@@ -57,11 +59,14 @@ class CommonStringLength(Metric):
 
     def evaluate(
         self,
-        lm_outputs: list[str],
+        lm_outputs: list[str | LMOutput],
         references_list: list[list[str]],
         extra_info_list: list[dict[str, str]] | None = None,
     ) -> MetricResult:
         validate_inputs(lm_outputs, references_list, extra_info_list)
+
+        # Extract text from LMOutput objects
+        lm_outputs = extract_text_from_outputs(lm_outputs)
 
         # Compute metrics
         common_string_length_list: list[int] = []

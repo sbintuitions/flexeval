@@ -3,12 +3,15 @@ from __future__ import annotations
 from collections import Counter
 from typing import Literal
 
+from flexeval.core.language_model.base import LMOutput
 from flexeval.core.metric.base import Metric, MetricResult
 from flexeval.core.metric.utils import aggregate_category_wise_scores, apply_string_processors, validate_inputs
 from flexeval.core.string_processor.base import StringProcessor
 from flexeval.core.string_processor.lower import StringLower
 from flexeval.core.tokenizer.base import Tokenizer
 from flexeval.core.tokenizer.sacrebleu_tokenizer import SacreBleuTokenizer
+
+from .utils import extract_text_from_outputs
 
 
 def to_ngram(words: list[str], n: int) -> list[str]:
@@ -81,8 +84,15 @@ class SARI(Metric):
         self.lm_output_processors = lm_output_processor
         self.reference_processors = reference_processor
 
-    def evaluate(self, lm_outputs, references_list, extra_info_list=None) -> MetricResult:  # noqa: ANN001
+    def evaluate(
+        self,
+        lm_outputs: list[str | LMOutput],
+        references_list: list[list[str]],
+        extra_info_list: list[dict[str, str]] | None = None,
+    ) -> MetricResult:
         validate_inputs(lm_outputs, references_list, extra_info_list)
+
+        lm_outputs = extract_text_from_outputs(lm_outputs)
 
         if extra_info_list is None:
             msg = "SARI requires extra_info_list"

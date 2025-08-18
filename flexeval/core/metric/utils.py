@@ -3,6 +3,7 @@ from __future__ import annotations
 from collections import defaultdict
 from typing import TypeVar
 
+from flexeval.core.language_model.base import LMOutput
 from flexeval.core.string_processor.base import StringProcessor
 
 T = TypeVar("T")
@@ -54,7 +55,7 @@ def apply_string_processors(text: str, processors: StringProcessor | list[String
 
 
 def validate_inputs(
-    lm_outputs: list[str],
+    lm_outputs: list[str | LMOutput],
     references_list: list[list[str]],
     extra_info_list: list[dict[str, str]] | None = None,
 ) -> None:
@@ -82,3 +83,23 @@ def validate_inputs(
             f"number of outputs ({len(lm_outputs)})."
         )
         raise ValueError(msg)
+
+
+def extract_text_from_outputs(lm_outputs: list[str | LMOutput]) -> list[str]:
+    """
+    Extract text content from a list of mixed string and LMOutput objects.
+
+    Args:
+        lm_outputs: List containing either string outputs or LMOutput objects.
+
+    Returns:
+        List of text strings extracted from the input. For LMOutput objects,
+        returns the text attribute or empty string if text is None.
+    """
+    text_outputs: list[str] = []
+    for output in lm_outputs:
+        if isinstance(output, str):
+            text_outputs.append(output)
+        else:
+            text_outputs.append(output.text or "")
+    return text_outputs

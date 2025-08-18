@@ -1,6 +1,9 @@
 from __future__ import annotations
 
+from flexeval.core.language_model.base import LMOutput
+
 from .base import Metric, MetricResult
+from .utils import extract_text_from_outputs
 
 
 class OutputLengthStats(Metric):
@@ -21,10 +24,13 @@ class OutputLengthStats(Metric):
 
     def evaluate(
         self,
-        lm_outputs: list[str],
+        lm_outputs: list[str | LMOutput],
         references_list: list[list[str]] | None = None,
         extra_info_list: list[dict[str, str]] | None = None,
     ) -> MetricResult:
+        # Extract text from LMOutput objects
+        lm_outputs = extract_text_from_outputs(lm_outputs)
+
         # Compute metrics
         output_length_list = [len(output) for output in lm_outputs]
         return MetricResult(

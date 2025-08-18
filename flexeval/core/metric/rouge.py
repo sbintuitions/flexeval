@@ -2,10 +2,11 @@ from __future__ import annotations
 
 from rouge import Rouge as RougeCalculator
 
+from flexeval.core.language_model.base import LMOutput
 from flexeval.core.tokenizer import Tokenizer
 
 from .base import Metric, MetricResult
-from .utils import validate_inputs
+from .utils import extract_text_from_outputs, validate_inputs
 
 
 class ROUGE(Metric):
@@ -39,11 +40,14 @@ class ROUGE(Metric):
 
     def evaluate(
         self,
-        lm_outputs: list[str],
+        lm_outputs: list[str | LMOutput],
         references_list: list[list[str]],
         extra_info_list: list[dict[str, str]] | None = None,
     ) -> MetricResult:
         validate_inputs(lm_outputs, references_list, extra_info_list)
+
+        # Extract text from LMOutput objects
+        lm_outputs = extract_text_from_outputs(lm_outputs)
 
         # Normalize text data - we only need the first reference
         target_summaries = [references[0] for references in references_list]

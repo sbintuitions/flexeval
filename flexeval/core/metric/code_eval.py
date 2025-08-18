@@ -5,11 +5,12 @@ from typing import Any
 
 import evaluate
 
+from flexeval.core.language_model.base import LMOutput
 from flexeval.core.metric.base import Metric, MetricResult
 from flexeval.core.string_processor import StringProcessor
 from flexeval.core.utils.jinja2_utils import JINJA2_ENV
 
-from .utils import apply_string_processors, validate_inputs
+from .utils import apply_string_processors, extract_text_from_outputs, validate_inputs
 
 # by default, the program is not allowed to execute code and we need to set this environment variable
 os.environ["HF_ALLOW_CODE_EVAL"] = "1"
@@ -58,7 +59,7 @@ class CodeEval(Metric):
 
     def evaluate(
         self,
-        lm_outputs: list[str],
+        lm_outputs: list[str | LMOutput],
         references_list: list[list[str]],
         extra_info_list: list[dict[str, str]] | None = None,
     ) -> MetricResult:
@@ -67,7 +68,8 @@ class CodeEval(Metric):
 
         validate_inputs(lm_outputs, references_list, extra_info_list)
 
-        # Normalize text data
+        lm_outputs = extract_text_from_outputs(lm_outputs)
+
         lm_outputs = [apply_string_processors(output, self.lm_output_processors) for output in lm_outputs]
 
         # Compute metrics
