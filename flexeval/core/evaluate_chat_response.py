@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import json
-from collections import Counter
+from dataclasses import asdict, is_dataclass
 from typing import Any, Iterable, Iterator, Sequence
 
 from loguru import logger
@@ -11,7 +11,7 @@ from flexeval.core.utils.chat_util import find_first_turn_for_response
 
 from .chat_dataset import ChatInstance
 from .few_shot_generator import FewShotGenerator
-from .language_model import LanguageModel
+from .language_model import LanguageModel, LMOutput
 from .metric import Metric
 from .utils.data_util import batch_iter
 
@@ -82,6 +82,13 @@ def _find_response_context_index(incomplete_messages: list[dict[str, Any]]) -> i
     return None
 
 
+def dataclass_default(o: Any) -> Any:  # noqa: ANN401
+    if is_dataclass(o):
+        return asdict(o)
+    msg = f"Object of type {type(o).__name__} is not JSON serializable"
+    raise TypeError(msg)
+
+
 def execute_conversation_flow(
     language_model: LanguageModel, eval_instances: Sequence[ChatInstance], batch_size: int, gen_kwargs: dict[str, Any]
 ) -> Iterator[dict[str, Any]]:
@@ -97,6 +104,7 @@ def execute_conversation_flow(
         # We will populate this history with llm
         current_chat_history: list[list[dict[str, Any]]] = [[*chat_instance.messages] for chat_instance in batch]
         response_context_indices = [_find_response_context_index(chat_history) for chat_history in current_chat_history]
+        last_lm_outputs: list[LMOutput | None] = [None for _ in range(len(batch))]
         while any(idx is not None for idx in response_context_indices):
             batch_inputs = [
                 _remove_redundant_keys_from_messages(
@@ -128,33 +136,21 @@ def execute_conversation_flow(
                     )
                 )
                 current_chat_history[batch_i].insert(response_context_indices[batch_i], lm_output_message)
+                last_lm_outputs[batch_i] = lm_output
             response_context_indices = [
                 _find_response_context_index(chat_history) for chat_history in current_chat_history
             ]
 
-        for messages, chat_instance in zip(current_chat_history, batch):
-            extra_info = chat_instance.extra_info
-            last_message = messages[-1]
-            if "tool_calls" in last_message:
-                extra_info["tool_calls"] = last_message["tool_calls"]
-            if "tool_call_validation_result" in last_message:
-                extra_info["tool_call_validation_result"] = last_message["tool_call_validation_result"]
-            if chat_instance.tools:
-                extra_info["tools"] = chat_instance.tools
+        for lm_output, messages, chat_instance in zip(last_lm_outputs, current_chat_history, batch):
             output = {
-                "lm_output": messages[-1]["content"],
-                "finish_reason": messages[-1]["finish_reason"],
-                "extra_info": {"messages": messages, **extra_info},
-                "references": chat_instance.references,
+                "lm_output": lm_output,
+                "chat_instance": chat_instance,
+                "messages": messages[:-1],  # exclude the final output
             }
-            if "raw_content" in messages[-1]:
-                output["raw_lm_output"] = messages[-1]["raw_content"]
-            if "tool_call_validation_result" in messages[-1]:
-                output["tool_call_validation_result"] = messages[-1]["tool_call_validation_result"]
             yield output
 
 
-def evaluate_chat_response(  # noqa: C901, PLR0912
+def evaluate_chat_response(  # noqa: C901
     language_model: LanguageModel,
     gen_kwargs: dict[str, Any],
     eval_dataset: Sequence[ChatInstance],
@@ -188,7 +184,7 @@ def evaluate_chat_response(  # noqa: C901, PLR0912
     ):
         if i == 0:
             logger.info("Example of the output")
-            logger.info(json.dumps(output, ensure_ascii=False, indent=4))
+            logger.info(json.dumps(output, ensure_ascii=False, indent=4, default=dataclass_default))
         outputs.append(output)
 
     language_model.cleanup_resources()
@@ -199,37 +195,43 @@ def evaluate_chat_response(  # noqa: C901, PLR0912
     for metric in metrics:
         metric_result = metric.evaluate(
             lm_outputs=[output["lm_output"] for output in outputs],
-            references_list=[output["references"] for output in outputs],
-            extra_info_list=[output["extra_info"] for output in outputs],
+            references_list=[output["chat_instance"].references for output in outputs],
+            extra_info_list=[
+                output["chat_instance"].extra_info
+                | {"messages": output["chat_instance"].messages, "tools": output["chat_instance"].tools}
+                for output in outputs
+            ],
         )
         metric.cleanup_resources()
 
         metrics_summary_dict.update(metric_result.summary)
 
         if metric_result.instance_details:
-            for instance_idx, instance_details in enumerate(
-                metric_result.instance_details,
-            ):
+            for instance_idx, instance_details in enumerate(metric_result.instance_details):
                 instance_metrics_list[instance_idx].update(instance_details)
     for instance_metrics, output in zip(instance_metrics_list, outputs):
-        output.update(instance_metrics)
-
-    # Calculate the finish_reason and validation statistics
-    finish_reason_counter = Counter()
-    tool_call_validation_result_counter = Counter()
-    for output in outputs:
-        messages = output["extra_info"]["messages"]
-        for mes in messages:
-            if "finish_reason" in mes:
-                finish_reason_counter[mes["finish_reason"]] += 1
-            if "tool_call_validation_result" in mes:
-                tool_call_validation_result_counter[mes["tool_call_validation_result"]] += 1
-    for finish_reason, count in finish_reason_counter.items():
-        metrics_summary_dict[f"finish_reason_ratio-{finish_reason}"] = count / sum(finish_reason_counter.values())
-    for validation_result, count in tool_call_validation_result_counter.items():
-        metrics_summary_dict[f"tool_call_validation_result_ratio-{validation_result}"] = count / sum(
-            tool_call_validation_result_counter.values()
-        )
+        output["metrics"] = instance_metrics
 
     logger.info(metrics_summary_dict)
-    return metrics_summary_dict, outputs
+
+    # Restructure the output for backward compatibility
+    # Maybe switch to the new structure sometime
+    # new: `{"lm_output": LMOutput, "chat_instance": ChatInstance, "messages": [...], "metrics": {...}}`
+    # current: `{"lm_output": "...", "finish_reason": "...", "task_inputs": {...}, "references": [...], **metrics}`
+    restructured_outputs: list[dict[str, Any]] = []
+    for output in outputs:
+        extra_info = output["chat_instance"].extra_info | {"messages": output["messages"]}
+        if output["lm_output"].tool_calls:
+            extra_info["tool_calls"] = output["lm_output"].tool_calls
+        if output["chat_instance"].tools:
+            extra_info["tools"] = output["chat_instance"].tools
+        restructured_output = {
+            "lm_output": output["lm_output"].text,
+            "finish_reason": output["lm_output"].finish_reason,
+            "extra_info": extra_info,
+            "references": output["chat_instance"].references,
+            **output["metrics"],
+        }
+        restructured_outputs.append(restructured_output)
+
+    return metrics_summary_dict, restructured_outputs

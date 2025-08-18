@@ -6,6 +6,7 @@ from .common_prefix_length import CommonPrefixLength
 from .common_string_length import CommonStringLength
 from .correlation import Correlation
 from .exact_match import ExactMatch
+from .finish_reason import FinishReasonCount
 from .llm_geval_score import ChatLLMGEvalScore, LLMGEvalScore
 from .llm_label import ChatLLMLabel, LLMLabel
 from .llm_score import ChatLLMScore, LLMScore
@@ -16,4 +17,5 @@ from .repetition_count import RepetitionCount
 from .rouge import ROUGE
 from .sari import SARI
 from .substring_match import SubstringMatch
+from .tool_call import ToolCallCount
 from .xer import XER

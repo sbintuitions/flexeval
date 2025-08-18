@@ -12,6 +12,7 @@ from flexeval.core.evaluate_chat_response import (
     execute_conversation_flow,
 )
 from flexeval.core.few_shot_generator import RandomFewShotGenerator
+from flexeval.core.metric import FinishReasonCount, ToolCallCount
 from tests.dummy_modules import (
     DummyChatDataset,
     DummyLanguageModel,
@@ -34,7 +35,7 @@ def test_evaluate_chat_response(use_few_shot: bool, max_instances: int, use_tool
             use_tools=use_tools,
         ),
         few_shot_generator=few_shot_generator,
-        metrics=[],
+        metrics=[FinishReasonCount(), ToolCallCount()],
         batch_size=batch_size,
         max_instances=max_instances,
     )
@@ -196,30 +197,27 @@ def test_execute_conversation_flow(batch_size: int) -> None:
     output1 = outputs[0]
 
     # Check the output
-    assert "Hello" in output1["lm_output"]  # The output from DummyLanguageModel should contain the last user message
-    assert output1["finish_reason"] == "length"
-    assert output1["references"] == ["Hi there!"]
-    assert "messages" in output1["extra_info"]
-    assert output1["extra_info"]["test_key"] == "test_value"
-    assert output1["tool_call_validation_result"] == "TextOnly"
+    assert (
+        "Hello" in output1["lm_output"].text
+    )  # The output from DummyLanguageModel should contain the last user message
+    assert output1["lm_output"].finish_reason == "length"
+    assert output1["lm_output"].tool_call_validation_result == "TextOnly"
+    assert output1["chat_instance"].references == ["Hi there!"]
+    assert "messages" in output1
+    assert output1["chat_instance"].extra_info["test_key"] == "test_value"
 
     # Check that conversation history includes both original messages and model response
-    messages = output1["extra_info"]["messages"]
-    assert len(messages) == 3  # system + user + assistant
+    messages = output1["messages"]
+    assert len(messages) == 2  # system + user
     assert messages[0]["role"] == "system"
     assert messages[1]["role"] == "user"
-    assert messages[2]["role"] == "assistant"
 
     # Check second output
     output2 = outputs[1]
-    assert (
-        "What's 2+2?" in output2["lm_output"]
-    )  # The output from DummyLanguageModel should contain the last user message
-    assert output2["finish_reason"] == "length"
-    assert output2["references"] == ["4"]
-    assert output2["tool_call_validation_result"] == "TextOnly"
-
-    messages2 = output2["extra_info"]["messages"]
-    assert len(messages2) == 2  # user + assistant
+    assert "What's 2+2?" in output2["lm_output"].text
+    assert output2["lm_output"].finish_reason == "length"
+    assert output2["lm_output"].tool_call_validation_result == "TextOnly"
+    assert output2["chat_instance"].references == ["4"]
+    messages2 = output2["messages"]
+    assert len(messages2) == 1  # user
     assert messages2[0]["role"] == "user"
-    assert messages2[1]["role"] == "assistant"
