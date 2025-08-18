@@ -11,7 +11,7 @@ from flexeval.core.prompt_template import PromptTemplate
 from flexeval.core.utils.data_util import batch_iter
 
 from .base import Metric, MetricResult
-from .utils import validate_inputs
+from .utils import extract_text_from_outputs, validate_inputs
 
 
 def parse_score_from_evaluator_output(evaluator_output: str, valid_score_range: tuple[int, int] | None) -> int | None:
@@ -227,7 +227,7 @@ class LLMScore(Metric):
 
     def evaluate(
         self,
-        lm_outputs: list[str],
+        lm_outputs: list[str | LMOutput],
         references_list: list[list[str]] | None = None,
         extra_info_list: list[dict[str, str]] | None = None,
     ) -> MetricResult:
@@ -237,6 +237,9 @@ class LLMScore(Metric):
             references_list = [[] for _ in lm_outputs]
 
         validate_inputs(lm_outputs, references_list, extra_info_list)
+
+        # Extract text from LMOutput objects
+        lm_outputs = extract_text_from_outputs(lm_outputs)
 
         # Compute metrics
         evaluator_input_list: list[str] = prepare_text_input_for_evaluator(
@@ -350,7 +353,7 @@ class ChatLLMScore(Metric):
 
     def evaluate(
         self,
-        lm_outputs: list[str],
+        lm_outputs: list[str | LMOutput],
         references_list: list[list[str]] | None = None,
         extra_info_list: list[dict[str, str]] | None = None,
     ) -> MetricResult:
@@ -358,6 +361,9 @@ class ChatLLMScore(Metric):
             extra_info_list = [{} for _ in lm_outputs]
         if references_list is None:
             references_list = [[] for _ in lm_outputs]
+
+        # Extract text from LMOutput objects
+        lm_outputs = extract_text_from_outputs(lm_outputs)
 
         # Compute metrics
         evaluator_input_list = prepare_chat_input_for_evaluator(

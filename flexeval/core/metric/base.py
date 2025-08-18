@@ -4,6 +4,8 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from typing import Any
 
+from flexeval.core.language_model.base import LMOutput
+
 
 @dataclass
 class MetricResult:
@@ -34,7 +36,7 @@ class Metric(ABC):
     @abstractmethod
     def evaluate(
         self,
-        lm_outputs: list[str],
+        lm_outputs: list[str | LMOutput],
         references_list: list[list[str]],
         extra_info_list: list[dict[str, str]] | None = None,
     ) -> MetricResult:
@@ -42,7 +44,7 @@ class Metric(ABC):
         Evaluate the outputs of `LanguageModel` against the references.
 
         Args:
-            lm_outputs: List of model outputs.
+            lm_outputs: List of model outputs (strings or LMOutput objects).
             references_list: List of reference outputs.
             extra_info_list: List of task inputs and some extra information.
         """

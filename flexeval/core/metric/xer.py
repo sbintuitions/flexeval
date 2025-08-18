@@ -2,10 +2,11 @@ from __future__ import annotations
 
 from jiwer import cer, wer
 
+from flexeval.core.language_model.base import LMOutput
 from flexeval.core.tokenizer import Tokenizer
 
 from .base import Metric, MetricResult
-from .utils import validate_inputs
+from .utils import extract_text_from_outputs, validate_inputs
 
 
 class XER(Metric):
@@ -35,11 +36,13 @@ class XER(Metric):
 
     def evaluate(
         self,
-        lm_outputs: list[str],
+        lm_outputs: list[str | LMOutput],
         references_list: list[list[str]],
         extra_info_list: list[dict[str, str]] | None = None,
     ) -> MetricResult:
         validate_inputs(lm_outputs, references_list, extra_info_list)
+
+        lm_outputs = extract_text_from_outputs(lm_outputs)
 
         # Normalize text data - we only need the first reference
         references = [references[0] for references in references_list]

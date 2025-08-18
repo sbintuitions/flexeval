@@ -13,6 +13,7 @@ from flexeval import MetricResult, SubstringMatch
         (["", "cat dog"], [["anything"], ["cat"]], 0.5),
         (["Substring is not present"], [["missing"]], 0.0),
     ],
+    indirect=["lm_outputs"],
 )
 def test_substring_match_any_mode(lm_outputs: list[str], expected_outputs: list[list[str]], score: float) -> None:
     """Test SubstringMatch in 'any' mode with various inputs."""

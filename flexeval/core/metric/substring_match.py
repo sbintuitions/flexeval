@@ -2,8 +2,10 @@ from __future__ import annotations
 
 from typing import Literal
 
+from flexeval.core.language_model.base import LMOutput
+
 from .base import Metric, MetricResult
-from .utils import aggregate_category_wise_scores, validate_inputs
+from .utils import aggregate_category_wise_scores, extract_text_from_outputs, validate_inputs
 
 
 class SubstringMatch(Metric):
@@ -42,11 +44,13 @@ class SubstringMatch(Metric):
 
     def evaluate(
         self,
-        lm_outputs: list[str],
+        lm_outputs: list[str | LMOutput],
         references_list: list[list[str]],
         extra_info_list: list[dict[str, str]] | None = None,
     ) -> MetricResult:
         validate_inputs(lm_outputs, references_list, extra_info_list)
+
+        lm_outputs = extract_text_from_outputs(lm_outputs)
 
         # Compute metrics
         match_list = [

@@ -24,6 +24,7 @@ from flexeval.core.string_processor.string_strip import StringStrip
         ([""], [["empty"]], None, None, 0.0),
         (["訳: これはテストです"], [["これはテストです "]], RegexExtractor(r"訳:\s*(.+)"), StringStrip(), 100.0),
     ],
+    indirect=["lm_outputs"],
 )
 def test_bleu(
     lm_outputs: list[str],

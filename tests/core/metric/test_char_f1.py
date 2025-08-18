@@ -23,6 +23,7 @@ from flexeval.core.string_processor import AIONormalizer, RegexExtractor, String
             1.0,
         ),
     ],
+    indirect=["lm_outputs"],
 )
 def test_char_f1(
     lm_outputs: list[str],
