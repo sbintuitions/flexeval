@@ -22,6 +22,7 @@ from flexeval.core.string_processor import AIONormalizer, RegexExtractor, String
             1.0,
         ),
     ],
+    indirect=["lm_outputs"],
 )
 def test_exact_match(
     lm_outputs: list[str],

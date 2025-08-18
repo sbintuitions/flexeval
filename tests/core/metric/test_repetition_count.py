@@ -12,6 +12,7 @@ from flexeval.core.metric.repetition_count import RepetitionCount, get_most_repe
         (["hello hello hello", "hello"], 3, 10, 0.0),  # No repetition because of the increased threshold_length
         (["hello hello hello", "hello"], 10, 5, 0.0),  # No repetition because of the increased count_threshold
     ],
+    indirect=["lm_outputs"],
 )
 def test_get_most_repeated_pattern(
     lm_outputs: list[str], count_threshold: int, threshold_length: int, expected_ratio: float

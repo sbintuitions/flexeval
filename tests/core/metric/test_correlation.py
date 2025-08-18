@@ -15,6 +15,7 @@ from flexeval import Correlation, MetricResult
         ("kendall", ["1", "2", "3", "4", "5"], ["1", "2", "3", "4", "5"], 1.0),
         ("kendall", ["1", "2", "3", "4", "5"], ["5", "4", "3", "2", "1"], -1.0),
     ],
+    indirect=["lm_outputs"],
 )
 def test_correlation(method: str, lm_outputs: list[str], references: list[float], expected_correlation: float) -> None:
     correlation = Correlation(method=method)
