@@ -11,7 +11,7 @@ from flexeval.core.evaluate_pairwise import Match, evaluate_pairwise
 from flexeval.core.evaluate_perplexity import evaluate_perplexity
 from flexeval.core.evaluate_reward_model import evaluate_reward_model
 from flexeval.core.few_shot_generator import RandomFewShotGenerator
-from flexeval.core.metric import ExactMatch
+from flexeval.core.metric import ExactMatch, FinishReasonCount
 from flexeval.core.prompt_template import Jinja2PromptTemplate
 from flexeval.core.reward_model.pairwise_judge_reward_model import PairwiseJudgeRewardModel
 from tests.dummy_modules import (
@@ -41,7 +41,7 @@ def test_evaluate_generation(use_few_shot: bool) -> None:
         eval_dataset=DummyGenerationDataset(),
         prompt_template=Jinja2PromptTemplate("{{text}}"),
         few_shot_generator=few_shot_generator,
-        metrics=[ExactMatch()],
+        metrics=[ExactMatch(), FinishReasonCount()],
         batch_size=1,
     )
     assert isinstance(metrics, dict)
