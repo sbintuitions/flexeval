@@ -217,7 +217,7 @@ def evaluate_chat_response(  # noqa: C901
     # Restructure the output for backward compatibility
     # Maybe switch to the new structure sometime
     # new: `{"lm_output": LMOutput, "chat_instance": ChatInstance, "messages": [...], "metrics": {...}}`
-    # current: `{"lm_output": "...", "finish_reason": "...", "task_inputs": {...}, "references": [...], **metrics}`
+    # legacy: `{"lm_output": "...", "finish_reason": "...", "task_inputs": {...}, "references": [...], **metrics}`
     restructured_outputs: list[dict[str, Any]] = []
     for output in outputs:
         extra_info = output["chat_instance"].extra_info | {"messages": output["messages"]}
