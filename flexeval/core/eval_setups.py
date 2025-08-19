@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any
 
 from .chat_dataset import ChatDataset
@@ -45,7 +45,7 @@ class ChatResponse(EvalSetup):
     """
 
     eval_dataset: ChatDataset
-    gen_kwargs: dict[str, Any]
+    gen_kwargs: dict[str, Any] = field(default_factory=dict)
     few_shot_generator: FewShotGenerator | None = None
     metrics: list[Metric] | Metric | None = None
     batch_size: int = 4
@@ -80,7 +80,7 @@ class Generation(EvalSetup):
 
     eval_dataset: GenerationDataset
     prompt_template: PromptTemplate | str
-    gen_kwargs: dict[str, Any]
+    gen_kwargs: dict[str, Any] = field(default_factory=dict)
     few_shot_generator: FewShotGenerator | None = None
     metrics: list[Metric] | Metric | None = None
     batch_size: int = 4
