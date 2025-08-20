@@ -388,12 +388,9 @@ class HuggingFaceLM(LanguageModel):
     def _batch_generate_chat_response(
         self,
         chat_messages_list: list[list[dict[str, Any]]],
-        tools_list: list[list[dict[str, Any]]] | None = None,
+        tools_list: list[list[dict[str, Any]] | None] | None = None,
         **kwargs,
     ) -> list[LMOutput]:
-        if tools_list and not self.tool_parser:
-            msg = "tool_parser is not set but tools are provided."
-            raise ValueError(msg)
         if tools_list is None:
             tools_list = [None] * len(chat_messages_list)
         if self.system_message is not None:
