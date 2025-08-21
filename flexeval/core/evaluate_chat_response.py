@@ -1,13 +1,14 @@
 from __future__ import annotations
 
 import json
-from dataclasses import asdict, is_dataclass
-from typing import Any, Iterable, Iterator, Sequence
+from collections.abc import Iterable, Iterator, Sequence
+from typing import Any
 
 from loguru import logger
 from tqdm import tqdm
 
 from flexeval.core.utils.chat_util import find_first_turn_for_response
+from flexeval.core.utils.json_util import truncated_default
 
 from .chat_dataset import ChatInstance
 from .few_shot_generator import FewShotGenerator
@@ -80,13 +81,6 @@ def _find_response_context_index(incomplete_messages: list[dict[str, Any]]) -> i
         return len(incomplete_messages)
 
     return None
-
-
-def dataclass_default(o: Any) -> Any:  # noqa: ANN401
-    if is_dataclass(o):
-        return asdict(o)
-    msg = f"Object of type {type(o).__name__} is not JSON serializable"
-    raise TypeError(msg)
 
 
 def execute_conversation_flow(
@@ -184,7 +178,7 @@ def evaluate_chat_response(  # noqa: C901
     ):
         if i == 0:
             logger.info("Example of the output")
-            logger.info(json.dumps(output, ensure_ascii=False, indent=4, default=dataclass_default))
+            logger.info(json.dumps(output, ensure_ascii=False, indent=4, default=truncated_default))
         outputs.append(output)
 
     language_model.cleanup_resources()
