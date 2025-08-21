@@ -35,7 +35,7 @@ def save_jsonl(
 def save_json(json_dict: dict[str, Any], save_path: str | PathLike[str]) -> None:
     Path(save_path).parent.mkdir(parents=True, exist_ok=True)
     with open(save_path, "w") as f:
-        json.dump(json_dict, f, indent=4, ensure_ascii=False, default=truncated_default)
+        json.dump(json_dict, f, indent=4, ensure_ascii=False, default=str)
 
 
 class LocalRecorder(ResultRecorder):
