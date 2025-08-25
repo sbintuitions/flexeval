@@ -41,6 +41,7 @@ class LiteLLMChatAPI(OpenAIChatAPI):
         string_processors: StringProcessor | list[StringProcessor] | None = None,
         ignore_seed: bool = False,
         model_limit_completion_tokens: int | None = None,
+        max_parallel_requests: int | None = None,
     ) -> None:
         super().__init__(
             model=model,
@@ -62,6 +63,7 @@ class LiteLLMChatAPI(OpenAIChatAPI):
             model_response_object=ModelResponse(),
         )
         self.ignore_seed = ignore_seed
+        self.max_parallel_requests = max_parallel_requests
 
     def _batch_complete_text(
         self,
