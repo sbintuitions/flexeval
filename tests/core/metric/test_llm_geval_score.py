@@ -5,7 +5,9 @@ import re
 import pytest
 
 from flexeval import Jinja2PromptTemplate, LanguageModel
+from flexeval.core.language_model.base import LMOutput
 from flexeval.core.metric.llm_geval_score import ChatLLMGEvalScore, LLMGEvalScore, calculate_weighted_average
+from flexeval.core.metric.utils import extract_text_from_outputs
 
 
 class EchoBackLanguageModel(LanguageModel):
@@ -61,113 +63,139 @@ def test_calculate_weighted_average(
     assert score == expected_score
 
 
-def test_llm_geval_score() -> None:
+@pytest.mark.parametrize(
+    ("lm_outputs", "extra_info_list", "expected_summary"),
+    [
+        (
+            [
+                "[A] Output a number from 1 to 5.",
+                "[B] Output a number from 1 to 5.",
+                "[C] Output a number from 1 to 5.",
+                "[D] Output a number from 1 to 5.",
+            ],
+            None,
+            {
+                "llm_geval_score": pytest.approx(3.0, rel=1e-5),
+                "num_failed_score_parses": 1,
+            },
+        ),
+        (
+            [
+                "[A] Output a number from 1 to 5.",
+                "[B] Output a number from 1 to 5.",
+                "[C] Output a number from 1 to 5.",
+            ],
+            [
+                {"category": "category-0"},
+                {"category": "category-1"},
+                {"category": "category-0"},
+            ],
+            {
+                "llm_geval_score": pytest.approx(3.0, rel=1e-5),
+                "num_failed_score_parses": 0,
+                "llm_geval_score/category-0": pytest.approx(3.1278810469948057, rel=1e-5),
+                "llm_geval_score/category-1": pytest.approx(2.744237906010388, rel=1e-5),
+            },
+        ),
+    ],
+    indirect=["lm_outputs"],
+)
+@pytest.mark.parametrize("metric_prefix", ["", "prefix"])
+def test_llm_geval_score(
+    lm_outputs: list[str | LMOutput],
+    extra_info_list: list[dict[str, str]] | None,
+    expected_summary: dict[str, float | int],
+    metric_prefix: str,
+) -> None:
     metric = LLMGEvalScore(
         language_model=EchoBackLanguageModel(),
         prompt_template=Jinja2PromptTemplate("{{ lm_output }}"),
         valid_score_range=(1, 5),
+        category_key="category" if extra_info_list else None,
+        metric_prefix=metric_prefix,
     )
-    lm_outputs = [
-        "[A] Output a number from 1 to 5.",
-        "[B] Output a number from 1 to 5.",
-        "[C] Output a number from 1 to 5.",
-        "[D] Output a number from 1 to 5.",
-    ]
-    metric_output = metric.evaluate(
-        lm_outputs=lm_outputs,
-    )
-
-    assert len(metric_output.summary) == 2
-    assert metric_output.summary["llm_geval_score"] == pytest.approx(3.0, rel=1e-5)
-    assert metric_output.summary["num_failed_score_parses"] == 1
-
-    for lm_output, instance_detail in zip(lm_outputs, metric_output.instance_details):
-        assert instance_detail["llm_geval_score_input"] == lm_output
-
-
-def test_llm_geval_score_with_category() -> None:
-    metric = LLMGEvalScore(
-        language_model=EchoBackLanguageModel(),
-        prompt_template=Jinja2PromptTemplate("{{ lm_output }}"),
-        valid_score_range=(1, 5),
-        category_key="category",
-    )
-    lm_outputs = [
-        "[A] Output a number from 1 to 5.",
-        "[B] Output a number from 1 to 5.",
-        "[C] Output a number from 1 to 5.",
-    ]
-    extra_info_list = [
-        {"category": "category-0"},
-        {"category": "category-1"},
-        {"category": "category-0"},
-    ]
     metric_output = metric.evaluate(
         lm_outputs=lm_outputs,
         extra_info_list=extra_info_list,
     )
 
-    assert len(metric_output.summary) == 4
-    assert metric_output.summary["llm_geval_score"] == pytest.approx(3.0, rel=1e-5)
-    assert metric_output.summary["num_failed_score_parses"] == 0
-    assert metric_output.summary["llm_geval_score/category-0"] == pytest.approx(3.1278810469948057, rel=1e-5)
-    assert metric_output.summary["llm_geval_score/category-1"] == pytest.approx(2.744237906010388, rel=1e-5)
+    if metric_prefix:
+        metric_prefix += "-"
 
-    for lm_output, instance_detail in zip(lm_outputs, metric_output.instance_details):
-        assert instance_detail["llm_geval_score_input"] == lm_output
+    expected_len = len(expected_summary)
+    assert len(metric_output.summary) == expected_len
+
+    for key, value in expected_summary.items():
+        assert metric_output.summary[f"{metric_prefix}{key}"] == value
+
+    for lm_output, instance_detail in zip(extract_text_from_outputs(lm_outputs), metric_output.instance_details):
+        assert instance_detail[f"{metric_prefix}llm_geval_score_input"] == lm_output
 
 
-def test_chat_llm_geval_score() -> None:
+@pytest.mark.parametrize(
+    ("lm_outputs", "extra_info_list", "expected_summary"),
+    [
+        (
+            [
+                "[A] Output a number from 1 to 5.",
+                "[B] Output a number from 1 to 5.",
+                "[C] Output a number from 1 to 5.",
+                "[D] Output a number from 1 to 5.",
+            ],
+            None,
+            {
+                "llm_geval_score": pytest.approx(3.0, rel=1e-5),
+                "num_failed_score_parses": 1,
+            },
+        ),
+        (
+            [
+                "[A] Output a number from 1 to 5.",
+                "[B] Output a number from 1 to 5.",
+                "[C] Output a number from 1 to 5.",
+            ],
+            [
+                {"category": "category-0"},
+                {"category": "category-1"},
+                {"category": "category-0"},
+            ],
+            {
+                "llm_geval_score": pytest.approx(3.0, rel=1e-5),
+                "num_failed_score_parses": 0,
+                "llm_geval_score/category-0": pytest.approx(3.1278810469948057, rel=1e-5),
+                "llm_geval_score/category-1": pytest.approx(2.744237906010388, rel=1e-5),
+            },
+        ),
+    ],
+    indirect=["lm_outputs"],
+)
+@pytest.mark.parametrize("metric_prefix", ["", "prefix"])
+def test_chat_llm_geval_score(
+    lm_outputs: list[str | LMOutput],
+    extra_info_list: list[dict[str, str]] | None,
+    expected_summary: dict[str, float | int],
+    metric_prefix: str,
+) -> None:
     metric = ChatLLMGEvalScore(
         language_model=EchoBackLanguageModel(),
         prompt_template=Jinja2PromptTemplate("{{ lm_output }}"),
         valid_score_range=(1, 5),
+        category_key="category" if extra_info_list else None,
+        metric_prefix=metric_prefix,
     )
-    lm_outputs = [
-        "[A] Output a number from 1 to 5.",
-        "[B] Output a number from 1 to 5.",
-        "[C] Output a number from 1 to 5.",
-        "[D] Output a number from 1 to 5.",
-    ]
-    metric_output = metric.evaluate(
-        lm_outputs=lm_outputs,
-    )
-
-    assert len(metric_output.summary) == 2
-    assert metric_output.summary["llm_geval_score"] == pytest.approx(3.0, rel=1e-5)
-    assert metric_output.summary["num_failed_score_parses"] == 1
-
-    for lm_output, instance_detail in zip(lm_outputs, metric_output.instance_details):
-        assert instance_detail["llm_geval_score_input"] == [{"role": "user", "content": lm_output}]
-
-
-def test_chat_llm_geval_score_with_category() -> None:
-    metric = ChatLLMGEvalScore(
-        language_model=EchoBackLanguageModel(),
-        prompt_template=Jinja2PromptTemplate("{{ lm_output }}"),
-        valid_score_range=(1, 5),
-        category_key="category",
-    )
-    lm_outputs = [
-        "[A] Output a number from 1 to 5.",
-        "[B] Output a number from 1 to 5.",
-        "[C] Output a number from 1 to 5.",
-    ]
-    extra_info_list = [
-        {"category": "category-0"},
-        {"category": "category-1"},
-        {"category": "category-0"},
-    ]
     metric_output = metric.evaluate(
         lm_outputs=lm_outputs,
         extra_info_list=extra_info_list,
     )
 
-    assert len(metric_output.summary) == 4
-    assert metric_output.summary["llm_geval_score"] == pytest.approx(3.0, rel=1e-5)
-    assert metric_output.summary["num_failed_score_parses"] == 0
-    assert metric_output.summary["llm_geval_score/category-0"] == pytest.approx(3.1278810469948057, rel=1e-5)
-    assert metric_output.summary["llm_geval_score/category-1"] == pytest.approx(2.744237906010388, rel=1e-5)
+    if metric_prefix:
+        metric_prefix += "-"
 
-    for lm_output, instance_detail in zip(lm_outputs, metric_output.instance_details):
-        assert instance_detail["llm_geval_score_input"] == [{"role": "user", "content": lm_output}]
+    expected_len = len(expected_summary)
+    assert len(metric_output.summary) == expected_len
+
+    for key, value in expected_summary.items():
+        assert metric_output.summary[f"{metric_prefix}{key}"] == value
+
+    for lm_output, instance_detail in zip(extract_text_from_outputs(lm_outputs), metric_output.instance_details):
+        assert instance_detail[f"{metric_prefix}llm_geval_score_input"] == [{"role": "user", "content": lm_output}]

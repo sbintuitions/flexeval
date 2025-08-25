@@ -5,9 +5,11 @@ import warnings
 
 import math_verify
 
+from flexeval.core.language_model.base import LMOutput
 from flexeval.core.string_processor.base import StringProcessor
 
 from .base import Metric, MetricResult
+from .utils import extract_text_from_outputs
 
 
 class MathVerify(Metric):
@@ -46,7 +48,7 @@ class MathVerify(Metric):
 
     def evaluate(
         self,
-        lm_outputs: list[str],
+        lm_outputs: list[str | LMOutput],
         references_list: list[list[str]],
         extra_info_list: list[dict[str, str]] | None = None,
     ) -> MetricResult:
@@ -56,6 +58,9 @@ class MathVerify(Metric):
                 "should be the same."
             )
             raise ValueError(msg)
+
+        # Extract text from LMOutput objects
+        lm_outputs = extract_text_from_outputs(lm_outputs)
 
         if self.lm_output_processors:
             lm_outputs = [

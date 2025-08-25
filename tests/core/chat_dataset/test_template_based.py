@@ -6,6 +6,20 @@ import pytest
 
 from flexeval.core.chat_dataset import HFChatDataset, JsonlChatDataset, TemplateChatDataset
 
+TOOL_DEFINITION = {
+    "type": "function",
+    "function": {
+        "name": "search_web",
+        "description": "Search the Web for specified query.",
+        "parameters": {
+            "type": "object",
+            "properties": {"query": {"type": "string", "description": "str - query for search"}},
+            "required": ["query"],
+        },
+        "return": {"type": "string", "description": "snippets: list"},
+    },
+}
+
 DATASETS_TO_TEST = [
     (
         HFChatDataset,
@@ -26,6 +40,14 @@ DATASETS_TO_TEST = [
         JsonlChatDataset,
         {
             "path": "tests/dummy_modules/test_with_tools.jsonl",
+        },
+        True,
+    ),
+    (
+        JsonlChatDataset,
+        {
+            "path": "tests/dummy_modules/test.jsonl",
+            "tools": [TOOL_DEFINITION],
         },
         True,
     ),
@@ -62,21 +84,7 @@ def test_template_dataset_with_reference(
     assert chat_dataset[0].references == ["Mount Everest"]
     assert chat_dataset[0].extra_info["question"] == "What is the highest mountain in the world."
     if has_tools:
-        assert chat_dataset[0].tools == [
-            {
-                "type": "function",
-                "function": {
-                    "name": "search_web",
-                    "description": "Search the Web for specified query.",
-                    "parameters": {
-                        "type": "object",
-                        "properties": {"query": {"type": "string", "description": "str - query for search"}},
-                        "required": ["query"],
-                    },
-                    "return": {"type": "string", "description": "snippets: list"},
-                },
-            }
-        ]
+        assert chat_dataset[0].tools == [TOOL_DEFINITION]
     else:
         assert chat_dataset[0].tools is None
 
@@ -111,21 +119,7 @@ def test_template_dataset_with_reference_list(
     assert chat_dataset[0].references == ["Mount Everest", "Everest"]
     assert chat_dataset[0].extra_info["question"] == "What is the highest mountain in the world."
     if has_tools:
-        assert chat_dataset[0].tools == [
-            {
-                "type": "function",
-                "function": {
-                    "name": "search_web",
-                    "description": "Search the Web for specified query.",
-                    "parameters": {
-                        "type": "object",
-                        "properties": {"query": {"type": "string", "description": "str - query for search"}},
-                        "required": ["query"],
-                    },
-                    "return": {"type": "string", "description": "snippets: list"},
-                },
-            }
-        ]
+        assert chat_dataset[0].tools == [TOOL_DEFINITION]
     else:
         assert chat_dataset[0].tools is None
 

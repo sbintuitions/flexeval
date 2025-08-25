@@ -178,7 +178,7 @@ class OpenAIChatBatchAPI(LanguageModel):
     def _execute_batch_requests(  # noqa: C901
         self,
         messages_list: list[list[dict[str, Any]]],
-        tools_list: list[list[dict[str, Any]]] | None = None,
+        tools_list: list[list[dict[str, Any]] | None] | None = None,
         **kwargs,
     ) -> list[Any]:
         if tools_list is None:
@@ -262,7 +262,7 @@ class OpenAIChatBatchAPI(LanguageModel):
     def _batch_generate_chat_response(
         self,
         chat_messages_list: list[list[dict[str, Any]]],
-        tools_list: list[list[dict[str, Any]]] | None = None,
+        tools_list: list[list[dict[str, Any]] | None] | None = None,
         **kwargs,
     ) -> list[LMOutput]:
         api_responses = self._execute_batch_requests(
@@ -279,7 +279,7 @@ class OpenAIChatBatchAPI(LanguageModel):
             for res in api_responses
         ]
 
-    def close(self) -> None:
+    def cleanup_resources(self) -> None:
         # in case that the program fails before the file is initialized in __init__
         if not hasattr(self, "temp_jsonl_file"):
             return
@@ -333,7 +333,7 @@ class OpenAIChatBatchAPI(LanguageModel):
         return log_probs
 
     def __del__(self) -> None:
-        self.close()
+        self.cleanup_resources()
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(model={self.model})"

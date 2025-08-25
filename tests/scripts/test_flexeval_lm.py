@@ -278,7 +278,7 @@ def test_if_saved_config_can_be_reused_to_run_eval(command: list[str]) -> None:
 def test_if_flexeval_lm_loads_custom_module() -> None:
     custom_metric_code = """\
 from flexeval import Metric, MetricResult
-
+from flexeval.core.metric.utils import extract_text_from_outputs
 
 class MyCustomMetric(Metric):
     def evaluate(
@@ -287,6 +287,7 @@ class MyCustomMetric(Metric):
         extra_info_list,
         references_list,
     ) -> MetricResult:
+        lm_outputs = extract_text_from_outputs(lm_outputs)
         length_ratios = [
             len(lm_output) / len(references[0])  # Assuming a single reference
             for lm_output, references in zip(lm_outputs, references_list)

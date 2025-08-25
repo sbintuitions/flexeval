@@ -11,7 +11,7 @@ from flexeval.core.prompt_template import PromptTemplate
 from flexeval.core.utils.data_util import batch_iter
 
 from .base import Metric, MetricResult
-from .utils import validate_inputs
+from .utils import extract_text_from_outputs, validate_inputs
 
 
 def parse_score_from_evaluator_output(evaluator_output: str, valid_score_range: tuple[int, int] | None) -> int | None:
@@ -181,6 +181,7 @@ class LLMScore(Metric):
             If the parsed score is out of the range, it will be ignored.
         category_key: A key to create category-wise mean score.
             The category key is expected to be in extra_info.
+        metric_prefix: A prefix to be added to the metric keys in the summary and instance details.
 
     Examples:
         >>> from flexeval import LLMScore, OpenAIChatAPI, Jinja2PromptTemplate
@@ -214,6 +215,7 @@ class LLMScore(Metric):
         disable_tqdm: bool = False,
         valid_score_range: tuple[int, int] | None = None,
         category_key: str | None = None,
+        metric_prefix: str | None = None,
     ) -> None:
         self.language_model = language_model
         self.prompt_template = prompt_template
@@ -221,10 +223,11 @@ class LLMScore(Metric):
         self.disable_tqdm = disable_tqdm
         self.valid_score_range = valid_score_range
         self.category_key = category_key
+        self.metric_prefix = f"{metric_prefix}-" if metric_prefix else ""
 
     def evaluate(
         self,
-        lm_outputs: list[str],
+        lm_outputs: list[str | LMOutput],
         references_list: list[list[str]] | None = None,
         extra_info_list: list[dict[str, str]] | None = None,
     ) -> MetricResult:
@@ -234,6 +237,9 @@ class LLMScore(Metric):
             references_list = [[] for _ in lm_outputs]
 
         validate_inputs(lm_outputs, references_list, extra_info_list)
+
+        # Extract text from LMOutput objects
+        lm_outputs = extract_text_from_outputs(lm_outputs)
 
         # Compute metrics
         evaluator_input_list: list[str] = prepare_text_input_for_evaluator(
@@ -260,9 +266,13 @@ class LLMScore(Metric):
         )
 
         return MetricResult(
-            summary,
+            {self.metric_prefix + key: value for key, value in summary.items()},
             instance_details=[
-                {"llm_score": eval_score, "llm_score_input": eval_in, "llm_score_output": eval_out.text}
+                {
+                    f"{self.metric_prefix}llm_score": eval_score,
+                    f"{self.metric_prefix}llm_score_input": eval_in,
+                    f"{self.metric_prefix}llm_score_output": eval_out.text,
+                }
                 for eval_score, eval_in, eval_out in zip(
                     evaluator_score_list,
                     evaluator_input_list,
@@ -270,6 +280,9 @@ class LLMScore(Metric):
                 )
             ],
         )
+
+    def cleanup_resources(self) -> None:
+        self.language_model.cleanup_resources()
 
     def __repr__(self) -> str:
         return (
@@ -291,6 +304,7 @@ class ChatLLMScore(Metric):
             If the parsed score is out of the range, it will be ignored.
         category_key: A key to create category-wise mean score.
             The category key is expected to be in extra_info.
+        metric_prefix: A prefix to be added to the metric keys in the summary and instance details.
 
     Examples:
         >>> from flexeval import ChatLLMScore, OpenAIChatAPI, Jinja2PromptTemplate
@@ -326,6 +340,7 @@ class ChatLLMScore(Metric):
         disable_tqdm: bool = False,
         valid_score_range: tuple[int, int] | None = None,
         category_key: str | None = None,
+        metric_prefix: str | None = None,
     ) -> None:
         self.language_model = language_model
         self.prompt_template = prompt_template
@@ -334,10 +349,11 @@ class ChatLLMScore(Metric):
         self.disable_tqdm = disable_tqdm
         self.valid_score_range = valid_score_range
         self.category_key = category_key
+        self.metric_prefix = f"{metric_prefix}-" if metric_prefix else ""
 
     def evaluate(
         self,
-        lm_outputs: list[str],
+        lm_outputs: list[str | LMOutput],
         references_list: list[list[str]] | None = None,
         extra_info_list: list[dict[str, str]] | None = None,
     ) -> MetricResult:
@@ -345,6 +361,9 @@ class ChatLLMScore(Metric):
             extra_info_list = [{} for _ in lm_outputs]
         if references_list is None:
             references_list = [[] for _ in lm_outputs]
+
+        # Extract text from LMOutput objects
+        lm_outputs = extract_text_from_outputs(lm_outputs)
 
         # Compute metrics
         evaluator_input_list = prepare_chat_input_for_evaluator(
@@ -371,9 +390,13 @@ class ChatLLMScore(Metric):
         )
 
         return MetricResult(
-            summary,
+            {self.metric_prefix + key: value for key, value in summary.items()},
             instance_details=[
-                {"llm_score": eval_score, "llm_score_input": eval_in, "llm_score_output": eval_out.text}
+                {
+                    f"{self.metric_prefix}llm_score": eval_score,
+                    f"{self.metric_prefix}llm_score_input": eval_in,
+                    f"{self.metric_prefix}llm_score_output": eval_out.text,
+                }
                 for eval_score, eval_in, eval_out in zip(
                     evaluator_score_list,
                     evaluator_input_list,
@@ -381,6 +404,9 @@ class ChatLLMScore(Metric):
                 )
             ],
         )
+
+    def cleanup_resources(self) -> None:
+        self.language_model.cleanup_resources()
 
     def __repr__(self) -> str:
         return (

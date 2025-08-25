@@ -29,9 +29,6 @@ class DummyLanguageModel(LanguageModel):
         tools_list: list[list[dict[str, Any]]] | None = None,
         **kwargs,
     ) -> list[LMOutput]:
-        messages_as_text = [json.dumps(messages) for messages in chat_messages_list]
-        kwargs_as_text = json.dumps(kwargs)
-
         tool_calls_list = [None for _ in chat_messages_list]
         if tools_list:
             for i, tools in enumerate(tools_list):
@@ -44,10 +41,10 @@ class DummyLanguageModel(LanguageModel):
 
         return [
             LMOutput(
-                text=m + kwargs_as_text,
+                text=f"This is response to `{messages[-1]['content']}` with kwargs {kwargs}",
                 finish_reason="length",
                 tool_calls=tc,
                 tool_call_validation_result="CompleteToolCall" if tc else "TextOnly",
             )
-            for m, tc in zip(messages_as_text, tool_calls_list)
+            for messages, tc in zip(chat_messages_list, tool_calls_list)
         ]

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any
 
 from .chat_dataset import ChatDataset
@@ -12,7 +12,7 @@ from .evaluate_perplexity import evaluate_perplexity
 from .few_shot_generator import FewShotGenerator
 from .generation_dataset import GenerationDataset
 from .language_model import LanguageModel
-from .metric import Metric
+from .metric import FinishReasonCount, Metric, OutputLengthStats
 from .multiple_choice_dataset import MultipleChoiceDataset
 from .prompt_template import PromptTemplate, instantiate_prompt_template_from_string
 from .text_dataset import TextDataset
@@ -45,7 +45,7 @@ class ChatResponse(EvalSetup):
     """
 
     eval_dataset: ChatDataset
-    gen_kwargs: dict[str, Any]
+    gen_kwargs: dict[str, Any] = field(default_factory=dict)
     few_shot_generator: FewShotGenerator | None = None
     metrics: list[Metric] | Metric | None = None
     batch_size: int = 4
@@ -58,6 +58,7 @@ class ChatResponse(EvalSetup):
         metrics = self.metrics or []
         if isinstance(metrics, Metric):
             metrics = [metrics]
+        metrics += [FinishReasonCount(), OutputLengthStats()]
 
         return evaluate_chat_response(
             language_model=language_model,
@@ -79,7 +80,7 @@ class Generation(EvalSetup):
 
     eval_dataset: GenerationDataset
     prompt_template: PromptTemplate | str
-    gen_kwargs: dict[str, Any]
+    gen_kwargs: dict[str, Any] = field(default_factory=dict)
     few_shot_generator: FewShotGenerator | None = None
     metrics: list[Metric] | Metric | None = None
     batch_size: int = 4
@@ -96,6 +97,7 @@ class Generation(EvalSetup):
         metrics = self.metrics or []
         if isinstance(metrics, Metric):
             metrics = [metrics]
+        metrics += [FinishReasonCount(), OutputLengthStats()]
 
         return evaluate_generation(
             language_model=language_model,

@@ -12,6 +12,7 @@ from flexeval.core.tokenizer import WhitespaceTokenizer
         (["これは テスト"], [["これは テスト"]], 0.0, 0.0),
         (["こんにちは 世界"], [["こんばんわ 地方"]], 0.62, 1.0),
     ],
+    indirect=["lm_outputs"],
 )
 def test_rouge(lm_outputs: list[str], expected_outputs: list[list[str]], cer_score: float, wer_score: float) -> None:
     rouge = XER(tokenizer=WhitespaceTokenizer())

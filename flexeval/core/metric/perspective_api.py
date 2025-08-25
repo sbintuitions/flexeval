@@ -9,7 +9,10 @@ from googleapiclient import discovery
 from googleapiclient.errors import HttpError
 from loguru import logger
 
+from flexeval.core.language_model.base import LMOutput
+
 from .base import Metric, MetricResult
+from .utils import extract_text_from_outputs
 
 PERSPECTIVE_API_KEY = os.getenv("PERSPECTIVE_API_KEY")
 
@@ -69,10 +72,13 @@ class PerspectiveAPI(Metric):
 
     def evaluate(
         self,
-        lm_outputs: list[str],
+        lm_outputs: list[str | LMOutput],
         references_list: list[list[str]] | None = None,
         extra_info_list: list[dict[str, str]] | None = None,
     ) -> MetricResult:
+        # Extract text from LMOutput objects
+        lm_outputs = extract_text_from_outputs(lm_outputs)
+
         # Compute metrics
         instance_details = []
         for lm_output in lm_outputs:

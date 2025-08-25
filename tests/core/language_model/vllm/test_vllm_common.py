@@ -3,12 +3,12 @@ from typing import Callable
 
 import pytest
 
+from flexeval.core.language_model.base import LanguageModel
 from flexeval.core.language_model.vllm_model import (
     VLLM,
 )
 from tests.conftest import is_vllm_enabled
 from tests.core.language_model.base import BaseLanguageModelTest
-from tests.dummy_modules.tool_parser import DummyToolParser
 
 
 @pytest.fixture(scope="module")
@@ -33,26 +33,6 @@ def chat_lm() -> VLLM:
             "disable_custom_all_reduce": True,
         },
         tokenizer_kwargs={"use_fast": False},
-    )
-    yield llm
-    from vllm.distributed.parallel_state import cleanup_dist_env_and_memory
-
-    cleanup_dist_env_and_memory()
-
-
-@pytest.fixture(scope="module")
-def chat_lm_for_tool_calling() -> VLLM:
-    tool_parser = DummyToolParser()
-    llm = VLLM(
-        model="sbintuitions/tiny-lm-chat",
-        model_kwargs={
-            "seed": 42,
-            "gpu_memory_utilization": 0.1,
-            "enforce_eager": True,
-            "disable_custom_all_reduce": True,
-        },
-        tokenizer_kwargs={"use_fast": False},
-        tool_parser=tool_parser,
     )
     yield llm
     from vllm.distributed.parallel_state import cleanup_dist_env_and_memory
@@ -89,6 +69,16 @@ class TestVLLM(BaseLanguageModelTest):
     def chat_lm(self, chat_lm: VLLM) -> VLLM:
         return chat_lm
 
-    @pytest.fixture()
-    def chat_lm_for_tool_calling(self, chat_lm_for_tool_calling: VLLM) -> VLLM:
-        return chat_lm_for_tool_calling
+    @pytest.mark.skip(reason="A larger, more high-performance model is required to test the behavior of Tool Calling.")
+    def test_generate_chat_response_single_input_with_tools(self, chat_lm_for_tool_calling: LanguageModel) -> None:
+        pass
+
+    @pytest.mark.skip(reason="A larger, more high-performance model is required to test the behavior of Tool Calling.")
+    def test_generate_chat_response_batch_input_with_tools(self, chat_lm_for_tool_calling: LanguageModel) -> None:
+        pass
+
+    @pytest.mark.skip(reason="A larger, more high-performance model is required to test the behavior of Tool Calling.")
+    def test_generate_chat_response_if_number_of_tools_and_messages_not_equal(
+        self, chat_lm_for_tool_calling: LanguageModel
+    ) -> None:
+        pass

@@ -10,6 +10,7 @@ from flexeval.core.metric.llm_score import (
     parse_score_from_evaluator_output,
     prepare_chat_input_for_evaluator,
 )
+from flexeval.core.metric.utils import extract_text_from_outputs
 
 
 class EchoBackLanguageModel(LanguageModel):
@@ -50,21 +51,65 @@ def test_parse_score_from_evaluator_output(
     assert score == expected_score
 
 
-def test_llm_score() -> None:
+@pytest.mark.parametrize(
+    ("lm_outputs", "extra_info_list", "expected_summary"),
+    [
+        (
+            ["This score is 1.", "This score is 2.", "This is a good one."],
+            [
+                {"category": "category-0"},
+                {"category": "category-0"},
+                {"category": "category-1"},
+            ],
+            {
+                "llm_score": 1.5,
+                "num_failed_score_parses": 1,
+                "llm_score/category-0": 1.5,
+            },
+        ),
+        (
+            ["This score is 1.", "This score is 2.", "This score is 3.", "This is a good one."],
+            [
+                {"category": ["category-0"]},
+                {"category": ["category-0", "category-1"]},
+                {"category": []},
+                {"category": [""]},
+            ],
+            {
+                "llm_score": 2.0,
+                "num_failed_score_parses": 1,
+                "llm_score/category-0": 1.5,
+                "llm_score/category-1": 2.0,
+            },
+        ),
+    ],
+    indirect=["lm_outputs"],
+)
+@pytest.mark.parametrize("metric_prefix", ["", "prefix"])
+def test_llm_score(
+    lm_outputs: list[str | LMOutput],
+    extra_info_list: list[dict[str, str | list[str]]],
+    expected_summary: dict[str, float],
+    metric_prefix: str | None,
+) -> None:
     metric = LLMScore(
         language_model=EchoBackLanguageModel(),
         prompt_template=Jinja2PromptTemplate("{{ lm_output }}"),
+        category_key="category",
+        metric_prefix=metric_prefix,
     )
-    lm_outputs = ["This score is 1.", "This score is 2.", "This is a good one."]
     metric_output = metric.evaluate(
         lm_outputs=lm_outputs,
+        extra_info_list=extra_info_list,
     )
+    if metric_prefix:
+        metric_prefix += "-"
 
-    assert metric_output.summary == {"llm_score": 1.5, "num_failed_score_parses": 1}
+    assert metric_output.summary == {f"{metric_prefix}{k}": v for k, v in expected_summary.items()}
 
-    for lm_output, instance_detail in zip(lm_outputs, metric_output.instance_details):
-        assert instance_detail["llm_score_input"] == lm_output
-        assert instance_detail["llm_score_output"] == lm_output
+    for lm_output, instance_detail in zip(extract_text_from_outputs(lm_outputs), metric_output.instance_details):
+        assert instance_detail[f"{metric_prefix}llm_score_input"] == lm_output
+        assert instance_detail[f"{metric_prefix}llm_score_output"] == lm_output
 
 
 @pytest.mark.parametrize(
@@ -99,95 +144,33 @@ def test_llm_score() -> None:
             },
         ),
     ],
+    indirect=["lm_outputs"],
 )
-def test_llm_score_with_category(
-    lm_outputs: list[str], extra_info_list: list[dict[str, str | list[str]]], expected_summary: dict[str, float]
+@pytest.mark.parametrize("metric_prefix", ["", "prefix"])
+def test_chat_llm_score(
+    lm_outputs: list[str | LMOutput],
+    extra_info_list: list[dict[str, str | list[str]]],
+    expected_summary: dict[str, float],
+    metric_prefix: str,
 ) -> None:
-    metric = LLMScore(
+    metric = ChatLLMScore(
         language_model=EchoBackLanguageModel(),
         prompt_template=Jinja2PromptTemplate("{{ lm_output }}"),
         category_key="category",
+        metric_prefix=metric_prefix,
     )
     metric_output = metric.evaluate(
         lm_outputs=lm_outputs,
         extra_info_list=extra_info_list,
     )
 
-    assert metric_output.summary == expected_summary
+    if metric_prefix:
+        metric_prefix += "-"
+    assert metric_output.summary == {f"{metric_prefix}{k}": v for k, v in expected_summary.items()}
 
-    for lm_output, instance_detail in zip(lm_outputs, metric_output.instance_details):
-        assert instance_detail["llm_score_input"] == lm_output
-        assert instance_detail["llm_score_output"] == lm_output
-
-
-def test_chat_llm_score() -> None:
-    metric = ChatLLMScore(
-        language_model=EchoBackLanguageModel(),
-        prompt_template=Jinja2PromptTemplate("{{ lm_output }}"),
-    )
-    lm_outputs = ["This score is 1.", "This score is 2.", "This is a good one."]
-    metric_output = metric.evaluate(
-        lm_outputs=lm_outputs,
-    )
-
-    assert metric_output.summary == {"llm_score": 1.5, "num_failed_score_parses": 1}
-
-    for lm_output, instance_detail in zip(lm_outputs, metric_output.instance_details):
-        assert instance_detail["llm_score_input"] == [{"role": "user", "content": lm_output}]
-        assert instance_detail["llm_score_output"] == lm_output
-
-
-@pytest.mark.parametrize(
-    ("lm_outputs", "extra_info_list", "expected_summary"),
-    [
-        (
-            ["This score is 1.", "This score is 2.", "This is a good one."],
-            [
-                {"category": "category-0"},
-                {"category": "category-0"},
-                {"category": "category-1"},
-            ],
-            {
-                "llm_score": 1.5,
-                "num_failed_score_parses": 1,
-                "llm_score/category-0": 1.5,
-            },
-        ),
-        (
-            ["This score is 1.", "This score is 2.", "This score is 3.", "This is a good one."],
-            [
-                {"category": ["category-0"]},
-                {"category": ["category-0", "category-1"]},
-                {"category": []},
-                {"category": [""]},
-            ],
-            {
-                "llm_score": 2.0,
-                "num_failed_score_parses": 1,
-                "llm_score/category-0": 1.5,
-                "llm_score/category-1": 2.0,
-            },
-        ),
-    ],
-)
-def test_chat_llm_score_with_category(
-    lm_outputs: list[str], extra_info_list: list[dict[str, str | list[str]]], expected_summary: dict[str, float]
-) -> None:
-    metric = ChatLLMScore(
-        language_model=EchoBackLanguageModel(),
-        prompt_template=Jinja2PromptTemplate("{{ lm_output }}"),
-        category_key="category",
-    )
-    metric_output = metric.evaluate(
-        lm_outputs=lm_outputs,
-        extra_info_list=extra_info_list,
-    )
-
-    assert metric_output.summary == expected_summary
-
-    for lm_output, instance_detail in zip(lm_outputs, metric_output.instance_details):
-        assert instance_detail["llm_score_input"] == [{"role": "user", "content": lm_output}]
-        assert instance_detail["llm_score_output"] == lm_output
+    for lm_output, instance_detail in zip(extract_text_from_outputs(lm_outputs), metric_output.instance_details):
+        assert instance_detail[f"{metric_prefix}llm_score_input"] == [{"role": "user", "content": lm_output}]
+        assert instance_detail[f"{metric_prefix}llm_score_output"] == lm_output
 
 
 def test_prepare_chat_input_for_evaluator() -> None:

@@ -27,9 +27,11 @@ class TemplateChatDataset(ChatDataset):
             if the dataset has a single reference.
         reference_list_template: Specify the Jinja2 template to render a list of reference strings
             if the dataset has multiple references.
-        require_incremental_response: Whether the dataset requires incremental response.
         extra_info_templates: A dictionary of Jinja2 templates for extra information.
         system_message_template: A Jinja2 template for the system message.
+        tools: Default tools to use for all chat instances. Individual items can override this
+            by including their own "tools" key. Typically in JSON Schema format as in the
+            OpenAI Chat Completion API for function calling.
         data_range: The range of data to use.
         keep_conditions: A dictionary to indicate the condition to filter certain items.
             The key is a Jinja2 template string to embed the item into a string, and the value is the value to keep.
@@ -43,9 +45,9 @@ class TemplateChatDataset(ChatDataset):
         input_template: str,
         reference_template: str | None = None,
         reference_list_template: str | None = None,
-        require_incremental_response: bool = False,
         extra_info_templates: dict[str, str] | None = None,
         system_message_template: str | None = None,
+        tools: list[dict[str, Any]] | None = None,
         data_range: tuple[int, int] | None = None,
         keep_conditions: dict[str, str] | None = None,
         remove_conditions: dict[str, str] | None = None,
@@ -68,6 +70,7 @@ class TemplateChatDataset(ChatDataset):
             items = [item for item in items if key_template.render(**item) != value_to_remove]
 
         self.items = items
+        self.tools = tools
 
         self.input_template = JINJA2_ENV.from_string(input_template)
         self.reference_template = JINJA2_ENV.from_string(reference_template) if reference_template else None
@@ -83,11 +86,6 @@ class TemplateChatDataset(ChatDataset):
         self._system_message_template: Template | None = (
             JINJA2_ENV.from_string(system_message_template) if system_message_template else None
         )
-
-        self._require_incremental_response = require_incremental_response
-
-    def require_incremental_response(self) -> bool:
-        return self._require_incremental_response
 
     def __len__(self) -> int:
         return len(self.items)
@@ -122,7 +120,10 @@ class TemplateChatDataset(ChatDataset):
         extra_info.update(extra_info_from_templates)
 
         return ChatInstance(
-            messages=messages, tools=item.get("tools"), references=reference_list, extra_info=extra_info
+            messages=messages,
+            tools=item.get("tools") or self.tools,
+            references=reference_list,
+            extra_info=extra_info,
         )
 
 
@@ -133,6 +134,7 @@ class HFChatDataset(TemplateChatDataset):
     Args:
         path: The path to the Hugging Face dataset.
         split: The split of the dataset.
+        input_template: A Jinja2 template for the user input.
         subset: The subset of the dataset.
         dataset_kwargs: The keyword arguments to pass to the Hugging Face dataset.
     """
@@ -146,9 +148,9 @@ class HFChatDataset(TemplateChatDataset):
         dataset_kwargs: dict[str, Any] | None = None,
         reference_template: str | None = None,
         reference_list_template: str | None = None,
-        require_incremental_response: bool = False,
         extra_info_templates: dict[str, str] | None = None,
         system_message_template: str | None = None,
+        tools: list[dict[str, Any]] | None = None,
         data_range: tuple[int, int] | None = None,
         keep_conditions: dict[str, str] | None = None,
         remove_conditions: dict[str, str] | None = None,
@@ -162,9 +164,9 @@ class HFChatDataset(TemplateChatDataset):
             input_template=input_template,
             reference_template=reference_template,
             reference_list_template=reference_list_template,
-            require_incremental_response=require_incremental_response,
             extra_info_templates=extra_info_templates,
             system_message_template=system_message_template,
+            tools=tools,
             data_range=data_range,
             keep_conditions=keep_conditions,
             remove_conditions=remove_conditions,
@@ -185,9 +187,9 @@ class JsonlChatDataset(TemplateChatDataset):
         input_template: str,
         reference_template: str | None = None,
         reference_list_template: str | None = None,
-        require_incremental_response: bool = False,
         extra_info_templates: dict[str, str] | None = None,
         system_message_template: str | None = None,
+        tools: list[dict[str, Any]] | None = None,
         data_range: tuple[int, int] | None = None,
         keep_conditions: dict[str, str] | None = None,
         remove_conditions: dict[str, str] | None = None,
@@ -200,9 +202,9 @@ class JsonlChatDataset(TemplateChatDataset):
             input_template=input_template,
             reference_template=reference_template,
             reference_list_template=reference_list_template,
-            require_incremental_response=require_incremental_response,
             extra_info_templates=extra_info_templates,
             system_message_template=system_message_template,
+            tools=tools,
             data_range=data_range,
             keep_conditions=keep_conditions,
             remove_conditions=remove_conditions,

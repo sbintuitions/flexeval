@@ -39,6 +39,7 @@ from flexeval.core.metric.sari import SARI
             0.0,
         ),
     ],
+    indirect=["lm_outputs"],
 )
 def test_sari(
     lm_outputs: list[str],

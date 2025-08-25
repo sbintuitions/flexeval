@@ -5,10 +5,11 @@ from typing import Literal
 
 from scipy.stats import kendalltau, pearsonr, spearmanr
 
+from flexeval.core.language_model.base import LMOutput
 from flexeval.core.string_processor import StringProcessor
 
 from .base import Metric, MetricResult
-from .utils import apply_string_processors, validate_inputs
+from .utils import apply_string_processors, extract_text_from_outputs, validate_inputs
 
 
 class Correlation(Metric):
@@ -52,15 +53,16 @@ class Correlation(Metric):
 
     def evaluate(
         self,
-        lm_outputs: list[str],
+        lm_outputs: list[str | LMOutput],
         references_list: list[list[str]],
         extra_info_list: list[dict[str, str]] | None = None,
     ) -> MetricResult:
         validate_inputs(lm_outputs, references_list, extra_info_list)
 
-        # Normalize text data - we only use the first reference here
-        references = [refs[0] for refs in references_list]
+        lm_outputs = extract_text_from_outputs(lm_outputs)
         lm_outputs = [apply_string_processors(output, self.lm_output_processors) for output in lm_outputs]
+
+        references = [refs[0] for refs in references_list]
         references = [apply_string_processors(ref, self.reference_processors) for ref in references]
 
         # Convert to numeric values

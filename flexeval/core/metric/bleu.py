@@ -2,10 +2,12 @@ from __future__ import annotations
 
 import sacrebleu
 
+from flexeval.core.language_model.base import LMOutput
 from flexeval.core.metric.utils import aggregate_category_wise_scores, apply_string_processors, validate_inputs
 from flexeval.core.string_processor.base import StringProcessor
 
 from .base import Metric, MetricResult
+from .utils import extract_text_from_outputs
 
 
 class BLEU(Metric):
@@ -59,13 +61,14 @@ class BLEU(Metric):
 
     def evaluate(
         self,
-        lm_outputs: list[str],
+        lm_outputs: list[str | LMOutput],
         references_list: list[list[str]],
         extra_info_list: list[dict[str, str]] | None = None,
     ) -> MetricResult:
         validate_inputs(lm_outputs, references_list, extra_info_list)
 
-        # Normalize text data
+        lm_outputs = extract_text_from_outputs(lm_outputs)
+
         lm_outputs = [apply_string_processors(output, self.lm_output_processors) for output in lm_outputs]
         references_list = [
             [apply_string_processors(ref, self.reference_processors) for ref in references]

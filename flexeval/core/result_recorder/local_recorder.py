@@ -1,11 +1,14 @@
 from __future__ import annotations
 
 import json
+from collections.abc import Iterable
 from os import PathLike
 from pathlib import Path
-from typing import Any, Iterable
+from typing import Any
 
 from loguru import logger
+
+from flexeval.core.utils.json_util import truncate_base64
 
 from .base import ResultRecorder
 
@@ -21,7 +24,7 @@ def save_jsonl(
     Path(save_path).parent.mkdir(parents=True, exist_ok=True)
     with open(save_path, "w") as f:
         for d in data:
-            dump_line = json.dumps(d, ensure_ascii=False, default=str)
+            dump_line = json.dumps(d, ensure_ascii=False, default=truncate_base64)
             try:
                 f.write(f"{dump_line}\n")
             except UnicodeEncodeError:

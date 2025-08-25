@@ -40,9 +40,62 @@ def evaluate_model_output(model_output: str, gold_label: PairwiseChoice) -> bool
     return False
 
 
+def aggregate_judge_results(
+    outputs: list[dict],
+    judge_outputs: list,
+    chosen_is_better_list: list[bool],
+) -> tuple[list[bool], list[dict]]:
+    """
+    Aggregates the doubled-length `judge_outputs` and `chosen_is_better_list`
+    into final results for each individual instance.
+
+    Returns:
+        final_results: list[bool]
+            A list indicating whether each instance is ultimately judged as correct.
+    """
+    aggregated_results: list[bool] = []
+    aggregated_outputs: list[dict] = []
+
+    for i, output in enumerate(outputs):
+        ab_output_text = judge_outputs[i * 2].text
+        ba_output_text = judge_outputs[i * 2 + 1].text
+        ab_eval = chosen_is_better_list[i * 2]
+        ba_eval = chosen_is_better_list[i * 2 + 1]
+
+        consistent = ab_eval == ba_eval
+        is_correct = consistent and ab_eval
+
+        aggregated_outputs.append(
+            {
+                "llm_outputs": [ab_output_text, ba_output_text],
+                "evaluation_results": [ab_eval, ba_eval],
+                "consistent": consistent,
+                "is_correct": is_correct,
+                **output,
+            }
+        )
+        aggregated_results.append(is_correct)
+
+    return aggregated_results, aggregated_outputs
+
+
 class PairwiseJudgeRewardModel(RewardModel):
     """Pairwise judge using a chat language model to compare two model or human
     outputs.
+    The reward model’s judgment is counted as **correct only if it is order‑invariant**:
+    when given (A = chosen, B = rejected) it prefers **A**, and when the inputs are swapped
+    (A = rejected, B = chosen) it prefers **B**.
+
+    Examples:
+    - ✅ Correct (order‑invariant):
+      - judge(prompt, A=chosen, B=rejected) → **A**
+      - judge(prompt, A=rejected, B=chosen) → **B**
+    - ❌ Incorrect (position bias; same answer regardless of order):
+      - judge(prompt, A=chosen, B=rejected) → **A**
+      - judge(prompt, A=rejected, B=chosen) → **A**
+    - ❌ Incorrect (both wrong):
+      - judge(prompt, A=chosen, B=rejected) → **B**
+      - judge(prompt, A=rejected, B=chosen) → **A**
 
     Args:
         language_model: The language model to use for pairwise comparison.
@@ -93,6 +146,7 @@ class PairwiseJudgeRewardModel(RewardModel):
         all_pairwise_instances: list[PairwiseInstance] = []
         outputs: list[dict[str, Any]] = []
         for reward_bench_instance in batch_reward_bench_instances:
+            # to address position biases, create two inputs by swapping chosen/rejected orderings
             pairwise_instance_answer_a_is_chosen = PairwiseInstance(
                 prompt=reward_bench_instance.prompt,
                 answer_a=reward_bench_instance.chosen,
@@ -130,8 +184,6 @@ class PairwiseJudgeRewardModel(RewardModel):
             msg = "The number of outputs should be twice the number of inputs."
             raise ValueError(msg)
 
-        for i in range(len(outputs)):
-            outputs[i]["llm_outputs"] = [judge_outputs[i * 2].text, judge_outputs[i * 2 + 1].text]
-            outputs[i]["evaluation_results"] = [chosen_is_better_list[i * 2], chosen_is_better_list[i * 2 + 1]]
+        aggregated_results, aggregated_outputs = aggregate_judge_results(outputs, judge_outputs, chosen_is_better_list)
 
-        return chosen_is_better_list, outputs
+        return aggregated_results, aggregated_outputs

@@ -98,9 +98,6 @@ class ChatbotBench(ChatDataset):
             "reasoning",
         ]
 
-    def require_incremental_response(self) -> bool:
-        return True
-
     def __len__(self) -> int:
         return len(self._id_to_question_id)
 

@@ -107,7 +107,7 @@ class OpenAIChatAPI(LanguageModel):
     async def _async_batch_run_chatgpt(
         self,
         messages_list: list[list[dict[str, Any]]],
-        tools_list: list[list[dict[str, Any]]] | None = None,
+        tools_list: list[list[dict[str, Any]] | None] | None = None,
         stop_sequences: str | list[str] | None = None,
         max_new_tokens: int | None = None,
         **kwargs,
@@ -195,7 +195,7 @@ class OpenAIChatAPI(LanguageModel):
     def _batch_generate_chat_response(
         self,
         chat_messages_list: list[list[dict[str, Any]]],
-        tools_list: list[list[dict[str, Any]]] | None = None,
+        tools_list: list[list[dict[str, Any]] | None] | None = None,
         **kwargs,
     ) -> list[LMOutput]:
         api_responses = asyncio.run(
@@ -365,6 +365,8 @@ class OpenAICompletionAPI(LanguageModel):
                 gen_kwargs.pop("stop_sequences", None),  # This is a common variable name used in flexeval
             ],
         )
+        if stop_sequences:
+            gen_kwargs["stop"] = stop_sequences
 
         tasks = [
             _retry_on_error(
@@ -373,7 +375,6 @@ class OpenAICompletionAPI(LanguageModel):
                 openai_call=lambda x=ms: self.api_call_func(
                     model=self.model,
                     prompt=x,
-                    stop=stop_sequences or NotGiven(),
                     **gen_kwargs,
                 ),
                 empty_response=self.empty_response,

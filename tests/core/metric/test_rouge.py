@@ -13,6 +13,7 @@ from flexeval.core.tokenizer import WhitespaceTokenizer
         (["こんにちは 世界"], [["こんばんわ 地方"]], 0.0),
         ([""], [["empty"]], 0.0),
     ],
+    indirect=["lm_outputs"],
 )
 def test_rouge(lm_outputs: list[str], expected_outputs: list[list[str]], score: float) -> None:
     rouge = ROUGE(tokenizer=WhitespaceTokenizer())

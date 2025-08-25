@@ -3,6 +3,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any, final
 
+from loguru import logger
+
 from flexeval.core.string_processor import StringProcessor
 
 
@@ -34,9 +36,11 @@ class LMOutput:
     """
 
     def __post_init__(self) -> None:
-        if self.tool_calls is None and self.text is None:
-            msg = "It is not allowed for both `text` and `tool_calls` to be None."
-            raise ValueError(msg)
+        if self.text is None:
+            self.text = ""
+            if self.tool_calls is None:
+                msg = "Both `text` and `tool_calls` are empty."
+                logger.warning(msg)
 
 
 class LanguageModel:
@@ -89,7 +93,7 @@ class LanguageModel:
     def _batch_generate_chat_response(
         self,
         chat_messages_list: list[list[dict[str, Any]]],
-        tools_list: list[list[dict[str, Any]]] | None = None,
+        tools_list: list[list[dict[str, Any]] | None] | None = None,
         **kwargs,
     ) -> list[LMOutput]:
         """Generate chat responses based on the chat messages in the list.
@@ -239,6 +243,15 @@ class LanguageModel:
         if isinstance(prompt[0], dict):
             return self._batch_compute_chat_log_probs([prompt], [response])[0]
         return self._batch_compute_chat_log_probs(prompt, response)
+
+    def cleanup_resources(self) -> None:
+        """
+        Clean up resources if necessary.
+        This method is called when the language model is no longer needed.
+        """
+
+    def __del__(self) -> None:
+        self.cleanup_resources()
 
 
 def normalize_stop_sequences(

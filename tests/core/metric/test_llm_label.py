@@ -5,6 +5,7 @@ import pytest
 from flexeval import Jinja2PromptTemplate, LanguageModel
 from flexeval.core.language_model.base import LMOutput
 from flexeval.core.metric.llm_label import ChatLLMLabel, LLMLabel, parse_label_from_evaluator_output
+from flexeval.core.metric.utils import extract_text_from_outputs
 
 
 class EchoBackLanguageModel(LanguageModel):
@@ -34,124 +35,132 @@ class EchoBackLanguageModel(LanguageModel):
 )
 def test_parse_label_from_evaluator_output(
     evaluator_output: str,
-    label_names: tuple[int, int] | None,
+    label_names: list[str],
     expected_label: str | None,
 ) -> None:
     label = parse_label_from_evaluator_output(evaluator_output, label_names)
     assert label == expected_label
 
 
-def test_llm_label() -> None:
+@pytest.mark.parametrize(
+    ("lm_outputs", "extra_info_list", "expected_summary"),
+    [
+        (
+            ["This is Good.", "This is Neutral.", "This is Bad.", "This is Great."],
+            None,
+            {
+                "llm_score": 0.5,
+                "num_failed_score_parses": 1,
+                "llm_label_distribution": {"Good": 1 / 3, "Neutral": 1 / 3, "Bad": 1 / 3},
+            },
+        ),
+        (
+            ["This is Good.", "This is Neutral.", "This is Bad.", "This is Great."],
+            [
+                {"category": "category-0"},
+                {"category": "category-0"},
+                {"category": "category-1"},
+                {"category": "category-2"},
+            ],
+            {
+                "llm_score": 0.5,
+                "llm_label_distribution": {"Good": 1 / 3, "Neutral": 1 / 3, "Bad": 1 / 3},
+                "num_failed_score_parses": 1,
+                "llm_score/category-0": 0.75,
+                "llm_label_distribution/category-0": {"Good": 1 / 2, "Neutral": 1 / 2, "Bad": 0 / 2},
+                "llm_score/category-1": 0.0,
+                "llm_label_distribution/category-1": {"Good": 0 / 1, "Neutral": 0 / 1, "Bad": 1 / 1},
+            },
+        ),
+    ],
+    indirect=["lm_outputs"],
+)
+@pytest.mark.parametrize("metric_prefix", ["", "prefix"])
+def test_llm_label(
+    lm_outputs: list[str | LMOutput],
+    extra_info_list: list[dict[str, str]] | None,
+    expected_summary: dict[str, float | dict[str, float]],
+    metric_prefix: str,
+) -> None:
     metric = LLMLabel(
         language_model=EchoBackLanguageModel(),
         prompt_template=Jinja2PromptTemplate("{{ lm_output }}"),
         label_names=["Good", "Neutral", "Bad"],
         label_points=[1.0, 0.5, 0.0],
+        category_key="category" if extra_info_list else None,
+        metric_prefix=metric_prefix,
     )
-    lm_outputs = ["This is Good.", "This is Neutral.", "This is Bad.", "This is Great."]
-    metric_output = metric.evaluate(
-        lm_outputs=lm_outputs,
-    )
-
-    assert metric_output.summary == {
-        "llm_score": 0.5,
-        "num_failed_score_parses": 1,
-        "llm_label_distribution": {"Good": 1 / 3, "Neutral": 1 / 3, "Bad": 1 / 3},
-    }
-
-    for lm_output, instance_detail in zip(lm_outputs, metric_output.instance_details):
-        assert instance_detail["llm_label_input"] == lm_output
-        assert instance_detail["llm_label_output"] == lm_output
-
-
-def test_llm_label_with_category() -> None:
-    metric = LLMLabel(
-        language_model=EchoBackLanguageModel(),
-        prompt_template=Jinja2PromptTemplate("{{ lm_output }}"),
-        label_names=["Good", "Neutral", "Bad"],
-        label_points=[1.0, 0.5, 0.0],
-        category_key="category",
-    )
-    lm_outputs = ["This is Good.", "This is Neutral.", "This is Bad.", "This is Great."]
-    extra_info_list = [
-        {"category": "category-0"},
-        {"category": "category-0"},
-        {"category": "category-1"},
-        {"category": "category-2"},
-    ]
     metric_output = metric.evaluate(
         lm_outputs=lm_outputs,
         extra_info_list=extra_info_list,
     )
 
-    assert metric_output.summary == {
-        "llm_score": 0.5,
-        "llm_label_distribution": {"Good": 1 / 3, "Neutral": 1 / 3, "Bad": 1 / 3},
-        "num_failed_score_parses": 1,
-        "llm_score/category-0": 0.75,
-        "llm_label_distribution/category-0": {"Good": 1 / 2, "Neutral": 1 / 2, "Bad": 0 / 2},
-        "llm_score/category-1": 0.0,
-        "llm_label_distribution/category-1": {"Good": 0 / 1, "Neutral": 0 / 1, "Bad": 1 / 1},
-    }
+    if metric_prefix:
+        metric_prefix += "-"
+    assert metric_output.summary == {f"{metric_prefix}{k}": v for k, v in expected_summary.items()}
 
-    for lm_output, instance_detail in zip(lm_outputs, metric_output.instance_details):
-        assert instance_detail["llm_label_input"] == lm_output
-        assert instance_detail["llm_label_output"] == lm_output
+    for lm_output, instance_detail in zip(extract_text_from_outputs(lm_outputs), metric_output.instance_details):
+        assert instance_detail[f"{metric_prefix}llm_label_input"] == lm_output
+        assert instance_detail[f"{metric_prefix}llm_label_output"] == lm_output
 
 
-def test_chat_llm_label() -> None:
+@pytest.mark.parametrize(
+    ("lm_outputs", "extra_info_list", "expected_summary"),
+    [
+        (
+            ["This is Good.", "This is Neutral.", "This is Bad.", "This is Great."],
+            None,
+            {
+                "llm_score": 0.5,
+                "num_failed_score_parses": 1,
+                "llm_label_distribution": {"Good": 1 / 3, "Neutral": 1 / 3, "Bad": 1 / 3},
+            },
+        ),
+        (
+            ["This is Good.", "This is Neutral.", "This is Bad.", "This is Great."],
+            [
+                {"category": "category-0"},
+                {"category": "category-0"},
+                {"category": "category-1"},
+                {"category": "category-2"},
+            ],
+            {
+                "llm_score": 0.5,
+                "llm_label_distribution": {"Good": 1 / 3, "Neutral": 1 / 3, "Bad": 1 / 3},
+                "num_failed_score_parses": 1,
+                "llm_score/category-0": 0.75,
+                "llm_label_distribution/category-0": {"Good": 1 / 2, "Neutral": 1 / 2, "Bad": 0 / 2},
+                "llm_score/category-1": 0.0,
+                "llm_label_distribution/category-1": {"Good": 0 / 1, "Neutral": 0 / 1, "Bad": 1 / 1},
+            },
+        ),
+    ],
+    indirect=["lm_outputs"],
+)
+@pytest.mark.parametrize("metric_prefix", ["", "prefix"])
+def test_chat_llm_label(
+    lm_outputs: list[str | LMOutput],
+    extra_info_list: list[dict[str, str]] | None,
+    expected_summary: dict[str, float | dict[str, float]],
+    metric_prefix: str,
+) -> None:
     metric = ChatLLMLabel(
         language_model=EchoBackLanguageModel(),
         prompt_template=Jinja2PromptTemplate("{{ lm_output }}"),
         label_names=["Good", "Neutral", "Bad"],
         label_points=[1.0, 0.5, 0.0],
+        category_key="category" if extra_info_list else None,
+        metric_prefix=metric_prefix,
     )
-    lm_outputs = ["This is Good.", "This is Neutral.", "This is Bad.", "This is Great."]
-    metric_output = metric.evaluate(
-        lm_outputs=lm_outputs,
-    )
-
-    assert metric_output.summary == {
-        "llm_score": 0.5,
-        "num_failed_score_parses": 1,
-        "llm_label_distribution": {"Good": 1 / 3, "Neutral": 1 / 3, "Bad": 1 / 3},
-    }
-
-    for lm_output, instance_detail in zip(lm_outputs, metric_output.instance_details):
-        assert instance_detail["llm_label_input"] == [{"role": "user", "content": lm_output}]
-        assert instance_detail["llm_label_output"] == lm_output
-
-
-def test_chat_llm_label_with_category() -> None:
-    metric = ChatLLMLabel(
-        language_model=EchoBackLanguageModel(),
-        prompt_template=Jinja2PromptTemplate("{{ lm_output }}"),
-        label_names=["Good", "Neutral", "Bad"],
-        label_points=[1.0, 0.5, 0.0],
-        category_key="category",
-    )
-    lm_outputs = ["This is Good.", "This is Neutral.", "This is Bad.", "This is Great."]
-    extra_info_list = [
-        {"category": "category-0"},
-        {"category": "category-0"},
-        {"category": "category-1"},
-        {"category": "category-2"},
-    ]
     metric_output = metric.evaluate(
         lm_outputs=lm_outputs,
         extra_info_list=extra_info_list,
     )
 
-    assert metric_output.summary == {
-        "llm_score": 0.5,
-        "llm_label_distribution": {"Good": 1 / 3, "Neutral": 1 / 3, "Bad": 1 / 3},
-        "num_failed_score_parses": 1,
-        "llm_score/category-0": 0.75,
-        "llm_label_distribution/category-0": {"Good": 1 / 2, "Neutral": 1 / 2, "Bad": 0 / 2},
-        "llm_score/category-1": 0.0,
-        "llm_label_distribution/category-1": {"Good": 0 / 1, "Neutral": 0 / 1, "Bad": 1 / 1},
-    }
+    if metric_prefix:
+        metric_prefix += "-"
+    assert metric_output.summary == {f"{metric_prefix}{k}": v for k, v in expected_summary.items()}
 
-    for lm_output, instance_detail in zip(lm_outputs, metric_output.instance_details):
-        assert instance_detail["llm_label_input"] == [{"role": "user", "content": lm_output}]
-        assert instance_detail["llm_label_output"] == lm_output
+    for lm_output, instance_detail in zip(extract_text_from_outputs(lm_outputs), metric_output.instance_details):
+        assert instance_detail[f"{metric_prefix}llm_label_input"] == [{"role": "user", "content": lm_output}]
+        assert instance_detail[f"{metric_prefix}llm_label_output"] == lm_output

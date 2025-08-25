@@ -16,6 +16,7 @@ from flexeval.core.metric import MathVerify
         (["The answer is \\boxed{1.501}"], [["1.5"]], 0.0),
         (["答えは４です"], [["4"]], 0.0),
     ],
+    indirect=["lm_outputs"],
 )
 def test_exact_match(
     lm_outputs: list[str],

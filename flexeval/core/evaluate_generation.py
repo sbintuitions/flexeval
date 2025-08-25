@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from collections import Counter
 from typing import Any, Sequence
 
 from loguru import logger
@@ -69,15 +68,18 @@ def evaluate_generation(  # noqa: C901
 
             pbar.update(len(batch))
 
+    language_model.cleanup_resources()
+
     # Evaluate the generated continuations
     metrics_summary_dict: dict[str, float] = {}
     instance_metrics_list: list[dict[str, Any]] = [{} for _ in range(len(eval_instances))]
     for metric in metrics:
         metric_result = metric.evaluate(
-            lm_outputs=[lm_output.text for lm_output in lm_output_list],
+            lm_outputs=lm_output_list,
             references_list=[i.references for i in eval_instances],
             extra_info_list=[i.inputs for i in eval_instances],
         )
+        metric.cleanup_resources()
 
         metrics_summary_dict.update(metric_result.summary)
 
@@ -86,11 +88,6 @@ def evaluate_generation(  # noqa: C901
                 metric_result.instance_details,
             ):
                 instance_metrics_list[instance_idx].update(instance_details)
-
-    # Calculate the finish_reason statistics
-    finish_reason_counter = Counter([lm_output.finish_reason for lm_output in lm_output_list])
-    for finish_reason, count in finish_reason_counter.items():
-        metrics_summary_dict[f"finish_reason_ratio-{finish_reason}"] = count / len(lm_output_list)
 
     logger.info(metrics_summary_dict)
 

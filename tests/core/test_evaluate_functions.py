@@ -4,7 +4,6 @@ import itertools
 
 import pytest
 
-from flexeval.core.evaluate_chat_response import evaluate_chat_response
 from flexeval.core.evaluate_from_data import evaluate_from_data
 from flexeval.core.evaluate_generation import evaluate_generation
 from flexeval.core.evaluate_multiple_choice import evaluate_multiple_choice
@@ -12,11 +11,10 @@ from flexeval.core.evaluate_pairwise import Match, evaluate_pairwise
 from flexeval.core.evaluate_perplexity import evaluate_perplexity
 from flexeval.core.evaluate_reward_model import evaluate_reward_model
 from flexeval.core.few_shot_generator import RandomFewShotGenerator
-from flexeval.core.metric import ExactMatch
+from flexeval.core.metric import ExactMatch, FinishReasonCount
 from flexeval.core.prompt_template import Jinja2PromptTemplate
 from flexeval.core.reward_model.pairwise_judge_reward_model import PairwiseJudgeRewardModel
 from tests.dummy_modules import (
-    DummyChatDataset,
     DummyGenerationDataset,
     DummyLanguageModel,
     DummyMultipleChoiceDataset,
@@ -25,50 +23,6 @@ from tests.dummy_modules import (
 )
 from tests.dummy_modules.reward_bench_dataset import DummyRewardBenchDataset
 from tests.dummy_modules.reward_lm import DummyRewardLanguageModel
-
-
-@pytest.mark.parametrize(
-    ("require_incremental_response", "use_few_shot", "max_instances", "use_tools", "batch_size"),
-    list(itertools.product([True, False], [True, False], [None, 1], [True, False], [1, 3])),
-)
-def test_evaluate_chat_response(
-    require_incremental_response: bool, use_few_shot: bool, max_instances: int, use_tools: bool, batch_size: int
-) -> None:
-    few_shot_generator = None
-    if use_few_shot:
-        few_shot_generator = RandomFewShotGenerator(dataset=DummyChatDataset(), num_shots=1, num_trials_to_avoid_leak=0)
-
-    metrics, outputs = evaluate_chat_response(
-        language_model=DummyLanguageModel(),
-        gen_kwargs={},
-        eval_dataset=DummyChatDataset(
-            require_incremental_response=require_incremental_response,
-            use_tools=use_tools,
-        ),
-        few_shot_generator=few_shot_generator,
-        metrics=[],
-        batch_size=batch_size,
-        max_instances=max_instances,
-    )
-    assert isinstance(metrics, dict)
-    assert metrics["finish_reason_ratio-length"] == 1.0
-    assert isinstance(outputs, list)
-
-    if max_instances is not None:
-        assert len(outputs) <= max_instances
-
-    # If the system message in "messages", few-shot examples should be inserted after the system message.
-    # Therefore, in any case the system message should be in the first turn.
-    assert outputs[0]["extra_info"]["messages"][0]["role"] == "system"
-
-    if use_tools:
-        assert isinstance(outputs[0]["extra_info"]["tool_calls"], list)
-        assert isinstance(outputs[0]["extra_info"]["tools"], list)
-        assert metrics["tool_call_validation_result_ratio-CompleteToolCall"] == 1.0
-    else:
-        assert "tool_calls" not in outputs[0]["extra_info"]
-        assert "tools" not in outputs[0]["extra_info"]
-        assert metrics["tool_call_validation_result_ratio-TextOnly"] == 1.0
 
 
 @pytest.mark.parametrize("use_few_shot", [True, False])
@@ -87,7 +41,7 @@ def test_evaluate_generation(use_few_shot: bool) -> None:
         eval_dataset=DummyGenerationDataset(),
         prompt_template=Jinja2PromptTemplate("{{text}}"),
         few_shot_generator=few_shot_generator,
-        metrics=[ExactMatch()],
+        metrics=[ExactMatch(), FinishReasonCount()],
         batch_size=1,
     )
     assert isinstance(metrics, dict)
@@ -206,8 +160,8 @@ def test_evaluate_reward_model() -> None:
         batch_size=1,
     )
 
-    assert metrics["accuracy"] == 0.5
-    assert metrics["accuracy-dummy"] == 0.5  # the score computed with the category key
+    assert metrics["accuracy"] == 0.0
+    assert metrics["accuracy-dummy"] == 0.0  # the score computed with the category key
     assert outputs[0] == {
         "prompt": [{"role": "user", "content": "prompt_text_0"}],
         "chosen": [{"role": "user", "content": "chosen_text_0"}],
@@ -231,6 +185,8 @@ def test_evaluate_reward_model() -> None:
         "llm_outputs": ["[[A]]", "[[A]]"],
         "evaluation_results": [True, False],
         "id": 0,
+        "consistent": False,
+        "is_correct": False,
     }
 
     # Check DummyRewardLanguageModel generate prefix-text
@@ -246,7 +202,7 @@ def test_evaluate_reward_model() -> None:
         batch_size=1,
     )
 
-    assert metrics["accuracy"] == 0.5
+    assert metrics["accuracy"] == 0.0
     assert outputs[0] == {
         "prompt": [{"role": "user", "content": "prompt_text_0"}],
         "chosen": [{"role": "user", "content": "chosen_text_0"}],
@@ -270,4 +226,6 @@ def test_evaluate_reward_model() -> None:
         "llm_outputs": ["Results: [[B]]", "Results: [[B]]"],
         "evaluation_results": [False, True],
         "id": 0,
+        "consistent": False,
+        "is_correct": False,
     }
