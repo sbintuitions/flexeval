@@ -186,6 +186,7 @@ class HuggingFaceLM(LanguageModel):
             an empty string is returned instead of raising an error.
             If set to “default”, the value will be automatically determined when possible.
         tool_parser: A ToolParser object to extract the tool_calls from the model's output.
+        tools: Default tools to use in chat responses when no tools are explicitly provided.
     """
 
     def __init__(
@@ -205,6 +206,7 @@ class HuggingFaceLM(LanguageModel):
         string_processors: StringProcessor | list[StringProcessor] | None = None,
         model_limit_tokens: int | None | Literal["default"] = "default",
         tool_parser: ToolParser | None = None,
+        tools: list[dict[str, Any]] | None = None,
     ) -> None:
         super().__init__(string_processors=string_processors)
         self._model_name_or_path = model
@@ -223,6 +225,7 @@ class HuggingFaceLM(LanguageModel):
         self.amp_dtype = amp_dtype
         self.model_limit_tokens = model_limit_tokens
         self.tool_parser = tool_parser
+        self.tools = tools
         logger.info(f"amp_dtype: {amp_dtype}")
         logger.info(f"random seed: {random_seed}")
         transformers.set_seed(random_seed)
@@ -392,7 +395,7 @@ class HuggingFaceLM(LanguageModel):
         **kwargs,
     ) -> list[LMOutput]:
         if tools_list is None:
-            tools_list = [None] * len(chat_messages_list)
+            tools_list = [self.tools] * len(chat_messages_list)
         if self.system_message is not None:
             for chat_messages in chat_messages_list:
                 chat_messages.insert(0, {"role": "system", "content": self.system_message})

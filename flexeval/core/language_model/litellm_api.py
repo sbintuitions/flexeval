@@ -31,6 +31,7 @@ class LiteLLMChatAPI(OpenAIChatAPI):
         model_limit_completion_tokens: An upper limit on the number of tokens the model can generate.
             For example, if a too-large `max_new_tokens` is given to generate_chat_response(), this value will cap it.
         max_parallel_requests: Maximum number of parallel requests to send to the API.
+        tools: Default tools to use in chat responses when no tools are explicitly provided.
     """
 
     def __init__(
@@ -42,6 +43,7 @@ class LiteLLMChatAPI(OpenAIChatAPI):
         ignore_seed: bool = False,
         model_limit_completion_tokens: int | None = None,
         max_parallel_requests: int | None = None,
+        tools: list[dict[str, Any]] | None = None,
     ) -> None:
         super().__init__(
             model=model,
@@ -51,6 +53,7 @@ class LiteLLMChatAPI(OpenAIChatAPI):
             string_processors=string_processors,
             model_limit_new_tokens=model_limit_completion_tokens,
             max_parallel_requests=max_parallel_requests,
+            tools=tools,
         )
         self.model = model
         self.default_gen_kwargs = default_gen_kwargs or {}

@@ -61,6 +61,7 @@ class OpenAIChatBatchAPI(LanguageModel):
         string_processors: A single or a list of StringProcessor objects to process the model's output.
         model_limit_new_tokens: An upper limit on the number of tokens the model can generate.
             For example, if a too-large `max_new_tokens` is given to generate_chat_response(), this value will cap it.
+        tools: Default tools to use in chat responses when no tools are explicitly provided.
     """
 
     def __init__(
@@ -72,6 +73,7 @@ class OpenAIChatBatchAPI(LanguageModel):
         developer_message: str | None = None,
         string_processors: StringProcessor | list[StringProcessor] | None = None,
         model_limit_new_tokens: int | None = None,
+        tools: list[dict[str, Any]] | None = None,
     ) -> None:
         super().__init__(string_processors=string_processors)
         self.model = model
@@ -87,6 +89,7 @@ class OpenAIChatBatchAPI(LanguageModel):
         self.polling_interval_seconds = polling_interval_seconds
         self.developer_message = developer_message
         self.model_limit_new_tokens = model_limit_new_tokens
+        self.tools = tools
 
     def create_batch_file(self, custom_id_2_input: dict[str, list[dict[str, list[dict[str, Any]]]]], **kwargs) -> None:
         with open(self.temp_jsonl_file.name, mode="w") as f:
@@ -182,7 +185,7 @@ class OpenAIChatBatchAPI(LanguageModel):
         **kwargs,
     ) -> list[Any]:
         if tools_list is None:
-            tools_list = [None] * len(messages_list)
+            tools_list = [self.tools] * len(messages_list)
         custom_id_2_input: dict[str, list[dict[str, list[dict[str, Any]]]]] = {
             str(uuid.uuid4()): {"messages": messages, "tools": tools}
             for messages, tools in zip(messages_list, tools_list)
