@@ -50,6 +50,7 @@ class LiteLLMChatAPI(OpenAIChatAPI):
             developer_message=developer_message,
             string_processors=string_processors,
             model_limit_new_tokens=model_limit_completion_tokens,
+            max_parallel_requests=max_parallel_requests,
         )
         self.model = model
         self.default_gen_kwargs = default_gen_kwargs or {}
@@ -63,7 +64,6 @@ class LiteLLMChatAPI(OpenAIChatAPI):
             model_response_object=ModelResponse(),
         )
         self.ignore_seed = ignore_seed
-        self.max_parallel_requests = max_parallel_requests
 
     def _batch_complete_text(
         self,
