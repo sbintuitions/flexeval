@@ -39,6 +39,7 @@ EMPTY_RESPONSE = ChatCompletion(
     usage=None,
 )
 
+
 def _retry_on_error(
     openai_call: Callable[[], T],
     empty_response: BaseModel,
@@ -383,7 +384,6 @@ class OpenAICompletionAPI(LanguageModel):
                 for ms in prompt_list
             ]
         return [future.result() for future in futures]
-
 
     def _batch_complete_text(
         self,
