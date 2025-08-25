@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Any, TypeVar
 
-from litellm import ModelResponse, acompletion
+from litellm import ModelResponse, completion
 from litellm.utils import convert_to_model_response_object
 
 from flexeval.core.language_model.base import LMOutput
@@ -55,7 +55,7 @@ class LiteLLMChatAPI(OpenAIChatAPI):
         if "max_new_tokens" in self.default_gen_kwargs:
             self.default_gen_kwargs["max_tokens"] = self.default_gen_kwargs.pop("max_new_tokens")
 
-        self.api_call_func = acompletion
+        self.api_call_func = completion
         self.empty_response = convert_to_model_response_object(
             response_object=EMPTY_RESPONSE_OPENAI.to_dict(),
             model_response_object=ModelResponse(),
