@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Any, TypeVar
 
-from litellm import ModelResponse, acompletion
+from litellm import ModelResponse, completion
 from litellm.utils import convert_to_model_response_object
 
 from flexeval.core.language_model.base import LMOutput
@@ -30,6 +30,7 @@ class LiteLLMChatAPI(OpenAIChatAPI):
             This is an option for models that do not support seed parameters such as anthropic/claude.
         model_limit_completion_tokens: An upper limit on the number of tokens the model can generate.
             For example, if a too-large `max_new_tokens` is given to generate_chat_response(), this value will cap it.
+        max_parallel_requests: Maximum number of parallel requests to send to the API.
     """
 
     def __init__(
@@ -40,6 +41,7 @@ class LiteLLMChatAPI(OpenAIChatAPI):
         string_processors: StringProcessor | list[StringProcessor] | None = None,
         ignore_seed: bool = False,
         model_limit_completion_tokens: int | None = None,
+        max_parallel_requests: int | None = None,
     ) -> None:
         super().__init__(
             model=model,
@@ -48,6 +50,7 @@ class LiteLLMChatAPI(OpenAIChatAPI):
             developer_message=developer_message,
             string_processors=string_processors,
             model_limit_new_tokens=model_limit_completion_tokens,
+            max_parallel_requests=max_parallel_requests,
         )
         self.model = model
         self.default_gen_kwargs = default_gen_kwargs or {}
@@ -55,7 +58,7 @@ class LiteLLMChatAPI(OpenAIChatAPI):
         if "max_new_tokens" in self.default_gen_kwargs:
             self.default_gen_kwargs["max_tokens"] = self.default_gen_kwargs.pop("max_new_tokens")
 
-        self.api_call_func = acompletion
+        self.api_call_func = completion
         self.empty_response = convert_to_model_response_object(
             response_object=EMPTY_RESPONSE_OPENAI.to_dict(),
             model_response_object=ModelResponse(),
