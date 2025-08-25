@@ -30,6 +30,7 @@ class LiteLLMChatAPI(OpenAIChatAPI):
             This is an option for models that do not support seed parameters such as anthropic/claude.
         model_limit_completion_tokens: An upper limit on the number of tokens the model can generate.
             For example, if a too-large `max_new_tokens` is given to generate_chat_response(), this value will cap it.
+        max_parallel_requests: Maximum number of parallel requests to send to the API.
     """
 
     def __init__(

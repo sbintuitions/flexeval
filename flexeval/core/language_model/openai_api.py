@@ -78,6 +78,7 @@ class OpenAIChatAPI(LanguageModel):
         string_processors: A single or a list of StringProcessor objects to process the model's output.
         model_limit_new_tokens: An upper limit on the number of tokens the model can generate.
             For example, if a too-large `max_new_tokens` is given to generate_chat_response(), this value will cap it.
+        max_parallel_requests: Maximum number of parallel requests to send to the OpenAI API.
     """
 
     def __init__(
@@ -320,6 +321,7 @@ class OpenAICompletionAPI(LanguageModel):
         api_headers: A dictionary of headers to use when making requests to the OpenAI API.
         default_gen_kwargs: Default generation kwargs to use when calling the API.
         string_processors: A single or a list of StringProcessor objects to process the model's output.
+        max_parallel_requests: Maximum number of parallel requests to send to the OpenAI API.
     """
 
     def __init__(
