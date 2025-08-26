@@ -8,7 +8,7 @@ from typing import Any
 
 from loguru import logger
 
-from flexeval.core.utils.json_util import truncate_base64
+from flexeval.core.utils.json_util import Base64TruncatingJSONEncoder
 
 from .base import ResultRecorder
 
@@ -24,7 +24,7 @@ def save_jsonl(
     Path(save_path).parent.mkdir(parents=True, exist_ok=True)
     with open(save_path, "w") as f:
         for d in data:
-            dump_line = json.dumps(d, ensure_ascii=False, default=truncate_base64)
+            dump_line = json.dumps(d, ensure_ascii=False, cls=Base64TruncatingJSONEncoder)
             try:
                 f.write(f"{dump_line}\n")
             except UnicodeEncodeError:
