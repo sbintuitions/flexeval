@@ -113,7 +113,7 @@ class VLLM(LanguageModel):
         tool_parser: ToolParser | None = None,
         tools: list[dict[str, Any]] | None = None,
     ) -> None:
-        super().__init__(string_processors=string_processors)
+        super().__init__(string_processors=string_processors, tools=tools)
         self.model_name = model
         tokenizer = tokenizer if tokenizer else model
         tokenizer_kwargs = tokenizer_kwargs or {}
@@ -140,7 +140,6 @@ class VLLM(LanguageModel):
         self.llm: LLM | None = None
         self.model_limit_tokens = model_limit_tokens
         self.tool_parser = tool_parser
-        self.tools = tools
 
     @staticmethod
     def load_model(method: Callable) -> Callable:
@@ -242,7 +241,7 @@ class VLLM(LanguageModel):
         **kwargs,
     ) -> list[LMOutput]:
         if tools_list is None:
-            tools_list = [self.tools] * len(chat_messages_list)
+            tools_list = [None] * len(chat_messages_list)
         if self.system_message is not None:
             for chat_messages in chat_messages_list:
                 chat_messages.insert(0, {"role": "system", "content": self.system_message})
