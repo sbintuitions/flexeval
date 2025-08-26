@@ -93,7 +93,7 @@ class OpenAIChatAPI(LanguageModel):
         max_parallel_requests: int | None = None,
         tools: list[dict[str, Any]] | None = None,
     ) -> None:
-        super().__init__(string_processors=string_processors)
+        super().__init__(string_processors=string_processors, tools=tools)
         self.model = model
         if api_headers is None:
             api_headers = {}
@@ -108,7 +108,6 @@ class OpenAIChatAPI(LanguageModel):
         self.developer_message = developer_message
         self.model_limit_new_tokens = model_limit_new_tokens
         self.max_parallel_requests = max_parallel_requests
-        self.tools = tools
 
     def _parallel_run_chatgpt(
         self,
@@ -154,7 +153,7 @@ class OpenAIChatAPI(LanguageModel):
         )
 
         if tools_list is None:
-            tools_list = [self.tools] * len(messages_list)
+            tools_list = [None] * len(messages_list)
 
         max_workers = self.max_parallel_requests or len(messages_list)
         with ThreadPoolExecutor(max_workers=max_workers) as executor:

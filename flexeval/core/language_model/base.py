@@ -50,12 +50,13 @@ class LanguageModel:
 
     Args:
         string_processors: A single or a list of StringProcessor objects to process the model's output.
-
+        tools: Default tools to use in chat responses when no tools are explicitly provided.
     """
 
     def __init__(
         self,
         string_processors: StringProcessor | list[StringProcessor] | None = None,
+        tools: list[dict[str, Any]] | None = None,
     ) -> None:
         if string_processors is None:
             string_processors = []
@@ -63,6 +64,7 @@ class LanguageModel:
             string_processors = [string_processors]
 
         self.string_processors = string_processors
+        self.tools = tools
 
     def _batch_complete_text(
         self,
@@ -187,13 +189,23 @@ class LanguageModel:
         To implement generation logic, you should override `batch_generate_chat_response` method.
         """
 
+        # We convert a single sample to a list of samples to pass to self._batch_generate_chat_response
+        is_single_input = isinstance(chat_messages[0], dict)
+
+        # Make the tools to not None.
+        if tools is None:
+            tools = [] if is_single_input else [[] for _ in range(len(chat_messages))]
+
+        # Normalize input into a list of inputs
         chat_messages_list = chat_messages
         tools_list = tools
-
-        if isinstance(chat_messages[0], dict):
+        if is_single_input:
             chat_messages_list = [chat_messages]
-        if tools and isinstance(tools[0], dict):
             tools_list = [tools]
+
+        # Use self.tools as fallback when tools are empty
+        if self.tools:
+            tools_list = [tools if tools else self.tools for tools in tools_list]
 
         if tools_list and len(tools_list) != len(chat_messages_list):
             msg = "tools_list must be either None or a list of the same length as chat_messages_list."
@@ -201,7 +213,7 @@ class LanguageModel:
 
         lm_outputs = self._batch_generate_chat_response(chat_messages_list, tools_list=tools_list, **kwargs)
 
-        # Post-process the generatessd text
+        # Post-process the generated text
         if self.string_processors:
             for lm_output in lm_outputs:
                 lm_output.raw_text = lm_output.text
@@ -209,7 +221,7 @@ class LanguageModel:
                     lm_output.text = string_processor(lm_output.text)
 
         # Return the result
-        if isinstance(chat_messages[0], dict):
+        if is_single_input:
             return lm_outputs[0]
         return lm_outputs
 

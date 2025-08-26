@@ -3,6 +3,7 @@ from abc import abstractmethod
 import pytest
 
 from flexeval.core.language_model.base import LanguageModel, LMOutput
+from tests.dummy_modules.lm import DummyLanguageModel
 
 
 class BaseLanguageModelTest:
@@ -418,3 +419,47 @@ class BaseLanguageModelTest:
         This test must be run after all other tests.
         """
         lm.cleanup_resources()
+
+
+def test_tool_calls_are_passed() -> None:
+    tools = [
+        {
+            "type": "function",
+            "function": {
+                "name": "my-awesome-tool",
+                "description": "This tool does something awsome.",
+                "parameters": {
+                    "type": "object",
+                    "required": ["input"],
+                    "properties": {"input": {"type": "string", "description": "The input."}},
+                },
+            },
+        }
+    ]
+
+    lm_with_tools = DummyLanguageModel(tools=tools)
+    output = lm_with_tools.generate_chat_response(chat_messages=[{"role": "user", "content": "this is a test."}])
+    assert output.tool_calls
+    # test batch
+    batch_outputs = lm_with_tools.generate_chat_response(
+        chat_messages=[
+            [{"role": "user", "content": "this is a test."}],
+            [{"role": "user", "content": "this is a test2."}],
+        ]
+    )
+    for output in batch_outputs:
+        assert output.tool_calls
+
+    # Check if DummyLanguageModel without tools does not return tool_calls
+    lm = DummyLanguageModel()
+    output = lm.generate_chat_response(chat_messages=[{"role": "user", "content": "this is a test."}])
+    assert not output.tool_calls
+    # test batch
+    batch_outputs = lm.generate_chat_response(
+        chat_messages=[
+            [{"role": "user", "content": "this is a test."}],
+            [{"role": "user", "content": "this is a test2."}],
+        ]
+    )
+    for output in batch_outputs:
+        assert not output.tool_calls
