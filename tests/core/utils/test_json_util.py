@@ -26,7 +26,7 @@ def test_truncate_base64() -> None:
     def _json_dumps(x):  # noqa: ANN001, ANN202
         return json.dumps(x, cls=Base64TruncatingJSONEncoder)
 
-    assert _json_dumps(TestDataClass("example", 123)) == {"field1": "example", "field2": 123}
+    assert _json_dumps(TestDataClass("example", 123)) == '{"field1": "example", "field2": 123}'
 
     assert _json_dumps(TestData()) == "TestData"
 
@@ -39,10 +39,13 @@ def test_truncate_base64() -> None:
         "normal string",
     ]
 
-    assert _json_dumps(TestDataClass(base64_string, 456)) == {
+    assert (
+        _json_dumps(TestDataClass(base64_string, 456))
+        == """{
         "field1": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAgA/... [truncated, 169 chars total]",
         "field2": 456,
-    }
+    }"""
+    )
 
     image_url = _json_dumps({"messages": [{"content": {"type": "image_url", "image_url": {"url": base64_string}}}]})
     assert (
