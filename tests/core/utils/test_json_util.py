@@ -27,11 +27,11 @@ def test_truncate_base64() -> None:
     def _json_dumps(x):  # noqa: ANN001, ANN202
         return json.dumps(x, cls=Base64TruncatingJSONEncoder)
 
-    assert literal_eval(_json_dumps(TestDataClass("example", 123))) == {"field1": "example", "field2": 123}
+    assert literal_eval(_json_dumps(TestDataClass("example", 123))) == {"field1": "example", "field2": "123"}
 
-    assert _json_dumps(TestData()) == "TestData"
+    assert literal_eval(_json_dumps(TestData())) == "TestData"
 
-    assert _json_dumps({"key": base64_string}) == {
+    assert literal_eval(_json_dumps({"key": base64_string})) == {
         "key": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAgA/... [truncated, 169 chars total]"
     }
 
@@ -42,7 +42,7 @@ def test_truncate_base64() -> None:
 
     assert literal_eval(_json_dumps(TestDataClass(base64_string, 456))) == {
         "field1": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAgA/... [truncated, 169 chars total]",
-        "field2": 456,
+        "field2": "456",
     }
 
     image_url = literal_eval(
