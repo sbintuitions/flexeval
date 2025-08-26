@@ -394,7 +394,7 @@ class HuggingFaceLM(LanguageModel):
         **kwargs,
     ) -> list[LMOutput]:
         if tools_list is None:
-            tools_list = [] * len(chat_messages_list)
+            tools_list = [None] * len(chat_messages_list)
         if self.system_message is not None:
             for chat_messages in chat_messages_list:
                 chat_messages.insert(0, {"role": "system", "content": self.system_message})
