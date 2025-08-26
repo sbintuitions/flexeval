@@ -8,7 +8,7 @@ from loguru import logger
 from tqdm import tqdm
 
 from flexeval.core.utils.chat_util import find_first_turn_for_response
-from flexeval.core.utils.json_util import truncate_base64
+from flexeval.core.utils.json_util import Base64TruncatingJSONEncoder
 
 from .chat_dataset import ChatInstance
 from .few_shot_generator import FewShotGenerator
@@ -178,7 +178,7 @@ def evaluate_chat_response(  # noqa: C901
     ):
         if i == 0:
             logger.info("Example of the output")
-            logger.info(json.dumps(output, ensure_ascii=False, indent=4, default=truncate_base64))
+            logger.info(json.dumps(output, ensure_ascii=False, indent=4, cls=Base64TruncatingJSONEncoder))
         outputs.append(output)
 
     language_model.cleanup_resources()
