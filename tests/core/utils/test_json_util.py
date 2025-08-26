@@ -23,7 +23,7 @@ base64_string = (
 
 
 def test_truncate_base64() -> None:
-    def _json_dumps(x):
+    def _json_dumps(x):  # noqa: ANN001, ANN202
         return json.dumps(x, cls=Base64TruncatingJSONEncoder)
 
     assert _json_dumps(TestDataClass("example", 123)) == {"field1": "example", "field2": 123}
