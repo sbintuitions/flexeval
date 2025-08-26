@@ -6,7 +6,7 @@ from typing import Any
 base64_pattern = re.compile(r"^data:\w+\/\w+;base64,.+")
 
 
-def _truncate_base64(o: Any) -> str:  # noqa: ANN401
+def _truncate_base64(o: Any) -> Any:  # noqa: ANN401
     if is_dataclass(o):
         return _truncate_base64(asdict(o))
     if isinstance(o, (list, tuple, set)):
