@@ -180,7 +180,7 @@ class LanguageModel:
     def generate_chat_response(
         self,
         chat_messages: list[dict[str, Any]] | list[list[dict[str, Any]]],
-        tools: list[dict[str, Any]] | list[list[dict[str, Any]]] | None = None,
+        tools: list[dict[str, Any]] | list[list[dict[str, Any]] | None] | None = None,
         **kwargs,
     ) -> LMOutput | list[LMOutput]:
         """
@@ -192,10 +192,6 @@ class LanguageModel:
         # We convert a single sample to a list of samples to pass to self._batch_generate_chat_response
         is_single_input = isinstance(chat_messages[0], dict)
 
-        # Make the tools to not None.
-        if tools is None:
-            tools = [] if is_single_input else [[] for _ in range(len(chat_messages))]
-
         # Normalize input into a list of inputs
         chat_messages_list = chat_messages
         tools_list = tools
@@ -205,7 +201,10 @@ class LanguageModel:
 
         # Use self.tools as fallback when tools are empty
         if self.tools:
-            tools_list = [tools if tools else self.tools for tools in tools_list]
+            if tools_list is None:
+                tools_list = [self.tools for _ in range(len(chat_messages))]
+            else:
+                tools_list = [tools if tools else self.tools for tools in tools_list]
 
         if tools_list and len(tools_list) != len(chat_messages_list):
             msg = "tools_list must be either None or a list of the same length as chat_messages_list."
