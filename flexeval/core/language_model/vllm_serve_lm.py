@@ -168,6 +168,7 @@ class VLLMServeLM(OpenAIChatAPI):
         model_limit_new_tokens: An upper limit on the number of tokens the model can generate.
             For example, if a too-large `max_new_tokens` is given to generate_chat_response(), this value will cap it.
         tools: Default tools to use in chat responses when no tools are explicitly provided.
+        max_parallel_requests: Maximum number of parallel requests to send to the OpenAI API.
     """
 
     def __init__(
@@ -181,6 +182,7 @@ class VLLMServeLM(OpenAIChatAPI):
         string_processors: StringProcessor | list[StringProcessor] | None = None,
         model_limit_new_tokens: int | None = None,
         tools: list[dict[str, Any]] | None = None,
+        max_parallel_requests: int | None = None,
     ) -> None:
         logging.getLogger("httpx").setLevel(logging.WARNING)
         logging.getLogger("httpcore").setLevel(logging.WARNING)
@@ -199,6 +201,7 @@ class VLLMServeLM(OpenAIChatAPI):
             string_processors=string_processors,
             model_limit_new_tokens=model_limit_new_tokens,
             tools=tools,
+            max_parallel_requests=max_parallel_requests,
         )
 
     @staticmethod
