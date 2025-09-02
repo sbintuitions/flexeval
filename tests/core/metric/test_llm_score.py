@@ -34,20 +34,24 @@ class EchoBackLanguageModel(LanguageModel):
 
 
 @pytest.mark.parametrize(
-    ("evaluator_output", "valid_score_range", "expected_score"),
+    ("evaluator_output", "valid_score_range", "regex_to_parse_score", "expected_score"),
     [
-        ("The final score is 65.", None, 65),
-        ("The final score is 65.", (0, 5), None),
-        ("Yes, this is a good one.", None, None),
-        ("The score is 5. No, it is 6.", None, 6),
+        ("The final score is 65.", None, r"(\d+)", 65),
+        ("The final score is 65.", (0, 5), r"(\d+)", None),
+        ("Yes, this is a good one.", None, r"(\d+)", None),
+        ("The score is 5. No, it is 6.", None, r"(\d+)", 6),
+        ("The score is [[5]]. No, it is 6.", None, r"\[\[(\d+)\]\]", 5),
     ],
 )
 def test_parse_score_from_evaluator_output(
     evaluator_output: str,
     valid_score_range: tuple[int, int] | None,
+    regex_to_parse_score: str,
     expected_score: int,
 ) -> None:
-    score = parse_score_from_evaluator_output(evaluator_output, valid_score_range)
+    score = parse_score_from_evaluator_output(
+        evaluator_output, valid_score_range, regex_to_parse_score=regex_to_parse_score
+    )
     assert score == expected_score
 
 
