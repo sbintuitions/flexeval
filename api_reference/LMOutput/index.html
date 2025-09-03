@@ -1846,6 +1846,16 @@ Typically,
             <p>A single or a list of StringProcessor objects to process the model's output.</p>
           </div>
         </li>
+        <li class="doc-section-item field-body">
+            <b><code>tools</code></b>
+              (<code><span title="list">list</span>[<span title="dict">dict</span>[<span title="str">str</span>, <span title="typing.Any">Any</span>]] | None</code>, default:
+                  <code>None</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>Default tools to use in chat responses when no tools are explicitly provided.</p>
+          </div>
+        </li>
     </ul>
 
 
@@ -2064,19 +2074,31 @@ Typically,
 <span class="normal">251</span>
 <span class="normal">252</span>
 <span class="normal">253</span>
-<span class="normal">254</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">LanguageModel</span><span class="p">:</span>
+<span class="normal">254</span>
+<span class="normal">255</span>
+<span class="normal">256</span>
+<span class="normal">257</span>
+<span class="normal">258</span>
+<span class="normal">259</span>
+<span class="normal">260</span>
+<span class="normal">261</span>
+<span class="normal">262</span>
+<span class="normal">263</span>
+<span class="normal">264</span>
+<span class="normal">265</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">LanguageModel</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;LanguageModel is what you want to evaluate with this library.</span>
 
 <span class="sd">    It can generate text based on the input text, response to chat messages, and compute log probabilities.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        string_processors: A single or a list of StringProcessor objects to process the model&#39;s output.</span>
-
+<span class="sd">        tools: Default tools to use in chat responses when no tools are explicitly provided.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">string_processors</span><span class="p">:</span> <span class="n">StringProcessor</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="n">StringProcessor</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">tools</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">string_processors</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">string_processors</span> <span class="o">=</span> <span class="p">[]</span>
@@ -2084,6 +2106,7 @@ Typically,
             <span class="n">string_processors</span> <span class="o">=</span> <span class="p">[</span><span class="n">string_processors</span><span class="p">]</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">string_processors</span> <span class="o">=</span> <span class="n">string_processors</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tools</span> <span class="o">=</span> <span class="n">tools</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_batch_complete_text</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -2199,7 +2222,7 @@ Typically,
     <span class="k">def</span><span class="w"> </span><span class="nf">generate_chat_response</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">chat_messages</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]],</span>
-        <span class="n">tools</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">tools</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">LMOutput</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="n">LMOutput</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -2208,13 +2231,22 @@ Typically,
 <span class="sd">        To implement generation logic, you should override `batch_generate_chat_response` method.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
+        <span class="c1"># We convert a single sample to a list of samples to pass to self._batch_generate_chat_response</span>
+        <span class="n">is_single_input</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">chat_messages</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">dict</span><span class="p">)</span>
+
+        <span class="c1"># Normalize input into a list of inputs</span>
         <span class="n">chat_messages_list</span> <span class="o">=</span> <span class="n">chat_messages</span>
         <span class="n">tools_list</span> <span class="o">=</span> <span class="n">tools</span>
-
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">chat_messages</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">is_single_input</span><span class="p">:</span>
             <span class="n">chat_messages_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">chat_messages</span><span class="p">]</span>
-        <span class="k">if</span> <span class="n">tools</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">tools</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">dict</span><span class="p">):</span>
             <span class="n">tools_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">tools</span><span class="p">]</span>
+
+        <span class="c1"># Use self.tools as fallback when tools are empty</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">tools</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">tools_list</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">tools_list</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">tools</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">chat_messages</span><span class="p">))]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">tools_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">tools</span> <span class="k">if</span> <span class="n">tools</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">tools</span> <span class="k">for</span> <span class="n">tools</span> <span class="ow">in</span> <span class="n">tools_list</span><span class="p">]</span>
 
         <span class="k">if</span> <span class="n">tools_list</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">tools_list</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">chat_messages_list</span><span class="p">):</span>
             <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;tools_list must be either None or a list of the same length as chat_messages_list.&quot;</span>
@@ -2222,7 +2254,7 @@ Typically,
 
         <span class="n">lm_outputs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_batch_generate_chat_response</span><span class="p">(</span><span class="n">chat_messages_list</span><span class="p">,</span> <span class="n">tools_list</span><span class="o">=</span><span class="n">tools_list</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
-        <span class="c1"># Post-process the generatessd text</span>
+        <span class="c1"># Post-process the generated text</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">string_processors</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">lm_output</span> <span class="ow">in</span> <span class="n">lm_outputs</span><span class="p">:</span>
                 <span class="n">lm_output</span><span class="o">.</span><span class="n">raw_text</span> <span class="o">=</span> <span class="n">lm_output</span><span class="o">.</span><span class="n">text</span>
@@ -2230,7 +2262,7 @@ Typically,
                     <span class="n">lm_output</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="n">string_processor</span><span class="p">(</span><span class="n">lm_output</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
 
         <span class="c1"># Return the result</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">chat_messages</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">is_single_input</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">lm_outputs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">lm_outputs</span>
 
@@ -2308,6 +2340,28 @@ Typically,
 
 </div>
 
+<div class="doc doc-object doc-attribute">
+
+
+
+<h3 id="flexeval.core.language_model.base.LanguageModel.tools" class="doc doc-heading">
+            <span class="doc doc-object-name doc-attribute-name">tools</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+<a href="#flexeval.core.language_model.base.LanguageModel.tools" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">tools</span> <span class="o">=</span> <span class="n">tools</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+    </div>
+
+</div>
+
 
 
 <div class="doc doc-object doc-function">
@@ -2322,6 +2376,7 @@ Typically,
     <span class="nf">string_processors</span><span class="p">:</span> <span class="n">StringProcessor</span>
     <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="n">StringProcessor</span><span class="p">]</span>
     <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">tools</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
 </code></pre></div>
 
@@ -2339,9 +2394,12 @@ Typically,
 <span class="normal">62</span>
 <span class="normal">63</span>
 <span class="normal">64</span>
-<span class="normal">65</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+<span class="normal">65</span>
+<span class="normal">66</span>
+<span class="normal">67</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">string_processors</span><span class="p">:</span> <span class="n">StringProcessor</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="n">StringProcessor</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">tools</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="k">if</span> <span class="n">string_processors</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">string_processors</span> <span class="o">=</span> <span class="p">[]</span>
@@ -2349,6 +2407,7 @@ Typically,
         <span class="n">string_processors</span> <span class="o">=</span> <span class="p">[</span><span class="n">string_processors</span><span class="p">]</span>
 
     <span class="bp">self</span><span class="o">.</span><span class="n">string_processors</span> <span class="o">=</span> <span class="n">string_processors</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">tools</span> <span class="o">=</span> <span class="n">tools</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -2380,9 +2439,7 @@ To implement generation logic, you should override <code>batch_complete_text</co
 
             <details class="quote">
               <summary>Source code in <code>flexeval/core/language_model/base.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">142</span>
-<span class="normal">143</span>
-<span class="normal">144</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">144</span>
 <span class="normal">145</span>
 <span class="normal">146</span>
 <span class="normal">147</span>
@@ -2413,7 +2470,9 @@ To implement generation logic, you should override <code>batch_complete_text</co
 <span class="normal">172</span>
 <span class="normal">173</span>
 <span class="normal">174</span>
-<span class="normal">175</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@final</span>
+<span class="normal">175</span>
+<span class="normal">176</span>
+<span class="normal">177</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@final</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">complete_text</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">text</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
@@ -2465,7 +2524,7 @@ To implement generation logic, you should override <code>batch_complete_text</co
     <span class="n">chat_messages</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span>
     <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]],</span>
     <span class="n">tools</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span>
-    <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]]</span>
+    <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span>
     <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">LMOutput</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="n">LMOutput</span><span class="p">]</span>
@@ -2480,9 +2539,7 @@ To implement generation logic, you should override <code>batch_generate_chat_res
 
             <details class="quote">
               <summary>Source code in <code>flexeval/core/language_model/base.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">177</span>
-<span class="normal">178</span>
-<span class="normal">179</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">179</span>
 <span class="normal">180</span>
 <span class="normal">181</span>
 <span class="normal">182</span>
@@ -2517,11 +2574,22 @@ To implement generation logic, you should override <code>batch_generate_chat_res
 <span class="normal">211</span>
 <span class="normal">212</span>
 <span class="normal">213</span>
-<span class="normal">214</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@final</span>
+<span class="normal">214</span>
+<span class="normal">215</span>
+<span class="normal">216</span>
+<span class="normal">217</span>
+<span class="normal">218</span>
+<span class="normal">219</span>
+<span class="normal">220</span>
+<span class="normal">221</span>
+<span class="normal">222</span>
+<span class="normal">223</span>
+<span class="normal">224</span>
+<span class="normal">225</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@final</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">generate_chat_response</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">chat_messages</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]],</span>
-    <span class="n">tools</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">tools</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">LMOutput</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="n">LMOutput</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -2530,13 +2598,22 @@ To implement generation logic, you should override <code>batch_generate_chat_res
 <span class="sd">    To implement generation logic, you should override `batch_generate_chat_response` method.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
+    <span class="c1"># We convert a single sample to a list of samples to pass to self._batch_generate_chat_response</span>
+    <span class="n">is_single_input</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">chat_messages</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">dict</span><span class="p">)</span>
+
+    <span class="c1"># Normalize input into a list of inputs</span>
     <span class="n">chat_messages_list</span> <span class="o">=</span> <span class="n">chat_messages</span>
     <span class="n">tools_list</span> <span class="o">=</span> <span class="n">tools</span>
-
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">chat_messages</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">dict</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">is_single_input</span><span class="p">:</span>
         <span class="n">chat_messages_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">chat_messages</span><span class="p">]</span>
-    <span class="k">if</span> <span class="n">tools</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">tools</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">dict</span><span class="p">):</span>
         <span class="n">tools_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">tools</span><span class="p">]</span>
+
+    <span class="c1"># Use self.tools as fallback when tools are empty</span>
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">tools</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">tools_list</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">tools_list</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">tools</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">chat_messages</span><span class="p">))]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">tools_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">tools</span> <span class="k">if</span> <span class="n">tools</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">tools</span> <span class="k">for</span> <span class="n">tools</span> <span class="ow">in</span> <span class="n">tools_list</span><span class="p">]</span>
 
     <span class="k">if</span> <span class="n">tools_list</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">tools_list</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">chat_messages_list</span><span class="p">):</span>
         <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;tools_list must be either None or a list of the same length as chat_messages_list.&quot;</span>
@@ -2544,7 +2621,7 @@ To implement generation logic, you should override <code>batch_generate_chat_res
 
     <span class="n">lm_outputs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_batch_generate_chat_response</span><span class="p">(</span><span class="n">chat_messages_list</span><span class="p">,</span> <span class="n">tools_list</span><span class="o">=</span><span class="n">tools_list</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
-    <span class="c1"># Post-process the generatessd text</span>
+    <span class="c1"># Post-process the generated text</span>
     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">string_processors</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">lm_output</span> <span class="ow">in</span> <span class="n">lm_outputs</span><span class="p">:</span>
             <span class="n">lm_output</span><span class="o">.</span><span class="n">raw_text</span> <span class="o">=</span> <span class="n">lm_output</span><span class="o">.</span><span class="n">text</span>
@@ -2552,7 +2629,7 @@ To implement generation logic, you should override <code>batch_generate_chat_res
                 <span class="n">lm_output</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="n">string_processor</span><span class="p">(</span><span class="n">lm_output</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
 
     <span class="c1"># Return the result</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">chat_messages</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">dict</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">is_single_input</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">lm_outputs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
     <span class="k">return</span> <span class="n">lm_outputs</span>
 </code></pre></div></td></tr></table></div>
@@ -2585,22 +2662,22 @@ To implement computation logic, you should override <code>batch_compute_log_prob
 
             <details class="quote">
               <summary>Source code in <code>flexeval/core/language_model/base.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">216</span>
-<span class="normal">217</span>
-<span class="normal">218</span>
-<span class="normal">219</span>
-<span class="normal">220</span>
-<span class="normal">221</span>
-<span class="normal">222</span>
-<span class="normal">223</span>
-<span class="normal">224</span>
-<span class="normal">225</span>
-<span class="normal">226</span>
-<span class="normal">227</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">227</span>
 <span class="normal">228</span>
 <span class="normal">229</span>
 <span class="normal">230</span>
-<span class="normal">231</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@final</span>
+<span class="normal">231</span>
+<span class="normal">232</span>
+<span class="normal">233</span>
+<span class="normal">234</span>
+<span class="normal">235</span>
+<span class="normal">236</span>
+<span class="normal">237</span>
+<span class="normal">238</span>
+<span class="normal">239</span>
+<span class="normal">240</span>
+<span class="normal">241</span>
+<span class="normal">242</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@final</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">compute_log_probs</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">text_list</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
@@ -2646,19 +2723,19 @@ To implement computation logic, you should override <code>batch_compute_chat_log
 
             <details class="quote">
               <summary>Source code in <code>flexeval/core/language_model/base.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">233</span>
-<span class="normal">234</span>
-<span class="normal">235</span>
-<span class="normal">236</span>
-<span class="normal">237</span>
-<span class="normal">238</span>
-<span class="normal">239</span>
-<span class="normal">240</span>
-<span class="normal">241</span>
-<span class="normal">242</span>
-<span class="normal">243</span>
-<span class="normal">244</span>
-<span class="normal">245</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@final</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">244</span>
+<span class="normal">245</span>
+<span class="normal">246</span>
+<span class="normal">247</span>
+<span class="normal">248</span>
+<span class="normal">249</span>
+<span class="normal">250</span>
+<span class="normal">251</span>
+<span class="normal">252</span>
+<span class="normal">253</span>
+<span class="normal">254</span>
+<span class="normal">255</span>
+<span class="normal">256</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@final</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">compute_chat_log_probs</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span> <span class="n">prompt</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]],</span> <span class="n">response</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
@@ -2696,11 +2773,11 @@ This method is called when the language model is no longer needed.</p>
 
             <details class="quote">
               <summary>Source code in <code>flexeval/core/language_model/base.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">247</span>
-<span class="normal">248</span>
-<span class="normal">249</span>
-<span class="normal">250</span>
-<span class="normal">251</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">cleanup_resources</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">258</span>
+<span class="normal">259</span>
+<span class="normal">260</span>
+<span class="normal">261</span>
+<span class="normal">262</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">cleanup_resources</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Clean up resources if necessary.</span>
 <span class="sd">    This method is called when the language model is no longer needed.</span>
@@ -2727,8 +2804,8 @@ This method is called when the language model is no longer needed.</p>
 
             <details class="quote">
               <summary>Source code in <code>flexeval/core/language_model/base.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">253</span>
-<span class="normal">254</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">264</span>
+<span class="normal">265</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">cleanup_resources</span><span class="p">()</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -3325,8 +3402,7 @@ If set to “default”, the value will be automatically determined when possibl
 <span class="normal">557</span>
 <span class="normal">558</span>
 <span class="normal">559</span>
-<span class="normal">560</span>
-<span class="normal">561</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">HuggingFaceLM</span><span class="p">(</span><span class="n">LanguageModel</span><span class="p">):</span>
+<span class="normal">560</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">HuggingFaceLM</span><span class="p">(</span><span class="n">LanguageModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    LanguageModel implementation using Hugging Face Transformers.</span>
 
@@ -3374,7 +3450,7 @@ If set to “default”, the value will be automatically determined when possibl
         <span class="n">tool_parser</span><span class="p">:</span> <span class="n">ToolParser</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">tools</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">string_processors</span><span class="o">=</span><span class="n">string_processors</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">string_processors</span><span class="o">=</span><span class="n">string_processors</span><span class="p">,</span> <span class="n">tools</span><span class="o">=</span><span class="n">tools</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_model_name_or_path</span> <span class="o">=</span> <span class="n">model</span>
         <span class="n">tokenizer</span> <span class="o">=</span> <span class="n">tokenizer</span> <span class="k">if</span> <span class="n">tokenizer</span> <span class="k">else</span> <span class="n">model</span>
         <span class="n">tokenizer_kwargs</span> <span class="o">=</span> <span class="n">tokenizer_kwargs</span> <span class="ow">or</span> <span class="p">{}</span>
@@ -3391,7 +3467,6 @@ If set to “default”, the value will be automatically determined when possibl
         <span class="bp">self</span><span class="o">.</span><span class="n">amp_dtype</span> <span class="o">=</span> <span class="n">amp_dtype</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">model_limit_tokens</span> <span class="o">=</span> <span class="n">model_limit_tokens</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tool_parser</span> <span class="o">=</span> <span class="n">tool_parser</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">tools</span> <span class="o">=</span> <span class="n">tools</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;amp_dtype: </span><span class="si">{</span><span class="n">amp_dtype</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;random seed: </span><span class="si">{</span><span class="n">random_seed</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="n">transformers</span><span class="o">.</span><span class="n">set_seed</span><span class="p">(</span><span class="n">random_seed</span><span class="p">)</span>
@@ -3561,7 +3636,7 @@ If set to “default”, the value will be automatically determined when possibl
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">LMOutput</span><span class="p">]:</span>
         <span class="k">if</span> <span class="n">tools_list</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">tools_list</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">tools</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">chat_messages_list</span><span class="p">)</span>
+            <span class="n">tools_list</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">chat_messages_list</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">system_message</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">chat_messages</span> <span class="ow">in</span> <span class="n">chat_messages_list</span><span class="p">:</span>
                 <span class="n">chat_messages</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;system&quot;</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">system_message</span><span class="p">})</span>
@@ -4004,28 +4079,6 @@ If set to “default”, the value will be automatically determined when possibl
 
 </div>
 
-<div class="doc doc-object doc-attribute">
-
-
-
-<h3 id="flexeval.core.language_model.hf_lm.HuggingFaceLM.tools" class="doc doc-heading">
-            <span class="doc doc-object-name doc-attribute-name">tools</span>
-
-
-  <span class="doc doc-labels">
-      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
-  </span>
-
-<a href="#flexeval.core.language_model.hf_lm.HuggingFaceLM.tools" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="n">tools</span> <span class="o">=</span> <span class="n">tools</span>
-</code></pre></div>
-
-    <div class="doc doc-contents ">
-
-    </div>
-
-</div>
-
 
 
 <div class="doc doc-object doc-function">
@@ -4103,8 +4156,7 @@ If set to “default”, the value will be automatically determined when possibl
 <span class="normal">227</span>
 <span class="normal">228</span>
 <span class="normal">229</span>
-<span class="normal">230</span>
-<span class="normal">231</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+<span class="normal">230</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">model</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">model_kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -4123,7 +4175,7 @@ If set to “default”, the value will be automatically determined when possibl
     <span class="n">tool_parser</span><span class="p">:</span> <span class="n">ToolParser</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">tools</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">string_processors</span><span class="o">=</span><span class="n">string_processors</span><span class="p">)</span>
+    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">string_processors</span><span class="o">=</span><span class="n">string_processors</span><span class="p">,</span> <span class="n">tools</span><span class="o">=</span><span class="n">tools</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_model_name_or_path</span> <span class="o">=</span> <span class="n">model</span>
     <span class="n">tokenizer</span> <span class="o">=</span> <span class="n">tokenizer</span> <span class="k">if</span> <span class="n">tokenizer</span> <span class="k">else</span> <span class="n">model</span>
     <span class="n">tokenizer_kwargs</span> <span class="o">=</span> <span class="n">tokenizer_kwargs</span> <span class="ow">or</span> <span class="p">{}</span>
@@ -4140,7 +4192,6 @@ If set to “default”, the value will be automatically determined when possibl
     <span class="bp">self</span><span class="o">.</span><span class="n">amp_dtype</span> <span class="o">=</span> <span class="n">amp_dtype</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">model_limit_tokens</span> <span class="o">=</span> <span class="n">model_limit_tokens</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">tool_parser</span> <span class="o">=</span> <span class="n">tool_parser</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">tools</span> <span class="o">=</span> <span class="n">tools</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;amp_dtype: </span><span class="si">{</span><span class="n">amp_dtype</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;random seed: </span><span class="si">{</span><span class="n">random_seed</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="n">transformers</span><span class="o">.</span><span class="n">set_seed</span><span class="p">(</span><span class="n">random_seed</span><span class="p">)</span>
@@ -4172,7 +4223,8 @@ If set to “default”, the value will be automatically determined when possibl
 
             <details class="quote">
               <summary>Source code in <code>flexeval/core/language_model/hf_lm.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">233</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">232</span>
+<span class="normal">233</span>
 <span class="normal">234</span>
 <span class="normal">235</span>
 <span class="normal">236</span>
@@ -4209,8 +4261,7 @@ If set to “default”, the value will be automatically determined when possibl
 <span class="normal">267</span>
 <span class="normal">268</span>
 <span class="normal">269</span>
-<span class="normal">270</span>
-<span class="normal">271</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
+<span class="normal">270</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">load_model</span><span class="p">(</span><span class="n">method</span><span class="p">:</span> <span class="n">Callable</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Decorator to load the model lazily.&quot;&quot;&quot;</span>
 
@@ -4271,13 +4322,13 @@ If set to “default”, the value will be automatically determined when possibl
 
             <details class="quote">
               <summary>Source code in <code>flexeval/core/language_model/hf_lm.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">552</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">551</span>
+<span class="normal">552</span>
 <span class="normal">553</span>
 <span class="normal">554</span>
 <span class="normal">555</span>
 <span class="normal">556</span>
-<span class="normal">557</span>
-<span class="normal">558</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">cleanup_resources</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">557</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">cleanup_resources</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">gc</span><span class="o">.</span><span class="n">collect</span><span class="p">()</span>
@@ -4306,8 +4357,8 @@ If set to “default”, the value will be automatically determined when possibl
 
             <details class="quote">
               <summary>Source code in <code>flexeval/core/language_model/hf_lm.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">560</span>
-<span class="normal">561</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">559</span>
+<span class="normal">560</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">(model=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_model_name_or_path</span><span class="si">!r}</span><span class="s2">)&quot;</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -5188,8 +5239,7 @@ For example, if a too-large <code>max_new_tokens</code> is given to generate_cha
 <span class="normal">271</span>
 <span class="normal">272</span>
 <span class="normal">273</span>
-<span class="normal">274</span>
-<span class="normal">275</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">OpenAIChatAPI</span><span class="p">(</span><span class="n">LanguageModel</span><span class="p">):</span>
+<span class="normal">274</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">OpenAIChatAPI</span><span class="p">(</span><span class="n">LanguageModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    LanguageModel implementation using OpenAI&#39;s ChatGPT API.</span>
 <span class="sd">    Note that this class is inherited by litellm_api.LiteLLMChatAPI, so be careful when making any modifications.</span>
@@ -5218,7 +5268,7 @@ For example, if a too-large <code>max_new_tokens</code> is given to generate_cha
         <span class="n">max_parallel_requests</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">tools</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">string_processors</span><span class="o">=</span><span class="n">string_processors</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">string_processors</span><span class="o">=</span><span class="n">string_processors</span><span class="p">,</span> <span class="n">tools</span><span class="o">=</span><span class="n">tools</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">model</span>
         <span class="k">if</span> <span class="n">api_headers</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">api_headers</span> <span class="o">=</span> <span class="p">{}</span>
@@ -5233,7 +5283,6 @@ For example, if a too-large <code>max_new_tokens</code> is given to generate_cha
         <span class="bp">self</span><span class="o">.</span><span class="n">developer_message</span> <span class="o">=</span> <span class="n">developer_message</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">model_limit_new_tokens</span> <span class="o">=</span> <span class="n">model_limit_new_tokens</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">max_parallel_requests</span> <span class="o">=</span> <span class="n">max_parallel_requests</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">tools</span> <span class="o">=</span> <span class="n">tools</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_parallel_run_chatgpt</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -5279,7 +5328,7 @@ For example, if a too-large <code>max_new_tokens</code> is given to generate_cha
         <span class="p">)</span>
 
         <span class="k">if</span> <span class="n">tools_list</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">tools_list</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">tools</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">messages_list</span><span class="p">)</span>
+            <span class="n">tools_list</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">messages_list</span><span class="p">)</span>
 
         <span class="n">max_workers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_parallel_requests</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">messages_list</span><span class="p">)</span>
         <span class="k">with</span> <span class="n">ThreadPoolExecutor</span><span class="p">(</span><span class="n">max_workers</span><span class="o">=</span><span class="n">max_workers</span><span class="p">)</span> <span class="k">as</span> <span class="n">executor</span><span class="p">:</span>
@@ -5565,28 +5614,6 @@ For example, if a too-large <code>max_new_tokens</code> is given to generate_cha
 
 </div>
 
-<div class="doc doc-object doc-attribute">
-
-
-
-<h3 id="flexeval.core.language_model.openai_api.OpenAIChatAPI.tools" class="doc doc-heading">
-            <span class="doc doc-object-name doc-attribute-name">tools</span>
-
-
-  <span class="doc doc-labels">
-      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
-  </span>
-
-<a href="#flexeval.core.language_model.openai_api.OpenAIChatAPI.tools" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="n">tools</span> <span class="o">=</span> <span class="n">tools</span>
-</code></pre></div>
-
-    <div class="doc doc-contents ">
-
-    </div>
-
-</div>
-
 
 
 <div class="doc doc-object doc-function">
@@ -5641,8 +5668,7 @@ For example, if a too-large <code>max_new_tokens</code> is given to generate_cha
 <span class="normal">107</span>
 <span class="normal">108</span>
 <span class="normal">109</span>
-<span class="normal">110</span>
-<span class="normal">111</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+<span class="normal">110</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">model</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;gpt-3.5-turbo&quot;</span><span class="p">,</span>
     <span class="n">api_headers</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -5653,7 +5679,7 @@ For example, if a too-large <code>max_new_tokens</code> is given to generate_cha
     <span class="n">max_parallel_requests</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">tools</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">string_processors</span><span class="o">=</span><span class="n">string_processors</span><span class="p">)</span>
+    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">string_processors</span><span class="o">=</span><span class="n">string_processors</span><span class="p">,</span> <span class="n">tools</span><span class="o">=</span><span class="n">tools</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">model</span>
     <span class="k">if</span> <span class="n">api_headers</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">api_headers</span> <span class="o">=</span> <span class="p">{}</span>
@@ -5668,7 +5694,6 @@ For example, if a too-large <code>max_new_tokens</code> is given to generate_cha
     <span class="bp">self</span><span class="o">.</span><span class="n">developer_message</span> <span class="o">=</span> <span class="n">developer_message</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">model_limit_new_tokens</span> <span class="o">=</span> <span class="n">model_limit_new_tokens</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">max_parallel_requests</span> <span class="o">=</span> <span class="n">max_parallel_requests</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">tools</span> <span class="o">=</span> <span class="n">tools</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -5691,8 +5716,8 @@ For example, if a too-large <code>max_new_tokens</code> is given to generate_cha
 
             <details class="quote">
               <summary>Source code in <code>flexeval/core/language_model/openai_api.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">274</span>
-<span class="normal">275</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">273</span>
+<span class="normal">274</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">(model=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="si">}</span><span class="s2">)&quot;</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -5790,7 +5815,8 @@ VLLM servers, as described in the documentation: https://docs.vllm.ai/en/latest/
 
               <details class="quote">
                 <summary>Source code in <code>flexeval/core/language_model/openai_api.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">315</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">314</span>
+<span class="normal">315</span>
 <span class="normal">316</span>
 <span class="normal">317</span>
 <span class="normal">318</span>
@@ -5884,8 +5910,7 @@ VLLM servers, as described in the documentation: https://docs.vllm.ai/en/latest/
 <span class="normal">406</span>
 <span class="normal">407</span>
 <span class="normal">408</span>
-<span class="normal">409</span>
-<span class="normal">410</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">OpenAICompletionAPI</span><span class="p">(</span><span class="n">LanguageModel</span><span class="p">):</span>
+<span class="normal">409</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">OpenAICompletionAPI</span><span class="p">(</span><span class="n">LanguageModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;LanguageModel implementation using OpenAI&#39;s Completion API.</span>
 
 <span class="sd">    Note that Completion API is a legacy API, with only a few models (such as gpt-3.5-turbo-instruct)</span>
@@ -6130,7 +6155,8 @@ VLLM servers, as described in the documentation: https://docs.vllm.ai/en/latest/
 
             <details class="quote">
               <summary>Source code in <code>flexeval/core/language_model/openai_api.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">330</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">329</span>
+<span class="normal">330</span>
 <span class="normal">331</span>
 <span class="normal">332</span>
 <span class="normal">333</span>
@@ -6148,8 +6174,7 @@ VLLM servers, as described in the documentation: https://docs.vllm.ai/en/latest/
 <span class="normal">345</span>
 <span class="normal">346</span>
 <span class="normal">347</span>
-<span class="normal">348</span>
-<span class="normal">349</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+<span class="normal">348</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">model</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;gpt-3.5-turbo-instruct&quot;</span><span class="p">,</span>
     <span class="n">api_headers</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -6191,8 +6216,8 @@ VLLM servers, as described in the documentation: https://docs.vllm.ai/en/latest/
 
             <details class="quote">
               <summary>Source code in <code>flexeval/core/language_model/openai_api.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">409</span>
-<span class="normal">410</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">408</span>
+<span class="normal">409</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">(model=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="si">}</span><span class="s2">)&quot;</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -6609,8 +6634,7 @@ For example, if a too-large <code>max_new_tokens</code> is given to generate_cha
 <span class="normal">338</span>
 <span class="normal">339</span>
 <span class="normal">340</span>
-<span class="normal">341</span>
-<span class="normal">342</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">OpenAIChatBatchAPI</span><span class="p">(</span><span class="n">LanguageModel</span><span class="p">):</span>
+<span class="normal">341</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">OpenAIChatBatchAPI</span><span class="p">(</span><span class="n">LanguageModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;LanguageModel implementation using OpenAI&#39;s ChatGPT API for Batch API.</span>
 <span class="sd">    NOTE: Batch size should be more than or equal to the size of the given dataset for efficient generation.</span>
 
@@ -6638,7 +6662,7 @@ For example, if a too-large <code>max_new_tokens</code> is given to generate_cha
         <span class="n">model_limit_new_tokens</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">tools</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">string_processors</span><span class="o">=</span><span class="n">string_processors</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">string_processors</span><span class="o">=</span><span class="n">string_processors</span><span class="p">,</span> <span class="n">tools</span><span class="o">=</span><span class="n">tools</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">model</span>
         <span class="k">if</span> <span class="n">api_headers</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">api_headers</span> <span class="o">=</span> <span class="p">{}</span>
@@ -6652,7 +6676,6 @@ For example, if a too-large <code>max_new_tokens</code> is given to generate_cha
         <span class="bp">self</span><span class="o">.</span><span class="n">polling_interval_seconds</span> <span class="o">=</span> <span class="n">polling_interval_seconds</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">developer_message</span> <span class="o">=</span> <span class="n">developer_message</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">model_limit_new_tokens</span> <span class="o">=</span> <span class="n">model_limit_new_tokens</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">tools</span> <span class="o">=</span> <span class="n">tools</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">create_batch_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">custom_id_2_input</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]]]],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">temp_jsonl_file</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
@@ -6748,7 +6771,7 @@ For example, if a too-large <code>max_new_tokens</code> is given to generate_cha
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Any</span><span class="p">]:</span>
         <span class="k">if</span> <span class="n">tools_list</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">tools_list</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">tools</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">messages_list</span><span class="p">)</span>
+            <span class="n">tools_list</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">messages_list</span><span class="p">)</span>
         <span class="n">custom_id_2_input</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]]]]</span> <span class="o">=</span> <span class="p">{</span>
             <span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">()):</span> <span class="p">{</span><span class="s2">&quot;messages&quot;</span><span class="p">:</span> <span class="n">messages</span><span class="p">,</span> <span class="s2">&quot;tools&quot;</span><span class="p">:</span> <span class="n">tools</span><span class="p">}</span>
             <span class="k">for</span> <span class="n">messages</span><span class="p">,</span> <span class="n">tools</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">messages_list</span><span class="p">,</span> <span class="n">tools_list</span><span class="p">)</span>
@@ -7050,28 +7073,6 @@ For example, if a too-large <code>max_new_tokens</code> is given to generate_cha
 
 </div>
 
-<div class="doc doc-object doc-attribute">
-
-
-
-<h3 id="flexeval.core.language_model.openai_batch_api.OpenAIChatBatchAPI.tools" class="doc doc-heading">
-            <span class="doc doc-object-name doc-attribute-name">tools</span>
-
-
-  <span class="doc doc-labels">
-      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
-  </span>
-
-<a href="#flexeval.core.language_model.openai_batch_api.OpenAIChatBatchAPI.tools" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="n">tools</span> <span class="o">=</span> <span class="n">tools</span>
-</code></pre></div>
-
-    <div class="doc doc-contents ">
-
-    </div>
-
-</div>
-
 
 
 <div class="doc doc-object doc-function">
@@ -7125,8 +7126,7 @@ For example, if a too-large <code>max_new_tokens</code> is given to generate_cha
 <span class="normal">88</span>
 <span class="normal">89</span>
 <span class="normal">90</span>
-<span class="normal">91</span>
-<span class="normal">92</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+<span class="normal">91</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">model</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">api_headers</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -7137,7 +7137,7 @@ For example, if a too-large <code>max_new_tokens</code> is given to generate_cha
     <span class="n">model_limit_new_tokens</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">tools</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">string_processors</span><span class="o">=</span><span class="n">string_processors</span><span class="p">)</span>
+    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">string_processors</span><span class="o">=</span><span class="n">string_processors</span><span class="p">,</span> <span class="n">tools</span><span class="o">=</span><span class="n">tools</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">model</span>
     <span class="k">if</span> <span class="n">api_headers</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">api_headers</span> <span class="o">=</span> <span class="p">{}</span>
@@ -7151,7 +7151,6 @@ For example, if a too-large <code>max_new_tokens</code> is given to generate_cha
     <span class="bp">self</span><span class="o">.</span><span class="n">polling_interval_seconds</span> <span class="o">=</span> <span class="n">polling_interval_seconds</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">developer_message</span> <span class="o">=</span> <span class="n">developer_message</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">model_limit_new_tokens</span> <span class="o">=</span> <span class="n">model_limit_new_tokens</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">tools</span> <span class="o">=</span> <span class="n">tools</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -7179,7 +7178,8 @@ For example, if a too-large <code>max_new_tokens</code> is given to generate_cha
 
             <details class="quote">
               <summary>Source code in <code>flexeval/core/language_model/openai_batch_api.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 94</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 93</span>
+<span class="normal"> 94</span>
 <span class="normal"> 95</span>
 <span class="normal"> 96</span>
 <span class="normal"> 97</span>
@@ -7192,8 +7192,7 @@ For example, if a too-large <code>max_new_tokens</code> is given to generate_cha
 <span class="normal">104</span>
 <span class="normal">105</span>
 <span class="normal">106</span>
-<span class="normal">107</span>
-<span class="normal">108</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">create_batch_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">custom_id_2_input</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]]]],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">107</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">create_batch_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">custom_id_2_input</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]]]],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">temp_jsonl_file</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">custom_id</span><span class="p">,</span> <span class="n">input_dict</span> <span class="ow">in</span> <span class="n">custom_id_2_input</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="n">messages</span> <span class="o">=</span> <span class="n">input_dict</span><span class="p">[</span><span class="s2">&quot;messages&quot;</span><span class="p">]</span>
@@ -7236,7 +7235,8 @@ For example, if a too-large <code>max_new_tokens</code> is given to generate_cha
 
             <details class="quote">
               <summary>Source code in <code>flexeval/core/language_model/openai_batch_api.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">164</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">163</span>
+<span class="normal">164</span>
 <span class="normal">165</span>
 <span class="normal">166</span>
 <span class="normal">167</span>
@@ -7246,8 +7246,7 @@ For example, if a too-large <code>max_new_tokens</code> is given to generate_cha
 <span class="normal">171</span>
 <span class="normal">172</span>
 <span class="normal">173</span>
-<span class="normal">174</span>
-<span class="normal">175</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">poll_batch_status_until_completion</span><span class="p">(</span>
+<span class="normal">174</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">poll_batch_status_until_completion</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">batch_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">polling_interval_seconds</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
@@ -7281,7 +7280,8 @@ For example, if a too-large <code>max_new_tokens</code> is given to generate_cha
 
             <details class="quote">
               <summary>Source code in <code>flexeval/core/language_model/openai_batch_api.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">285</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">284</span>
+<span class="normal">285</span>
 <span class="normal">286</span>
 <span class="normal">287</span>
 <span class="normal">288</span>
@@ -7290,8 +7290,7 @@ For example, if a too-large <code>max_new_tokens</code> is given to generate_cha
 <span class="normal">291</span>
 <span class="normal">292</span>
 <span class="normal">293</span>
-<span class="normal">294</span>
-<span class="normal">295</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">cleanup_resources</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">294</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">cleanup_resources</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="c1"># in case that the program fails before the file is initialized in __init__</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;temp_jsonl_file&quot;</span><span class="p">):</span>
         <span class="k">return</span>
@@ -7324,8 +7323,8 @@ For example, if a too-large <code>max_new_tokens</code> is given to generate_cha
 
             <details class="quote">
               <summary>Source code in <code>flexeval/core/language_model/openai_batch_api.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">338</span>
-<span class="normal">339</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">337</span>
+<span class="normal">338</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">cleanup_resources</span><span class="p">()</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -7349,8 +7348,8 @@ For example, if a too-large <code>max_new_tokens</code> is given to generate_cha
 
             <details class="quote">
               <summary>Source code in <code>flexeval/core/language_model/openai_batch_api.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">341</span>
-<span class="normal">342</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">340</span>
+<span class="normal">341</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">(model=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="si">}</span><span class="s2">)&quot;</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -7824,8 +7823,7 @@ If set to “default”, the value will be automatically determined when possibl
 <span class="normal">376</span>
 <span class="normal">377</span>
 <span class="normal">378</span>
-<span class="normal">379</span>
-<span class="normal">380</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VLLM</span><span class="p">(</span><span class="n">LanguageModel</span><span class="p">):</span>
+<span class="normal">379</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VLLM</span><span class="p">(</span><span class="n">LanguageModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;LanguageModel implementation using VLLM.</span>
 
 <span class="sd">    Args:</span>
@@ -7866,7 +7864,7 @@ If set to “default”, the value will be automatically determined when possibl
         <span class="n">tool_parser</span><span class="p">:</span> <span class="n">ToolParser</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">tools</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">string_processors</span><span class="o">=</span><span class="n">string_processors</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">string_processors</span><span class="o">=</span><span class="n">string_processors</span><span class="p">,</span> <span class="n">tools</span><span class="o">=</span><span class="n">tools</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">model_name</span> <span class="o">=</span> <span class="n">model</span>
         <span class="n">tokenizer</span> <span class="o">=</span> <span class="n">tokenizer</span> <span class="k">if</span> <span class="n">tokenizer</span> <span class="k">else</span> <span class="n">model</span>
         <span class="n">tokenizer_kwargs</span> <span class="o">=</span> <span class="n">tokenizer_kwargs</span> <span class="ow">or</span> <span class="p">{}</span>
@@ -7893,7 +7891,6 @@ If set to “default”, the value will be automatically determined when possibl
         <span class="bp">self</span><span class="o">.</span><span class="n">llm</span><span class="p">:</span> <span class="n">LLM</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">model_limit_tokens</span> <span class="o">=</span> <span class="n">model_limit_tokens</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tool_parser</span> <span class="o">=</span> <span class="n">tool_parser</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">tools</span> <span class="o">=</span> <span class="n">tools</span>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">load_model</span><span class="p">(</span><span class="n">method</span><span class="p">:</span> <span class="n">Callable</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">:</span>
@@ -7995,7 +7992,7 @@ If set to “default”, the value will be automatically determined when possibl
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">LMOutput</span><span class="p">]:</span>
         <span class="k">if</span> <span class="n">tools_list</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">tools_list</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">tools</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">chat_messages_list</span><span class="p">)</span>
+            <span class="n">tools_list</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">chat_messages_list</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">system_message</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">chat_messages</span> <span class="ow">in</span> <span class="n">chat_messages_list</span><span class="p">:</span>
                 <span class="n">chat_messages</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;system&quot;</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">system_message</span><span class="p">})</span>
@@ -8390,28 +8387,6 @@ If set to “default”, the value will be automatically determined when possibl
 
 </div>
 
-<div class="doc doc-object doc-attribute">
-
-
-
-<h3 id="flexeval.core.language_model.vllm_model.VLLM.tools" class="doc doc-heading">
-            <span class="doc doc-object-name doc-attribute-name">tools</span>
-
-
-  <span class="doc doc-labels">
-      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
-  </span>
-
-<a href="#flexeval.core.language_model.vllm_model.VLLM.tools" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="n">tools</span> <span class="o">=</span> <span class="n">tools</span>
-</code></pre></div>
-
-    <div class="doc doc-contents ">
-
-    </div>
-
-</div>
-
 
 
 <div class="doc doc-object doc-function">
@@ -8490,8 +8465,7 @@ If set to “default”, the value will be automatically determined when possibl
 <span class="normal">139</span>
 <span class="normal">140</span>
 <span class="normal">141</span>
-<span class="normal">142</span>
-<span class="normal">143</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+<span class="normal">142</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">model</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">model_kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -8507,7 +8481,7 @@ If set to “default”, the value will be automatically determined when possibl
     <span class="n">tool_parser</span><span class="p">:</span> <span class="n">ToolParser</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">tools</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">string_processors</span><span class="o">=</span><span class="n">string_processors</span><span class="p">)</span>
+    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">string_processors</span><span class="o">=</span><span class="n">string_processors</span><span class="p">,</span> <span class="n">tools</span><span class="o">=</span><span class="n">tools</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">model_name</span> <span class="o">=</span> <span class="n">model</span>
     <span class="n">tokenizer</span> <span class="o">=</span> <span class="n">tokenizer</span> <span class="k">if</span> <span class="n">tokenizer</span> <span class="k">else</span> <span class="n">model</span>
     <span class="n">tokenizer_kwargs</span> <span class="o">=</span> <span class="n">tokenizer_kwargs</span> <span class="ow">or</span> <span class="p">{}</span>
@@ -8534,7 +8508,6 @@ If set to “default”, the value will be automatically determined when possibl
     <span class="bp">self</span><span class="o">.</span><span class="n">llm</span><span class="p">:</span> <span class="n">LLM</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">model_limit_tokens</span> <span class="o">=</span> <span class="n">model_limit_tokens</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">tool_parser</span> <span class="o">=</span> <span class="n">tool_parser</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">tools</span> <span class="o">=</span> <span class="n">tools</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -8563,7 +8536,8 @@ If set to “default”, the value will be automatically determined when possibl
 
             <details class="quote">
               <summary>Source code in <code>flexeval/core/language_model/vllm_model.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">145</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">144</span>
+<span class="normal">145</span>
 <span class="normal">146</span>
 <span class="normal">147</span>
 <span class="normal">148</span>
@@ -8575,8 +8549,7 @@ If set to “default”, the value will be automatically determined when possibl
 <span class="normal">154</span>
 <span class="normal">155</span>
 <span class="normal">156</span>
-<span class="normal">157</span>
-<span class="normal">158</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
+<span class="normal">157</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">load_model</span><span class="p">(</span><span class="n">method</span><span class="p">:</span> <span class="n">Callable</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Decorator to load the model lazily.&quot;&quot;&quot;</span>
 
@@ -8612,14 +8585,14 @@ If set to “default”, the value will be automatically determined when possibl
 
             <details class="quote">
               <summary>Source code in <code>flexeval/core/language_model/vllm_model.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">370</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">369</span>
+<span class="normal">370</span>
 <span class="normal">371</span>
 <span class="normal">372</span>
 <span class="normal">373</span>
 <span class="normal">374</span>
 <span class="normal">375</span>
-<span class="normal">376</span>
-<span class="normal">377</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">cleanup_resources</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">376</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">cleanup_resources</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">vllm.distributed</span><span class="w"> </span><span class="kn">import</span> <span class="n">cleanup_dist_env_and_memory</span>
 
     <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">llm</span>
@@ -8649,8 +8622,8 @@ If set to “default”, the value will be automatically determined when possibl
 
             <details class="quote">
               <summary>Source code in <code>flexeval/core/language_model/vllm_model.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">379</span>
-<span class="normal">380</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">378</span>
+<span class="normal">379</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;VLLM(model_name=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">model_name</span><span class="si">}</span><span class="s2">)&quot;</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -8785,6 +8758,16 @@ For example, if a too-large <code>max_new_tokens</code> is given to generate_cha
             <p>Default tools to use in chat responses when no tools are explicitly provided.</p>
           </div>
         </li>
+        <li class="doc-section-item field-body">
+            <b><code>max_parallel_requests</code></b>
+              (<code><span title="int">int</span> | None</code>, default:
+                  <code>None</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>Maximum number of parallel requests to send to the OpenAI API.</p>
+          </div>
+        </li>
     </ul>
 
 
@@ -8904,7 +8887,10 @@ For example, if a too-large <code>max_new_tokens</code> is given to generate_cha
 <span class="normal">250</span>
 <span class="normal">251</span>
 <span class="normal">252</span>
-<span class="normal">253</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VLLMServeLM</span><span class="p">(</span><span class="n">OpenAIChatAPI</span><span class="p">):</span>
+<span class="normal">253</span>
+<span class="normal">254</span>
+<span class="normal">255</span>
+<span class="normal">256</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VLLMServeLM</span><span class="p">(</span><span class="n">OpenAIChatAPI</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The LanguageModel class that uses vLLM via `vllm serve`.</span>
 <span class="sd">    This class starts a OpenAI-compatible vLLM API server in the background and communicates with it via HTTP.</span>
@@ -8931,6 +8917,7 @@ For example, if a too-large <code>max_new_tokens</code> is given to generate_cha
 <span class="sd">        model_limit_new_tokens: An upper limit on the number of tokens the model can generate.</span>
 <span class="sd">            For example, if a too-large `max_new_tokens` is given to generate_chat_response(), this value will cap it.</span>
 <span class="sd">        tools: Default tools to use in chat responses when no tools are explicitly provided.</span>
+<span class="sd">        max_parallel_requests: Maximum number of parallel requests to send to the OpenAI API.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
@@ -8944,6 +8931,7 @@ For example, if a too-large <code>max_new_tokens</code> is given to generate_cha
         <span class="n">string_processors</span><span class="p">:</span> <span class="n">StringProcessor</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="n">StringProcessor</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">model_limit_new_tokens</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">tools</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">max_parallel_requests</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;httpx&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">WARNING</span><span class="p">)</span>
         <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;httpcore&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">WARNING</span><span class="p">)</span>
@@ -8962,6 +8950,7 @@ For example, if a too-large <code>max_new_tokens</code> is given to generate_cha
             <span class="n">string_processors</span><span class="o">=</span><span class="n">string_processors</span><span class="p">,</span>
             <span class="n">model_limit_new_tokens</span><span class="o">=</span><span class="n">model_limit_new_tokens</span><span class="p">,</span>
             <span class="n">tools</span><span class="o">=</span><span class="n">tools</span><span class="p">,</span>
+            <span class="n">max_parallel_requests</span><span class="o">=</span><span class="n">max_parallel_requests</span><span class="p">,</span>
         <span class="p">)</span>
 
     <span class="nd">@staticmethod</span>
@@ -9075,6 +9064,7 @@ For example, if a too-large <code>max_new_tokens</code> is given to generate_cha
     <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">model_limit_new_tokens</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">tools</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">max_parallel_requests</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
 </code></pre></div>
 
@@ -9083,8 +9073,7 @@ For example, if a too-large <code>max_new_tokens</code> is given to generate_cha
 
             <details class="quote">
               <summary>Source code in <code>flexeval/core/language_model/vllm_serve_lm.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">173</span>
-<span class="normal">174</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">174</span>
 <span class="normal">175</span>
 <span class="normal">176</span>
 <span class="normal">177</span>
@@ -9112,7 +9101,10 @@ For example, if a too-large <code>max_new_tokens</code> is given to generate_cha
 <span class="normal">199</span>
 <span class="normal">200</span>
 <span class="normal">201</span>
-<span class="normal">202</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+<span class="normal">202</span>
+<span class="normal">203</span>
+<span class="normal">204</span>
+<span class="normal">205</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">model</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">api_headers</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -9123,6 +9115,7 @@ For example, if a too-large <code>max_new_tokens</code> is given to generate_cha
     <span class="n">string_processors</span><span class="p">:</span> <span class="n">StringProcessor</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="n">StringProcessor</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">model_limit_new_tokens</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">tools</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">max_parallel_requests</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;httpx&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">WARNING</span><span class="p">)</span>
     <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;httpcore&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">WARNING</span><span class="p">)</span>
@@ -9141,6 +9134,7 @@ For example, if a too-large <code>max_new_tokens</code> is given to generate_cha
         <span class="n">string_processors</span><span class="o">=</span><span class="n">string_processors</span><span class="p">,</span>
         <span class="n">model_limit_new_tokens</span><span class="o">=</span><span class="n">model_limit_new_tokens</span><span class="p">,</span>
         <span class="n">tools</span><span class="o">=</span><span class="n">tools</span><span class="p">,</span>
+        <span class="n">max_parallel_requests</span><span class="o">=</span><span class="n">max_parallel_requests</span><span class="p">,</span>
     <span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -9170,16 +9164,16 @@ For example, if a too-large <code>max_new_tokens</code> is given to generate_cha
 
             <details class="quote">
               <summary>Source code in <code>flexeval/core/language_model/vllm_serve_lm.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">204</span>
-<span class="normal">205</span>
-<span class="normal">206</span>
-<span class="normal">207</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">207</span>
 <span class="normal">208</span>
 <span class="normal">209</span>
 <span class="normal">210</span>
 <span class="normal">211</span>
 <span class="normal">212</span>
-<span class="normal">213</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
+<span class="normal">213</span>
+<span class="normal">214</span>
+<span class="normal">215</span>
+<span class="normal">216</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">load_model</span><span class="p">(</span><span class="n">method</span><span class="p">:</span> <span class="n">Callable</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Decorator to load the model lazily.&quot;&quot;&quot;</span>
 
@@ -9211,8 +9205,8 @@ For example, if a too-large <code>max_new_tokens</code> is given to generate_cha
 
             <details class="quote">
               <summary>Source code in <code>flexeval/core/language_model/vllm_serve_lm.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">248</span>
-<span class="normal">249</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">251</span>
+<span class="normal">252</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">(model=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="si">}</span><span class="s2">)&quot;</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -9236,9 +9230,9 @@ For example, if a too-large <code>max_new_tokens</code> is given to generate_cha
 
             <details class="quote">
               <summary>Source code in <code>flexeval/core/language_model/vllm_serve_lm.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">251</span>
-<span class="normal">252</span>
-<span class="normal">253</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">cleanup_resources</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">254</span>
+<span class="normal">255</span>
+<span class="normal">256</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">cleanup_resources</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;manager&quot;</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">manager</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
 </code></pre></div></td></tr></table></div>
