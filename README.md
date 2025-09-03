@@ -47,7 +47,6 @@ flexeval_lm \
   --eval_setup "commonsense_qa" \
   --save_dir "results/commonsense_qa"
 ```
-<!-- (The model used in the example is solely for debugging purposes and does not perform well. Try switching to your favorite model!) -->
 
 ### Output
 
