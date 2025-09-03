@@ -35,16 +35,24 @@ pip install flexeval
 
 ## クイックスタート
 
-以下の例では、`aio` （[AI王](https://sites.google.com/view/project-aio/home)）というクイズに回答するタスクを使って、hugging face モデル `sbintuitions/tiny-lm` を評価します。
+以下の例では、`aio` （[AI王](https://sites.google.com/view/project-aio/home)）というクイズに回答するタスクを使って、hugging face モデル `sbintuitions/sarashina2.2-0.5b` を評価します。
+
+### 実行コマンド
 
 ```bash
 flexeval_lm \
   --language_model HuggingFaceLM \
-  --language_model.model "sbintuitions/tiny-lm" \
+  --language_model.model "sbintuitions/sarashina2.2-0.5b" \
   --eval_setup "aio" \
   --save_dir "results/aio"
 ```
-（上に挙げているモデルはあくまでデバッグ用であり、性能は全く期待できません。お好きなモデルに切り替えて試してみてください！）
+
+### 実行結果
+```
+...
+2025-09-03 16:18:12.101 | INFO     | flexeval.core.evaluate_generation:evaluate_generation:92 - {'char_f1': 0.4991599999999999, 'exact_match': 0.38, 'finish_reason_ratio-stop': 0.999, 'finish_reason_ratio-length': 0.001, 'avg_output_length': 4.986, 'max_output_length': 70, 'min_output_length': 1}
+...
+```
 
 `--saved_dir` に結果が保存され、ファイル毎に以下の内容が含まれます。
 

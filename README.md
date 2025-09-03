@@ -36,16 +36,25 @@ pip install flexeval
 
 ## Quick Start
 
-The following minimal example evaluates the hugging face model `sbintuitions/tiny-lm` with the `commonsense_qa` task.
+The following minimal example evaluates the hugging face model `sbintuitions/sarashina2.2-0.5b` with the `commonsense_qa` task.
+
+### Run Command
 
 ```bash
 flexeval_lm \
   --language_model HuggingFaceLM \
-  --language_model.model "sbintuitions/tiny-lm" \
+  --language_model.model "sbintuitions/sarashina2.2-0.5b" \
   --eval_setup "commonsense_qa" \
   --save_dir "results/commonsense_qa"
 ```
-(The model used in the example is solely for debugging purposes and does not perform well. Try switching to your favorite model!)
+
+### Output
+
+```
+...
+2025-09-03 16:22:58.434 | INFO     | flexeval.core.evaluate_generation:evaluate_generation:92 - {'exact_match': 0.3185913185913186, 'finish_reason_ratio-stop': 1.0, 'avg_output_length': 9.095004095004095, 'max_output_length': 69, 'min_output_length': 2}
+...
+```
 
 The results saved in `--saved_dir` contain:
 
