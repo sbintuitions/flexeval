@@ -56,7 +56,7 @@ def test_parse_score_from_evaluator_output(
 
 
 @pytest.mark.parametrize(
-    ("lm_outputs", "extra_info_list", "expected_summary"),
+    ("lm_outputs", "extra_info_list", "regex_to_parse_score", "expected_summary"),
     [
         (
             ["This score is 1.", "This score is 2.", "This is a good one."],
@@ -65,6 +65,7 @@ def test_parse_score_from_evaluator_output(
                 {"category": "category-0"},
                 {"category": "category-1"},
             ],
+            r"(\d+)",
             {
                 "llm_score": 1.5,
                 "num_failed_score_parses": 1,
@@ -79,11 +80,27 @@ def test_parse_score_from_evaluator_output(
                 {"category": []},
                 {"category": [""]},
             ],
+            r"(\d+)",
             {
                 "llm_score": 2.0,
                 "num_failed_score_parses": 1,
                 "llm_score/category-0": 1.5,
                 "llm_score/category-1": 2.0,
+            },
+        ),
+        (
+            ["This score is [[1]].", "This score is 2.", "This score is 3.", "This is a good one."],
+            [
+                {"category": ["category-0"]},
+                {"category": ["category-0", "category-1"]},
+                {"category": []},
+                {"category": [""]},
+            ],
+            r"\[\[(\d+)\]\]",
+            {
+                "llm_score": 1.0,
+                "num_failed_score_parses": 3,
+                "llm_score/category-0": 1.0,
             },
         ),
     ],
@@ -94,6 +111,7 @@ def test_llm_score(
     lm_outputs: list[str | LMOutput],
     extra_info_list: list[dict[str, str | list[str]]],
     expected_summary: dict[str, float],
+    regex_to_parse_score: str,
     metric_prefix: str | None,
 ) -> None:
     metric = LLMScore(
@@ -101,6 +119,7 @@ def test_llm_score(
         prompt_template=Jinja2PromptTemplate("{{ lm_output }}"),
         category_key="category",
         metric_prefix=metric_prefix,
+        regex_to_parse_score=regex_to_parse_score,
     )
     metric_output = metric.evaluate(
         lm_outputs=lm_outputs,
@@ -117,7 +136,7 @@ def test_llm_score(
 
 
 @pytest.mark.parametrize(
-    ("lm_outputs", "extra_info_list", "expected_summary"),
+    ("lm_outputs", "extra_info_list", "regex_to_parse_score", "expected_summary"),
     [
         (
             ["This score is 1.", "This score is 2.", "This is a good one."],
@@ -126,6 +145,7 @@ def test_llm_score(
                 {"category": "category-0"},
                 {"category": "category-1"},
             ],
+            r"(\d+)",
             {
                 "llm_score": 1.5,
                 "num_failed_score_parses": 1,
@@ -140,11 +160,27 @@ def test_llm_score(
                 {"category": []},
                 {"category": [""]},
             ],
+            r"(\d+)",
             {
                 "llm_score": 2.0,
                 "num_failed_score_parses": 1,
                 "llm_score/category-0": 1.5,
                 "llm_score/category-1": 2.0,
+            },
+        ),
+        (
+            ["This score is [[1]].", "This score is 2.", "This score is 3.", "This is a good one."],
+            [
+                {"category": ["category-0"]},
+                {"category": ["category-0", "category-1"]},
+                {"category": []},
+                {"category": [""]},
+            ],
+            r"\[\[(\d+)\]\]",
+            {
+                "llm_score": 1.0,
+                "num_failed_score_parses": 3,
+                "llm_score/category-0": 1.0,
             },
         ),
     ],
@@ -155,6 +191,7 @@ def test_chat_llm_score(
     lm_outputs: list[str | LMOutput],
     extra_info_list: list[dict[str, str | list[str]]],
     expected_summary: dict[str, float],
+    regex_to_parse_score: str,
     metric_prefix: str,
 ) -> None:
     metric = ChatLLMScore(
@@ -162,6 +199,7 @@ def test_chat_llm_score(
         prompt_template=Jinja2PromptTemplate("{{ lm_output }}"),
         category_key="category",
         metric_prefix=metric_prefix,
+        regex_to_parse_score=regex_to_parse_score,
     )
     metric_output = metric.evaluate(
         lm_outputs=lm_outputs,

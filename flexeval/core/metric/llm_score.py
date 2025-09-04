@@ -311,6 +311,7 @@ class ChatLLMScore(Metric):
         category_key: A key to create category-wise mean score.
             The category key is expected to be in extra_info.
         metric_prefix: A prefix to be added to the metric keys in the summary and instance details.
+        regex_to_parse_score: A regular expression to parse score.
 
     Examples:
         >>> from flexeval import ChatLLMScore, OpenAIChatAPI, Jinja2PromptTemplate
@@ -347,6 +348,7 @@ class ChatLLMScore(Metric):
         valid_score_range: tuple[int, int] | None = None,
         category_key: str | None = None,
         metric_prefix: str | None = None,
+        regex_to_parse_score: str = r"(\d+)",
     ) -> None:
         self.language_model = language_model
         self.prompt_template = prompt_template
@@ -356,6 +358,7 @@ class ChatLLMScore(Metric):
         self.valid_score_range = valid_score_range
         self.category_key = category_key
         self.metric_prefix = f"{metric_prefix}-" if metric_prefix else ""
+        self.regex_to_parse_score = regex_to_parse_score
 
     def evaluate(
         self,
@@ -384,6 +387,7 @@ class ChatLLMScore(Metric):
             evaluator_score = parse_score_from_evaluator_output(
                 evaluator_output.text,
                 valid_score_range=self.valid_score_range,
+                regex_to_parse_score=self.regex_to_parse_score,
             )
             if evaluator_score is None:
                 logger.warning(f"Failed to parse score from evaluator output: {evaluator_output}")
