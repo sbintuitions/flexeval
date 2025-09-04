@@ -119,7 +119,7 @@ def test_llm_score(
         prompt_template=Jinja2PromptTemplate("{{ lm_output }}"),
         category_key="category",
         metric_prefix=metric_prefix,
-        regex_to_parse_score=regex_to_parse_score
+        regex_to_parse_score=regex_to_parse_score,
     )
     metric_output = metric.evaluate(
         lm_outputs=lm_outputs,
@@ -199,7 +199,7 @@ def test_chat_llm_score(
         prompt_template=Jinja2PromptTemplate("{{ lm_output }}"),
         category_key="category",
         metric_prefix=metric_prefix,
-        regex_to_parse_score=regex_to_parse_score
+        regex_to_parse_score=regex_to_parse_score,
     )
     metric_output = metric.evaluate(
         lm_outputs=lm_outputs,
