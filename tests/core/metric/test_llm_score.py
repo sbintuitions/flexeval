@@ -207,10 +207,7 @@ def test_llm_score_regex_parse_score(
     ],
     indirect=["lm_outputs"],
 )
-def test_llm_score_metric_prefix(
-    lm_outputs: list[str | LMOutput],
-    metric_prefix: str
-) -> None:
+def test_llm_score_metric_prefix(lm_outputs: list[str | LMOutput], metric_prefix: str) -> None:
     extra_info_list = [{"category": "category-0"}, {"category": "category-0"}]
     expected_summary = {"llm_score": 1.5, "num_failed_score_parses": 0, "llm_score/category-0": 1.5}
 
@@ -387,10 +384,7 @@ def test_chat_llm_score_regex_parse_score(
     ],
     indirect=["lm_outputs"],
 )
-def test_chat_llm_score_metric_prefix(
-    lm_outputs: list[str | LMOutput],
-    metric_prefix: str
-) -> None:
+def test_chat_llm_score_metric_prefix(lm_outputs: list[str | LMOutput], metric_prefix: str) -> None:
     extra_info_list = [{"category": "category-0"}, {"category": "category-0"}]
     expected_summary = {"llm_score": 1.5, "num_failed_score_parses": 0, "llm_score/category-0": 1.5}
 
