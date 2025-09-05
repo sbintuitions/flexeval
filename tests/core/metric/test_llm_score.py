@@ -95,7 +95,7 @@ def test_llm_score(
 
 
 @pytest.mark.parametrize(
-    ("lm_outputs", "extra_info_list", "expected_summary"),
+    ("lm_outputs", "extra_info_list", "category_key", "expected_summary"),
     [
         (
             ["This score is 1.", "This score is 2.", "This is a good one."],
@@ -104,10 +104,11 @@ def test_llm_score(
                 {"category": "category-0"},
                 {"category": "category-1"},
             ],
+            "category",
             {
                 "llm_score": 1.5,
                 "num_failed_score_parses": 1,
-                "llm_score/category-0": 1.5,
+                "llm_score/category/category-0": 1.5,
             },
         ),
         (
@@ -118,11 +119,29 @@ def test_llm_score(
                 {"category": []},
                 {"category": [""]},
             ],
+            "category",
             {
                 "llm_score": 2.0,
                 "num_failed_score_parses": 1,
-                "llm_score/category-0": 1.5,
-                "llm_score/category-1": 2.0,
+                "llm_score/category/category-0": 1.5,
+                "llm_score/category/category-1": 2.0,
+            },
+        ),
+        (
+            ["This score is 1.", "This score is 2.", "This score is 3."],
+            [
+                {"category": ["category-0"], "second-category": ["variant-1"]},
+                {"category": ["category-0", "category-1"], "second-category": []},
+                {"category": [], "second-category": ["variant-0"]},
+            ],
+            ["category", "second-category"],
+            {
+                "llm_score": 2.0,
+                "num_failed_score_parses": 0,
+                "llm_score/category/category-0": 1.5,
+                "llm_score/category/category-1": 2.0,
+                "llm_score/second-category/variant-0": 3.0,
+                "llm_score/second-category/variant-1": 1.0,
             },
         ),
     ],
@@ -131,12 +150,13 @@ def test_llm_score(
 def test_llm_score_with_category_key(
     lm_outputs: list[str | LMOutput],
     extra_info_list: list[dict[str, str | list[str]]],
+    category_key: str | list[str],
     expected_summary: dict[str, float],
 ) -> None:
     metric = LLMScore(
         language_model=EchoBackLanguageModel(),
         prompt_template=Jinja2PromptTemplate("{{ lm_output }}"),
-        category_key="category",
+        category_key=category_key,
     )
     metric_output = metric.evaluate(
         lm_outputs=lm_outputs,
@@ -209,7 +229,7 @@ def test_llm_score_regex_parse_score(
 )
 def test_llm_score_metric_prefix(lm_outputs: list[str | LMOutput], metric_prefix: str) -> None:
     extra_info_list = [{"category": "category-0"}, {"category": "category-0"}]
-    expected_summary = {"llm_score": 1.5, "num_failed_score_parses": 0, "llm_score/category-0": 1.5}
+    expected_summary = {"llm_score": 1.5, "num_failed_score_parses": 0, "llm_score/category/category-0": 1.5}
 
     metric = LLMScore(
         language_model=EchoBackLanguageModel(),
@@ -272,7 +292,7 @@ def test_chat_llm_score(
 
 
 @pytest.mark.parametrize(
-    ("lm_outputs", "extra_info_list", "expected_summary"),
+    ("lm_outputs", "extra_info_list", "category_key", "expected_summary"),
     [
         (
             ["This score is 1.", "This score is 2.", "This is a good one."],
@@ -281,10 +301,11 @@ def test_chat_llm_score(
                 {"category": "category-0"},
                 {"category": "category-1"},
             ],
+            "category",
             {
                 "llm_score": 1.5,
                 "num_failed_score_parses": 1,
-                "llm_score/category-0": 1.5,
+                "llm_score/category/category-0": 1.5,
             },
         ),
         (
@@ -295,11 +316,29 @@ def test_chat_llm_score(
                 {"category": []},
                 {"category": [""]},
             ],
+            "category",
             {
                 "llm_score": 2.0,
                 "num_failed_score_parses": 1,
-                "llm_score/category-0": 1.5,
-                "llm_score/category-1": 2.0,
+                "llm_score/category/category-0": 1.5,
+                "llm_score/category/category-1": 2.0,
+            },
+        ),
+        (
+            ["This score is 1.", "This score is 2.", "This score is 3."],
+            [
+                {"category": ["category-0"], "second-category": ["variant-1"]},
+                {"category": ["category-0", "category-1"], "second-category": []},
+                {"category": [], "second-category": ["variant-0"]},
+            ],
+            ["category", "second-category"],
+            {
+                "llm_score": 2.0,
+                "num_failed_score_parses": 0,
+                "llm_score/category/category-0": 1.5,
+                "llm_score/category/category-1": 2.0,
+                "llm_score/second-category/variant-0": 3.0,
+                "llm_score/second-category/variant-1": 1.0,
             },
         ),
     ],
@@ -308,12 +347,13 @@ def test_chat_llm_score(
 def test_chat_llm_score_with_category_key(
     lm_outputs: list[str | LMOutput],
     extra_info_list: list[dict[str, str | list[str]]],
+    category_key: str | list[str],
     expected_summary: dict[str, float],
 ) -> None:
     metric = ChatLLMScore(
         language_model=EchoBackLanguageModel(),
         prompt_template=Jinja2PromptTemplate("{{ lm_output }}"),
-        category_key="category",
+        category_key=category_key,
     )
     metric_output = metric.evaluate(
         lm_outputs=lm_outputs,
@@ -386,7 +426,7 @@ def test_chat_llm_score_regex_parse_score(
 )
 def test_chat_llm_score_metric_prefix(lm_outputs: list[str | LMOutput], metric_prefix: str) -> None:
     extra_info_list = [{"category": "category-0"}, {"category": "category-0"}]
-    expected_summary = {"llm_score": 1.5, "num_failed_score_parses": 0, "llm_score/category-0": 1.5}
+    expected_summary = {"llm_score": 1.5, "num_failed_score_parses": 0, "llm_score/category/category-0": 1.5}
 
     metric = ChatLLMScore(
         language_model=EchoBackLanguageModel(),
