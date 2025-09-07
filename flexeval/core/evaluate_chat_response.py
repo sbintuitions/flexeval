@@ -140,7 +140,6 @@ def execute_conversation_flow(
                 "lm_output": lm_output,
                 "chat_instance": chat_instance,
                 "messages": messages[:-1],  # exclude the final output
-                "original_messages": chat_instance.messages,
             }
             yield output
 
@@ -156,9 +155,7 @@ def evaluate_chat_response(  # noqa: C901
 ) -> tuple[dict[str, float], list[dict[str, Any]]]:
     logger.info(f"Evaluate the model with gen_kwargs: {gen_kwargs}")
 
-    # eval_instances: Sequence[ChatInstance] = eval_dataset
     if max_instances is not None:
-        # eval_instances = [eval_dataset[i] for i in range(min(max_instances, len(eval_instances)))]
         max_instances = min(max_instances, len(eval_dataset))
     else:
         max_instances = len(eval_dataset)
@@ -219,10 +216,7 @@ def evaluate_chat_response(  # noqa: C901
     # legacy: `{"lm_output": "...", "finish_reason": "...", "task_inputs": {...}, "references": [...], **metrics}`
     restructured_outputs: list[dict[str, Any]] = []
     for output in outputs:
-        extra_info = output["chat_instance"].extra_info | {
-            "messages": output["messages"],
-            "original_messages": output["chat_instance"].messages
-        }
+        extra_info = output["chat_instance"].extra_info | {"messages": output["messages"]}
         if output["lm_output"].tool_calls:
             extra_info["tool_calls"] = output["lm_output"].tool_calls
         if output["chat_instance"].tools:
