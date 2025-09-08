@@ -29,10 +29,15 @@ def _remove_redundant_keys_from_messages(
     Thus this removal is required before each input step.
     """
     remove_keys = set(remove_keys)
-    return [{key: value for key, value in message.items() if key not in remove_keys} for message in messages]
+    return [
+        {key: value for key, value in message.items() if key not in remove_keys}
+        for message in messages
+    ]
 
 
-def _add_few_shot_messages_to_chat_instance(chat_instance: ChatInstance, few_shot_generator: FewShotGenerator) -> None:
+def _add_few_shot_messages_to_chat_instance(
+    chat_instance: ChatInstance, few_shot_generator: FewShotGenerator
+) -> None:
     """Add few-shot examples to a chat instance by inserting them before the first user message.
     Note that it updates ChatInstance in-place.
     """
@@ -46,7 +51,9 @@ def _add_few_shot_messages_to_chat_instance(chat_instance: ChatInstance, few_sho
         few_shot_messages += few_shot_instance.messages
         if few_shot_instance.references:
             # use the first reference as the assistant message
-            few_shot_messages += [{"role": "assistant", "content": few_shot_instance.references[0]}]
+            few_shot_messages += [
+                {"role": "assistant", "content": few_shot_instance.references[0]}
+            ]
 
     # Insert few_shot_messages before the first user message
     first_turn_idx = find_first_turn_for_response(chat_instance.messages)
@@ -57,7 +64,9 @@ def _add_few_shot_messages_to_chat_instance(chat_instance: ChatInstance, few_sho
     ]
 
 
-def _find_response_context_index(incomplete_messages: list[dict[str, Any]]) -> int | None:
+def _find_response_context_index(
+    incomplete_messages: list[dict[str, Any]],
+) -> int | None:
     """
     Finds the index after the earliest message that requires an assistant response.
 
@@ -84,7 +93,10 @@ def _find_response_context_index(incomplete_messages: list[dict[str, Any]]) -> i
 
 
 def execute_conversation_flow(
-    language_model: LanguageModel, eval_instances: Sequence[ChatInstance], batch_size: int, gen_kwargs: dict[str, Any]
+    language_model: LanguageModel,
+    eval_instances: Sequence[ChatInstance],
+    batch_size: int,
+    gen_kwargs: dict[str, Any],
 ) -> Iterator[dict[str, Any]]:
     """
     Execute complete conversation flows for a batch of chat instances.
@@ -96,19 +108,30 @@ def execute_conversation_flow(
     for batch in batch_iter(eval_instances, batch_size):
         # Copy the input messages as current_chat_history
         # We will populate this history with llm
-        current_chat_history: list[list[dict[str, Any]]] = [[*chat_instance.messages] for chat_instance in batch]
-        response_context_indices = [_find_response_context_index(chat_history) for chat_history in current_chat_history]
+        current_chat_history: list[list[dict[str, Any]]] = [
+            [*chat_instance.messages] for chat_instance in batch
+        ]
+        response_context_indices = [
+            _find_response_context_index(chat_history)
+            for chat_history in current_chat_history
+        ]
         last_lm_outputs: list[LMOutput | None] = [None for _ in range(len(batch))]
         while any(idx is not None for idx in response_context_indices):
             batch_inputs = [
                 _remove_redundant_keys_from_messages(
                     current_chat_history[batch_i][:message_i],
-                    remove_keys={"finish_reason", "raw_content", "tool_call_validation_result"},
+                    remove_keys={
+                        "finish_reason",
+                        "raw_content",
+                        "tool_call_validation_result",
+                    },
                 )
                 for batch_i, message_i in enumerate(response_context_indices)
                 if message_i is not None
             ]
-            ids_fed_to_lm = [i for i, idx in enumerate(response_context_indices) if idx is not None]
+            ids_fed_to_lm = [
+                i for i, idx in enumerate(response_context_indices) if idx is not None
+            ]
             lm_outputs = language_model.generate_chat_response(
                 batch_inputs,
                 tools=[batch[i].tools for i in ids_fed_to_lm],
@@ -121,21 +144,36 @@ def execute_conversation_flow(
                         "content": lm_output.text,
                         "finish_reason": lm_output.finish_reason,
                     }
-                    | ({"raw_content": lm_output.raw_text} if lm_output.raw_text else {})
-                    | ({"tool_calls": lm_output.tool_calls} if lm_output.tool_calls else {})
                     | (
-                        {"tool_call_validation_result": lm_output.tool_call_validation_result}
+                        {"raw_content": lm_output.raw_text}
+                        if lm_output.raw_text
+                        else {}
+                    )
+                    | (
+                        {"tool_calls": lm_output.tool_calls}
+                        if lm_output.tool_calls
+                        else {}
+                    )
+                    | (
+                        {
+                            "tool_call_validation_result": lm_output.tool_call_validation_result
+                        }
                         if lm_output.tool_call_validation_result
                         else {}
                     )
                 )
-                current_chat_history[batch_i].insert(response_context_indices[batch_i], lm_output_message)
+                current_chat_history[batch_i].insert(
+                    response_context_indices[batch_i], lm_output_message
+                )
                 last_lm_outputs[batch_i] = lm_output
             response_context_indices = [
-                _find_response_context_index(chat_history) for chat_history in current_chat_history
+                _find_response_context_index(chat_history)
+                for chat_history in current_chat_history
             ]
 
-        for lm_output, messages, chat_instance in zip(last_lm_outputs, current_chat_history, batch):
+        for lm_output, messages, chat_instance in zip(
+            last_lm_outputs, current_chat_history, batch
+        ):
             output = {
                 "lm_output": lm_output,
                 "chat_instance": chat_instance,
@@ -155,7 +193,11 @@ def evaluate_chat_response(  # noqa: C901
 ) -> tuple[dict[str, float], list[dict[str, Any]]]:
     logger.info(f"Evaluate the model with gen_kwargs: {gen_kwargs}")
 
-    max_instances = (len(eval_dataset) if max_instances is None else min(max_instances, len(eval_dataset)))
+    max_instances = (
+        len(eval_dataset)
+        if max_instances is None
+        else min(max_instances, len(eval_dataset))
+    )
     eval_instances: list[ChatInstance] = [eval_dataset[i] for i in range(max_instances)]
 
     if few_shot_generator:
@@ -177,7 +219,14 @@ def evaluate_chat_response(  # noqa: C901
     ):
         if i == 0:
             logger.info("Example of the output")
-            logger.info(json.dumps(output, ensure_ascii=False, indent=4, cls=Base64TruncatingJSONEncoder))
+            logger.info(
+                json.dumps(
+                    output,
+                    ensure_ascii=False,
+                    indent=4,
+                    cls=Base64TruncatingJSONEncoder,
+                )
+            )
         outputs.append(output)
 
     language_model.cleanup_resources()
@@ -191,7 +240,10 @@ def evaluate_chat_response(  # noqa: C901
             references_list=[output["chat_instance"].references for output in outputs],
             extra_info_list=[
                 output["chat_instance"].extra_info
-                | {"messages": output["chat_instance"].messages, "tools": output["chat_instance"].tools}
+                | {
+                    "messages": output["chat_instance"].messages,
+                    "tools": output["chat_instance"].tools,
+                }
                 for output in outputs
             ],
         )
@@ -200,7 +252,9 @@ def evaluate_chat_response(  # noqa: C901
         metrics_summary_dict.update(metric_result.summary)
 
         if metric_result.instance_details:
-            for instance_idx, instance_details in enumerate(metric_result.instance_details):
+            for instance_idx, instance_details in enumerate(
+                metric_result.instance_details
+            ):
                 instance_metrics_list[instance_idx].update(instance_details)
     for instance_metrics, output in zip(instance_metrics_list, outputs):
         output["metrics"] = instance_metrics
@@ -213,7 +267,9 @@ def evaluate_chat_response(  # noqa: C901
     # legacy: `{"lm_output": "...", "finish_reason": "...", "task_inputs": {...}, "references": [...], **metrics}`
     restructured_outputs: list[dict[str, Any]] = []
     for output in outputs:
-        extra_info = output["chat_instance"].extra_info | {"messages": output["messages"]}
+        extra_info = output["chat_instance"].extra_info | {
+            "messages": output["messages"]
+        }
         if output["lm_output"].tool_calls:
             extra_info["tool_calls"] = output["lm_output"].tool_calls
         if output["chat_instance"].tools:
