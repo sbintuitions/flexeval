@@ -155,9 +155,8 @@ def evaluate_chat_response(  # noqa: C901
 ) -> tuple[dict[str, float], list[dict[str, Any]]]:
     logger.info(f"Evaluate the model with gen_kwargs: {gen_kwargs}")
 
-    eval_instances: Sequence[ChatInstance] = eval_dataset
-    if max_instances is not None:
-        eval_instances = [eval_dataset[i] for i in range(min(max_instances, len(eval_instances)))]
+    max_instances = len(eval_dataset) if max_instances is None else min(max_instances, len(eval_dataset))
+    eval_instances: list[ChatInstance] = [eval_dataset[i] for i in range(max_instances)]
 
     if few_shot_generator:
         for eval_instance in eval_instances:
