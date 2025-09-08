@@ -186,6 +186,7 @@ class HuggingFaceLM(LanguageModel):
             an empty string is returned instead of raising an error.
             If set to “default”, the value will be automatically determined when possible.
         tool_parser: A ToolParser object to extract the tool_calls from the model's output.
+        tools: Default tools to use in chat responses when no tools are explicitly provided.
     """
 
     def __init__(
@@ -205,8 +206,9 @@ class HuggingFaceLM(LanguageModel):
         string_processors: StringProcessor | list[StringProcessor] | None = None,
         model_limit_tokens: int | None | Literal["default"] = "default",
         tool_parser: ToolParser | None = None,
+        tools: list[dict[str, Any]] | None = None,
     ) -> None:
-        super().__init__(string_processors=string_processors)
+        super().__init__(string_processors=string_processors, tools=tools)
         self._model_name_or_path = model
         tokenizer = tokenizer if tokenizer else model
         tokenizer_kwargs = tokenizer_kwargs or {}

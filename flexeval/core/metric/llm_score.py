@@ -14,12 +14,14 @@ from .base import Metric, MetricResult
 from .utils import extract_text_from_outputs, validate_inputs
 
 
-def parse_score_from_evaluator_output(evaluator_output: str, valid_score_range: tuple[int, int] | None) -> int | None:
+def parse_score_from_evaluator_output(
+    evaluator_output: str, valid_score_range: tuple[int, int] | None, regex_to_parse_score: str = r"(\d+)"
+) -> int | None:
     """Extract the last integer value from the evaluator output.
 
     Return None if parsing fails.
     """
-    matched = re.findall(r"(\d+)", evaluator_output)
+    matched = re.findall(regex_to_parse_score, evaluator_output)
     if not matched:
         return None
 
@@ -32,7 +34,7 @@ def parse_score_from_evaluator_output(evaluator_output: str, valid_score_range: 
 def summarize_evaluator_scores(
     evaluator_score_list: list[int | None],
     extra_info_list: list[dict[str, str]],
-    category_key: str | None = None,
+    category_key: str | list[str] | None = None,
 ) -> dict[str, float]:
     """Summarize evaluator_score_list. If category_key is given, return
     category-wise mean score as well as overall mean score.
@@ -45,23 +47,26 @@ def summarize_evaluator_scores(
     summary = {"llm_score": llm_score, "num_failed_score_parses": num_failed_score_parses}
 
     # compute category-wise mean score if category_key is given
-    category2valid_scores: dict[str, list[int]] = defaultdict(list)
-    for score, extra_info in zip(evaluator_score_list, extra_info_list):
-        if score is None or category_key is None:
-            continue
-        if category_key in extra_info:
-            categories = extra_info[category_key]
-            if not isinstance(categories, (list, tuple, set)):
-                categories = [categories]
-            for category in categories:
-                category2valid_scores[category].append(score)
+    if category_key is not None:
+        # Handle both str and list[str] for category_key
+        keys_to_check = [category_key] if isinstance(category_key, str) else category_key
 
-    category2mean_score: dict[str, float] = {}
-    for category, valid_scores in category2valid_scores.items():
-        category2mean_score[category] = sum(valid_scores) / len(valid_scores)
+        for key in keys_to_check:
+            category2valid_scores: dict[str, list[int]] = defaultdict(list)
+            for score, extra_info in zip(evaluator_score_list, extra_info_list):
+                if score is None:
+                    continue
+                if key in extra_info:
+                    categories = extra_info[key]
+                    if not isinstance(categories, (list, tuple, set)):
+                        categories = [categories]
+                    for category in categories:
+                        category2valid_scores[category].append(score)
 
-    for category, mean_score in category2mean_score.items():
-        summary[f"llm_score/{category}"] = mean_score
+            # Add category-wise scores for this key
+            for category, valid_scores in category2valid_scores.items():
+                mean_score = sum(valid_scores) / len(valid_scores)
+                summary[f"llm_score/{key}/{category}"] = mean_score
     return summary
 
 
@@ -179,9 +184,10 @@ class LLMScore(Metric):
         disable_tqdm: Whether to disable the progress bar.
         valid_score_range: A tuple of two integers representing the valid score range.
             If the parsed score is out of the range, it will be ignored.
-        category_key: A key to create category-wise mean score.
-            The category key is expected to be in extra_info.
+        category_key: A key or list of keys to create category-wise mean score.
+            The category keys are expected to be in extra_info.
         metric_prefix: A prefix to be added to the metric keys in the summary and instance details.
+        regex_to_parse_score: A regular expression to parse score.
 
     Examples:
         >>> from flexeval import LLMScore, OpenAIChatAPI, Jinja2PromptTemplate
@@ -214,8 +220,9 @@ class LLMScore(Metric):
         batch_size: int = 4,
         disable_tqdm: bool = False,
         valid_score_range: tuple[int, int] | None = None,
-        category_key: str | None = None,
+        category_key: str | list[str] | None = None,
         metric_prefix: str | None = None,
+        regex_to_parse_score: str = r"(\d+)",
     ) -> None:
         self.language_model = language_model
         self.prompt_template = prompt_template
@@ -224,6 +231,7 @@ class LLMScore(Metric):
         self.valid_score_range = valid_score_range
         self.category_key = category_key
         self.metric_prefix = f"{metric_prefix}-" if metric_prefix else ""
+        self.regex_to_parse_score = regex_to_parse_score
 
     def evaluate(
         self,
@@ -254,6 +262,7 @@ class LLMScore(Metric):
             evaluator_score = parse_score_from_evaluator_output(
                 evaluator_output.text,
                 valid_score_range=self.valid_score_range,
+                regex_to_parse_score=self.regex_to_parse_score,
             )
             if evaluator_score is None:
                 logger.warning(f"Failed to parse score from evaluator output: {evaluator_output}")
@@ -302,9 +311,10 @@ class ChatLLMScore(Metric):
         disable_tqdm: Whether to disable the progress bar.
         valid_score_range: A tuple of two integers representing the valid score range.
             If the parsed score is out of the range, it will be ignored.
-        category_key: A key to create category-wise mean score.
-            The category key is expected to be in extra_info.
+        category_key: A key or list of keys to create category-wise mean score.
+            The category keys are expected to be in extra_info.
         metric_prefix: A prefix to be added to the metric keys in the summary and instance details.
+        regex_to_parse_score: A regular expression to parse score.
 
     Examples:
         >>> from flexeval import ChatLLMScore, OpenAIChatAPI, Jinja2PromptTemplate
@@ -339,8 +349,9 @@ class ChatLLMScore(Metric):
         batch_size: int = 4,
         disable_tqdm: bool = False,
         valid_score_range: tuple[int, int] | None = None,
-        category_key: str | None = None,
+        category_key: str | list[str] | None = None,
         metric_prefix: str | None = None,
+        regex_to_parse_score: str = r"(\d+)",
     ) -> None:
         self.language_model = language_model
         self.prompt_template = prompt_template
@@ -350,6 +361,7 @@ class ChatLLMScore(Metric):
         self.valid_score_range = valid_score_range
         self.category_key = category_key
         self.metric_prefix = f"{metric_prefix}-" if metric_prefix else ""
+        self.regex_to_parse_score = regex_to_parse_score
 
     def evaluate(
         self,
@@ -378,6 +390,7 @@ class ChatLLMScore(Metric):
             evaluator_score = parse_score_from_evaluator_output(
                 evaluator_output.text,
                 valid_score_range=self.valid_score_range,
+                regex_to_parse_score=self.regex_to_parse_score,
             )
             if evaluator_score is None:
                 logger.warning(f"Failed to parse score from evaluator output: {evaluator_output}")

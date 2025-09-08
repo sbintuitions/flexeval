@@ -1,20 +1,20 @@
 from __future__ import annotations
 
-import asyncio
 import itertools
-from typing import Any, Awaitable, Callable, TypeVar
+import time
+from concurrent.futures import ThreadPoolExecutor
+from typing import Any, Callable, TypeVar
 
 import openai
 import tiktoken
 from loguru import logger
-from openai import AsyncOpenAI, BaseModel
+from openai import BaseModel, OpenAI
 from openai._types import NotGiven
 from openai.types.chat import ChatCompletion, ChatCompletionMessage
 from openai.types.chat.chat_completion import Choice
 
+from flexeval.core.language_model.base import LanguageModel, LMOutput, normalize_stop_sequences
 from flexeval.core.string_processor import StringProcessor
-
-from .base import LanguageModel, LMOutput, normalize_stop_sequences
 
 T = TypeVar("T")
 
@@ -40,15 +40,15 @@ EMPTY_RESPONSE = ChatCompletion(
 )
 
 
-async def _retry_on_error(
-    openai_call: Callable[[], Awaitable[T]],
+def _retry_on_error(
+    openai_call: Callable[[], T],
     empty_response: BaseModel,
     max_num_trials: int = 5,
     first_wait_time: int = 10,
-) -> Awaitable[T]:
+) -> T:
     for i in range(max_num_trials):
         try:
-            return await openai_call()
+            return openai_call()
         except openai.APIError as e:  # noqa: PERF203
             if i == max_num_trials - 1:
                 # Since reaching maximum number of trials, exit for-loop and return
@@ -57,7 +57,7 @@ async def _retry_on_error(
             logger.warning(f"We got an error: {e}")
             wait_time_seconds = first_wait_time * (2**i)
             logger.warning(f"Wait for {wait_time_seconds} seconds...")
-            await asyncio.sleep(wait_time_seconds)
+            time.sleep(wait_time_seconds)
 
     logger.warning(f"We reached maximum number of trials ({max_num_trials} trials.).")
     logger.warning("Response including empty string is returned.")
@@ -78,6 +78,8 @@ class OpenAIChatAPI(LanguageModel):
         string_processors: A single or a list of StringProcessor objects to process the model's output.
         model_limit_new_tokens: An upper limit on the number of tokens the model can generate.
             For example, if a too-large `max_new_tokens` is given to generate_chat_response(), this value will cap it.
+        max_parallel_requests: Maximum number of parallel requests to send to the OpenAI API.
+        tools: Default tools to use in chat responses when no tools are explicitly provided.
     """
 
     def __init__(
@@ -88,12 +90,14 @@ class OpenAIChatAPI(LanguageModel):
         developer_message: str | None = None,
         string_processors: StringProcessor | list[StringProcessor] | None = None,
         model_limit_new_tokens: int | None = None,
+        max_parallel_requests: int | None = None,
+        tools: list[dict[str, Any]] | None = None,
     ) -> None:
-        super().__init__(string_processors=string_processors)
+        super().__init__(string_processors=string_processors, tools=tools)
         self.model = model
         if api_headers is None:
             api_headers = {}
-        client = AsyncOpenAI(**api_headers)
+        client = OpenAI(**api_headers)
         self.api_call_func = client.chat.completions.create
         self.empty_response = EMPTY_RESPONSE
         self.default_gen_kwargs = default_gen_kwargs or {}
@@ -103,8 +107,9 @@ class OpenAIChatAPI(LanguageModel):
 
         self.developer_message = developer_message
         self.model_limit_new_tokens = model_limit_new_tokens
+        self.max_parallel_requests = max_parallel_requests
 
-    async def _async_batch_run_chatgpt(
+    def _parallel_run_chatgpt(
         self,
         messages_list: list[list[dict[str, Any]]],
         tools_list: list[list[dict[str, Any]] | None] | None = None,
@@ -150,22 +155,23 @@ class OpenAIChatAPI(LanguageModel):
         if tools_list is None:
             tools_list = [None] * len(messages_list)
 
-        tasks = [
-            _retry_on_error(
-                # Define an anonymous function with a lambda expression and pass it,
-                # and call it inside the _retry_on_error function
-                openai_call=lambda messages=messages, tools=tools: self.api_call_func(
-                    model=self.model,
-                    messages=messages,
-                    tools=tools,
-                    stop=stop_sequences or NotGiven(),
-                    **gen_kwargs,
-                ),
-                empty_response=self.empty_response,
-            )
-            for messages, tools in zip(messages_list, tools_list)
-        ]
-        return await asyncio.gather(*tasks)
+        max_workers = self.max_parallel_requests or len(messages_list)
+        with ThreadPoolExecutor(max_workers=max_workers) as executor:
+            futures = [
+                executor.submit(
+                    _retry_on_error,
+                    openai_call=lambda messages=messages, tools=tools: self.api_call_func(
+                        model=self.model,
+                        messages=messages,
+                        tools=tools or NotGiven(),
+                        stop=stop_sequences or NotGiven(),
+                        **gen_kwargs,
+                    ),
+                    empty_response=self.empty_response,
+                )
+                for messages, tools in zip(messages_list, tools_list)
+            ]
+            return [future.result() for future in futures]
 
     def _batch_complete_text(
         self,
@@ -175,13 +181,11 @@ class OpenAIChatAPI(LanguageModel):
         **kwargs,
     ) -> list[LMOutput]:
         messages_list = [[{"role": "user", "content": text}] for text in text_list]
-        api_responses = asyncio.run(
-            self._async_batch_run_chatgpt(
-                messages_list,
-                stop_sequences=stop_sequences,
-                max_new_tokens=max_new_tokens,
-                **kwargs,
-            ),
+        api_responses = self._parallel_run_chatgpt(
+            messages_list,
+            stop_sequences=stop_sequences,
+            max_new_tokens=max_new_tokens,
+            **kwargs,
         )
         outputs = [
             LMOutput(text=res.choices[0].message.content, finish_reason=res.choices[0].finish_reason)
@@ -198,9 +202,7 @@ class OpenAIChatAPI(LanguageModel):
         tools_list: list[list[dict[str, Any]] | None] | None = None,
         **kwargs,
     ) -> list[LMOutput]:
-        api_responses = asyncio.run(
-            self._async_batch_run_chatgpt(chat_messages_list, tools_list=tools_list, **kwargs),
-        )
+        api_responses = self._parallel_run_chatgpt(chat_messages_list, tools_list=tools_list, **kwargs)
         outputs = [
             LMOutput(
                 text=res.choices[0].message.content,
@@ -244,14 +246,12 @@ class OpenAIChatAPI(LanguageModel):
 
         # For saving cost, remove duplication from message_list for an API request.
         unique_prompt_list = remove_duplicates_from_prompt_list(prompt_list)
-        api_responses = asyncio.run(
-            self._async_batch_run_chatgpt(
-                unique_prompt_list,
-                max_completion_tokens=1,
-                seed=seed,
-                logprobs=True,
-                top_logprobs=top_logprobs,
-            ),
+        api_responses = self._parallel_run_chatgpt(
+            unique_prompt_list,
+            max_completion_tokens=1,
+            seed=seed,
+            logprobs=True,
+            top_logprobs=top_logprobs,
         )
 
         log_probs = []
@@ -323,6 +323,7 @@ class OpenAICompletionAPI(LanguageModel):
         api_headers: A dictionary of headers to use when making requests to the OpenAI API.
         default_gen_kwargs: Default generation kwargs to use when calling the API.
         string_processors: A single or a list of StringProcessor objects to process the model's output.
+        max_parallel_requests: Maximum number of parallel requests to send to the OpenAI API.
     """
 
     def __init__(
@@ -331,20 +332,22 @@ class OpenAICompletionAPI(LanguageModel):
         api_headers: dict[str, str] | None = None,
         default_gen_kwargs: dict[str, Any] | None = None,
         string_processors: StringProcessor | list[StringProcessor] | None = None,
+        max_parallel_requests: int | None = None,
     ) -> None:
         super().__init__(string_processors=string_processors)
         self.model = model
         if api_headers is None:
             api_headers = {}
-        client = AsyncOpenAI(**api_headers)
+        client = OpenAI(**api_headers)
         self.api_call_func = client.completions.create
         self.empty_response = EMPTY_RESPONSE
         self.default_gen_kwargs = default_gen_kwargs or {}
+        self.max_parallel_requests = max_parallel_requests
         # convert the flexeval-specific argument name to the OpenAI-specific name
         if "max_new_tokens" in self.default_gen_kwargs:
             self.default_gen_kwargs["max_tokens"] = self.default_gen_kwargs.pop("max_new_tokens")
 
-    async def _async_batch_run_completion(
+    def _parallel_run_chatgpt(
         self,
         prompt_list: list[str],
         stop_sequences: str | list[str] | None = None,
@@ -368,20 +371,23 @@ class OpenAICompletionAPI(LanguageModel):
         if stop_sequences:
             gen_kwargs["stop"] = stop_sequences
 
-        tasks = [
-            _retry_on_error(
-                # Define an anonymous function with a lambda expression and pass it,
-                # and call it inside the _retry_on_error function
-                openai_call=lambda x=ms: self.api_call_func(
-                    model=self.model,
-                    prompt=x,
-                    **gen_kwargs,
-                ),
-                empty_response=self.empty_response,
-            )
-            for ms in prompt_list
-        ]
-        return await asyncio.gather(*tasks)
+        max_workers = self.max_parallel_requests or len(prompt_list)
+        with ThreadPoolExecutor(max_workers=max_workers) as executor:
+            futures = [
+                executor.submit(
+                    _retry_on_error,
+                    # Define an anonymous function with a lambda expression and pass it,
+                    # and call it inside the _retry_on_error function
+                    openai_call=lambda x=ms: self.api_call_func(
+                        model=self.model,
+                        prompt=x,
+                        **gen_kwargs,
+                    ),
+                    empty_response=self.empty_response,
+                )
+                for ms in prompt_list
+            ]
+        return [future.result() for future in futures]
 
     def _batch_complete_text(
         self,
@@ -390,13 +396,11 @@ class OpenAICompletionAPI(LanguageModel):
         max_new_tokens: int | None = None,
         **kwargs,
     ) -> list[LMOutput]:
-        api_responses = asyncio.run(
-            self._async_batch_run_completion(
-                text_list,
-                stop_sequences=stop_sequences,
-                max_new_tokens=max_new_tokens,
-                **kwargs,
-            ),
+        api_responses = self._parallel_run_chatgpt(
+            text_list,
+            stop_sequences=stop_sequences,
+            max_new_tokens=max_new_tokens,
+            **kwargs,
         )
 
         return [LMOutput(text=res.choices[0].text, finish_reason=res.choices[0].finish_reason) for res in api_responses]
