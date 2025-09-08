@@ -163,7 +163,7 @@ class OpenAIChatAPI(LanguageModel):
                     openai_call=lambda messages=messages, tools=tools: self.api_call_func(
                         model=self.model,
                         messages=messages,
-                        tools=tools,
+                        tools=tools or NotGiven(),
                         stop=stop_sequences or NotGiven(),
                         **gen_kwargs,
                     ),
