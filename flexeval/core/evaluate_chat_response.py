@@ -57,9 +57,7 @@ def _add_few_shot_messages_to_chat_instance(chat_instance: ChatInstance, few_sho
     ]
 
 
-def _find_response_context_index(
-    incomplete_messages: list[dict[str, Any]],
-) -> int | None:
+def _find_response_context_index(incomplete_messages: list[dict[str, Any]]) -> int | None:
     """
     Finds the index after the earliest message that requires an assistant response.
 
@@ -86,10 +84,7 @@ def _find_response_context_index(
 
 
 def execute_conversation_flow(
-    language_model: LanguageModel,
-    eval_instances: Sequence[ChatInstance],
-    batch_size: int,
-    gen_kwargs: dict[str, Any],
+    language_model: LanguageModel, eval_instances: Sequence[ChatInstance], batch_size: int, gen_kwargs: dict[str, Any]
 ) -> Iterator[dict[str, Any]]:
     """
     Execute complete conversation flows for a batch of chat instances.
@@ -108,11 +103,7 @@ def execute_conversation_flow(
             batch_inputs = [
                 _remove_redundant_keys_from_messages(
                     current_chat_history[batch_i][:message_i],
-                    remove_keys={
-                        "finish_reason",
-                        "raw_content",
-                        "tool_call_validation_result",
-                    },
+                    remove_keys={"finish_reason", "raw_content", "tool_call_validation_result"},
                 )
                 for batch_i, message_i in enumerate(response_context_indices)
                 if message_i is not None
@@ -186,14 +177,7 @@ def evaluate_chat_response(  # noqa: C901
     ):
         if i == 0:
             logger.info("Example of the output")
-            logger.info(
-                json.dumps(
-                    output,
-                    ensure_ascii=False,
-                    indent=4,
-                    cls=Base64TruncatingJSONEncoder,
-                )
-            )
+            logger.info(json.dumps(output, ensure_ascii=False, indent=4, cls=Base64TruncatingJSONEncoder))
         outputs.append(output)
 
     language_model.cleanup_resources()
@@ -207,10 +191,7 @@ def evaluate_chat_response(  # noqa: C901
             references_list=[output["chat_instance"].references for output in outputs],
             extra_info_list=[
                 output["chat_instance"].extra_info
-                | {
-                    "messages": output["chat_instance"].messages,
-                    "tools": output["chat_instance"].tools,
-                }
+                | {"messages": output["chat_instance"].messages, "tools": output["chat_instance"].tools}
                 for output in outputs
             ],
         )
