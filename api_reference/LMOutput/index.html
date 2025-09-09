@@ -5338,7 +5338,7 @@ For example, if a too-large <code>max_new_tokens</code> is given to generate_cha
                     <span class="n">openai_call</span><span class="o">=</span><span class="k">lambda</span> <span class="n">messages</span><span class="o">=</span><span class="n">messages</span><span class="p">,</span> <span class="n">tools</span><span class="o">=</span><span class="n">tools</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">api_call_func</span><span class="p">(</span>
                         <span class="n">model</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">,</span>
                         <span class="n">messages</span><span class="o">=</span><span class="n">messages</span><span class="p">,</span>
-                        <span class="n">tools</span><span class="o">=</span><span class="n">tools</span><span class="p">,</span>
+                        <span class="n">tools</span><span class="o">=</span><span class="n">tools</span> <span class="ow">or</span> <span class="n">NotGiven</span><span class="p">(),</span>
                         <span class="n">stop</span><span class="o">=</span><span class="n">stop_sequences</span> <span class="ow">or</span> <span class="n">NotGiven</span><span class="p">(),</span>
                         <span class="o">**</span><span class="n">gen_kwargs</span><span class="p">,</span>
                     <span class="p">),</span>
