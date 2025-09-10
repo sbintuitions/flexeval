@@ -35,7 +35,13 @@ class AddTagProcessor(StringProcessor):
     ("use_few_shot", "max_instances", "use_tools", "batch_size", "use_processor"),
     list(itertools.product([True, False], [None, 1], [True, False], [1, 3], [True, False])),
 )
-def test_evaluate_chat_response(use_few_shot: bool, max_instances: int, use_tools: bool, batch_size: int, use_processor: bool) -> None:
+def test_evaluate_chat_response(
+    use_few_shot: bool, 
+    max_instances: int, 
+    use_tools: bool, 
+    batch_size: int, 
+    use_processor: bool
+) -> None:
 
     few_shot_generator = None
     if use_few_shot:
