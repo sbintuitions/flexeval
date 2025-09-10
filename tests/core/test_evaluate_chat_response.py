@@ -24,6 +24,7 @@ class AddTagProcessor(StringProcessor):
     """
     StringProcessor for testing that appends a tag to the input text.
     """
+
     def __init__(self) -> None:
         self.tag = " [processed]"
 
@@ -36,13 +37,8 @@ class AddTagProcessor(StringProcessor):
     list(itertools.product([True, False], [None, 1], [True, False], [1, 3], [True, False])),
 )
 def test_evaluate_chat_response(
-    use_few_shot: bool, 
-    max_instances: int, 
-    use_tools: bool, 
-    batch_size: int, 
-    use_processor: bool
+    use_few_shot: bool, max_instances: int, use_tools: bool, batch_size: int, use_processor: bool
 ) -> None:
-
     few_shot_generator = None
     if use_few_shot:
         few_shot_generator = RandomFewShotGenerator(dataset=DummyChatDataset(), num_shots=1, num_trials_to_avoid_leak=0)
