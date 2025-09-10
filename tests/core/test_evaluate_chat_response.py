@@ -13,11 +13,11 @@ from flexeval.core.evaluate_chat_response import (
 )
 from flexeval.core.few_shot_generator import RandomFewShotGenerator
 from flexeval.core.metric import FinishReasonCount, ToolCallCount
+from flexeval.core.string_processor import StringProcessor
 from tests.dummy_modules import (
     DummyChatDataset,
     DummyLanguageModel,
 )
-from flexeval.core.string_processor import StringProcessor
 
 
 class AddTagProcessor(StringProcessor):
@@ -36,7 +36,7 @@ class AddTagProcessor(StringProcessor):
     list(itertools.product([True, False], [None, 1], [True, False], [1, 3], [True, False])),
 )
 def test_evaluate_chat_response(use_few_shot: bool, max_instances: int, use_tools: bool, batch_size: int, use_processor: bool) -> None:
-    
+
     few_shot_generator = None
     if use_few_shot:
         few_shot_generator = RandomFewShotGenerator(dataset=DummyChatDataset(), num_shots=1, num_trials_to_avoid_leak=0)
@@ -72,7 +72,7 @@ def test_evaluate_chat_response(use_few_shot: bool, max_instances: int, use_tool
         assert "tool_calls" not in outputs[0]["extra_info"]
         assert "tools" not in outputs[0]["extra_info"]
         assert metrics["tool_call_validation_result_ratio-TextOnly"] == 1.0
-    
+
     if use_processor:
         assert "raw_lm_output" in outputs[0]
         assert outputs[0]["lm_output"].endswith(add_tag_processor.tag)
