@@ -225,6 +225,8 @@ def evaluate_chat_response(  # noqa: C901
             "references": output["chat_instance"].references,
             **output["metrics"],
         }
+        if output["lm_output"].raw_text:
+            restructured_output["raw_lm_output"] = output["lm_output"].raw_text
         restructured_outputs.append(restructured_output)
 
     return metrics_summary_dict, restructured_outputs
