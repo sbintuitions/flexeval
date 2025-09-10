@@ -22,7 +22,7 @@ from tests.dummy_modules import (
 
 class AddTagProcessor(StringProcessor):
     """
-    StringProcessor for testing that appends a tag to the input text.
+    Dummy StringProcessor for testing that appends a tag to the input text.
     """
 
     def __init__(self) -> None:
