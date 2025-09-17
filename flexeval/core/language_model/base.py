@@ -261,9 +261,6 @@ class LanguageModel:
         This method is called when the language model is no longer needed.
         """
 
-    def __del__(self) -> None:
-        self.cleanup_resources()
-
 
 def normalize_stop_sequences(
     stop_sequences_list: list[str | list[str] | None],
