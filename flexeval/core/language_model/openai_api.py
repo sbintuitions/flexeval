@@ -9,7 +9,6 @@ import openai
 import tiktoken
 from loguru import logger
 from openai import BaseModel, OpenAI
-from openai._types import NotGiven
 from openai.types.chat import ChatCompletion, ChatCompletionMessage
 from openai.types.chat.chat_completion import Choice
 
