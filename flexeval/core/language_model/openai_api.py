@@ -42,7 +42,7 @@ EMPTY_RESPONSE = ChatCompletion(
 def _retry_on_error(
     openai_call: Callable[[], T],
     empty_response: BaseModel,
-    max_num_trials: int = 5,
+    max_num_trials: int | None = 5,
     first_wait_time: int = 10,
 ) -> T:
     for i in range(max_num_trials):
@@ -91,6 +91,7 @@ class OpenAIChatAPI(LanguageModel):
         model_limit_new_tokens: int | None = None,
         max_parallel_requests: int | None = None,
         tools: list[dict[str, Any]] | None = None,
+        max_num_trials: int | None = None,
     ) -> None:
         super().__init__(string_processors=string_processors, tools=tools)
         self.model = model
@@ -107,6 +108,7 @@ class OpenAIChatAPI(LanguageModel):
         self.developer_message = developer_message
         self.model_limit_new_tokens = model_limit_new_tokens
         self.max_parallel_requests = max_parallel_requests
+        self.max_num_trials = max_num_trials
 
     def _parallel_run_chatgpt(
         self,
@@ -167,6 +169,7 @@ class OpenAIChatAPI(LanguageModel):
                         }
                     ),
                     empty_response=self.empty_response,
+                    max_num_trials=self.max_num_trials,
                 )
                 for messages, tools in zip(messages_list, tools_list)
             ]
