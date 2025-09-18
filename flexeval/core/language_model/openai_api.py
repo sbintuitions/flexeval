@@ -161,11 +161,11 @@ class OpenAIChatAPI(LanguageModel):
                 executor.submit(
                     _retry_on_error,
                     openai_call=lambda messages=messages, tools=tools: self.api_call_func(
-                        model=self.model,
-                        messages=messages,
-                        tools=tools or NotGiven(),
-                        stop=stop_sequences or NotGiven(),
-                        **gen_kwargs,
+                        **{
+                            **({"model": self.model, "messages": messages} | gen_kwargs),
+                            **({"tools": tools} if tools else {}),
+                            **({"stop": stop_sequences} if stop_sequences else {}),
+                        }
                     ),
                     empty_response=self.empty_response,
                 )
