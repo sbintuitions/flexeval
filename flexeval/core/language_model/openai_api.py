@@ -43,7 +43,8 @@ def _retry_on_error(
     openai_call: Callable[[], T],
     empty_response: BaseModel,
     max_num_trials: int | None = 5,
-    first_wait_time: int = 10,
+    first_wait_time: int | None = 10,
+    max_wait_time: int | None = 80,
 ) -> T:
     for i in range(max_num_trials):
         try:
@@ -54,7 +55,7 @@ def _retry_on_error(
                 # empty response.
                 break
             logger.warning(f"We got an error: {e}")
-            wait_time_seconds = first_wait_time * (2**i)
+            wait_time_seconds = min(max_wait_time, first_wait_time * (2**i))
             logger.warning(f"Wait for {wait_time_seconds} seconds...")
             time.sleep(wait_time_seconds)
 
@@ -92,6 +93,8 @@ class OpenAIChatAPI(LanguageModel):
         max_parallel_requests: int | None = None,
         tools: list[dict[str, Any]] | None = None,
         max_num_trials: int | None = None,
+        first_wait_time: int | None = None,
+        max_wait_time: int | None = None,
     ) -> None:
         super().__init__(string_processors=string_processors, tools=tools)
         self.model = model
@@ -109,6 +112,8 @@ class OpenAIChatAPI(LanguageModel):
         self.model_limit_new_tokens = model_limit_new_tokens
         self.max_parallel_requests = max_parallel_requests
         self.max_num_trials = max_num_trials
+        self.first_wait_time = first_wait_time
+        self.max_wait_time = max_wait_time
 
     def _parallel_run_chatgpt(
         self,
@@ -170,6 +175,8 @@ class OpenAIChatAPI(LanguageModel):
                     ),
                     empty_response=self.empty_response,
                     max_num_trials=self.max_num_trials,
+                    first_wait_time=self.first_wait_time,
+                    max_wait_time=self.max_wait_time,
                 )
                 for messages, tools in zip(messages_list, tools_list)
             ]
