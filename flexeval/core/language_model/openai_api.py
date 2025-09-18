@@ -9,7 +9,6 @@ import openai
 import tiktoken
 from loguru import logger
 from openai import BaseModel, OpenAI
-from openai._types import NotGiven
 from openai.types.chat import ChatCompletion, ChatCompletionMessage
 from openai.types.chat.chat_completion import Choice
 
@@ -161,11 +160,11 @@ class OpenAIChatAPI(LanguageModel):
                 executor.submit(
                     _retry_on_error,
                     openai_call=lambda messages=messages, tools=tools: self.api_call_func(
-                        model=self.model,
-                        messages=messages,
-                        tools=tools or NotGiven(),
-                        stop=stop_sequences or NotGiven(),
-                        **gen_kwargs,
+                        **{
+                            **({"model": self.model, "messages": messages} | gen_kwargs),
+                            **({"tools": tools} if tools else {}),
+                            **({"stop": stop_sequences} if stop_sequences else {}),
+                        }
                     ),
                     empty_response=self.empty_response,
                 )
