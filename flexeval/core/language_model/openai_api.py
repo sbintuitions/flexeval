@@ -43,10 +43,13 @@ EMPTY_RESPONSE = ChatCompletion(
 def _retry_on_error(
     openai_call: Callable[[], T],
     empty_response: BaseModel,
-    max_num_trials: int | None = 5,
-    first_wait_time: int | None = 10,
-    max_wait_time: int | None = 80,
+    max_num_trials: int | None = None,
+    first_wait_time: int | None = None,
+    max_wait_time: int | None = None,
 ) -> T:
+    max_num_trials = max_num_trials or 5
+    first_wait_time = first_wait_time or 10
+    max_wait_time = max_wait_time or 80
     for i in range(max_num_trials):
         try:
             return openai_call()
