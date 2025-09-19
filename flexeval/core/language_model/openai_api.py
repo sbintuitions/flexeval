@@ -2,7 +2,8 @@ from __future__ import annotations
 
 import itertools
 import time
-from concurrent.futures import ThreadPoolExecutor
+import os
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import Any, Callable, TypeVar
 
 import openai
@@ -161,10 +162,15 @@ class OpenAIChatAPI(LanguageModel):
         if tools_list is None:
             tools_list = [None] * len(messages_list)
 
-        max_workers = self.max_parallel_requests or len(messages_list)
+        total = len(messages_list)
+        # Progress logging controlled via the environment variable OPENAI_PROGRESS_EVERY_N
+        # N>0: log every N completions; 0 or unset: disables
+        prog_every_n = int(os.getenv("OPENAI_PROGRESS_EVERY_N", "0"))
+        max_workers = self.max_parallel_requests or total
         with ThreadPoolExecutor(max_workers=max_workers) as executor:
-            futures = [
-                executor.submit(
+            future_to_idx = {}
+            for idx, (messages, tools) in enumerate(zip(messages_list, tools_list)):
+                future = executor.submit(
                     _retry_on_error,
                     openai_call=lambda messages=messages, tools=tools: self.api_call_func(
                         **{
@@ -178,9 +184,18 @@ class OpenAIChatAPI(LanguageModel):
                     first_wait_time=self.first_wait_time,
                     max_wait_time=self.max_wait_time,
                 )
-                for messages, tools in zip(messages_list, tools_list)
-            ]
-            return [future.result() for future in futures]
+                future_to_idx[future] = idx
+
+            results: list[ChatCompletion] = [self.empty_response] * total
+            done_count = 0
+            for future in as_completed(future_to_idx.keys()):
+                idx = future_to_idx[future]
+                results[idx] = future.result()
+                done_count += 1
+                if prog_every_n and (done_count % prog_every_n == 0 or done_count == total):
+                    logger.info(f"[progress] {done_count}/{total} ({done_count/total:.1%}) done")
+
+            return results
 
     def _batch_complete_text(
         self,
