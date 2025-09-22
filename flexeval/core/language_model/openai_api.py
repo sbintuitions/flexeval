@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 import itertools
-import time
 import os
+import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import Any, Callable, TypeVar
 
@@ -190,11 +190,9 @@ class OpenAIChatAPI(LanguageModel):
                 future_to_idx[future] = idx
 
             results: list[ChatCompletion] = [self.empty_response] * total
-            done_count = 0
-            for future in as_completed(future_to_idx.keys()):
+            for done_count, future in enumerate(as_completed(future_to_idx.keys()), start=1):
                 idx = future_to_idx[future]
                 results[idx] = future.result()
-                done_count += 1
                 if prog_every_n and (done_count % prog_every_n == 0 or done_count == total):
                     logger.info(f"[progress] {done_count}/{total} ({done_count/total:.1%}) done")
 
