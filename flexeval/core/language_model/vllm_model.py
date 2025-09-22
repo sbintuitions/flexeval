@@ -209,7 +209,7 @@ class VLLM(LanguageModel):
             skip_flag_list.append(remaining <= 0)
 
         vllm_outputs: list[RequestOutput] = self.llm.generate(
-            prompts=[TokensPrompt(prompt_token_ids=prompt_token_ids) for prompt_token_ids in batch_prompt_token_ids],
+            [TokensPrompt(prompt_token_ids=prompt_token_ids) for prompt_token_ids in batch_prompt_token_ids],
             sampling_params=sampling_params,
             use_tqdm=False,
         )
@@ -325,7 +325,7 @@ class VLLM(LanguageModel):
                 for chunk_input_ids in chunk_batch_input_ids
             ]
             chunk_batch_outputs: list[RequestOutput] = self.llm.generate(
-                prompts=[TokensPrompt(prompt_token_ids=prompt_token_ids) for prompt_token_ids in chunk_batch_input_ids],
+                [TokensPrompt(prompt_token_ids=prompt_token_ids) for prompt_token_ids in chunk_batch_input_ids],
                 sampling_params=sampling_params,
                 use_tqdm=False,
             )
