@@ -187,15 +187,16 @@ class VLLM(LanguageModel):
         )
 
         from vllm import RequestOutput, SamplingParams
+        from vllm.inputs import TokensPrompt
 
-        prompt_token_ids: list[list[int]] = model_inputs.input_ids
+        batch_prompt_token_ids: list[list[int]] = model_inputs.input_ids
         sampling_params: list[SamplingParams] = []
         skip_flag_list: list[bool] = []
         for i, input_ids in enumerate(model_inputs.input_ids):
             remaining = self.model_limit_tokens - len(input_ids)
             instance_gen_kwargs = gen_kwargs.copy()
             if remaining <= 0:
-                prompt_token_ids[i] = input_ids[:1]
+                batch_prompt_token_ids[i] = input_ids[:1]
                 instance_gen_kwargs["max_tokens"] = 1
                 msg = (
                     f"Received input that is longer than `model_limit_tokens = {self.model_limit_tokens}`. "
@@ -208,7 +209,7 @@ class VLLM(LanguageModel):
             skip_flag_list.append(remaining <= 0)
 
         vllm_outputs: list[RequestOutput] = self.llm.generate(
-            prompt_token_ids=prompt_token_ids,
+            prompts=[TokensPrompt(prompt_token_ids=prompt_token_ids) for prompt_token_ids in batch_prompt_token_ids],
             sampling_params=sampling_params,
             use_tqdm=False,
         )
@@ -309,6 +310,7 @@ class VLLM(LanguageModel):
         sequence_length = max([len(input_ids) for input_ids in batch_input_ids])
 
         from vllm import RequestOutput, SamplingParams
+        from vllm.inputs import TokensPrompt
         from vllm.sequence import Logprob
 
         sampling_params = SamplingParams(temperature=0.0, max_tokens=1, prompt_logprobs=1)
@@ -323,7 +325,7 @@ class VLLM(LanguageModel):
                 for chunk_input_ids in chunk_batch_input_ids
             ]
             chunk_batch_outputs: list[RequestOutput] = self.llm.generate(
-                prompt_token_ids=chunk_batch_input_ids,
+                prompts=[TokensPrompt(prompt_token_ids=prompt_token_ids) for prompt_token_ids in chunk_batch_input_ids],
                 sampling_params=sampling_params,
                 use_tqdm=False,
             )
