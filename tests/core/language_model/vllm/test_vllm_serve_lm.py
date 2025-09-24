@@ -23,7 +23,8 @@ class DummyStream:
 
 
 @pytest.fixture(scope="module")
-def chat_lm() -> VLLMServeLM:
+def chat_lm(monkeypatch: pytest.MonkeyPatch) -> VLLMServeLM:
+    monkeypatch.delenv("OPENAI_API_KEY", raising=False)
     llm = VLLMServeLM(
         model="sbintuitions/tiny-lm-chat",
         model_kwargs={
