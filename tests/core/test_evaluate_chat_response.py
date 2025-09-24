@@ -13,23 +13,39 @@ from flexeval.core.evaluate_chat_response import (
 )
 from flexeval.core.few_shot_generator import RandomFewShotGenerator
 from flexeval.core.metric import FinishReasonCount, ToolCallCount
+from flexeval.core.string_processor import StringProcessor
 from tests.dummy_modules import (
     DummyChatDataset,
     DummyLanguageModel,
 )
 
 
+class AddTagProcessor(StringProcessor):
+    """
+    Dummy StringProcessor for testing that appends a tag to the input text.
+    """
+
+    def __init__(self) -> None:
+        self.tag = " [processed]"
+
+    def __call__(self, text: str) -> str:
+        return text + self.tag
+
+
 @pytest.mark.parametrize(
-    ("use_few_shot", "max_instances", "use_tools", "batch_size"),
-    list(itertools.product([True, False], [None, 1], [True, False], [1, 3])),
+    ("use_few_shot", "max_instances", "use_tools", "batch_size", "use_processor"),
+    list(itertools.product([True, False], [None, 1], [True, False], [1, 3], [True, False])),
 )
-def test_evaluate_chat_response(use_few_shot: bool, max_instances: int, use_tools: bool, batch_size: int) -> None:
+def test_evaluate_chat_response(
+    use_few_shot: bool, max_instances: int, use_tools: bool, batch_size: int, use_processor: bool
+) -> None:
     few_shot_generator = None
     if use_few_shot:
         few_shot_generator = RandomFewShotGenerator(dataset=DummyChatDataset(), num_shots=1, num_trials_to_avoid_leak=0)
 
+    add_tag_processor = AddTagProcessor()
     metrics, outputs = evaluate_chat_response(
-        language_model=DummyLanguageModel(),
+        language_model=DummyLanguageModel(string_processors=[add_tag_processor] if use_processor else None),
         gen_kwargs={},
         eval_dataset=DummyChatDataset(
             use_tools=use_tools,
@@ -58,6 +74,13 @@ def test_evaluate_chat_response(use_few_shot: bool, max_instances: int, use_tool
         assert "tool_calls" not in outputs[0]["extra_info"]
         assert "tools" not in outputs[0]["extra_info"]
         assert metrics["tool_call_validation_result_ratio-TextOnly"] == 1.0
+
+    if use_processor:
+        assert "raw_lm_output" in outputs[0]
+        assert outputs[0]["lm_output"].endswith(add_tag_processor.tag)
+        assert outputs[0]["lm_output"] != outputs[0]["raw_lm_output"]
+    else:
+        assert "raw_lm_output" not in outputs[0]
 
 
 @pytest.mark.parametrize(

@@ -1,15 +1,15 @@
 from __future__ import annotations
 
 import itertools
+import os
 import time
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import Any, Callable, TypeVar
 
 import openai
 import tiktoken
 from loguru import logger
 from openai import BaseModel, OpenAI
-from openai._types import NotGiven
 from openai.types.chat import ChatCompletion, ChatCompletionMessage
 from openai.types.chat.chat_completion import Choice
 
@@ -43,9 +43,13 @@ EMPTY_RESPONSE = ChatCompletion(
 def _retry_on_error(
     openai_call: Callable[[], T],
     empty_response: BaseModel,
-    max_num_trials: int = 5,
-    first_wait_time: int = 10,
+    max_num_trials: int | None = None,
+    first_wait_time: int | None = None,
+    max_wait_time: int | None = None,
 ) -> T:
+    max_num_trials = max_num_trials or 5
+    first_wait_time = first_wait_time or 10
+    max_wait_time = max_wait_time or 80
     for i in range(max_num_trials):
         try:
             return openai_call()
@@ -55,7 +59,7 @@ def _retry_on_error(
                 # empty response.
                 break
             logger.warning(f"We got an error: {e}")
-            wait_time_seconds = first_wait_time * (2**i)
+            wait_time_seconds = min(max_wait_time, first_wait_time * (2**i))
             logger.warning(f"Wait for {wait_time_seconds} seconds...")
             time.sleep(wait_time_seconds)
 
@@ -92,6 +96,9 @@ class OpenAIChatAPI(LanguageModel):
         model_limit_new_tokens: int | None = None,
         max_parallel_requests: int | None = None,
         tools: list[dict[str, Any]] | None = None,
+        max_num_trials: int | None = None,
+        first_wait_time: int | None = None,
+        max_wait_time: int | None = None,
     ) -> None:
         super().__init__(string_processors=string_processors, tools=tools)
         self.model = model
@@ -108,6 +115,9 @@ class OpenAIChatAPI(LanguageModel):
         self.developer_message = developer_message
         self.model_limit_new_tokens = model_limit_new_tokens
         self.max_parallel_requests = max_parallel_requests
+        self.max_num_trials = max_num_trials
+        self.first_wait_time = first_wait_time
+        self.max_wait_time = max_wait_time
 
     def _parallel_run_chatgpt(
         self,
@@ -155,23 +165,38 @@ class OpenAIChatAPI(LanguageModel):
         if tools_list is None:
             tools_list = [None] * len(messages_list)
 
-        max_workers = self.max_parallel_requests or len(messages_list)
+        total = len(messages_list)
+        # Progress logging controlled via the environment variable OPENAI_PROGRESS_EVERY_N
+        # N>0: log every N completions; 0 or unset: disables
+        prog_every_n = int(os.getenv("OPENAI_PROGRESS_EVERY_N", "0"))
+        max_workers = self.max_parallel_requests or total
         with ThreadPoolExecutor(max_workers=max_workers) as executor:
-            futures = [
-                executor.submit(
+            future_to_idx = {}
+            for idx, (messages, tools) in enumerate(zip(messages_list, tools_list)):
+                future = executor.submit(
                     _retry_on_error,
                     openai_call=lambda messages=messages, tools=tools: self.api_call_func(
-                        model=self.model,
-                        messages=messages,
-                        tools=tools or NotGiven(),
-                        stop=stop_sequences or NotGiven(),
-                        **gen_kwargs,
+                        **{
+                            **({"model": self.model, "messages": messages} | gen_kwargs),
+                            **({"tools": tools} if tools else {}),
+                            **({"stop": stop_sequences} if stop_sequences else {}),
+                        }
                     ),
                     empty_response=self.empty_response,
+                    max_num_trials=self.max_num_trials,
+                    first_wait_time=self.first_wait_time,
+                    max_wait_time=self.max_wait_time,
                 )
-                for messages, tools in zip(messages_list, tools_list)
-            ]
-            return [future.result() for future in futures]
+                future_to_idx[future] = idx
+
+            results: list[ChatCompletion] = [self.empty_response] * total
+            for done_count, future in enumerate(as_completed(future_to_idx.keys()), start=1):
+                idx = future_to_idx[future]
+                results[idx] = future.result()
+                if prog_every_n and (done_count % prog_every_n == 0 or done_count == total):
+                    logger.info(f"[progress] {done_count}/{total} ({done_count/total:.1%}) done")
+
+            return results
 
     def _batch_complete_text(
         self,
