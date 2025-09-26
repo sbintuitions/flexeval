@@ -193,6 +193,7 @@ class VLLMServeLM(OpenAIChatAPI):
         if api_headers is None:
             api_headers = {}
         api_headers["base_url"] = self.manager.base_url
+        api_headers["api_key"] = "EMPTY"  # OpenAI client requires an api_key, but vLLM does not use it.
         super().__init__(
             model=model,
             api_headers=api_headers,

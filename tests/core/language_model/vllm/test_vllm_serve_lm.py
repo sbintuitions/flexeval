@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 from unittest import mock
 
 import pytest
@@ -24,6 +25,7 @@ class DummyStream:
 
 @pytest.fixture(scope="module")
 def chat_lm() -> VLLMServeLM:
+    openai_api_key = os.environ.pop("OPENAI_API_KEY", None)
     llm = VLLMServeLM(
         model="sbintuitions/tiny-lm-chat",
         model_kwargs={
@@ -36,6 +38,8 @@ def chat_lm() -> VLLMServeLM:
     )
     yield llm
     llm.manager.stop()
+    if openai_api_key is not None:
+        os.environ["OPENAI_API_KEY"] = openai_api_key
 
 
 def test_port_is_auto_assigned() -> None:
