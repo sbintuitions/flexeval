@@ -1,10 +1,12 @@
 from __future__ import annotations
+from jinja2 import Template
+from pathlib import Path
 
 from typing import Any
 
 import pytest
 
-from flexeval.core.chat_dataset import HFChatDataset, JsonlChatDataset, TemplateChatDataset
+from flexeval.core.chat_dataset import HFChatDataset, JsonlChatDataset, TemplateChatDataset, load_jinja2_template
 
 TOOL_DEFINITION = {
     "type": "function",
@@ -199,3 +201,23 @@ def test_remove_conditions(
     assert 0 < len(filtered_dataset) < len(original_dataset)
     for item in filtered_dataset:
         assert len(item.references) > 1
+
+
+@pytest.fixture
+def dummy_template_file(tmp_path: Path) -> Path:
+    template_content = "Hello {{ name }}!"
+    template_file = tmp_path / "dummy.j2"
+    template_file.write_text(template_content, encoding="utf-8")
+    return template_file
+
+
+def test_load_jinja2_template(dummy_template_file: Path) -> None:
+    template_from_path = load_jinja2_template(dummy_template_file)
+    embed_result = template_from_path.render(name="flexeval")
+    assert isinstance(template_from_path, Template)
+    assert embed_result == "Hello flexeval!"
+
+    template_from_string = load_jinja2_template("Hello {{ name }}!")
+    embed_result = template_from_string.render(name="flexeval")
+    assert isinstance(template_from_string, Template)
+    assert embed_result == "Hello flexeval!"
