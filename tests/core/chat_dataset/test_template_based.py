@@ -1,10 +1,10 @@
 from __future__ import annotations
-from jinja2 import Template
-from pathlib import Path
 
+from pathlib import Path
 from typing import Any
 
 import pytest
+from jinja2 import Template
 
 from flexeval.core.chat_dataset import HFChatDataset, JsonlChatDataset, TemplateChatDataset, load_jinja2_template
 
@@ -203,7 +203,7 @@ def test_remove_conditions(
         assert len(item.references) > 1
 
 
-@pytest.fixture
+@pytest.fixture()
 def dummy_template_file(tmp_path: Path) -> Path:
     template_content = "Hello {{ name }}!"
     template_file = tmp_path / "dummy.j2"
