@@ -322,7 +322,8 @@ class VLLM(LanguageModel):
             chunk_batch_input_ids = [input_ids[chunk_start:chunk_end] for input_ids in batch_input_ids]
             chunk_batch_input_ids = [
                 [self.tokenizer.bos_token_id or self.tokenizer.eos_token]
-                if len(chunk_input_ids) == 0 else chunk_input_ids
+                if len(chunk_input_ids) == 0
+                else chunk_input_ids
                 for chunk_input_ids in chunk_batch_input_ids
             ]
             chunk_batch_outputs: list[RequestOutput] = self.llm.generate(
