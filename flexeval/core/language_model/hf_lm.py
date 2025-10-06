@@ -439,7 +439,7 @@ class HuggingFaceLM(LanguageModel):
         # This is needed to correctly calculate the log probabilities of the first token.
         for i in range(batch_size):
             if prefix_list[i] == "":
-                prefix_list[i] = self.tokenizer.bos_token
+                prefix_list[i] = self.tokenizer.bos_token or self.tokenizer.eos_token
 
         prefix_encoding = tokenize_text_for_lm_prefix(
             prefix_list,
