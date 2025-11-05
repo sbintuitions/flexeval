@@ -12,6 +12,7 @@ from typing import Any
 import pytest
 
 from flexeval.core.result_recorder.local_recorder import CONFIG_FILE_NAME, METRIC_FILE_NAME, OUTPUTS_FILE_NAME
+from flexeval.scripts.flexeval_lm import generate_eval_entries
 
 # fmt: off
 CHAT_RESPONSE_CMD = [
@@ -321,3 +322,46 @@ class MyCustomMetric(Metric):
         assert result.returncode == os.EX_OK
 
         check_if_eval_results_are_correctly_saved(f)
+
+
+@pytest.fixture()
+def mock_eval_data() -> dict:
+    return {"setup": "dummy_setup_object", "config": {"task": "test", "metric": "acc"}, "group": "test_group"}
+
+
+def test_no_repeat_with_group(mock_eval_data: dict) -> None:
+    result = generate_eval_entries(
+        eval_setup=mock_eval_data["setup"],
+        config_content=mock_eval_data["config"],
+        group=mock_eval_data["group"],
+        num_repeats=0,
+    )
+    expected = [("dummy_setup_object", {"task": "test", "metric": "acc"}, "test_group")]
+    assert result == expected
+    assert len(result) == 1
+
+
+def test_no_repeat_no_group(mock_eval_data: dict) -> None:
+    result = generate_eval_entries(
+        eval_setup=mock_eval_data["setup"], config_content=mock_eval_data["config"], group=None, num_repeats=1
+    )
+    expected = [("dummy_setup_object", {"task": "test", "metric": "acc"}, None)]
+    assert result == expected
+    assert len(result) == 1
+
+
+def test_multiple_repeats_with_group(mock_eval_data: dict) -> None:
+    num_repeats = 3
+    result = generate_eval_entries(
+        eval_setup=mock_eval_data["setup"],
+        config_content=mock_eval_data["config"],
+        group=mock_eval_data["group"],
+        num_repeats=num_repeats,
+    )
+    expected_metadatas = ["test_group/run0", "test_group/run1", "test_group/run2"]
+
+    assert len(result) == num_repeats
+    for i, entry in enumerate(result):
+        assert entry[0] == mock_eval_data["setup"]
+        assert entry[1] == mock_eval_data["config"]
+        assert entry[2] == expected_metadatas[i]
