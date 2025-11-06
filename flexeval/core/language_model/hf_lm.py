@@ -229,6 +229,9 @@ class HuggingFaceLM(LanguageModel):
         logger.info(f"random seed: {random_seed}")
         transformers.set_seed(random_seed)
 
+    def set_random_seed(self, seed: int) -> None:
+        transformers.set_seed(seed)
+
     @staticmethod
     def load_model(method: Callable) -> Callable:
         """Decorator to load the model lazily."""

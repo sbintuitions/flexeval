@@ -115,3 +115,8 @@ class TestVLLMServeLM(BaseLanguageModelTest):
         self, chat_lm_for_tool_calling: LanguageModel
     ) -> None:
         pass
+
+@pytest.mark.skipif(not is_vllm_enabled(), reason="vllm library is not installed")
+def test_set_random_seed(chat_lm: VLLMServeLM):
+    chat_lm.set_random_seed(42)
+    assert chat_lm.default_gen_kwargs["seed"] == 42

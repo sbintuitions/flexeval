@@ -86,3 +86,9 @@ def test_if_not_ignore_seed() -> None:
     with patch.object(OpenAIChatAPI, "_batch_complete_text", return_value=[LMOutput("ChatGPT.")]) as mock_method:
         chat_lm.complete_text(text, stop_sequences=None, max_new_tokens=None, temperature=0.7, seed=42)
         mock_method.assert_called_once_with([text], None, None, temperature=0.7, seed=42)
+
+
+@pytest.mark.skipif(not is_openai_enabled(), reason="OpenAI is not installed")
+def test_set_random_seed(chat_lm: OpenAIChatAPI):
+    chat_lm.set_random_seed(42)
+    assert chat_lm.default_gen_kwargs["seed"] == 42

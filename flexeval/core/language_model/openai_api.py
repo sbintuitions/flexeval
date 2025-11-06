@@ -119,6 +119,9 @@ class OpenAIChatAPI(LanguageModel):
         self.first_wait_time = first_wait_time
         self.max_wait_time = max_wait_time
 
+    def set_random_seed(self, seed: int) -> None:
+        self.default_gen_kwargs["seed"] = seed
+
     def _parallel_run_chatgpt(
         self,
         messages_list: list[list[dict[str, Any]]],
@@ -304,6 +307,8 @@ def number_of_tokens_in_openai_model(model: str, content: str) -> int:
     return len(encoding.encode(content))
 
 
+
+
 def message_list_from_prompt(prompt: list[dict[str, Any]]) -> list[str]:
     """A preprocess function to remove duplicates from prompt_list.
     This function translates prompt into list[str], allowing sorting
@@ -413,6 +418,9 @@ class OpenAICompletionAPI(LanguageModel):
                 for ms in prompt_list
             ]
         return [future.result() for future in futures]
+
+    def set_random_seed(self, seed: int) -> None:
+        self.default_gen_kwargs["seed"] = seed
 
     def _batch_complete_text(
         self,
