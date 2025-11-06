@@ -89,6 +89,6 @@ def test_if_not_ignore_seed() -> None:
 
 
 @pytest.mark.skipif(not is_openai_enabled(), reason="OpenAI is not installed")
-def test_set_random_seed(chat_lm: OpenAIChatAPI):
+def test_set_random_seed(chat_lm: OpenAIChatAPI) -> None:
     chat_lm.set_random_seed(42)
     assert chat_lm.default_gen_kwargs["seed"] == 42

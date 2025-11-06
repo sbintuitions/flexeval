@@ -235,6 +235,6 @@ def test_system_message_prepended_to_batch_chat_messages(chat_lm_with_system_mes
 
 
 @pytest.mark.skipif(not is_vllm_enabled(), reason="vllm library is not installed")
-def test_set_random_seed(chat_lm: VLLM):
+def test_set_random_seed(chat_lm: VLLM) -> None:
     chat_lm.set_random_seed(42)
     assert chat_lm.default_gen_kwargs["seed"] == 42
