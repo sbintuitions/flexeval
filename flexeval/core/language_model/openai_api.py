@@ -307,8 +307,6 @@ def number_of_tokens_in_openai_model(model: str, content: str) -> int:
     return len(encoding.encode(content))
 
 
-
-
 def message_list_from_prompt(prompt: list[dict[str, Any]]) -> list[str]:
     """A preprocess function to remove duplicates from prompt_list.
     This function translates prompt into list[str], allowing sorting
