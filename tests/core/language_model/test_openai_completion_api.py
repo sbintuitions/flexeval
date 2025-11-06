@@ -1,5 +1,3 @@
-import os
-
 import pytest
 
 from flexeval.core.language_model import OpenAICompletionAPI
