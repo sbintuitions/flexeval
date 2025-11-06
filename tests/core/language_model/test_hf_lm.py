@@ -231,6 +231,7 @@ def test_if_random_seed_fixes_the_lm_outputs(lm_init_func: Callable[..., Hugging
         completions.add(completion.text)
     assert len(completions) > 1
 
+
 def test_if_set_random_seed_fixes_the_lm_outputs(lm: HuggingFaceLM) -> None:
     # first check if the outputs are different without fixing the seed
     completions = set()
