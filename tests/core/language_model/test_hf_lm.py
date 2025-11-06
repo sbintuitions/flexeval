@@ -231,6 +231,23 @@ def test_if_random_seed_fixes_the_lm_outputs(lm_init_func: Callable[..., Hugging
         completions.add(completion.text)
     assert len(completions) > 1
 
+def test_if_set_random_seed_fixes_the_lm_outputs(lm: HuggingFaceLM) -> None:
+    # first check if the outputs are different without fixing the seed
+    completions = set()
+    for i in range(3):
+        lm.set_random_seed(i)
+        completion = lm.complete_text(["<s>"], do_sample=True)[0]
+        completions.add(completion.text)
+    assert len(completions) > 1
+
+    # then check if the outputs are the same with fixing the seed
+    completions = set()
+    for _ in range(3):
+        lm.set_random_seed(42)
+        completion = lm.complete_text(["<s>"], do_sample=True)[0]
+        completions.add(completion.text)
+    assert len(completions) == 1
+
 
 def test_if_custom_chat_template_is_given(lm_init_func: Callable[..., HuggingFaceLM]) -> None:
     # To verify that the template specified in `custom_chat_template` is passed to `tokenizer.apply_chat_template()`,
@@ -494,3 +511,8 @@ def test_system_message_prepended_to_batch_chat_messages(chat_lm_with_system_mes
     finally:
         # Restore original method
         chat_lm_with_system_message.tokenizer.apply_chat_template = original_apply_chat_template
+
+
+def test_set_random_seed(lm: HuggingFaceLM) -> None:
+    # check that method is implemented
+    assert lm.set_random_seed(42) is None
