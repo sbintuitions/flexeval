@@ -10,7 +10,7 @@ from .base import BaseLanguageModelTest
 
 
 def is_openai_enabled() -> bool:
-    return not (os.environ.get("OPENAI_API_KEY") is None or os.environ.get("OPENAI_API_KEY") is None)
+    return os.environ.get("OPENAI_API_KEY") is not None
 
 
 @pytest.fixture(scope="module")
