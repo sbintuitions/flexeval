@@ -50,6 +50,7 @@ class ChatResponse(EvalSetup):
     metrics: list[Metric] | Metric | None = None
     batch_size: int = 4
     max_instances: int | None = None
+    random_seed: int = 42
 
     def evaluate_lm(
         self,
@@ -59,6 +60,8 @@ class ChatResponse(EvalSetup):
         if isinstance(metrics, Metric):
             metrics = [metrics]
         metrics += [FinishReasonCount(), OutputLengthStats()]
+
+        language_model.set_random_seed(self.random_seed)
 
         return evaluate_chat_response(
             language_model=language_model,
@@ -85,6 +88,7 @@ class Generation(EvalSetup):
     metrics: list[Metric] | Metric | None = None
     batch_size: int = 4
     max_instances: int | None = None
+    random_seed: int = 42
 
     def __post_init__(self) -> None:
         if isinstance(self.prompt_template, str):
@@ -98,6 +102,8 @@ class Generation(EvalSetup):
         if isinstance(metrics, Metric):
             metrics = [metrics]
         metrics += [FinishReasonCount(), OutputLengthStats()]
+
+        language_model.set_random_seed(self.random_seed)
 
         return evaluate_generation(
             language_model=language_model,
