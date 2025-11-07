@@ -232,3 +232,9 @@ def test_system_message_prepended_to_batch_chat_messages(chat_lm_with_system_mes
     finally:
         # Restore original method
         chat_lm_with_system_message.tokenizer.apply_chat_template = original_apply_chat_template
+
+
+@pytest.mark.skipif(not is_vllm_enabled(), reason="vllm library is not installed")
+def test_set_random_seed(chat_lm: VLLM) -> None:
+    chat_lm.set_random_seed(42)
+    assert chat_lm.default_gen_kwargs["seed"] == 42

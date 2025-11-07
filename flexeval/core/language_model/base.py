@@ -66,6 +66,13 @@ class LanguageModel:
         self.string_processors = string_processors
         self.tools = tools
 
+    def set_random_seed(self, seed: int) -> None:
+        """
+        A method to set random seed for deterministic behavior.
+        """
+        msg = "set_random_seed is not implemented."
+        raise NotImplementedError(msg)
+
     def _batch_complete_text(
         self,
         text_list: list[str],
