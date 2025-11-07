@@ -11,6 +11,9 @@ class DummyRewardLanguageModel(LanguageModel):
         super().__init__()
         self.response = response
 
+    def set_random_seed(self, seed: int) -> None:
+        pass
+
     def _batch_complete_text(self, text_list: list[str], **kwargs) -> list[LMOutput]:
         return [LMOutput(text=self.response, finish_reason="length") for _ in text_list]
 

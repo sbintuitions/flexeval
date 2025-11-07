@@ -23,6 +23,9 @@ class DummyLanguageModel(LanguageModel):
     ) -> list[float]:
         return [-1.0] * len(text_list)
 
+    def set_random_seed(self, seed: int) -> None:
+        pass
+
     def _batch_generate_chat_response(
         self,
         chat_messages_list: list[list[dict[str, str]]],
