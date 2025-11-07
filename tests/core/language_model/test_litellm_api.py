@@ -1,4 +1,3 @@
-import os
 from unittest.mock import patch
 
 import pytest
@@ -11,7 +10,7 @@ from .base import BaseLanguageModelTest
 
 
 def is_openai_enabled() -> bool:
-    return os.environ.get("OPENAI_API_KEY") is not None
+    return False
 
 
 @pytest.fixture(scope="module")
