@@ -11,8 +11,10 @@ from typing import Any
 
 import pytest
 
+from flexeval import Generation, Perplexity
 from flexeval.core.result_recorder.local_recorder import CONFIG_FILE_NAME, METRIC_FILE_NAME, OUTPUTS_FILE_NAME
-from flexeval.scripts.flexeval_lm import generate_eval_entries
+from flexeval.scripts.flexeval_lm import generate_eval_entries, maybe_replace_random_seed
+from tests.dummy_modules import DummyGenerationDataset, DummyTextDataset
 
 # fmt: off
 CHAT_RESPONSE_CMD = [
@@ -365,3 +367,25 @@ def test_multiple_repeats_with_group(mock_eval_data: dict) -> None:
         assert entry[0] == mock_eval_data["setup"]
         assert entry[1] == mock_eval_data["config"]
         assert entry[2] == expected_metadatas[i]
+
+
+def test_maybe_replace_random_seed() -> None:
+    # eval setup w/ random seed: should update random seed
+    generation_eval_setup = Generation(
+        eval_dataset=DummyGenerationDataset(), gen_kwargs={}, prompt_template="dummy", random_seed=42
+    )
+    generation_config = {"init_args": {"random_seed": 42}}
+    new_generation_eval_setup, new_generation_config = maybe_replace_random_seed(
+        generation_eval_setup, generation_config, seed_increment=1
+    )
+    assert new_generation_eval_setup.random_seed == 43
+    assert new_generation_config["init_args"]["random_seed"] == 43
+
+    # eval setup w/o random seed: should not change anything
+    perplexity_eval_setup = Perplexity(eval_dataset=DummyTextDataset())
+    perplexity_config = {}
+    new_perplexity_eval_setup, new_perplexity_config = maybe_replace_random_seed(
+        perplexity_eval_setup, perplexity_config, seed_increment=1
+    )
+    assert id(new_perplexity_config) == id(perplexity_config)
+    assert id(new_perplexity_eval_setup) == id(perplexity_eval_setup)

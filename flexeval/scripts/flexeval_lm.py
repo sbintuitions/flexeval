@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import copy
+import dataclasses
 import json
 import os
 import re
@@ -45,6 +47,25 @@ def as_dict(self: Namespace) -> dict[str, Any]:
     return dic
 
 
+def maybe_replace_random_seed(
+    eval_setup: EvalSetup, config_content: dict, seed_increment: int
+) -> tuple[EvalSetup, dict]:
+    """
+    Increments the random seed if the EvalSetup object has a 'random_seed' attribute.
+
+    A new EvalSetup instance and a deep-copied config dictionary are returned
+    with the updated seed value.
+    """
+    if hasattr(eval_setup, "random_seed"):
+        new_random_seed = eval_setup.random_seed + seed_increment
+        new_eval_setup = dataclasses.replace(eval_setup, random_seed=new_random_seed)
+        new_config_content = copy.deepcopy(config_content)
+        new_config_content["init_args"]["random_seed"] = new_random_seed
+        return new_eval_setup, new_config_content
+    else:
+        return eval_setup, config_content
+
+
 def generate_eval_entries(eval_setup: EvalSetup, config_content: dict, group: str | None, num_repeats: int) -> list:
     """
     Generates a list of evaluation entries based on repeat count and group name.
@@ -55,9 +76,9 @@ def generate_eval_entries(eval_setup: EvalSetup, config_content: dict, group: st
     Args:
         eval_setup (EvalSetup): The evaluation setup object.
         config_content (dict): The configuration content (dictionary) for the setup.
-        group (str | None): The group name for the evaluation. This forms the base
-                            of the metadata (e.g., 'group/runN'). If None, the
-                            metadata will only be 'runN' for repeats.
+        group (str | None): The group name for the evaluation, e.g., aio, mt-bench, etc...
+                            This forms the base of the metadata (e.g., 'group/runN').
+                            If None, the metadata will only be 'runN' for repeats.
         num_repeats (int): The number of times the evaluation should be repeated.
 
     Returns:
@@ -72,7 +93,8 @@ def generate_eval_entries(eval_setup: EvalSetup, config_content: dict, group: st
     else:
         for index in range(num_repeats):
             metadata = f"{group}/run{index}" if group else f"run{index}"
-            entries.append((eval_setup, config_content, metadata))
+            new_eval_setup, new_config_content = maybe_replace_random_seed(eval_setup, config_content, index)
+            entries.append((new_eval_setup, new_config_content, metadata))
 
     return entries
 
@@ -220,6 +242,7 @@ def main() -> None:  # noqa: C901, PLR0912, PLR0915
                     num_repeats=args.num_repeats,
                 )
             )
+
     # run evaluation
     for eval_setup, eval_setup_config, group in eval_setups_and_metadata:
         logger.info(f"Evaluating with the setup: {eval_setup_config}")
