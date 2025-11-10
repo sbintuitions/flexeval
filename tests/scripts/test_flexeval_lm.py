@@ -369,6 +369,16 @@ def test_multiple_repeats_with_group(mock_eval_data: dict) -> None:
         assert entry[2] == expected_metadatas[i]
 
 
+def test_non_positive_num_repeats(mock_eval_data: dict) -> None:
+    with pytest.raises(ValueError):
+        generate_eval_entries(
+            eval_setup=mock_eval_data["setup"],
+            config_content=mock_eval_data["config"],
+            group=mock_eval_data["group"],
+            num_repeats=-1,
+        )
+
+
 def test_maybe_replace_random_seed() -> None:
     # eval setup w/ random seed: should update random seed
     generation_eval_setup = Generation(
@@ -393,7 +403,7 @@ def test_maybe_replace_random_seed() -> None:
 
 @pytest.mark.parametrize(
     "num_repeats",
-    [0, 1, 3, 5],
+    [1, 3, 5],
 )
 def test_flexeval_lm_with_num_repeats(num_repeats: int) -> None:
     with tempfile.TemporaryDirectory() as f:
@@ -404,8 +414,8 @@ def test_flexeval_lm_with_num_repeats(num_repeats: int) -> None:
         result = subprocess.run(command, check=False)
         assert result.returncode == os.EX_OK
 
-        if num_repeats == 0:
+        if num_repeats == 1:
             check_if_eval_results_are_correctly_saved(f)
         else:
-            for _ in range(num_repeats):
-                check_if_eval_results_are_correctly_saved(f"{f}")
+            for i in range(num_repeats):
+                check_if_eval_results_are_correctly_saved(f"{f}/run{i}")

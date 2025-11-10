@@ -15,7 +15,7 @@ from typing import Any, Dict
 import _jsonnet
 from jsonargparse import ActionConfigFile, ArgumentParser, Namespace
 from loguru import logger
-from pydantic.types import NonNegativeInt
+from pydantic.types import PositiveInt
 
 from flexeval import EvalSetup, LanguageModel, LocalRecorder, ResultRecorder
 from flexeval.utils.module_utils import ConfigNameResolver
@@ -65,7 +65,9 @@ def maybe_replace_random_seed(
     return eval_setup, config_content
 
 
-def generate_eval_entries(eval_setup: EvalSetup, config_content: dict, group: str | None, num_repeats: int) -> list:
+def generate_eval_entries(
+    eval_setup: EvalSetup, config_content: dict, group: str | None, num_repeats: PositiveInt
+) -> list:
     """
     Generates a list of evaluation entries based on repeat count and group name.
 
@@ -86,7 +88,11 @@ def generate_eval_entries(eval_setup: EvalSetup, config_content: dict, group: st
     """
     entries: list[tuple[EvalSetup, dict, str | None]] = []
 
-    if num_repeats <= 1:
+    if num_repeats <= 0:
+        msg = f"num_repeats must be positive, but {num_repeats} is given"
+        raise ValueError(msg)
+
+    if num_repeats == 1:
         metadata = group if group is not None else None
         entries.append((eval_setup, config_content, metadata))
     else:
@@ -154,8 +160,8 @@ def main() -> None:  # noqa: C901, PLR0912, PLR0915
     )
     parser.add_argument(
         "--num_repeats",
-        type=NonNegativeInt,
-        default=0,
+        type=PositiveInt,
+        default=1,
         help="Number of times to repeat the evaluation",
     )
 
