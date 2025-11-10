@@ -398,7 +398,7 @@ def test_maybe_replace_random_seed() -> None:
 def test_flexeval_lm_with_num_repeats(num_repeats: int) -> None:
     with tempfile.TemporaryDirectory() as f:
         # fmt: off
-        command = CHAT_RESPONSE_CMD + ["--num_repeats", str(num_repeats), "--save_dir", f]
+        command = [*CHAT_RESPONSE_CMD, "--num_repeats", str(num_repeats), "--save_dir", f]
         # fmt: on
 
         result = subprocess.run(command, check=False)
@@ -407,5 +407,5 @@ def test_flexeval_lm_with_num_repeats(num_repeats: int) -> None:
         if num_repeats == 0:
             check_if_eval_results_are_correctly_saved(f)
         else:
-            for i in range(num_repeats):
+            for _ in range(num_repeats):
                 check_if_eval_results_are_correctly_saved(f"{f}")
