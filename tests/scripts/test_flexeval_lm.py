@@ -389,3 +389,23 @@ def test_maybe_replace_random_seed() -> None:
     )
     assert id(new_perplexity_config) == id(perplexity_config)
     assert id(new_perplexity_eval_setup) == id(perplexity_eval_setup)
+
+
+@pytest.mark.parametrize(
+    "num_repeats",
+    [0, 1, 3, 5],
+)
+def test_flexeval_lm_with_num_repeats(num_repeats: int) -> None:
+    with tempfile.TemporaryDirectory() as f:
+        # fmt: off
+        command = CHAT_RESPONSE_CMD + ["--num_repeats", str(num_repeats), "--save_dir", f]
+        # fmt: on
+
+        result = subprocess.run(command, check=False)
+        assert result.returncode == os.EX_OK
+
+        if num_repeats == 0:
+            check_if_eval_results_are_correctly_saved(f)
+        else:
+            for i in range(num_repeats):
+                check_if_eval_results_are_correctly_saved(f"{f}")
