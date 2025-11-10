@@ -62,8 +62,7 @@ def maybe_replace_random_seed(
         new_config_content = copy.deepcopy(config_content)
         new_config_content["init_args"]["random_seed"] = new_random_seed
         return new_eval_setup, new_config_content
-    else:
-        return eval_setup, config_content
+    return eval_setup, config_content
 
 
 def generate_eval_entries(eval_setup: EvalSetup, config_content: dict, group: str | None, num_repeats: int) -> list:
