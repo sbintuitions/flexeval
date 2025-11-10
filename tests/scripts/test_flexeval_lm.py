@@ -336,7 +336,7 @@ def test_no_repeat_with_group(mock_eval_data: dict) -> None:
         eval_setup=mock_eval_data["setup"],
         config_content=mock_eval_data["config"],
         group=mock_eval_data["group"],
-        num_repeats=0,
+        num_repeats=1,
     )
     expected = [("dummy_setup_object", {"task": "test", "metric": "acc"}, "test_group")]
     assert result == expected
