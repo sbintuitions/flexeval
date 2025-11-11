@@ -11,7 +11,10 @@ from typing import Any
 
 import pytest
 
+from flexeval import Generation, Perplexity
 from flexeval.core.result_recorder.local_recorder import CONFIG_FILE_NAME, METRIC_FILE_NAME, OUTPUTS_FILE_NAME
+from flexeval.scripts.flexeval_lm import generate_eval_entries, maybe_replace_random_seed
+from tests.dummy_modules import DummyGenerationDataset, DummyTextDataset
 
 # fmt: off
 CHAT_RESPONSE_CMD = [
@@ -321,3 +324,98 @@ class MyCustomMetric(Metric):
         assert result.returncode == os.EX_OK
 
         check_if_eval_results_are_correctly_saved(f)
+
+
+@pytest.fixture()
+def mock_eval_data() -> dict:
+    return {"setup": "dummy_setup_object", "config": {"task": "test", "metric": "acc"}, "group": "test_group"}
+
+
+def test_no_repeat_with_group(mock_eval_data: dict) -> None:
+    result = generate_eval_entries(
+        eval_setup=mock_eval_data["setup"],
+        config_content=mock_eval_data["config"],
+        group=mock_eval_data["group"],
+        num_repeats=1,
+    )
+    expected = [("dummy_setup_object", {"task": "test", "metric": "acc"}, "test_group")]
+    assert result == expected
+    assert len(result) == 1
+
+
+def test_no_repeat_no_group(mock_eval_data: dict) -> None:
+    result = generate_eval_entries(
+        eval_setup=mock_eval_data["setup"], config_content=mock_eval_data["config"], group=None, num_repeats=1
+    )
+    expected = [("dummy_setup_object", {"task": "test", "metric": "acc"}, None)]
+    assert result == expected
+    assert len(result) == 1
+
+
+def test_multiple_repeats_with_group(mock_eval_data: dict) -> None:
+    num_repeats = 3
+    result = generate_eval_entries(
+        eval_setup=mock_eval_data["setup"],
+        config_content=mock_eval_data["config"],
+        group=mock_eval_data["group"],
+        num_repeats=num_repeats,
+    )
+    expected_metadatas = ["test_group/run0", "test_group/run1", "test_group/run2"]
+
+    assert len(result) == num_repeats
+    for i, entry in enumerate(result):
+        assert entry[0] == mock_eval_data["setup"]
+        assert entry[1] == mock_eval_data["config"]
+        assert entry[2] == expected_metadatas[i]
+
+
+def test_non_positive_num_repeats(mock_eval_data: dict) -> None:
+    with pytest.raises(ValueError):
+        generate_eval_entries(
+            eval_setup=mock_eval_data["setup"],
+            config_content=mock_eval_data["config"],
+            group=mock_eval_data["group"],
+            num_repeats=-1,
+        )
+
+
+def test_maybe_replace_random_seed() -> None:
+    # eval setup w/ random seed: should update random seed
+    generation_eval_setup = Generation(
+        eval_dataset=DummyGenerationDataset(), gen_kwargs={}, prompt_template="dummy", random_seed=42
+    )
+    generation_config = {"init_args": {"random_seed": 42}}
+    new_generation_eval_setup, new_generation_config = maybe_replace_random_seed(
+        generation_eval_setup, generation_config, seed_increment=1
+    )
+    assert new_generation_eval_setup.random_seed == 43
+    assert new_generation_config["init_args"]["random_seed"] == 43
+
+    # eval setup w/o random seed: should not change anything
+    perplexity_eval_setup = Perplexity(eval_dataset=DummyTextDataset())
+    perplexity_config = {}
+    new_perplexity_eval_setup, new_perplexity_config = maybe_replace_random_seed(
+        perplexity_eval_setup, perplexity_config, seed_increment=1
+    )
+    assert id(new_perplexity_config) == id(perplexity_config)
+    assert id(new_perplexity_eval_setup) == id(perplexity_eval_setup)
+
+
+@pytest.mark.parametrize(
+    "num_repeats",
+    [1, 3, 5],
+)
+def test_flexeval_lm_with_num_repeats(num_repeats: int) -> None:
+    with tempfile.TemporaryDirectory() as f:
+        # fmt: off
+        command = [*CHAT_RESPONSE_CMD, "--num_repeats", str(num_repeats), "--save_dir", f]
+        # fmt: on
+
+        result = subprocess.run(command, check=False)
+        assert result.returncode == os.EX_OK
+
+        if num_repeats == 1:
+            check_if_eval_results_are_correctly_saved(f)
+        else:
+            for i in range(num_repeats):
+                check_if_eval_results_are_correctly_saved(f"{f}/run{i}")
