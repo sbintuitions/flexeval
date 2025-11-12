@@ -10,7 +10,7 @@ def regex_replace(s: str, pattern: str, replace: str) -> str:
     return re.sub(pattern, replace, s)
 
 
-def truncate_middle(s: str, length: int, filler: str = "..."):
+def truncate_middle(s: str, length: int, filler: str = "...") -> str:
     if len(s) + len(filler) <= length:
         return s
     extract_len = length - len(filler)
