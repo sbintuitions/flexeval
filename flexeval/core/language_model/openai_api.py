@@ -218,7 +218,7 @@ class OpenAIChatAPI(LanguageModel):
         outputs = [
             LMOutput(
                 text=res.choices[0].message.content,
-                reasoning_text=res.choices[0].message.reasoning_content,
+                reasoning_text=getattr(res.choices[0].message, "reasoning_content", None),
                 finish_reason=res.choices[0].finish_reason,
             )
             for res in api_responses
@@ -238,7 +238,7 @@ class OpenAIChatAPI(LanguageModel):
         outputs = [
             LMOutput(
                 text=res.choices[0].message.content,
-                reasoning_text=res.choices[0].message.reasoning_content,
+                reasoning_text=getattr(res.choices[0].message, "reasoning_content", None),
                 finish_reason=res.choices[0].finish_reason,
                 tool_calls=[tool_call.to_dict() for tool_call in res.choices[0].message.tool_calls]
                 if res.choices[0].message.tool_calls
