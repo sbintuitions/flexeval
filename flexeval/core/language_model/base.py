@@ -19,6 +19,10 @@ class LMOutput:
     """
     The raw output text of the language model before post-processing.
     """
+    reasoning_text: str | None = None
+    """
+    The output reasoning text of the language model.
+    """
     finish_reason: str | None = None
     """
     The reason why the generation is finished.
