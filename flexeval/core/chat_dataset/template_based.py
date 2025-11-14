@@ -17,7 +17,7 @@ from .base import ChatDataset, ChatInstance
 
 def load_jinja2_template(template: str | PathLike[str]) -> Template:
     path = Path(template)
-    if path.exists():
+    if len(str(path)) <= 255 and path.exists():
         return JINJA2_ENV.from_string(path.read_text(encoding="utf-8"))
     return JINJA2_ENV.from_string(template)
 
