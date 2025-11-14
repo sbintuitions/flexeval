@@ -221,3 +221,8 @@ def test_load_jinja2_template(dummy_template_file: Path) -> None:
     embed_result = template_from_string.render(name="flexeval")
     assert isinstance(template_from_string, Template)
     assert embed_result == "Hello flexeval!"
+
+    template_from_string = load_jinja2_template("a" * 1000)
+    embed_result = template_from_string.render()
+    assert isinstance(template_from_string, Template)
+    assert embed_result == "a" * 1000
