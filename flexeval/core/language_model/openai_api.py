@@ -197,7 +197,7 @@ class OpenAIChatAPI(LanguageModel):
                 idx = future_to_idx[future]
                 results[idx] = future.result()
                 if prog_every_n and (done_count % prog_every_n == 0 or done_count == total):
-                    logger.info(f"[progress] {done_count}/{total} ({done_count/total:.1%}) done")
+                    logger.info(f"[progress] {done_count}/{total} ({done_count / total:.1%}) done")
 
             return results
 
@@ -216,7 +216,11 @@ class OpenAIChatAPI(LanguageModel):
             **kwargs,
         )
         outputs = [
-            LMOutput(text=res.choices[0].message.content, finish_reason=res.choices[0].finish_reason)
+            LMOutput(
+                text=res.choices[0].message.content,
+                reasoning_text=getattr(res.choices[0].message, "reasoning_content", None),
+                finish_reason=res.choices[0].finish_reason,
+            )
             for res in api_responses
         ]
 
@@ -234,6 +238,7 @@ class OpenAIChatAPI(LanguageModel):
         outputs = [
             LMOutput(
                 text=res.choices[0].message.content,
+                reasoning_text=getattr(res.choices[0].message, "reasoning_content", None),
                 finish_reason=res.choices[0].finish_reason,
                 tool_calls=[tool_call.to_dict() for tool_call in res.choices[0].message.tool_calls]
                 if res.choices[0].message.tool_calls
