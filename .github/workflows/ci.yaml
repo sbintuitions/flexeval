@@ -34,8 +34,10 @@ jobs:
       - name: Install dependencies
         run: |
           df -h
-          du -ch -d 1 /home/runner/.cache/
+          poetry config virtualenvs.path /mnt/virtualenvs
+          df -h
           poetry install --only main,dev --all-extras
+          df -h
 
       - name: Run tests
         run: |
