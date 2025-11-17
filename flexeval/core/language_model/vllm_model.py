@@ -156,6 +156,9 @@ class VLLM(LanguageModel):
 
         return wrapper
 
+    def set_random_seed(self, seed: int) -> None:
+        self.default_gen_kwargs["seed"] = seed
+
     @load_model
     def _batch_complete_text(
         self,
@@ -282,7 +285,7 @@ class VLLM(LanguageModel):
         # This is needed to correctly calculate the log probabilities of the first token.
         for i in range(batch_size):
             if prefix_list[i] == "":
-                prefix_list[i] = self.tokenizer.bos_token
+                prefix_list[i] = self.tokenizer.bos_token or self.tokenizer.eos_token
 
         batch_prefix_ids = tokenize_text_for_lm_prefix(
             prefix_list,
@@ -321,7 +324,9 @@ class VLLM(LanguageModel):
             chunk_end = min(chunk_start + max_length, sequence_length)
             chunk_batch_input_ids = [input_ids[chunk_start:chunk_end] for input_ids in batch_input_ids]
             chunk_batch_input_ids = [
-                [self.tokenizer.bos_token_id] if len(chunk_input_ids) == 0 else chunk_input_ids
+                [self.tokenizer.bos_token_id or self.tokenizer.eos_token]
+                if len(chunk_input_ids) == 0
+                else chunk_input_ids
                 for chunk_input_ids in chunk_batch_input_ids
             ]
             chunk_batch_outputs: list[RequestOutput] = self.llm.generate(

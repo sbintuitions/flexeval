@@ -68,6 +68,9 @@ class LiteLLMChatAPI(OpenAIChatAPI):
         )
         self.ignore_seed = ignore_seed
 
+    def set_random_seed(self, seed: int) -> None:
+        self.default_gen_kwargs["seed"] = seed
+
     def _batch_complete_text(
         self,
         text_list: list[str],

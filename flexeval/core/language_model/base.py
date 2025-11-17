@@ -19,6 +19,10 @@ class LMOutput:
     """
     The raw output text of the language model before post-processing.
     """
+    reasoning_text: str | None = None
+    """
+    The output reasoning text of the language model.
+    """
     finish_reason: str | None = None
     """
     The reason why the generation is finished.
@@ -65,6 +69,13 @@ class LanguageModel:
 
         self.string_processors = string_processors
         self.tools = tools
+
+    def set_random_seed(self, seed: int) -> None:
+        """
+        A method to set random seed for deterministic behavior.
+        """
+        msg = "set_random_seed is not implemented."
+        raise NotImplementedError(msg)
 
     def _batch_complete_text(
         self,

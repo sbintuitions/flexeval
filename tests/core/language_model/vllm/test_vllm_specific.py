@@ -7,7 +7,7 @@ from unittest.mock import patch
 import pytest
 from transformers import AutoTokenizer
 
-from flexeval.core.language_model import VLLM, HuggingFaceLM, LanguageModel
+from flexeval.core.language_model import VLLM, HuggingFaceLM
 from tests.conftest import is_vllm_enabled
 from tests.dummy_modules.tool_parser import DummyToolParser
 
@@ -24,6 +24,23 @@ def chat_lm() -> Generator[VLLM, None, None]:
             "disable_custom_all_reduce": True,
         },
         tokenizer_kwargs={"use_fast": False},
+    )
+    yield llm
+    from vllm.distributed.parallel_state import cleanup_dist_env_and_memory
+
+    cleanup_dist_env_and_memory()
+
+
+@pytest.fixture(scope="module")
+def chat_lm_qwen() -> Generator[VLLM, None, None]:
+    llm = VLLM(
+        model="Qwen/Qwen3-0.6B-Base",
+        model_kwargs={
+            "seed": 42,
+            "gpu_memory_utilization": 0.1,
+            "enforce_eager": True,
+            "disable_custom_all_reduce": True,
+        },
     )
     yield llm
     from vllm.distributed.parallel_state import cleanup_dist_env_and_memory
@@ -60,7 +77,13 @@ def hf_lm(model_name: str = "sbintuitions/tiny-lm-chat") -> HuggingFaceLM:
 
 
 @pytest.mark.skipif(not is_vllm_enabled(), reason="vllm library is not installed")
-def test_batch_compute_log_probs_approximates_hf_lm(chat_lm: LanguageModel, hf_lm: HuggingFaceLM) -> None:
+@pytest.mark.parametrize("chat_lm_name", ["chat_lm", "chat_lm_qwen"])
+def test_batch_compute_log_probs_approximates_hf_lm(
+    request: pytest.FixtureRequest,
+    chat_lm_name: str,
+    hf_lm: HuggingFaceLM,
+) -> None:
+    chat_lm = request.getfixturevalue(chat_lm_name)
     prefix_list = ["それは正しい日本語ですか？"]
     text_list = ["これは正しい日本語です。"]
 
@@ -209,3 +232,9 @@ def test_system_message_prepended_to_batch_chat_messages(chat_lm_with_system_mes
     finally:
         # Restore original method
         chat_lm_with_system_message.tokenizer.apply_chat_template = original_apply_chat_template
+
+
+@pytest.mark.skipif(not is_vllm_enabled(), reason="vllm library is not installed")
+def test_set_random_seed(chat_lm: VLLM) -> None:
+    chat_lm.set_random_seed(42)
+    assert chat_lm.default_gen_kwargs["seed"] == 42

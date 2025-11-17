@@ -229,6 +229,9 @@ class HuggingFaceLM(LanguageModel):
         logger.info(f"random seed: {random_seed}")
         transformers.set_seed(random_seed)
 
+    def set_random_seed(self, seed: int) -> None:
+        transformers.set_seed(seed)
+
     @staticmethod
     def load_model(method: Callable) -> Callable:
         """Decorator to load the model lazily."""
@@ -439,7 +442,7 @@ class HuggingFaceLM(LanguageModel):
         # This is needed to correctly calculate the log probabilities of the first token.
         for i in range(batch_size):
             if prefix_list[i] == "":
-                prefix_list[i] = self.tokenizer.bos_token
+                prefix_list[i] = self.tokenizer.bos_token or self.tokenizer.eos_token
 
         prefix_encoding = tokenize_text_for_lm_prefix(
             prefix_list,

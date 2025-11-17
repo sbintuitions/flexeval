@@ -1,5 +1,4 @@
 import logging
-import os
 
 import pytest
 
@@ -14,7 +13,7 @@ from .base import BaseLanguageModelTest
 
 
 def is_openai_enabled() -> bool:
-    return os.environ.get("OPENAI_API_KEY") is not None
+    return False
 
 
 @pytest.fixture(scope="module")
@@ -162,3 +161,9 @@ def test_model_limit_new_tokens_complete_text(chat_lm: OpenAIChatAPI, caplog: py
     assert len(caplog.records) >= 1
     assert any(record.msg.startswith("The specified `max_new_tokens` (128) exceeds") for record in caplog.records)
     caplog.clear()
+
+
+@pytest.mark.skipif(not is_openai_enabled(), reason="OpenAI is not installed")
+def test_set_random_seed(chat_lm: OpenAIChatAPI) -> None:
+    chat_lm.set_random_seed(42)
+    assert chat_lm.default_gen_kwargs["seed"] == 42

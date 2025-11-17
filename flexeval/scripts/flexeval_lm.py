@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import copy
+import dataclasses
 import json
 import os
 import re
@@ -13,6 +15,7 @@ from typing import Any, Dict
 import _jsonnet
 from jsonargparse import ActionConfigFile, ArgumentParser, Namespace
 from loguru import logger
+from pydantic.types import PositiveInt
 
 from flexeval import EvalSetup, LanguageModel, LocalRecorder, ResultRecorder
 from flexeval.utils.module_utils import ConfigNameResolver
@@ -42,6 +45,63 @@ def as_dict(self: Namespace) -> dict[str, Any]:
             val = [v.as_dict() for v in val]  # noqa: PLW2901
         dic[del_clash_mark(key)] = val
     return dic
+
+
+def maybe_replace_random_seed(
+    eval_setup: EvalSetup, config_content: dict, seed_increment: int
+) -> tuple[EvalSetup, dict]:
+    """
+    Increments the random seed if the EvalSetup object has a 'random_seed' attribute.
+
+    A new EvalSetup instance and a deep-copied config dictionary are returned
+    with the updated seed value.
+    """
+    if hasattr(eval_setup, "random_seed"):
+        new_random_seed = eval_setup.random_seed + seed_increment
+        new_eval_setup = dataclasses.replace(eval_setup, random_seed=new_random_seed)
+        new_config_content = copy.deepcopy(config_content)
+        new_config_content["init_args"]["random_seed"] = new_random_seed
+        return new_eval_setup, new_config_content
+    return eval_setup, config_content
+
+
+def generate_eval_entries(
+    eval_setup: EvalSetup, config_content: dict, group: str | None, num_repeats: PositiveInt
+) -> list:
+    """
+    Generates a list of evaluation entries based on repeat count and group name.
+
+    If the number of repeats (num_repeats) is 1 or less, no run-specific metadata
+    (i.e., 'runN') is appended. If it is 2 or more, each entry is indexed.
+
+    Args:
+        eval_setup (EvalSetup): The evaluation setup object.
+        config_content (dict): The configuration content (dictionary) for the setup.
+        group (str | None): The group name for the evaluation, e.g., aio, mt-bench, etc...
+                            This forms the base of the metadata (e.g., 'group/runN').
+                            If None, the metadata will only be 'runN' for repeats.
+        num_repeats (int): The number of times the evaluation should be repeated.
+
+    Returns:
+        list[tuple[EvalSetup, dict, str | None]]: A list of tuples, each containing:
+            (EvalSetup object, config dictionary, metadata string | None)
+    """
+    entries: list[tuple[EvalSetup, dict, str | None]] = []
+
+    if num_repeats <= 0:
+        msg = f"num_repeats must be positive, but {num_repeats} is given"
+        raise ValueError(msg)
+
+    if num_repeats == 1:
+        metadata = group if group is not None else None
+        entries.append((eval_setup, config_content, metadata))
+    else:
+        for index in range(num_repeats):
+            metadata = f"{group}/run{index}" if group else f"run{index}"
+            new_eval_setup, new_config_content = maybe_replace_random_seed(eval_setup, config_content, index)
+            entries.append((new_eval_setup, new_config_content, metadata))
+
+    return entries
 
 
 def main() -> None:  # noqa: C901, PLR0912, PLR0915
@@ -97,6 +157,12 @@ def main() -> None:  # noqa: C901, PLR0912, PLR0915
         type=Dict[str, Any],
         default={},
         help="Metadata to save in config.json",
+    )
+    parser.add_argument(
+        "--num_repeats",
+        type=PositiveInt,
+        default=1,
+        help="Number of times to repeat the evaluation",
     )
 
     config_name_resolver = ConfigNameResolver()
@@ -159,12 +225,28 @@ def main() -> None:  # noqa: C901, PLR0912, PLR0915
 
     # normalize args.eval_setup or args.eval_setups into a list of tuples,
     # which contain (eval_setup, eval_setup_config, group)
-    eval_setups_and_metadata: list[EvalSetup, dict[str, Any], str | None] = []
+    eval_setups_and_metadata: list[tuple[EvalSetup, dict[str, Any], str | None]] = []
+
     if args.eval_setup:
-        eval_setups_and_metadata.append((args.eval_setup, config_dict["eval_setup"], None))
+        eval_setups_and_metadata.extend(
+            generate_eval_entries(
+                eval_setup=args.eval_setup,
+                config_content=config_dict["eval_setup"],
+                group=None,
+                num_repeats=args.num_repeats,
+            )
+        )
+
     if args.eval_setups:
         for group, eval_setup in args.eval_setups.items():
-            eval_setups_and_metadata.append((eval_setup, config_dict["eval_setups"][group], group))
+            eval_setups_and_metadata.extend(
+                generate_eval_entries(
+                    eval_setup=eval_setup,
+                    config_content=config_dict["eval_setups"][group],
+                    group=group,
+                    num_repeats=args.num_repeats,
+                )
+            )
 
     # run evaluation
     for eval_setup, eval_setup_config, group in eval_setups_and_metadata:
