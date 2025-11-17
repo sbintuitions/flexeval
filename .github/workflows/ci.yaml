@@ -34,7 +34,7 @@ jobs:
       - name: Install dependencies
         run: |
           df -h
-          poetry install --only main,dev
+          poetry install --only main,dev --extras wandb
           df -h
 
       - name: Run tests
