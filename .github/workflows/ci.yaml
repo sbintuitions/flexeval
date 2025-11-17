@@ -33,6 +33,8 @@ jobs:
 
       - name: Install dependencies
         run: |
+          df -h
+          du -ch -d 1 /home/runner/.cache/
           poetry install --only main,dev --all-extras
 
       - name: Run tests
