@@ -34,9 +34,7 @@ jobs:
       - name: Install dependencies
         run: |
           df -h
-          mkdir -p /mnt/virtualenvs
-          poetry config virtualenvs.path /mnt/virtualenvs
-          df -h
+          pwd
           poetry install --only main,dev --all-extras
           df -h
 
