@@ -35,7 +35,8 @@ jobs:
         run: |
           df -h
           pwd
-          poetry install --only main,dev --all-extras
+          mkdir ~/tmpdir
+          TMPDIR=~/tmpdir poetry install --only main,dev --all-extras
           df -h
 
       - name: Run tests
