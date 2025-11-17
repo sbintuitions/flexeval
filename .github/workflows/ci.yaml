@@ -11,7 +11,7 @@ on:
 
 jobs:
   run-tests:
-    runs-on: ubuntu-22.04-2-cores-8GB-RAM-75GB-SSD
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         # 3.11.9, which is picked up by GithubAction by default, doesn't work because of argparse or something...
@@ -34,7 +34,7 @@ jobs:
       - name: Install dependencies
         run: |
           df -h
-          poetry install --only main,dev --all-extras
+          poetry install --only main,dev
           df -h
 
       - name: Run tests
