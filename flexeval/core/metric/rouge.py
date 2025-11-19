@@ -6,7 +6,7 @@ from flexeval.core.language_model.base import LMOutput
 from flexeval.core.tokenizer import Tokenizer
 
 from .base import Metric, MetricResult
-from .utils import extract_text_from_outputs, validate_inputs
+from .utils import extract_text_from_outputs, recursion_limit, validate_inputs
 
 
 class ROUGE(Metric):
@@ -18,6 +18,8 @@ class ROUGE(Metric):
         tokenizer: An instance of `Tokenizer` to tokenize the input and output strings.
         max_output_tokens: Maximum number of tokens to consider from model outputs.
             If specified, only model outputs will be truncated to this length.
+        recursion_limit: Recursion limit to set before calculating ROUGE scores.
+            If specified, `sys.setrecursionlimit()` will be called with this value.
 
     Examples:
         >>> from flexeval import ROUGE
@@ -37,9 +39,12 @@ class ROUGE(Metric):
         )
     """
 
-    def __init__(self, tokenizer: Tokenizer, max_output_tokens: int | None = None) -> None:
+    def __init__(
+        self, tokenizer: Tokenizer, max_output_tokens: int | None = None, recursion_limit: int | None = None
+    ) -> None:
         self._tokenizer = tokenizer
         self._max_output_tokens = max_output_tokens
+        self._recursion_limit = recursion_limit
 
     def evaluate(
         self,
@@ -69,12 +74,13 @@ class ROUGE(Metric):
         # replace empty string with " " to avoid "ValueError: Hypothesis is empty" from rouge
         tokenized_lm_outputs = [o if o else " " for o in tokenized_lm_outputs]
 
-        # Compute metrics
-        rouge = RougeCalculator()
-        score_outputs = rouge.get_scores(
-            tokenized_lm_outputs,
-            tokenized_target_summaries,
-        )
+        # Compute metrics with recursion limit
+        with recursion_limit(self._recursion_limit):
+            rouge = RougeCalculator()
+            score_outputs = rouge.get_scores(
+                tokenized_lm_outputs,
+                tokenized_target_summaries,
+            )
 
         rouge1_list = [o["rouge-1"]["f"] for o in score_outputs]
         rouge2_list = [o["rouge-2"]["f"] for o in score_outputs]

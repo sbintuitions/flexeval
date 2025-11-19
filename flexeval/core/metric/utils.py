@@ -1,6 +1,9 @@
 from __future__ import annotations
 
+import sys
 from collections import defaultdict
+from collections.abc import Generator
+from contextlib import contextmanager
 from typing import TypeVar
 
 from flexeval.core.language_model.base import LMOutput
@@ -79,8 +82,7 @@ def validate_inputs(
 
     if extra_info_list is not None and len(extra_info_list) != len(lm_outputs):
         msg = (
-            f"Number of extra_info entries ({len(extra_info_list)}) should match "
-            f"number of outputs ({len(lm_outputs)})."
+            f"Number of extra_info entries ({len(extra_info_list)}) should match number of outputs ({len(lm_outputs)})."
         )
         raise ValueError(msg)
 
@@ -103,3 +105,18 @@ def extract_text_from_outputs(lm_outputs: list[str | LMOutput]) -> list[str]:
         else:
             text_outputs.append(output.text or "")
     return text_outputs
+
+
+@contextmanager
+def recursion_limit(limit: int | None) -> Generator[None, None, None]:
+    """Context manager to temporarily set recursion limit."""
+    if limit is None:
+        yield
+        return
+
+    original_limit = sys.getrecursionlimit()
+    sys.setrecursionlimit(limit)
+    try:
+        yield
+    finally:
+        sys.setrecursionlimit(original_limit)
