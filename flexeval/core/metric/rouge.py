@@ -16,6 +16,8 @@ class ROUGE(Metric):
 
     Args:
         tokenizer: An instance of `Tokenizer` to tokenize the input and output strings.
+        max_output_tokens: Maximum number of tokens to consider from model outputs.
+            If specified, only model outputs will be truncated to this length.
 
     Examples:
         >>> from flexeval import ROUGE
@@ -35,8 +37,9 @@ class ROUGE(Metric):
         )
     """
 
-    def __init__(self, tokenizer: Tokenizer) -> None:
+    def __init__(self, tokenizer: Tokenizer, max_output_tokens: int | None = None) -> None:
         self._tokenizer = tokenizer
+        self._max_output_tokens = max_output_tokens
 
     def evaluate(
         self,
@@ -56,6 +59,12 @@ class ROUGE(Metric):
         tokenized_target_summaries = [
             " ".join(self._tokenizer.tokenize(target_summary)) for target_summary in target_summaries
         ]
+
+        # Truncate model outputs if max_output_tokens is specified
+        if self._max_output_tokens is not None:
+            tokenized_lm_outputs = [
+                " ".join(output.split()[: self._max_output_tokens]) for output in tokenized_lm_outputs
+            ]
 
         # replace empty string with " " to avoid "ValueError: Hypothesis is empty" from rouge
         tokenized_lm_outputs = [o if o else " " for o in tokenized_lm_outputs]
