@@ -34,8 +34,7 @@ def test_rouge(lm_outputs: list[str], expected_outputs: list[list[str]], score: 
     ("lm_outputs", "expected_outputs", "max_output_tokens", "score"),
     [
         (["これは テスト です"], [["これは テスト"]], 2, 1.0),  # Exact match after truncation
-        (["こんにちは 世界 です"], [["こんばんわ 地方"]], 2, 0.0),  # No match after truncation
-        (["同じ 単語 ではない"], [["同じ 単語"]], 2, 1.0),  # Match after truncation
+        (["こんにちは 世界 です"], [["こんばんわ 地方"]], 2, 0.0),  # No match even after truncation
     ],
     indirect=["lm_outputs"],
 )
