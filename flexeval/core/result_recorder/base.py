@@ -46,3 +46,33 @@ class ResultRecorder(ABC):
                 dictionaries may vary depending on the specific model and task.
             group: An optional group name to organize the model outputs.
         """
+
+    def is_config_saved(self, group: str | None = None) -> bool:
+        """
+        Check if the configuration has already been saved.
+
+        Args:
+            group: An optional group name to check for saved configuration.
+        """
+        return False
+
+
+    @abstractmethod
+    def is_outputs_saved(self, group: str | None = None) -> bool:
+        """
+        Check if the model outputs have already been saved.
+
+        Args:
+            group: An optional group name to check for saved outputs.
+        """
+        return False
+
+    @abstractmethod
+    def is_metrics_saved(self, group: str | None = None) -> bool:
+        """
+        Check if the evaluation metrics have already been saved.
+
+        Args:
+            group: An optional group name to check for saved metrics.
+        """
+        return False
