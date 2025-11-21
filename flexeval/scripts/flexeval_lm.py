@@ -143,7 +143,7 @@ def main() -> None:  # noqa: C901, PLR0912, PLR0915
         "--resume",
         type=bool,
         default=False,
-        help="Overwrite the save_dir if it exists",
+        help="Re-run only the failed evaluation runs. Skip runs if metrics are already saved.",
     )
     parser.add_argument(
         "--result_recorder",
