@@ -420,6 +420,7 @@ def test_flexeval_lm_with_num_repeats(num_repeats: int) -> None:
             for i in range(num_repeats):
                 check_if_eval_results_are_correctly_saved(f"{f}/run{i}")
 
+
 @pytest.mark.parametrize("force", [True, False])
 @pytest.mark.parametrize("resume", [True, False])
 def test_flexeval_lm_with_resume(resume: bool, force: bool) -> None:
@@ -439,10 +440,15 @@ def test_flexeval_lm_with_resume(resume: bool, force: bool) -> None:
         # Second run with resume
         command = [
             *CHAT_RESPONSE_CMD,
-            "--num_repeats", str(num_repeats),
-            "--save_dir", f,
-            "--resume", str(resume).lower(),
-            "--force", str(force).lower()]
+            "--num_repeats",
+            str(num_repeats),
+            "--save_dir",
+            f,
+            "--resume",
+            str(resume).lower(),
+            "--force",
+            str(force).lower(),
+        ]
 
         result = subprocess.run(command, check=False, capture_output=True)
 

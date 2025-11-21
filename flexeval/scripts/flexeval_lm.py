@@ -269,9 +269,7 @@ def main() -> None:  # noqa: C901, PLR0912, PLR0915
 
         try:
             if args.resume and not args.force:
-                to_skip = all(
-                    result_recorder.is_metrics_saved(group) for result_recorder in result_recorders
-                )
+                to_skip = all(result_recorder.is_metrics_saved(group) for result_recorder in result_recorders)
                 if to_skip:
                     logger.info(f"Skipping the evaluation for group: {group} as the metrics are already saved.")
                     continue

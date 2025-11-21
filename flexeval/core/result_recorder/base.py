@@ -56,7 +56,6 @@ class ResultRecorder(ABC):
         """
         return False
 
-
     @abstractmethod
     def is_outputs_saved(self, group: str | None = None) -> bool:
         """
