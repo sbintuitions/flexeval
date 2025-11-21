@@ -248,6 +248,7 @@ def main() -> None:  # noqa: C901, PLR0912, PLR0915
                 )
             )
 
+    exit_code = 0
     # run evaluation
     for eval_setup, eval_setup_config, group in eval_setups_and_metadata:
         logger.info(f"Evaluating with the setup: {eval_setup_config}")
@@ -282,6 +283,9 @@ def main() -> None:  # noqa: C901, PLR0912, PLR0915
             logger.error(
                 f"Error in evaluation:\n{e}\n{stack_trace_str}",
             )
+            exit_code = 1
+
+    sys.exit(exit_code)
 
 
 if __name__ == "__main__":
