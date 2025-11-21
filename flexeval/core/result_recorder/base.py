@@ -56,7 +56,6 @@ class ResultRecorder(ABC):
         """
         return False
 
-    @abstractmethod
     def is_outputs_saved(self, group: str | None = None) -> bool:
         """
         Check if the model outputs have already been saved.
@@ -66,7 +65,6 @@ class ResultRecorder(ABC):
         """
         return False
 
-    @abstractmethod
     def is_metrics_saved(self, group: str | None = None) -> bool:
         """
         Check if the evaluation metrics have already been saved.
