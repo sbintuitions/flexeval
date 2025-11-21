@@ -461,5 +461,5 @@ def test_flexeval_lm_with_resume(resume: bool, force: bool) -> None:
             assert "Skipping the evaluation for group: run2" in result.stderr.decode()
             check_if_eval_results_are_correctly_saved(f"{f}/run1")
         elif not resume and not force:
-            assert not Path(f"{f}/run1/{METRIC_FILE_NAME}").exist()
+            assert not Path(f"{f}/run1/{METRIC_FILE_NAME}").exists()
             assert not Path(f"{f}/run1/{OUTPUTS_FILE_NAME}").exists()
