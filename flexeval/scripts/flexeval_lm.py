@@ -10,7 +10,7 @@ import traceback
 from collections import defaultdict
 from importlib.metadata import version
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict
 
 import _jsonnet
 from jsonargparse import ActionConfigFile, ArgumentParser, Namespace
@@ -121,7 +121,7 @@ def main() -> None:  # noqa: C901, PLR0912, PLR0915
     )
     parser.add_argument(
         "--eval_setups",
-        type=dict[str, EvalSetup],
+        type=Dict[str, EvalSetup],
         help="A dictionary of evaluation setups. "
         "The key is the folder name where the outputs will be saved, and the value is the EvalSetup object. ",
         enable_path=True,
@@ -154,7 +154,7 @@ def main() -> None:  # noqa: C901, PLR0912, PLR0915
     # Metadata
     parser.add_argument(
         "--metadata",
-        type=dict[str, Any],
+        type=Dict[str, Any],
         default={},
         help="Metadata to save in config.json",
     )
