@@ -164,6 +164,13 @@ def main() -> None:  # noqa: C901, PLR0912, PLR0915
         default=1,
         help="Number of times to repeat the evaluation",
     )
+    parser.add_argument(
+        "--cleanup_after_generation",
+        type=bool,
+        default=False,
+        help="Whether to clean up language model resources after each evaluation run. "
+        "This is useful when using LLM-based metrics in the same job, as it helps release GPU memory.",
+    )
 
     config_name_resolver = ConfigNameResolver()
     # Resolve the preset name to the path to the config file before parsing the arguments.
@@ -268,6 +275,7 @@ def main() -> None:  # noqa: C901, PLR0912, PLR0915
             with Timer() as timer:
                 metrics, outputs = eval_setup.evaluate_lm(
                     language_model=args.language_model,
+                    cleanup_after_generation=args.cleanup_after_generation,
                 )
             metrics["elapsed_time"] = timer.time
             logger.info(f"Elapsed time: {timer.time:.2f} sec")

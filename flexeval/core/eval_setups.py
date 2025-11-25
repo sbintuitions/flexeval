@@ -26,6 +26,7 @@ class EvalSetup(ABC):
     def evaluate_lm(
         self,
         language_model: LanguageModel,
+        **kwargs,
     ) -> tuple[dict[str, float], list[dict[str, Any]] | None]:
         pass
 
@@ -55,6 +56,7 @@ class ChatResponse(EvalSetup):
     def evaluate_lm(
         self,
         language_model: LanguageModel,
+        **kwargs,
     ) -> tuple[dict[str, float], list[dict[str, Any]] | None]:
         metrics = self.metrics or []
         if isinstance(metrics, Metric):
@@ -71,6 +73,7 @@ class ChatResponse(EvalSetup):
             batch_size=self.batch_size,
             max_instances=self.max_instances,
             few_shot_generator=self.few_shot_generator,
+            cleanup_after_generation=kwargs.pop("cleanup_after_generation", False),
         )
 
 
@@ -97,6 +100,7 @@ class Generation(EvalSetup):
     def evaluate_lm(
         self,
         language_model: LanguageModel,
+        **kwargs,
     ) -> tuple[dict[str, float], list[dict[str, Any]] | None]:
         metrics = self.metrics or []
         if isinstance(metrics, Metric):
@@ -114,6 +118,7 @@ class Generation(EvalSetup):
             metrics=metrics,
             batch_size=self.batch_size,
             max_instances=self.max_instances,
+            cleanup_after_generation=kwargs.pop("cleanup_after_generation", False),
         )
 
 
@@ -137,6 +142,7 @@ class MultipleChoice(EvalSetup):
     def evaluate_lm(
         self,
         language_model: LanguageModel,
+        **kwargs,
     ) -> tuple[dict[str, float], list[dict[str, Any]] | None]:
         return evaluate_multiple_choice(
             language_model=language_model,
@@ -163,6 +169,7 @@ class Perplexity(EvalSetup):
     def evaluate_lm(
         self,
         language_model: LanguageModel,
+        **kwargs,
     ) -> tuple[dict[str, float], list[dict[str, Any]] | None]:
         metrics = evaluate_perplexity(
             language_model=language_model,
