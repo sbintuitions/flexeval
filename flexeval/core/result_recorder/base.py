@@ -46,3 +46,12 @@ class ResultRecorder(ABC):
                 dictionaries may vary depending on the specific model and task.
             group: An optional group name to organize the model outputs.
         """
+
+    def is_metrics_saved(self, group: str | None = None) -> bool:
+        """
+        Check if the evaluation metrics have already been saved.
+
+        Args:
+            group: An optional group name to check for saved metrics.
+        """
+        return False

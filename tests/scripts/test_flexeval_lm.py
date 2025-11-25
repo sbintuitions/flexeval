@@ -419,3 +419,47 @@ def test_flexeval_lm_with_num_repeats(num_repeats: int) -> None:
         else:
             for i in range(num_repeats):
                 check_if_eval_results_are_correctly_saved(f"{f}/run{i}")
+
+
+@pytest.mark.parametrize("force", [True, False])
+@pytest.mark.parametrize("retry", [True, False])
+def test_flexeval_lm_with_retry(retry: bool, force: bool) -> None:
+    with tempfile.TemporaryDirectory() as f:
+        num_repeats = 3
+        # First run to create initial results
+        command = [*CHAT_RESPONSE_CMD, "--num_repeats", str(num_repeats), "--save_dir", f]
+        result = subprocess.run(command, check=False)
+        assert result.returncode == os.EX_OK
+        for i in range(num_repeats):
+            check_if_eval_results_are_correctly_saved(f"{f}/run{i}")
+
+        # Delete metrics.json and outputs.json in run1 to simulate a failed run
+        os.remove(f"{f}/run1/{METRIC_FILE_NAME}")  # noqa: PTH107
+        os.remove(f"{f}/run1/{OUTPUTS_FILE_NAME}")  # noqa: PTH107
+
+        # Second run with resume
+        command = [
+            *CHAT_RESPONSE_CMD,
+            "--num_repeats",
+            str(num_repeats),
+            "--save_dir",
+            f,
+            "--retry",
+            str(retry).lower(),
+            "--force",
+            str(force).lower(),
+        ]
+
+        result = subprocess.run(command, check=False, capture_output=True)
+
+        if force:
+            assert "Skipping the evaluation for group: run0" not in result.stderr.decode()
+            assert "Skipping the evaluation for group: run2" not in result.stderr.decode()
+            check_if_eval_results_are_correctly_saved(f"{f}/run1")
+        elif retry:
+            assert "Skipping the evaluation for group: run0" in result.stderr.decode()
+            assert "Skipping the evaluation for group: run2" in result.stderr.decode()
+            check_if_eval_results_are_correctly_saved(f"{f}/run1")
+        elif not retry and not force:
+            assert not Path(f"{f}/run1/{METRIC_FILE_NAME}").exists()
+            assert not Path(f"{f}/run1/{OUTPUTS_FILE_NAME}").exists()
