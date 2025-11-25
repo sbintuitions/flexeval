@@ -25,7 +25,7 @@ jinja2 = "^3.1.2"
 fuzzywuzzy = "^0.18.0"
 python-levenshtein = "^0.23.0"
 rouge = "^1.0.1"
-sacrebleu = {extras = ["ja"], version = "^2.4.1"}
+sacrebleu = {extras = ["ja", "ko"], version = "^2.4.1"}
 jiwer = "^3.0.4"
 openai = "^1.52.2"
 google-api-python-client = "^2.131.0"
