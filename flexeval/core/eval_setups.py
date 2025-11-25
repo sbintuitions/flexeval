@@ -73,7 +73,7 @@ class ChatResponse(EvalSetup):
             batch_size=self.batch_size,
             max_instances=self.max_instances,
             few_shot_generator=self.few_shot_generator,
-            cleanup_after_generation = kwargs.pop("cleanup_after_generation", False)
+            cleanup_after_generation=kwargs.pop("cleanup_after_generation", False),
         )
 
 
@@ -118,7 +118,7 @@ class Generation(EvalSetup):
             metrics=metrics,
             batch_size=self.batch_size,
             max_instances=self.max_instances,
-            cleanup_after_generation = kwargs.pop("cleanup_after_generation", False)
+            cleanup_after_generation=kwargs.pop("cleanup_after_generation", False),
         )
 
 

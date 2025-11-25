@@ -169,7 +169,7 @@ def main() -> None:  # noqa: C901, PLR0912, PLR0915
         type=bool,
         default=False,
         help="Whether to clean up language model resources after each evaluation run. "
-             "This is useful when using LLM-based metrics in the same job, as it helps release GPU memory.",
+        "This is useful when using LLM-based metrics in the same job, as it helps release GPU memory.",
     )
 
     config_name_resolver = ConfigNameResolver()
