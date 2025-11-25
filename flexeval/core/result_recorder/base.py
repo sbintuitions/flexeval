@@ -47,24 +47,6 @@ class ResultRecorder(ABC):
             group: An optional group name to organize the model outputs.
         """
 
-    def is_config_saved(self, group: str | None = None) -> bool:
-        """
-        Check if the configuration has already been saved.
-
-        Args:
-            group: An optional group name to check for saved configuration.
-        """
-        return False
-
-    def is_outputs_saved(self, group: str | None = None) -> bool:
-        """
-        Check if the model outputs have already been saved.
-
-        Args:
-            group: An optional group name to check for saved outputs.
-        """
-        return False
-
     def is_metrics_saved(self, group: str | None = None) -> bool:
         """
         Check if the evaluation metrics have already been saved.

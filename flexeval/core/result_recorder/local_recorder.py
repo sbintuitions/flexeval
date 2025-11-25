@@ -94,18 +94,6 @@ class LocalRecorder(ResultRecorder):
         save_jsonl(model_outputs, output_dir / OUTPUTS_FILE_NAME)
         logger.info(f"Saved the outputs to {output_dir / OUTPUTS_FILE_NAME}")
 
-    def is_config_saved(self, group: str | None = None) -> bool:
-        output_dir = self.output_dir
-        if group is not None:
-            output_dir = self.output_dir / group
-        return (output_dir / CONFIG_FILE_NAME).exists()
-
-    def is_outputs_saved(self, group: str | None = None) -> bool:
-        output_dir = self.output_dir
-        if group is not None:
-            output_dir = self.output_dir / group
-        return (output_dir / OUTPUTS_FILE_NAME).exists()
-
     def is_metrics_saved(self, group: str | None = None) -> bool:
         output_dir = self.output_dir
         if group is not None:
