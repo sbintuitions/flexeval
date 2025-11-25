@@ -422,8 +422,8 @@ def test_flexeval_lm_with_num_repeats(num_repeats: int) -> None:
 
 
 @pytest.mark.parametrize("force", [True, False])
-@pytest.mark.parametrize("resume", [True, False])
-def test_flexeval_lm_with_resume(resume: bool, force: bool) -> None:
+@pytest.mark.parametrize("retry", [True, False])
+def test_flexeval_lm_with_resume(retry: bool, force: bool) -> None:
     with tempfile.TemporaryDirectory() as f:
         num_repeats = 3
         # First run to create initial results
@@ -444,8 +444,8 @@ def test_flexeval_lm_with_resume(resume: bool, force: bool) -> None:
             str(num_repeats),
             "--save_dir",
             f,
-            "--resume",
-            str(resume).lower(),
+            "--retry",
+            str(retry).lower(),
             "--force",
             str(force).lower(),
         ]
@@ -456,10 +456,10 @@ def test_flexeval_lm_with_resume(resume: bool, force: bool) -> None:
             assert "Skipping the evaluation for group: run0" not in result.stderr.decode()
             assert "Skipping the evaluation for group: run2" not in result.stderr.decode()
             check_if_eval_results_are_correctly_saved(f"{f}/run1")
-        elif resume:
+        elif retry:
             assert "Skipping the evaluation for group: run0" in result.stderr.decode()
             assert "Skipping the evaluation for group: run2" in result.stderr.decode()
             check_if_eval_results_are_correctly_saved(f"{f}/run1")
-        elif not resume and not force:
+        elif not retry and not force:
             assert not Path(f"{f}/run1/{METRIC_FILE_NAME}").exists()
             assert not Path(f"{f}/run1/{OUTPUTS_FILE_NAME}").exists()
