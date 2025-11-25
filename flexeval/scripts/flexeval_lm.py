@@ -10,7 +10,7 @@ import traceback
 from collections import defaultdict
 from importlib.metadata import version
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any
 
 import _jsonnet
 from jsonargparse import ActionConfigFile, ArgumentParser, Namespace
@@ -121,7 +121,7 @@ def main() -> None:  # noqa: C901, PLR0912, PLR0915
     )
     parser.add_argument(
         "--eval_setups",
-        type=Dict[str, EvalSetup],
+        type=dict[str, EvalSetup],
         help="A dictionary of evaluation setups. "
         "The key is the folder name where the outputs will be saved, and the value is the EvalSetup object. ",
         enable_path=True,
@@ -154,7 +154,7 @@ def main() -> None:  # noqa: C901, PLR0912, PLR0915
     # Metadata
     parser.add_argument(
         "--metadata",
-        type=Dict[str, Any],
+        type=dict[str, Any],
         default={},
         help="Metadata to save in config.json",
     )
@@ -248,7 +248,7 @@ def main() -> None:  # noqa: C901, PLR0912, PLR0915
                 )
             )
 
-    exit_code = 0
+    exit_code = os.EX_OK
     # run evaluation
     for eval_setup, eval_setup_config, group in eval_setups_and_metadata:
         logger.info(f"Evaluating with the setup: {eval_setup_config}")
@@ -283,7 +283,7 @@ def main() -> None:  # noqa: C901, PLR0912, PLR0915
             logger.error(
                 f"Error in evaluation:\n{e}\n{stack_trace_str}",
             )
-            exit_code = 1
+            exit_code = os.EX_DATAERR
 
     sys.exit(exit_code)
 
