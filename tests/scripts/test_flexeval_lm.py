@@ -234,7 +234,7 @@ def test_if_cli_raises_error_when_save_data_exists(command: list[str]) -> None:
         config_file = Path(f) / CONFIG_FILE_NAME
         config_file.touch()
         result = subprocess.run([*command, "--save_dir", f], check=False)
-        assert result.returncode == os.EX_OK
+        assert result.returncode == os.EX_DATAERR
         # check if config_file is not modified and empty
         assert config_file.read_text() == ""
 
@@ -326,7 +326,7 @@ class MyCustomMetric(Metric):
         check_if_eval_results_are_correctly_saved(f)
 
 
-@pytest.fixture()
+@pytest.fixture
 def mock_eval_data() -> dict:
     return {"setup": "dummy_setup_object", "config": {"task": "test", "metric": "acc"}, "group": "test_group"}
 
