@@ -423,7 +423,7 @@ def test_flexeval_lm_with_num_repeats(num_repeats: int) -> None:
 
 @pytest.mark.parametrize("force", [True, False])
 @pytest.mark.parametrize("retry", [True, False])
-def test_flexeval_lm_with_resume(retry: bool, force: bool) -> None:
+def test_flexeval_lm_with_retry(retry: bool, force: bool) -> None:
     with tempfile.TemporaryDirectory() as f:
         num_repeats = 3
         # First run to create initial results
