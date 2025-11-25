@@ -12461,6 +12461,28 @@ Please set <code>PERSPECTIVE_API_KEY</code> in the environment variable.</p>
             <p>An instance of <code>Tokenizer</code> to tokenize the input and output strings.</p>
           </div>
         </li>
+        <li class="doc-section-item field-body">
+            <b><code>max_output_tokens</code></b>
+              (<code><span title="int">int</span> | None</code>, default:
+                  <code>None</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>Maximum number of tokens to consider from model outputs.
+If specified, only model outputs will be truncated to this length.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>recursion_limit</code></b>
+              (<code><span title="int">int</span> | None</code>, default:
+                  <code>None</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>Recursion limit to set before calculating ROUGE scores.
+If specified, <code>sys.setrecursionlimit()</code> will be called with this value.</p>
+          </div>
+        </li>
     </ul>
 
 
@@ -12562,13 +12584,32 @@ Please set <code>PERSPECTIVE_API_KEY</code> in the environment variable.</p>
 <span class="normal">81</span>
 <span class="normal">82</span>
 <span class="normal">83</span>
-<span class="normal">84</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ROUGE</span><span class="p">(</span><span class="n">Metric</span><span class="p">):</span>
+<span class="normal">84</span>
+<span class="normal">85</span>
+<span class="normal">86</span>
+<span class="normal">87</span>
+<span class="normal">88</span>
+<span class="normal">89</span>
+<span class="normal">90</span>
+<span class="normal">91</span>
+<span class="normal">92</span>
+<span class="normal">93</span>
+<span class="normal">94</span>
+<span class="normal">95</span>
+<span class="normal">96</span>
+<span class="normal">97</span>
+<span class="normal">98</span>
+<span class="normal">99</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ROUGE</span><span class="p">(</span><span class="n">Metric</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;An implementation of [ROUGE](https://aclanthology.org/W04-1013/).</span>
 
 <span class="sd">    The calculation is based on the [rouge](https://github.com/pltrdy/rouge) library.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        tokenizer: An instance of `Tokenizer` to tokenize the input and output strings.</span>
+<span class="sd">        max_output_tokens: Maximum number of tokens to consider from model outputs.</span>
+<span class="sd">            If specified, only model outputs will be truncated to this length.</span>
+<span class="sd">        recursion_limit: Recursion limit to set before calculating ROUGE scores.</span>
+<span class="sd">            If specified, `sys.setrecursionlimit()` will be called with this value.</span>
 
 <span class="sd">    Examples:</span>
 <span class="sd">        &gt;&gt;&gt; from flexeval import ROUGE</span>
@@ -12588,8 +12629,12 @@ Please set <code>PERSPECTIVE_API_KEY</code> in the environment variable.</p>
 <span class="sd">        )</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tokenizer</span><span class="p">:</span> <span class="n">Tokenizer</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">tokenizer</span><span class="p">:</span> <span class="n">Tokenizer</span><span class="p">,</span> <span class="n">max_output_tokens</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">recursion_limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_tokenizer</span> <span class="o">=</span> <span class="n">tokenizer</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_max_output_tokens</span> <span class="o">=</span> <span class="n">max_output_tokens</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_recursion_limit</span> <span class="o">=</span> <span class="n">recursion_limit</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">evaluate</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -12610,15 +12655,22 @@ Please set <code>PERSPECTIVE_API_KEY</code> in the environment variable.</p>
             <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tokenizer</span><span class="o">.</span><span class="n">tokenize</span><span class="p">(</span><span class="n">target_summary</span><span class="p">))</span> <span class="k">for</span> <span class="n">target_summary</span> <span class="ow">in</span> <span class="n">target_summaries</span>
         <span class="p">]</span>
 
+        <span class="c1"># Truncate model outputs if max_output_tokens is specified</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_max_output_tokens</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">tokenized_lm_outputs</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output</span><span class="o">.</span><span class="n">split</span><span class="p">()[:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_max_output_tokens</span><span class="p">])</span> <span class="k">for</span> <span class="n">output</span> <span class="ow">in</span> <span class="n">tokenized_lm_outputs</span>
+            <span class="p">]</span>
+
         <span class="c1"># replace empty string with &quot; &quot; to avoid &quot;ValueError: Hypothesis is empty&quot; from rouge</span>
         <span class="n">tokenized_lm_outputs</span> <span class="o">=</span> <span class="p">[</span><span class="n">o</span> <span class="k">if</span> <span class="n">o</span> <span class="k">else</span> <span class="s2">&quot; &quot;</span> <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">tokenized_lm_outputs</span><span class="p">]</span>
 
-        <span class="c1"># Compute metrics</span>
-        <span class="n">rouge</span> <span class="o">=</span> <span class="n">RougeCalculator</span><span class="p">()</span>
-        <span class="n">score_outputs</span> <span class="o">=</span> <span class="n">rouge</span><span class="o">.</span><span class="n">get_scores</span><span class="p">(</span>
-            <span class="n">tokenized_lm_outputs</span><span class="p">,</span>
-            <span class="n">tokenized_target_summaries</span><span class="p">,</span>
-        <span class="p">)</span>
+        <span class="c1"># Compute metrics with recursion limit</span>
+        <span class="k">with</span> <span class="n">recursion_limit</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_recursion_limit</span><span class="p">):</span>
+            <span class="n">rouge</span> <span class="o">=</span> <span class="n">RougeCalculator</span><span class="p">()</span>
+            <span class="n">score_outputs</span> <span class="o">=</span> <span class="n">rouge</span><span class="o">.</span><span class="n">get_scores</span><span class="p">(</span>
+                <span class="n">tokenized_lm_outputs</span><span class="p">,</span>
+                <span class="n">tokenized_target_summaries</span><span class="p">,</span>
+            <span class="p">)</span>
 
         <span class="n">rouge1_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">o</span><span class="p">[</span><span class="s2">&quot;rouge-1&quot;</span><span class="p">][</span><span class="s2">&quot;f&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">score_outputs</span><span class="p">]</span>
         <span class="n">rouge2_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">o</span><span class="p">[</span><span class="s2">&quot;rouge-2&quot;</span><span class="p">][</span><span class="s2">&quot;f&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">score_outputs</span><span class="p">]</span>
@@ -12658,7 +12710,11 @@ Please set <code>PERSPECTIVE_API_KEY</code> in the environment variable.</p>
 
 
 <a href="#flexeval.core.metric.rouge.ROUGE.__init__" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="fm">__init__</span><span class="p">(</span><span class="nf">tokenizer</span><span class="p">:</span> <span class="n">Tokenizer</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="fm">__init__</span><span class="p">(</span>
+    <span class="nf">tokenizer</span><span class="p">:</span> <span class="n">Tokenizer</span><span class="p">,</span>
+    <span class="n">max_output_tokens</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">recursion_limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -12666,9 +12722,17 @@ Please set <code>PERSPECTIVE_API_KEY</code> in the environment variable.</p>
 
             <details class="quote">
               <summary>Source code in <code>flexeval/core/metric/rouge.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">38</span>
-<span class="normal">39</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tokenizer</span><span class="p">:</span> <span class="n">Tokenizer</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span> <span class="n">tokenizer</span><span class="p">:</span> <span class="n">Tokenizer</span><span class="p">,</span> <span class="n">max_output_tokens</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">recursion_limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_tokenizer</span> <span class="o">=</span> <span class="n">tokenizer</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_max_output_tokens</span> <span class="o">=</span> <span class="n">max_output_tokens</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_recursion_limit</span> <span class="o">=</span> <span class="n">recursion_limit</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -12695,15 +12759,7 @@ Please set <code>PERSPECTIVE_API_KEY</code> in the environment variable.</p>
 
             <details class="quote">
               <summary>Source code in <code>flexeval/core/metric/rouge.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">41</span>
-<span class="normal">42</span>
-<span class="normal">43</span>
-<span class="normal">44</span>
-<span class="normal">45</span>
-<span class="normal">46</span>
-<span class="normal">47</span>
-<span class="normal">48</span>
-<span class="normal">49</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">49</span>
 <span class="normal">50</span>
 <span class="normal">51</span>
 <span class="normal">52</span>
@@ -12738,7 +12794,22 @@ Please set <code>PERSPECTIVE_API_KEY</code> in the environment variable.</p>
 <span class="normal">81</span>
 <span class="normal">82</span>
 <span class="normal">83</span>
-<span class="normal">84</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">evaluate</span><span class="p">(</span>
+<span class="normal">84</span>
+<span class="normal">85</span>
+<span class="normal">86</span>
+<span class="normal">87</span>
+<span class="normal">88</span>
+<span class="normal">89</span>
+<span class="normal">90</span>
+<span class="normal">91</span>
+<span class="normal">92</span>
+<span class="normal">93</span>
+<span class="normal">94</span>
+<span class="normal">95</span>
+<span class="normal">96</span>
+<span class="normal">97</span>
+<span class="normal">98</span>
+<span class="normal">99</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">evaluate</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">lm_outputs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span> <span class="o">|</span> <span class="n">LMOutput</span><span class="p">],</span>
     <span class="n">references_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span>
@@ -12757,15 +12828,22 @@ Please set <code>PERSPECTIVE_API_KEY</code> in the environment variable.</p>
         <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tokenizer</span><span class="o">.</span><span class="n">tokenize</span><span class="p">(</span><span class="n">target_summary</span><span class="p">))</span> <span class="k">for</span> <span class="n">target_summary</span> <span class="ow">in</span> <span class="n">target_summaries</span>
     <span class="p">]</span>
 
+    <span class="c1"># Truncate model outputs if max_output_tokens is specified</span>
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_max_output_tokens</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">tokenized_lm_outputs</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output</span><span class="o">.</span><span class="n">split</span><span class="p">()[:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_max_output_tokens</span><span class="p">])</span> <span class="k">for</span> <span class="n">output</span> <span class="ow">in</span> <span class="n">tokenized_lm_outputs</span>
+        <span class="p">]</span>
+
     <span class="c1"># replace empty string with &quot; &quot; to avoid &quot;ValueError: Hypothesis is empty&quot; from rouge</span>
     <span class="n">tokenized_lm_outputs</span> <span class="o">=</span> <span class="p">[</span><span class="n">o</span> <span class="k">if</span> <span class="n">o</span> <span class="k">else</span> <span class="s2">&quot; &quot;</span> <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">tokenized_lm_outputs</span><span class="p">]</span>
 
-    <span class="c1"># Compute metrics</span>
-    <span class="n">rouge</span> <span class="o">=</span> <span class="n">RougeCalculator</span><span class="p">()</span>
-    <span class="n">score_outputs</span> <span class="o">=</span> <span class="n">rouge</span><span class="o">.</span><span class="n">get_scores</span><span class="p">(</span>
-        <span class="n">tokenized_lm_outputs</span><span class="p">,</span>
-        <span class="n">tokenized_target_summaries</span><span class="p">,</span>
-    <span class="p">)</span>
+    <span class="c1"># Compute metrics with recursion limit</span>
+    <span class="k">with</span> <span class="n">recursion_limit</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_recursion_limit</span><span class="p">):</span>
+        <span class="n">rouge</span> <span class="o">=</span> <span class="n">RougeCalculator</span><span class="p">()</span>
+        <span class="n">score_outputs</span> <span class="o">=</span> <span class="n">rouge</span><span class="o">.</span><span class="n">get_scores</span><span class="p">(</span>
+            <span class="n">tokenized_lm_outputs</span><span class="p">,</span>
+            <span class="n">tokenized_target_summaries</span><span class="p">,</span>
+        <span class="p">)</span>
 
     <span class="n">rouge1_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">o</span><span class="p">[</span><span class="s2">&quot;rouge-1&quot;</span><span class="p">][</span><span class="s2">&quot;f&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">score_outputs</span><span class="p">]</span>
     <span class="n">rouge2_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">o</span><span class="p">[</span><span class="s2">&quot;rouge-2&quot;</span><span class="p">][</span><span class="s2">&quot;f&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">score_outputs</span><span class="p">]</span>
