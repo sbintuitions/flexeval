@@ -144,7 +144,7 @@ def execute_conversation_flow(
             yield output
 
 
-def evaluate_chat_response(  # noqa: C901
+def evaluate_chat_response(  # noqa: C901, PLR0912
     language_model: LanguageModel,
     gen_kwargs: dict[str, Any],
     eval_dataset: Sequence[ChatInstance],
@@ -152,6 +152,7 @@ def evaluate_chat_response(  # noqa: C901
     batch_size: int,
     few_shot_generator: FewShotGenerator | None = None,
     max_instances: int | None = None,
+    cleanup_after_generation: bool = True,
 ) -> tuple[dict[str, float], list[dict[str, Any]]]:
     logger.info(f"Evaluate the model with gen_kwargs: {gen_kwargs}")
 
@@ -180,7 +181,8 @@ def evaluate_chat_response(  # noqa: C901
             logger.info(json.dumps(output, ensure_ascii=False, indent=4, cls=Base64TruncatingJSONEncoder))
         outputs.append(output)
 
-    language_model.cleanup_resources()
+    if cleanup_after_generation:
+        language_model.cleanup_resources()
 
     # Evaluate the generated responses
     metrics_summary_dict: dict[str, float] = {}

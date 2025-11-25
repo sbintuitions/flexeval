@@ -22,6 +22,7 @@ def evaluate_generation(  # noqa: C901
     batch_size: int,
     max_instances: int | None = None,
     few_shot_generator: FewShotGenerator | None = None,
+    cleanup_after_generation: bool = True,
 ) -> tuple[dict[str, float], list[dict[str, Any]]]:
     logger.info(f"Evaluate the model with gen_kwargs: {gen_kwargs}")
     logger.info(f"Prompt template: {prompt_template}")
@@ -68,7 +69,8 @@ def evaluate_generation(  # noqa: C901
 
             pbar.update(len(batch))
 
-    language_model.cleanup_resources()
+    if cleanup_after_generation:
+        language_model.cleanup_resources()
 
     # Evaluate the generated continuations
     metrics_summary_dict: dict[str, float] = {}
