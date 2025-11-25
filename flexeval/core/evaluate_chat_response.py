@@ -152,7 +152,7 @@ def evaluate_chat_response(  # noqa: C901, PLR0912
     batch_size: int,
     few_shot_generator: FewShotGenerator | None = None,
     max_instances: int | None = None,
-    cleanup_after_generation: bool = True,
+    cleanup_after_generation: bool = False,
 ) -> tuple[dict[str, float], list[dict[str, Any]]]:
     logger.info(f"Evaluate the model with gen_kwargs: {gen_kwargs}")
 
