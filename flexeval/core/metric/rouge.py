@@ -72,7 +72,7 @@ class ROUGE(Metric):
             ]
 
         # replace empty string with " " to avoid "ValueError: Hypothesis is empty" from rouge
-        tokenized_lm_outputs = [o if o else " " for o in tokenized_lm_outputs]
+        tokenized_lm_outputs = [o if o.strip(".") else " " for o in tokenized_lm_outputs]
 
         # Compute metrics with recursion limit
         with recursion_limit(self._recursion_limit):
