@@ -74,7 +74,7 @@ class ROUGE(Metric):
         # replace empty string with " " to avoid "ValueError: Hypothesis is empty" from rouge
         new_tokenized_lm_outputs = []
         for lm_output in tokenized_lm_outputs:
-            # if lm_output is empty or only contains ".", replace with " "
+            # ROUGE raises "Hypothesis is empty." ValueError when lm_output contains only punctuation or is empty.
             if lm_output and lm_output != ".":
                 new_tokenized_lm_outputs.append(lm_output)
             else:
