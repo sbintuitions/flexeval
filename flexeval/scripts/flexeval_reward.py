@@ -4,7 +4,7 @@ import os
 import sys
 from importlib.metadata import version
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any
 
 from jsonargparse import ActionConfigFile, ArgumentParser
 from loguru import logger
@@ -61,7 +61,7 @@ def main() -> None:
     # Metadata
     parser.add_argument(
         "--metadata",
-        type=Dict[str, Any],
+        type=dict[str, Any],
         default={},
         help="Metadata to save in config.json",
     )

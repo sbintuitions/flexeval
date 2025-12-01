@@ -2,7 +2,8 @@ from __future__ import annotations
 
 import os
 import time
-from typing import Any, Callable
+from collections.abc import Callable
+from typing import Any
 
 import numpy as np
 from googleapiclient import discovery
@@ -83,7 +84,7 @@ class PerspectiveAPI(Metric):
         instance_details = []
         for lm_output in lm_outputs:
             if lm_output == "":
-                instance_details.append({att: 0.0 for att in self.attributes})
+                instance_details.append(dict.fromkeys(self.attributes, 0.0))
                 continue
             analyze_request = {
                 "comment": {"text": lm_output},

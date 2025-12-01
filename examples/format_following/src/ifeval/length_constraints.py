@@ -130,7 +130,7 @@ class NumberSentences(ResponseConstraint):
         return False
 
 
-@functools.lru_cache(maxsize=None)
+@functools.lru_cache
 def _get_sentence_tokenizer() -> nltk.tokenize.punkt.PunktSentenceTokenizer:
     nltk.download("punkt_tab", quiet=True)
     return nltk.data.load("nltk:tokenizers/punkt/english.pickle")

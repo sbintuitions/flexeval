@@ -3,8 +3,9 @@ from __future__ import annotations
 import itertools
 import os
 import time
+from collections.abc import Callable
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from typing import Any, Callable, TypeVar
+from typing import Any, TypeVar
 
 import openai
 import tiktoken

@@ -6,7 +6,7 @@ import sys
 from abc import ABC, abstractmethod
 from importlib.metadata import version
 from pathlib import Path
-from typing import Any, Dict, List, Union
+from typing import Any, Union
 
 import _jsonnet
 from jsonargparse import ActionConfigFile, ArgumentParser
@@ -69,7 +69,7 @@ def main() -> None:  # noqa: C901, PLR0912, PLR0915
     )
     parser.add_argument(
         "--metrics",
-        type=Union[List[Metric], Metric],
+        type=Union[list[Metric], Metric],
         required=True,
         help="You can specify the parameters, the path to the config file, or the name of the preset config.",
     )
@@ -108,7 +108,7 @@ def main() -> None:  # noqa: C901, PLR0912, PLR0915
     # Metadata
     parser.add_argument(
         "--metadata",
-        type=Dict[str, Any],
+        type=dict[str, Any],
         default={},
         help="Metadata to save in config.json",
     )

@@ -146,7 +146,7 @@ class OpenAIChatBatchAPI(LanguageModel):
         self.create_batch_file(custom_id_2_input, **gen_kwargs)
 
         # Update batch file
-        with open(self.temp_jsonl_file.name, "rb") as batch_file:  # noqa: ASYNC101
+        with open(self.temp_jsonl_file.name, "rb") as batch_file:
             batch_input_file = await self._client.files.create(file=batch_file, purpose="batch")
 
         # Run Job
@@ -190,7 +190,7 @@ class OpenAIChatBatchAPI(LanguageModel):
             for messages, tools in zip(messages_list, tools_list)
         }
         # The response will be an empty string if the API produces an error.
-        custom_id_2_response: dict[str, str | list[dict[str, Any]]] = {custom_id: "" for custom_id in custom_id_2_input}
+        custom_id_2_response: dict[str, str | list[dict[str, Any]]] = dict.fromkeys(custom_id_2_input, "")
         exec_cnt = 1
 
         while len(custom_id_2_input) > 0:
