@@ -101,7 +101,6 @@ ignore = [
     "G",  # flake8-logging-format
     "TD", # flake8-todos
     "ANN003",  # missing-type-kwargs
-    "ANN101",  # missing-type-self
     "ARG002",  # unused-method-argument
     "FIX002",  # line-contains-todo
     "PLR0913",  # too-many-arguments
@@ -112,10 +111,11 @@ ignore = [
     "RUF002", # ambiguous-unicode-character-docstring
     "S311",  # suspicious-non-cryptographic-random-usage
     "S603",  # subprocess-without-shell-equals-true
-    "TCH001",  # typing-only-first-party-import
-    "TCH002",  # typing-only-third-party-import
-    "TCH003",  # typing-only-standard-library-import
+    "TC001",  # typing-only-first-party-import
+    "TC002",  # typing-only-third-party-import
+    "TC003",  # typing-only-standard-library-import
     "PLC0415", # `import` should be at the top-level of a file
+    "B905",  # `zip()` without an explicit `strict=` parameter
 ]
 
 [tool.ruff.lint.per-file-ignores]

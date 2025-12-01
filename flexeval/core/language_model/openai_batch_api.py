@@ -84,7 +84,7 @@ class OpenAIChatBatchAPI(LanguageModel):
         # convert the flexeval-specific argument name to the OpenAI-specific name
         if "max_new_tokens" in self.default_gen_kwargs:
             self.default_gen_kwargs["max_completion_tokens"] = self.default_gen_kwargs.pop("max_new_tokens")
-        self.temp_jsonl_file = tempfile.NamedTemporaryFile(delete=False, suffix=".jsonl")
+        self.temp_jsonl_file = tempfile.NamedTemporaryFile(delete=False, suffix=".jsonl")  # noqa: SIM115
 
         self.polling_interval_seconds = polling_interval_seconds
         self.developer_message = developer_message
@@ -146,7 +146,7 @@ class OpenAIChatBatchAPI(LanguageModel):
         self.create_batch_file(custom_id_2_input, **gen_kwargs)
 
         # Update batch file
-        with open(self.temp_jsonl_file.name, "rb") as batch_file:
+        with open(self.temp_jsonl_file.name, "rb") as batch_file:  # noqa: ASYNC230
             batch_input_file = await self._client.files.create(file=batch_file, purpose="batch")
 
         # Run Job

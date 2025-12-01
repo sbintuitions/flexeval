@@ -44,8 +44,8 @@ def test_finish_reason_count_functionality(
     """Test FinishReasonCount metric functionality with various finish reason combinations."""
     metric = FinishReasonCount()
 
-    lm_outputs = [LMOutput(text=f"Response {i+1}", finish_reason=reason) for i, reason in enumerate(finish_reasons)]
-    references_list = [[f"ref{i+1}"] for i in range(len(finish_reasons))]
+    lm_outputs = [LMOutput(text=f"Response {i + 1}", finish_reason=reason) for i, reason in enumerate(finish_reasons)]
+    references_list = [[f"ref{i + 1}"] for i in range(len(finish_reasons))]
 
     result = metric.evaluate(lm_outputs, references_list)
 

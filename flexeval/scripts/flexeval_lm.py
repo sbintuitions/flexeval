@@ -204,7 +204,7 @@ def main() -> None:  # noqa: C901, PLR0912, PLR0915
             overrides_for_eval_setups[setup_name][override_key] = sys.argv[i + 1]
             indices_to_pop += [i, i + 1]
     sys.argv = [a for i, a in enumerate(sys.argv) if i not in indices_to_pop]
-    for eval_key in params_for_eval_setups:
+    for eval_key in params_for_eval_setups:  # noqa: PLC0206
         for override_key, override_value in overrides_for_eval_setups[eval_key].items():
             override_jsonargparse_params(params_for_eval_setups[eval_key], override_key, override_value)
     for eval_key, eval_config in params_for_eval_setups.items():

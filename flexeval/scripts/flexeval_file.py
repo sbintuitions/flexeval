@@ -6,7 +6,7 @@ import sys
 from abc import ABC, abstractmethod
 from importlib.metadata import version
 from pathlib import Path
-from typing import Any, Union
+from typing import Any
 
 import _jsonnet
 from jsonargparse import ActionConfigFile, ArgumentParser
@@ -69,13 +69,13 @@ def main() -> None:  # noqa: C901, PLR0912, PLR0915
     )
     parser.add_argument(
         "--metrics",
-        type=Union[list[Metric], Metric],
+        type=list[Metric] | Metric,
         required=True,
         help="You can specify the parameters, the path to the config file, or the name of the preset config.",
     )
     parser.add_argument(
         "--eval_dataset",
-        type=Union[GenerationDataset, ChatDataset],
+        type=GenerationDataset | ChatDataset,
         default=None,
         help="If specified, override the references with the ones from the generation_dataset.",
     )

@@ -79,7 +79,7 @@ def summarize_evaluator_labels(
         category2mean_score[category] = score
         category2dist[category] = calc_label_dist(valid_labels, label_names)
 
-    for category in category2mean_score:
+    for category in category2mean_score:  # noqa: PLC0206
         summary[f"{score_key}/{category}"] = category2mean_score[category]
         summary[f"{dist_key}/{category}"] = category2dist[category]
 

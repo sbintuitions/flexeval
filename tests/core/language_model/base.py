@@ -193,7 +193,7 @@ class BaseLanguageModelTest:
         ]
         try:
             with pytest.raises(
-                ValueError, match="tools_list must be either None or a list of the same length as chat_messages_list."
+                ValueError, match=r"tools_list must be either None or a list of the same length as chat_messages_list."
             ):
                 chat_lm_for_tool_calling.generate_chat_response(
                     [
