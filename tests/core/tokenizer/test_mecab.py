@@ -5,7 +5,7 @@ import pytest
 from flexeval import MecabTokenizer
 
 
-@pytest.fixture()
+@pytest.fixture
 def mocked_fugashi_tagger() -> Mock:
     # Mock fugashi.Tagger as it requires downloading the MeCab dictionary
     with patch("fugashi.Tagger") as mock_tagger:

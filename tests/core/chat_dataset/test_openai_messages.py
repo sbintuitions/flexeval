@@ -19,7 +19,7 @@ TEST_CHAT_MESSAGES = [
 ]
 
 
-@pytest.fixture()
+@pytest.fixture
 def jsonl_data_factory(tmp_path) -> Callable:  # noqa: ANN001
     def _create(
         message_key: str, messages_list: list[dict], num_samples: int = 10, extra_info: dict | None = None
@@ -160,7 +160,7 @@ TEST_CHAT_MESSAGES_WITH_TOOLS = [
 ]
 
 
-@pytest.fixture()
+@pytest.fixture
 def mock_chat_messages_with_tools_data_path() -> None:
     with tempfile.NamedTemporaryFile(mode="w", suffix=".jsonl") as f:
         for messages in TEST_CHAT_MESSAGES_WITH_TOOLS:

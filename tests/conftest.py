@@ -14,7 +14,7 @@ def is_vllm_enabled() -> bool:
         return False
 
 
-@pytest.fixture()
+@pytest.fixture
 def caplog(caplog: pytest.LogCaptureFixture) -> Generator[pytest.LogCaptureFixture, Any, None]:
     handler_id = logger.add(caplog.handler, format="{message}")
     yield caplog

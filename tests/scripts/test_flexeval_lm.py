@@ -326,7 +326,7 @@ class MyCustomMetric(Metric):
         check_if_eval_results_are_correctly_saved(f)
 
 
-@pytest.fixture()
+@pytest.fixture
 def mock_eval_data() -> dict:
     return {"setup": "dummy_setup_object", "config": {"task": "test", "metric": "acc"}, "group": "test_group"}
 

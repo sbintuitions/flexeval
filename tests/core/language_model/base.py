@@ -27,7 +27,7 @@ class BaseLanguageModelTest:
         ```
     """
 
-    @pytest.fixture()
+    @pytest.fixture
     @abstractmethod
     def lm(self, *args, **kwargs) -> LanguageModel:  # noqa: ANN002
         """Return an instance of the LanguageModel.
@@ -36,7 +36,7 @@ class BaseLanguageModelTest:
         msg = "Subclasses must implement model fixture"
         raise NotImplementedError(msg)
 
-    @pytest.fixture()
+    @pytest.fixture
     @abstractmethod
     def chat_lm(self, *args, **kwargs) -> LanguageModel:  # noqa: ANN002
         """Return an instance of the LanguageModel.
@@ -45,7 +45,7 @@ class BaseLanguageModelTest:
         msg = "Subclasses must implement model fixture"
         raise NotImplementedError(msg)
 
-    @pytest.fixture()
+    @pytest.fixture
     @abstractmethod
     def chat_lm_for_tool_calling(self, *args, **kwargs) -> LanguageModel:  # noqa: ANN002
         """Return an instance of the LanguageModel.

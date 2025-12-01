@@ -20,15 +20,15 @@ def lm() -> OpenAICompletionAPI:
 
 @pytest.mark.skipif(not is_openai_enabled(), reason="OpenAI API Key is not set")
 class TestOpenAICompletionAPI(BaseLanguageModelTest):
-    @pytest.fixture()
+    @pytest.fixture
     def lm(self, lm: OpenAICompletionAPI) -> LanguageModel:
         return lm
 
-    @pytest.fixture()
+    @pytest.fixture
     def chat_lm(self, lm: OpenAICompletionAPI) -> LanguageModel:
         return lm
 
-    @pytest.fixture()
+    @pytest.fixture
     def chat_lm_for_tool_calling(self, lm: OpenAICompletionAPI) -> LanguageModel:
         return lm
 
