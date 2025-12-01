@@ -54,7 +54,7 @@ wandb = ["wandb"]
 pytest = "^7.4.3"
 pytest-mock = "^3.14.0"
 taskipy = "^1.12.0"
-ruff = "^0.4.5"
+ruff = "^0.14.7"
 pytest-xdist = "^3.7.0"
 
 [tool.poetry.group.docs.dependencies]
@@ -115,6 +115,7 @@ ignore = [
     "TCH001",  # typing-only-first-party-import
     "TCH002",  # typing-only-third-party-import
     "TCH003",  # typing-only-standard-library-import
+    "PLC0415", # `import` should be at the top-level of a file
 ]
 
 [tool.ruff.lint.per-file-ignores]
