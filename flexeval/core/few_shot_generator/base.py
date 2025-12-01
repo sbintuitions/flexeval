@@ -1,14 +1,14 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import Any, Union
+from typing import Any
 
 from flexeval.core.chat_dataset import ChatDataset, ChatInstance
 from flexeval.core.generation_dataset import GenerationDataset, GenerationInstance
 from flexeval.core.multiple_choice_dataset import MultipleChoiceDataset, MultipleChoiceInstance
 
-Dataset = Union[GenerationDataset, MultipleChoiceDataset, ChatDataset]
-Instance = Union[GenerationInstance, MultipleChoiceInstance, ChatInstance]
+Dataset = GenerationDataset | MultipleChoiceDataset | ChatDataset
+Instance = GenerationInstance | MultipleChoiceInstance | ChatInstance
 
 
 class FewShotGenerator(ABC):

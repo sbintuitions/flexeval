@@ -59,7 +59,7 @@ def evaluate_multiple_choice(
             if batch_id == 0:
                 logger.info("Example of the model inputs and outputs:")
                 logger.info(f"prefix: {batch_prefixes[0]}")
-                logger.info(f"choices: {batch_choices[:len(eval_instance.choices)]}")
+                logger.info(f"choices: {batch_choices[: len(eval_instance.choices)]}")
 
             batch_log_probs = language_model.compute_log_probs(
                 text_list=batch_choices,

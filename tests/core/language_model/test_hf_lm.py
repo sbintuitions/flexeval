@@ -2,7 +2,8 @@ from __future__ import annotations
 
 import functools
 import logging
-from typing import Any, Callable
+from collections.abc import Callable
+from typing import Any
 from unittest.mock import patch
 
 import pytest
@@ -87,15 +88,15 @@ def chat_lm_without_system_message(model_name: str = "sbintuitions/tiny-lm-chat"
 
 
 class TestHuggingFaceLM(BaseLanguageModelTest):
-    @pytest.fixture()
+    @pytest.fixture
     def lm(self, lm: HuggingFaceLM) -> LanguageModel:
         return lm
 
-    @pytest.fixture()
+    @pytest.fixture
     def chat_lm(self, chat_lm: HuggingFaceLM) -> LanguageModel:
         return chat_lm
 
-    @pytest.fixture()
+    @pytest.fixture
     def chat_lm_for_tool_calling(self, chat_lm_for_tool_calling: HuggingFaceLM) -> HuggingFaceLM:
         return chat_lm_for_tool_calling
 

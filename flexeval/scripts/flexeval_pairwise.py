@@ -4,7 +4,7 @@ import os
 import sys
 from importlib.metadata import version
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any
 
 import _jsonnet
 from jsonargparse import ActionConfigFile, ArgumentParser
@@ -22,12 +22,12 @@ from .common import (
 
 def main() -> None:
     parser = ArgumentParser(parser_mode="jsonnet")
-    parser.add_argument("--lm_output_paths", type=Dict[str, str], required=True)
+    parser.add_argument("--lm_output_paths", type=dict[str, str], required=True)
     parser.add_argument("--judge", type=PairwiseJudge, required=True, enable_path=True)
     parser.add_argument("--match_maker", type=MatchMaker, default={"class_path": "AllCombinations"})
     parser.add_argument(
         "--scorers",
-        type=List[PairwiseScorer],
+        type=list[PairwiseScorer],
         default=[{"class_path": "WinRateScorer"}, {"class_path": "BradleyTerryScorer"}],
     )
     parser.add_argument("--batch_size", type=int, default=4)
@@ -65,7 +65,7 @@ def main() -> None:
     # Metadata
     parser.add_argument(
         "--metadata",
-        type=Dict[str, Any],
+        type=dict[str, Any],
         default={},
         help="Metadata to save in config.json",
     )

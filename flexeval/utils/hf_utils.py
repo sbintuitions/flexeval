@@ -47,8 +47,7 @@ def get_default_model_kwargs(model_kwargs: None | dict[str, Any] = None) -> dict
         # Convert string to torch.dtype
         # We allow either "bfloat16" or "torch.bfloat16"
         torch_dtype_str = model_kwargs["torch_dtype"]
-        if torch_dtype_str.startswith("torch."):
-            torch_dtype_str = torch_dtype_str[len("torch.") :]
+        torch_dtype_str = torch_dtype_str.removeprefix("torch.")
         model_kwargs["torch_dtype"] = getattr(torch, torch_dtype_str)
         if not isinstance(model_kwargs["torch_dtype"], torch.dtype):
             msg = f"Invalid torch_dtype: {model_kwargs['torch_dtype']}"

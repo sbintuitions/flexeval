@@ -6,7 +6,8 @@ import socket
 import subprocess
 import threading
 import time
-from typing import IO, Any, Callable
+from collections.abc import Callable
+from typing import IO, Any
 
 import requests
 import torch

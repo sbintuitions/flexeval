@@ -60,10 +60,7 @@ def _nested_dict_to_markdown(d: dict[str, Any], level: int = 0, current_path: st
 with mkdocs_gen_files.open(Path("preset_configs") / "index.md", "w") as fd:
     fd.write("# Preset Configs\n")
     fd.write(
-        "You can check the config using the following command:\n"
-        "```bash\n"
-        "flexeval_presets <config_name>\n"
-        "```\n",
+        "You can check the config using the following command:\n```bash\nflexeval_presets <config_name>\n```\n",
     )
     fd.write(_nested_dict_to_markdown(all_pages))
 

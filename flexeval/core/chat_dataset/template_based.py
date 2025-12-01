@@ -8,7 +8,7 @@ from typing import Any
 
 import datasets
 from jinja2 import Template
-from smart_open import open
+from smart_open import open  # noqa: A004
 
 from flexeval.core.utils.jinja2_utils import JINJA2_ENV
 
@@ -120,8 +120,7 @@ class TemplateChatDataset(ChatDataset):
             reference_list_string = self.reference_list_template.render(**item)
             if not (reference_list_string.startswith("[") and reference_list_string.endswith("]")):
                 msg = (
-                    f"The reference_list_template should render a list of strings "
-                    f"but we got `{reference_list_string}`."
+                    f"The reference_list_template should render a list of strings but we got `{reference_list_string}`."
                 )
                 raise ValueError(msg)
             reference_list.extend([str(ref) for ref in literal_eval(reference_list_string)])

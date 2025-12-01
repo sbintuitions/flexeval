@@ -26,7 +26,7 @@ def chat_lm() -> OpenAIChatAPI:
 
 @pytest.mark.skipif(not is_openai_enabled(), reason="OpenAI API Key is not set")
 class TestOpenAIChatAPI(BaseLanguageModelTest):
-    @pytest.fixture()
+    @pytest.fixture
     def lm(self) -> LanguageModel:
         return OpenAIChatAPI(
             "gpt-4o-mini-2024-07-18",
@@ -36,11 +36,11 @@ class TestOpenAIChatAPI(BaseLanguageModelTest):
             "Do not provide the answer or any other information.",
         )
 
-    @pytest.fixture()
+    @pytest.fixture
     def chat_lm(self, chat_lm: OpenAIChatAPI) -> LanguageModel:
         return chat_lm
 
-    @pytest.fixture()
+    @pytest.fixture
     def chat_lm_for_tool_calling(self, chat_lm: OpenAIChatAPI) -> OpenAIChatAPI:
         return chat_lm
 

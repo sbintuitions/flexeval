@@ -59,7 +59,7 @@ class SubstringMatch(Metric):
         ]
 
         score = 0.0
-        if len(match_list):
+        if match_list:
             score = sum(match_list) / len(match_list)
 
         summary = {f"substring_match-{self.mode}": score}

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import itertools
-from typing import Iterable
+from collections.abc import Iterable
 
 from flexeval.core.pairwise_comparison.match import Match
 

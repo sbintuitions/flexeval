@@ -5,7 +5,7 @@ from typing import Any
 
 import datasets
 from jinja2 import Template
-from smart_open import open
+from smart_open import open  # noqa: A004
 
 from flexeval.core.utils.jinja2_utils import JINJA2_ENV
 

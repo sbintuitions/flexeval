@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import itertools
 import random
-from typing import Iterable
+from collections.abc import Iterable
 
 from flexeval.core.pairwise_comparison.match import Match
 
@@ -25,7 +25,7 @@ class RandomCombinations(MatchMaker):
 
         cached_matches = cached_matches or []
         cache_dict = {match.get_key_for_cache(): match for match in cached_matches}
-        model_match_counter: dict[str, int] = {name: 0 for name in model_names}
+        model_match_counter: dict[str, int] = dict.fromkeys(model_names, 0)
         possible_new_matches: list[Match] = []
         matches: list[Match] = []
         for m1, m2 in all_permutations:
