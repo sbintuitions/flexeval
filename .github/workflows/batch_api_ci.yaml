@@ -33,7 +33,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          poetry install --only main,dev --all-extras
+          poetry install --only main,dev --extras wandb
 
       - name: Run tests
         run: |
