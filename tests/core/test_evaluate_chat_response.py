@@ -66,6 +66,8 @@ def test_evaluate_chat_response(
     # Therefore, in any case the system message should be in the first turn.
     assert outputs[0]["extra_info"]["messages"][0]["role"] == "system"
 
+    assert outputs[0]["extra_info"]["reasoning_text"] == "reasoning_text"
+
     if use_tools:
         assert isinstance(outputs[0]["extra_info"]["tool_calls"], list)
         assert isinstance(outputs[0]["extra_info"]["tools"], list)

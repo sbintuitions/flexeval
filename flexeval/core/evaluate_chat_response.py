@@ -128,6 +128,7 @@ def execute_conversation_flow(
                         if lm_output.tool_call_validation_result
                         else {}
                     )
+                    | ({"reasoning_text": lm_output.reasoning_text} if lm_output.reasoning_text else {})
                 )
                 current_chat_history[batch_i].insert(response_context_indices[batch_i], lm_output_message)
                 last_lm_outputs[batch_i] = lm_output
@@ -216,6 +217,8 @@ def evaluate_chat_response(  # noqa: C901, PLR0912
     restructured_outputs: list[dict[str, Any]] = []
     for output in outputs:
         extra_info = output["chat_instance"].extra_info | {"messages": output["messages"]}
+        if output["lm_output"].reasoning_text:
+            extra_info["reasoning_text"] = output["lm_output"].reasoning_text
         if output["lm_output"].tool_calls:
             extra_info["tool_calls"] = output["lm_output"].tool_calls
         if output["chat_instance"].tools:
