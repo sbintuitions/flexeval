@@ -4,7 +4,8 @@ import contextlib
 import copy
 import gc
 import json
-from typing import Any, Callable, Literal, TypeVar
+from collections.abc import Callable
+from typing import Any, Literal, TypeVar
 
 import torch
 import torch.nn.functional as F  # noqa: N812

@@ -20,9 +20,9 @@ def chat_lm() -> OpenAIChatBatchAPI:
 
 
 @pytest.mark.skipif(not is_openai_enabled(), reason="OpenAI API Key is not set")
-@pytest.mark.batch_api()
+@pytest.mark.batch_api
 class TestOpenAIChatBatchAPI(BaseLanguageModelTest):
-    @pytest.fixture()
+    @pytest.fixture
     def lm(self) -> LanguageModel:
         return OpenAIChatBatchAPI(
             "gpt-4o-mini-2024-07-18",
@@ -32,11 +32,11 @@ class TestOpenAIChatBatchAPI(BaseLanguageModelTest):
             "Do not provide the answer or any other information.",
         )
 
-    @pytest.fixture()
+    @pytest.fixture
     def chat_lm(self, chat_lm: OpenAIChatBatchAPI) -> LanguageModel:
         return chat_lm
 
-    @pytest.fixture()
+    @pytest.fixture
     def chat_lm_for_tool_calling(self, chat_lm: OpenAIChatBatchAPI) -> OpenAIChatBatchAPI:
         return chat_lm
 
@@ -50,7 +50,7 @@ class TestOpenAIChatBatchAPI(BaseLanguageModelTest):
 
 
 @pytest.mark.skipif(not is_openai_enabled(), reason="OpenAI is not installed")
-@pytest.mark.batch_api()
+@pytest.mark.batch_api
 def test_create_batch_file(chat_lm: OpenAIChatBatchAPI) -> None:
     chat_lm.create_batch_file(
         {str(i): {"messages": [[{"role": "user", "content": "こんにちは。"}]], "tools": None} for i in range(10)},
@@ -63,7 +63,7 @@ def test_create_batch_file(chat_lm: OpenAIChatBatchAPI) -> None:
 
 
 @pytest.mark.skipif(not is_openai_enabled(), reason="OpenAI is not installed")
-@pytest.mark.batch_api()
+@pytest.mark.batch_api
 def test_warning_if_conflict_max_new_tokens(caplog: pytest.LogCaptureFixture) -> None:
     caplog.set_level(logging.WARNING)
     chat_lm_with_max_new_tokens = OpenAIChatBatchAPI(
@@ -77,7 +77,7 @@ def test_warning_if_conflict_max_new_tokens(caplog: pytest.LogCaptureFixture) ->
 
 
 @pytest.mark.skipif(not is_openai_enabled(), reason="OpenAI is not installed")
-@pytest.mark.batch_api()
+@pytest.mark.batch_api
 def test_compute_chat_log_probs_for_multi_tokens(chat_lm: OpenAIChatBatchAPI) -> None:
     prompt = [{"role": "user", "content": "Hello."}]
     response = {"role": "assistant", "content": "Hello~~~"}
@@ -86,7 +86,7 @@ def test_compute_chat_log_probs_for_multi_tokens(chat_lm: OpenAIChatBatchAPI) ->
 
 
 @pytest.mark.skipif(not is_openai_enabled(), reason="OpenAI is not installed")
-@pytest.mark.batch_api()
+@pytest.mark.batch_api
 def test_developer_message() -> None:
     openai_api = OpenAIChatBatchAPI(
         "gpt-4o-mini-2024-07-18",

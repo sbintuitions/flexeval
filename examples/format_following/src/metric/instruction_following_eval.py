@@ -36,11 +36,11 @@ class FormatFollowingMetric(Metric):
     ) -> MetricResult:
         is_check_passed_list: list[list[bool]] = []
         is_check_passed_per_checker = defaultdict(list)
-        for lm_output, extra_info in zip(lm_outputs, extra_info_list):
+        for lm_output, extra_info in zip(lm_outputs, extra_info_list, strict=True):
             constraints = [self._instantiate_checker_from_params(params) for params in extra_info["constraints"]]
             is_check_passed = [checker.check(lm_output) for checker in constraints]
             is_check_passed_list.append(is_check_passed)
-            for checker, is_passed in zip(constraints, is_check_passed):
+            for checker, is_passed in zip(constraints, is_check_passed, strict=True):
                 is_check_passed_per_checker[checker.__class__.__name__].append(is_passed)
 
         num_items = len(is_check_passed_list)

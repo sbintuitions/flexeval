@@ -1,4 +1,5 @@
-from typing import Any, Generator
+from collections.abc import Generator
+from typing import Any
 
 import pytest
 from loguru import logger
@@ -14,7 +15,7 @@ def is_vllm_enabled() -> bool:
         return False
 
 
-@pytest.fixture()
+@pytest.fixture
 def caplog(caplog: pytest.LogCaptureFixture) -> Generator[pytest.LogCaptureFixture, Any, None]:
     handler_id = logger.add(caplog.handler, format="{message}")
     yield caplog

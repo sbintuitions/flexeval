@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 from os import PathLike
 
-from smart_open import open
+from smart_open import open  # noqa: A004
 
 from .base import TextDataset, TextInstance
 

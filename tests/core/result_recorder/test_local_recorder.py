@@ -12,7 +12,7 @@ from flexeval.core.result_recorder.local_recorder import (
 )
 
 
-@pytest.fixture()
+@pytest.fixture
 def temp_dir() -> None:
     with tempfile.TemporaryDirectory() as tmp_path:
         yield tmp_path

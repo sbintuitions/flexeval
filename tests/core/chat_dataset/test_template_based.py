@@ -203,7 +203,7 @@ def test_remove_conditions(
         assert len(item.references) > 1
 
 
-@pytest.fixture()
+@pytest.fixture
 def dummy_template_file(tmp_path: Path) -> Path:
     template_content = "Hello {{ name }}!"
     template_file = tmp_path / "dummy.j2"

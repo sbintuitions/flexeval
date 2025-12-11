@@ -19,4 +19,4 @@ class DummyPairwiseScorer(PairwiseScorer):
         for model1, model2, _ in match_results:
             all_model_names.add(model1)
             all_model_names.add(model2)
-        return {model_name: 1.0 for model_name in all_model_names}
+        return dict.fromkeys(all_model_names, 1.0)

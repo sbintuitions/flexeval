@@ -31,9 +31,7 @@ class RepeatPrompt(ResponseConstraint):
         self.prompt_to_repeat = prompt_to_repeat
 
     def check(self, response: str) -> bool:
-        if response.strip().lower().startswith(self.prompt_to_repeat.strip().lower()):
-            return True
-        return False
+        return response.strip().lower().startswith(self.prompt_to_repeat.strip().lower())
 
 
 class TwoResponses(ResponseConstraint):

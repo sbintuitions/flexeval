@@ -35,9 +35,7 @@ def evaluate_model_output(model_output: str, gold_label: PairwiseChoice) -> bool
         return False
 
     # If only gold label is in model output, then output is **correct**
-    if gold_label.value in model_output:
-        return True
-    return False
+    return gold_label.value in model_output
 
 
 def aggregate_judge_results(
