@@ -1945,7 +1945,9 @@ when given (A = chosen, B = rejected) it prefers <strong>A</strong>, and when th
 
               <details class="quote">
                 <summary>Source code in <code>flexeval/core/reward_model/pairwise_judge_reward_model.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 82</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 80</span>
+<span class="normal"> 81</span>
+<span class="normal"> 82</span>
 <span class="normal"> 83</span>
 <span class="normal"> 84</span>
 <span class="normal"> 85</span>
@@ -2050,9 +2052,7 @@ when given (A = chosen, B = rejected) it prefers <strong>A</strong>, and when th
 <span class="normal">184</span>
 <span class="normal">185</span>
 <span class="normal">186</span>
-<span class="normal">187</span>
-<span class="normal">188</span>
-<span class="normal">189</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">PairwiseJudgeRewardModel</span><span class="p">(</span><span class="n">RewardModel</span><span class="p">):</span>
+<span class="normal">187</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">PairwiseJudgeRewardModel</span><span class="p">(</span><span class="n">RewardModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Pairwise judge using a chat language model to compare two model or human</span>
 <span class="sd">    outputs.</span>
 <span class="sd">    The reward model’s judgment is counted as **correct only if it is order‑invariant**:</span>
@@ -2284,7 +2284,9 @@ when given (A = chosen, B = rejected) it prefers <strong>A</strong>, and when th
 
             <details class="quote">
               <summary>Source code in <code>flexeval/core/reward_model/pairwise_judge_reward_model.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">109</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">107</span>
+<span class="normal">108</span>
+<span class="normal">109</span>
 <span class="normal">110</span>
 <span class="normal">111</span>
 <span class="normal">112</span>
@@ -2294,9 +2296,7 @@ when given (A = chosen, B = rejected) it prefers <strong>A</strong>, and when th
 <span class="normal">116</span>
 <span class="normal">117</span>
 <span class="normal">118</span>
-<span class="normal">119</span>
-<span class="normal">120</span>
-<span class="normal">121</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+<span class="normal">119</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">language_model</span><span class="p">:</span> <span class="n">LanguageModel</span><span class="p">,</span>
     <span class="n">prompt_template</span><span class="p">:</span> <span class="n">PromptTemplate</span><span class="p">,</span>
@@ -2333,7 +2333,9 @@ when given (A = chosen, B = rejected) it prefers <strong>A</strong>, and when th
 
             <details class="quote">
               <summary>Source code in <code>flexeval/core/reward_model/pairwise_judge_reward_model.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">141</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">139</span>
+<span class="normal">140</span>
+<span class="normal">141</span>
 <span class="normal">142</span>
 <span class="normal">143</span>
 <span class="normal">144</span>
@@ -2379,9 +2381,7 @@ when given (A = chosen, B = rejected) it prefers <strong>A</strong>, and when th
 <span class="normal">184</span>
 <span class="normal">185</span>
 <span class="normal">186</span>
-<span class="normal">187</span>
-<span class="normal">188</span>
-<span class="normal">189</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">batch_judge</span><span class="p">(</span>
+<span class="normal">187</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">batch_judge</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">batch_reward_bench_instances</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">RewardBenchInstance</span><span class="p">],</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">bool</span><span class="p">],</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]]:</span>

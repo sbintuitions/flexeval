@@ -1434,8 +1434,7 @@
 
               <details class="quote">
                 <summary>Source code in <code>flexeval/core/pairwise_comparison/match_maker/base.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">11</span>
-<span class="normal">12</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">12</span>
 <span class="normal">13</span>
 <span class="normal">14</span>
 <span class="normal">15</span>
@@ -1446,7 +1445,8 @@
 <span class="normal">20</span>
 <span class="normal">21</span>
 <span class="normal">22</span>
-<span class="normal">23</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">MatchMaker</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+<span class="normal">23</span>
+<span class="normal">24</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">MatchMaker</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate matches between items from different models.</span>
 
 <span class="sd">    The output is instances of the `Match` class.</span>
@@ -1497,13 +1497,13 @@
 
             <details class="quote">
               <summary>Source code in <code>flexeval/core/pairwise_comparison/match_maker/base.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">17</span>
-<span class="normal">18</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">18</span>
 <span class="normal">19</span>
 <span class="normal">20</span>
 <span class="normal">21</span>
 <span class="normal">22</span>
-<span class="normal">23</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@abstractmethod</span>
+<span class="normal">23</span>
+<span class="normal">24</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@abstractmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">generate_matches</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">model_items</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="n">T</span><span class="p">]],</span>
@@ -1802,7 +1802,7 @@
 
         <span class="n">cached_matches</span> <span class="o">=</span> <span class="n">cached_matches</span> <span class="ow">or</span> <span class="p">[]</span>
         <span class="n">cache_dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">match</span><span class="o">.</span><span class="n">get_key_for_cache</span><span class="p">():</span> <span class="n">match</span> <span class="k">for</span> <span class="n">match</span> <span class="ow">in</span> <span class="n">cached_matches</span><span class="p">}</span>
-        <span class="n">model_match_counter</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">name</span><span class="p">:</span> <span class="mi">0</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">model_names</span><span class="p">}</span>
+        <span class="n">model_match_counter</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="o">.</span><span class="n">fromkeys</span><span class="p">(</span><span class="n">model_names</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
         <span class="n">possible_new_matches</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Match</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">matches</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Match</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">m1</span><span class="p">,</span> <span class="n">m2</span> <span class="ow">in</span> <span class="n">all_permutations</span><span class="p">:</span>
@@ -2020,7 +2020,7 @@
 
     <span class="n">cached_matches</span> <span class="o">=</span> <span class="n">cached_matches</span> <span class="ow">or</span> <span class="p">[]</span>
     <span class="n">cache_dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">match</span><span class="o">.</span><span class="n">get_key_for_cache</span><span class="p">():</span> <span class="n">match</span> <span class="k">for</span> <span class="n">match</span> <span class="ow">in</span> <span class="n">cached_matches</span><span class="p">}</span>
-    <span class="n">model_match_counter</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">name</span><span class="p">:</span> <span class="mi">0</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">model_names</span><span class="p">}</span>
+    <span class="n">model_match_counter</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="o">.</span><span class="n">fromkeys</span><span class="p">(</span><span class="n">model_names</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
     <span class="n">possible_new_matches</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Match</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">matches</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Match</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">m1</span><span class="p">,</span> <span class="n">m2</span> <span class="ow">in</span> <span class="n">all_permutations</span><span class="p">:</span>
