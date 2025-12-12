@@ -45,6 +45,7 @@ class DummyLanguageModel(LanguageModel):
         return [
             LMOutput(
                 text=f"This is response to `{messages[-1]['content']}` with kwargs {kwargs}",
+                reasoning_text="reasoning_text",
                 finish_reason="length",
                 tool_calls=tc,
                 tool_call_validation_result="CompleteToolCall" if tc else "TextOnly",

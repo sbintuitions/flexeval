@@ -229,6 +229,8 @@ def evaluate_chat_response(  # noqa: C901, PLR0912
         }
         if output["lm_output"].raw_text:
             restructured_output["raw_lm_output"] = output["lm_output"].raw_text
+        if output["lm_output"].reasoning_text:
+            restructured_output["reasoning_text"] = output["lm_output"].reasoning_text
         restructured_outputs.append(restructured_output)
 
     return metrics_summary_dict, restructured_outputs
