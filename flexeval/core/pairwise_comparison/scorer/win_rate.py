@@ -30,7 +30,7 @@ class WinRateScorer(PairwiseScorer):
                 win_count_dict[model2] += 0.5
 
         win_rate_dict = {}
-        for model in match_count_dict:
+        for model in match_count_dict:  # noqa: PLC0206
             win_rate_dict[model] = 100 * win_count_dict.get(model, 0.0) / match_count_dict[model]
 
         return dict(sorted(win_rate_dict.items(), key=lambda x: -x[1]))

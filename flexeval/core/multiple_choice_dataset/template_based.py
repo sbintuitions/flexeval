@@ -78,7 +78,7 @@ class TemplateMultipleChoiceDataset(MultipleChoiceDataset):
 
         answer_index = int(self.answer_index_template.render(**item))
         if not (answer_index >= 0 and answer_index < len(choices)):
-            msg = f"at least {answer_index+1} choices required, but got {choices}"
+            msg = f"at least {answer_index + 1} choices required, but got {choices}"
             raise ValueError(msg)
 
         return MultipleChoiceInstance(

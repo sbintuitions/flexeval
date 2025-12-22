@@ -15,6 +15,7 @@ from flexeval.core.tokenizer import WhitespaceTokenizer
         (["これは テスト"], [["これは テスト"]], 1.0),
         (["こんにちは 世界"], [["こんばんわ 地方"]], 0.0),
         ([""], [["empty"]], 0.0),
+        (["."], [["empty"]], 0.0),
     ],
     indirect=["lm_outputs"],
 )

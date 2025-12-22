@@ -1,5 +1,5 @@
 import functools
-from typing import Callable
+from collections.abc import Callable
 
 import pytest
 
@@ -61,11 +61,11 @@ def chat_lm_with_system_message() -> VLLM:
 
 @pytest.mark.skipif(not is_vllm_enabled(), reason="vllm library is not installed")
 class TestVLLM(BaseLanguageModelTest):
-    @pytest.fixture()
+    @pytest.fixture
     def lm(self, chat_lm: VLLM) -> VLLM:
         return chat_lm
 
-    @pytest.fixture()
+    @pytest.fixture
     def chat_lm(self, chat_lm: VLLM) -> VLLM:
         return chat_lm
 

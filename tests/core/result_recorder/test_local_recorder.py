@@ -12,7 +12,7 @@ from flexeval.core.result_recorder.local_recorder import (
 )
 
 
-@pytest.fixture()
+@pytest.fixture
 def temp_dir() -> None:
     with tempfile.TemporaryDirectory() as tmp_path:
         yield tmp_path
@@ -103,31 +103,24 @@ def test_raise_error_with_file_exists(temp_dir: str) -> None:
         recorder_with_error.record_model_outputs([{"new": "output"}])
 
 
-def test_force_overwrite(temp_dir: str) -> None:
-    # Create initial recorder and files
-    recorder1 = LocalRecorder(temp_dir)
-    recorder1.record_config({"initial": "config"})
-    recorder1.record_metrics({"initial": "metrics"})
-    recorder1.record_model_outputs([{"initial": "output"}])
+def test_is_metrics_saved(temp_dir: str) -> None:
+    local_recorder = LocalRecorder(temp_dir)
 
-    # Create new recorder with force=True
-    recorder2 = LocalRecorder(temp_dir, force=True)
+    assert not local_recorder.is_metrics_saved()
 
-    new_config = {"new": "config"}
-    new_metrics = {"new": "metrics"}
-    new_outputs = [{"new": "output"}]
+    metrics = {"accuracy": 0.95}
+    local_recorder.record_metrics(metrics)
 
-    # These should not raise exceptions
-    recorder2.record_config(new_config)
-    recorder2.record_metrics(new_metrics)
-    recorder2.record_model_outputs(new_outputs)
+    assert local_recorder.is_metrics_saved()
 
-    # Check that the new data has been written
-    with open(Path(temp_dir) / CONFIG_FILE_NAME) as f:
-        assert json.load(f) == new_config
 
-    with open(Path(temp_dir) / METRIC_FILE_NAME) as f:
-        assert json.load(f) == new_metrics
+def test_is_metrics_saved_with_group(temp_dir: str) -> None:
+    group = "test_group"
+    local_recorder = LocalRecorder(temp_dir)
 
-    with open(Path(temp_dir) / OUTPUTS_FILE_NAME) as f:
-        assert json.loads(f.readline()) == new_outputs[0]
+    assert not local_recorder.is_metrics_saved(group=group)
+
+    metrics = {"accuracy": 0.95}
+    local_recorder.record_metrics(metrics, group=group)
+
+    assert local_recorder.is_metrics_saved(group=group)

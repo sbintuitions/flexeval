@@ -10,7 +10,7 @@ import traceback
 from collections import defaultdict
 from importlib.metadata import version
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any
 
 import _jsonnet
 from jsonargparse import ActionConfigFile, ArgumentParser, Namespace
@@ -121,7 +121,7 @@ def main() -> None:  # noqa: C901, PLR0912, PLR0915
     )
     parser.add_argument(
         "--eval_setups",
-        type=Dict[str, EvalSetup],
+        type=dict[str, EvalSetup],
         help="A dictionary of evaluation setups. "
         "The key is the folder name where the outputs will be saved, and the value is the EvalSetup object. ",
         enable_path=True,
@@ -140,6 +140,12 @@ def main() -> None:  # noqa: C901, PLR0912, PLR0915
         help="Overwrite the save_dir if it exists",
     )
     parser.add_argument(
+        "--retry",
+        type=bool,
+        default=False,
+        help="Re-run only the failed evaluation runs. Skip runs if metrics are already saved.",
+    )
+    parser.add_argument(
         "--result_recorder",
         type=ResultRecorder,
         default=None,
@@ -154,7 +160,7 @@ def main() -> None:  # noqa: C901, PLR0912, PLR0915
     # Metadata
     parser.add_argument(
         "--metadata",
-        type=Dict[str, Any],
+        type=dict[str, Any],
         default={},
         help="Metadata to save in config.json",
     )
@@ -163,6 +169,13 @@ def main() -> None:  # noqa: C901, PLR0912, PLR0915
         type=PositiveInt,
         default=1,
         help="Number of times to repeat the evaluation",
+    )
+    parser.add_argument(
+        "--cleanup_after_generation",
+        type=bool,
+        default=False,
+        help="Whether to clean up language model resources after each evaluation run. "
+        "This is useful when using LLM-based metrics in the same job, as it helps release GPU memory.",
     )
 
     config_name_resolver = ConfigNameResolver()
@@ -191,7 +204,7 @@ def main() -> None:  # noqa: C901, PLR0912, PLR0915
             overrides_for_eval_setups[setup_name][override_key] = sys.argv[i + 1]
             indices_to_pop += [i, i + 1]
     sys.argv = [a for i, a in enumerate(sys.argv) if i not in indices_to_pop]
-    for eval_key in params_for_eval_setups:
+    for eval_key in params_for_eval_setups:  # noqa: PLC0206
         for override_key, override_value in overrides_for_eval_setups[eval_key].items():
             override_jsonargparse_params(params_for_eval_setups[eval_key], override_key, override_value)
     for eval_key, eval_config in params_for_eval_setups.items():
@@ -248,6 +261,7 @@ def main() -> None:  # noqa: C901, PLR0912, PLR0915
                 )
             )
 
+    exit_code = os.EX_OK
     # run evaluation
     for eval_setup, eval_setup_config, group in eval_setups_and_metadata:
         logger.info(f"Evaluating with the setup: {eval_setup_config}")
@@ -262,12 +276,22 @@ def main() -> None:  # noqa: C901, PLR0912, PLR0915
         }
 
         try:
+            if args.retry and not args.force:
+                to_skip = all(result_recorder.is_metrics_saved(group) for result_recorder in result_recorders)
+                if to_skip:
+                    logger.info(f"Skipping the evaluation for group: {group} as the metrics are already saved.")
+                    continue
+                for result_recorder in result_recorders:
+                    if hasattr(result_recorder, "force"):
+                        result_recorder.force = True
+
             for result_recorder in result_recorders:
                 result_recorder.record_config(task_config, group)
 
             with Timer() as timer:
                 metrics, outputs = eval_setup.evaluate_lm(
                     language_model=args.language_model,
+                    cleanup_after_generation=args.cleanup_after_generation,
                 )
             metrics["elapsed_time"] = timer.time
             logger.info(f"Elapsed time: {timer.time:.2f} sec")
@@ -282,6 +306,9 @@ def main() -> None:  # noqa: C901, PLR0912, PLR0915
             logger.error(
                 f"Error in evaluation:\n{e}\n{stack_trace_str}",
             )
+            exit_code = os.EX_DATAERR
+
+    sys.exit(exit_code)
 
 
 if __name__ == "__main__":

@@ -739,7 +739,7 @@ class KatakanaOnly(ResponseConstraint):
 
     def check(self, response: str) -> bool:
         def is_katakana(char: str) -> bool:
-            return "ァ" <= char <= "ン" or char == "ー" or char == "・" or "ｦ" <= char <= "ﾟ"
+            return "ァ" <= char <= "ン" or char in {"ー", "・"} or "ｦ" <= char <= "ﾟ"
 
         def is_ignorable(char: str) -> bool:
             return not unicodedata.category(char).startswith("L")

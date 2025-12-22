@@ -1,7 +1,8 @@
 from __future__ import annotations
 
 import logging
-from typing import Any, Callable, Generator
+from collections.abc import Callable, Generator
+from typing import Any
 from unittest.mock import patch
 
 import pytest

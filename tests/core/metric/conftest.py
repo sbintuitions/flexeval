@@ -20,7 +20,7 @@ def as_lm_output(request: pytest.FixtureRequest) -> str:
     return request.param
 
 
-@pytest.fixture()
+@pytest.fixture
 def lm_outputs(request: pytest.FixtureRequest, as_lm_output: str) -> list[str] | list[LMOutput]:
     """
     Fixture that converts parameterized string lists to either strings or LMOutput objects.

@@ -86,11 +86,11 @@ def test_stop_terminates_process() -> None:
 
 @pytest.mark.skipif(not is_vllm_enabled(), reason="vllm library is not installed")
 class TestVLLMServeLM(BaseLanguageModelTest):
-    @pytest.fixture()
+    @pytest.fixture
     def lm(self, chat_lm: VLLMServeLM) -> VLLMServeLM:
         return chat_lm
 
-    @pytest.fixture()
+    @pytest.fixture
     def chat_lm(self, chat_lm: VLLMServeLM) -> VLLMServeLM:
         return chat_lm
 
