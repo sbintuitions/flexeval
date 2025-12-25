@@ -7,16 +7,18 @@ import subprocess
 import threading
 import time
 from collections.abc import Callable
-from typing import IO, Any
+from typing import IO, TYPE_CHECKING, Any
 
 import requests
 import torch
 from loguru import logger
 
 from flexeval.core.language_model.base import LMOutput
-from flexeval.core.string_processor import StringProcessor
 
 from .openai_api import OpenAIChatAPI
+
+if TYPE_CHECKING:
+    from flexeval.core.string_processor import StringProcessor
 
 
 def find_free_port() -> int:
@@ -204,9 +206,9 @@ class VLLMServeLM(OpenAIChatAPI):
             model_limit_new_tokens=model_limit_new_tokens,
             tools=tools,
             max_parallel_requests=max_parallel_requests,
-            max_num_trials = 5,
-            first_wait_time = 1,
-            max_wait_time = 1,
+            max_num_trials=5,
+            first_wait_time=1,
+            max_wait_time=1,
         )
 
     @staticmethod
