@@ -19,7 +19,7 @@ jobs:
     env:
       OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY || null }}
       AZURE_OPENAI_API_KEY: ${{ secrets.AZURE_OPENAI_API_KEY || null }}
-      AZURE_OPENAI_ENDPOINT: ${{ secrets.$AZURE_OPENAI_ENDPOINT || null }}
+      AZURE_OPENAI_ENDPOINT: ${{ secrets.AZURE_OPENAI_ENDPOINT || null }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
