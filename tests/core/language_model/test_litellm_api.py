@@ -45,7 +45,7 @@ def chat_lm() -> LiteLLMChatAPI:
 
 @pytest.mark.skipif(not (is_openai_enabled() or is_azure_openai_enabled()), reason="OpenAI API Key is not set")
 class TestLiteLLMChatAPI(BaseLanguageModelTest):
-    @pytest.fixture()
+    @pytest.fixture
     def lm(self) -> LanguageModel:
         return LiteLLMChatAPI(
             MODEL_NAME,
@@ -55,11 +55,11 @@ class TestLiteLLMChatAPI(BaseLanguageModelTest):
             "Do not provide the answer or any other information.",
         )
 
-    @pytest.fixture()
+    @pytest.fixture
     def chat_lm(self, chat_lm: LiteLLMChatAPI) -> LanguageModel:
         return chat_lm
 
-    @pytest.fixture()
+    @pytest.fixture
     def chat_lm_for_tool_calling(self, chat_lm: LiteLLMChatAPI) -> LiteLLMChatAPI:
         return chat_lm
 
