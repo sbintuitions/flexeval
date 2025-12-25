@@ -1,6 +1,8 @@
+import os
 from unittest.mock import patch
 
 import pytest
+from openai import AzureOpenAI, NotFoundError
 
 from flexeval.core.language_model import LanguageModel, LiteLLMChatAPI
 from flexeval.core.language_model.base import LMOutput
@@ -8,25 +10,40 @@ from flexeval.core.language_model.openai_api import OpenAIChatAPI
 
 from .base import BaseLanguageModelTest
 
+MODEL_NAME = "gpt-4o-mini"
 
 def is_openai_enabled() -> bool:
-    return False
+    return os.environ.get("OPENAI_API_KEY") is not None
 
+def is_azure_openai_enabled() -> bool:
+    is_set_env = (os.environ.get("AZURE_OPENAI_API_KEY") is not None) \
+        and (os.environ.get("AZURE_OPENAI_ENDPOINT") is not None)
+    is_enabled = False
+    if is_set_env:
+        client = AzureOpenAI()
+        try:
+            client.models.retrieve(MODEL_NAME)
+            is_enabled = True
+        except NotFoundError:
+            is_enabled = True
+    return is_enabled
+
+MODEL_NAME = f"azure/{MODEL_NAME}" if is_azure_openai_enabled() else MODEL_NAME
 
 @pytest.fixture(scope="module")
 def chat_lm() -> LiteLLMChatAPI:
     return LiteLLMChatAPI(
-        "gpt-4o-mini-2024-07-18",
+        MODEL_NAME,
         default_gen_kwargs={"temperature": 0.0},
     )
 
 
-@pytest.mark.skipif(not is_openai_enabled(), reason="OpenAI API Key is not set")
+@pytest.mark.skipif(not (is_openai_enabled() or is_azure_openai_enabled()), reason="OpenAI API Key is not set")
 class TestLiteLLMChatAPI(BaseLanguageModelTest):
     @pytest.fixture
     def lm(self) -> LanguageModel:
         return LiteLLMChatAPI(
-            "gpt-4o-mini-2024-07-18",
+            MODEL_NAME,
             default_gen_kwargs={"temperature": 0.0},
             developer_message="You are text completion model. "
             "Please provide the text likely to continue after the user input. "
@@ -60,7 +77,7 @@ def test_compute_chat_log_probs_for_multi_tokens(chat_lm: LiteLLMChatAPI) -> Non
 
 @pytest.mark.skipif(not is_openai_enabled(), reason="OpenAI is not installed")
 def test_if_ignore_seed() -> None:
-    chat_lm = LiteLLMChatAPI("gpt-4o-mini-2024-07-18", ignore_seed=True)
+    chat_lm = LiteLLMChatAPI(MODEL_NAME, ignore_seed=True)
     chat_messages = [{"role": "user", "content": "Hello"}]
     with patch.object(OpenAIChatAPI, "_batch_generate_chat_response", return_value=[LMOutput("Hello!")]) as mock_method:
         chat_lm.generate_chat_response(chat_messages, temperature=0.7, seed=42)
@@ -76,7 +93,7 @@ def test_if_ignore_seed() -> None:
 
 @pytest.mark.skipif(not is_openai_enabled(), reason="OpenAI is not installed")
 def test_if_not_ignore_seed() -> None:
-    chat_lm = LiteLLMChatAPI("gpt-4o-mini-2024-07-18")
+    chat_lm = LiteLLMChatAPI(MODEL_NAME)
     chat_messages = [{"role": "user", "content": "Hello"}]
     with patch.object(OpenAIChatAPI, "_batch_generate_chat_response", return_value=[LMOutput("Hello!")]) as mock_method:
         chat_lm.generate_chat_response(chat_messages, temperature=0.7, seed=42)
