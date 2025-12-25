@@ -186,6 +186,9 @@ class VLLMServeLM(OpenAIChatAPI):
         model_limit_new_tokens: int | None = None,
         tools: list[dict[str, Any]] | None = None,
         max_parallel_requests: int | None = None,
+        max_num_trials: int = 5,
+        first_wait_time: int = 1,
+        max_wait_time: int = 1,
     ) -> None:
         logging.getLogger("httpx").setLevel(logging.WARNING)
         logging.getLogger("httpcore").setLevel(logging.WARNING)
@@ -206,9 +209,9 @@ class VLLMServeLM(OpenAIChatAPI):
             model_limit_new_tokens=model_limit_new_tokens,
             tools=tools,
             max_parallel_requests=max_parallel_requests,
-            max_num_trials=5,
-            first_wait_time=1,
-            max_wait_time=1,
+            max_num_trials=max_num_trials,
+            first_wait_time=first_wait_time,
+            max_wait_time=max_wait_time,
         )
 
     @staticmethod
