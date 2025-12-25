@@ -204,6 +204,9 @@ class VLLMServeLM(OpenAIChatAPI):
             model_limit_new_tokens=model_limit_new_tokens,
             tools=tools,
             max_parallel_requests=max_parallel_requests,
+            max_num_trials = 5,
+            first_wait_time = 1,
+            max_wait_time = 1,
         )
 
     @staticmethod
