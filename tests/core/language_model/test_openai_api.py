@@ -26,6 +26,7 @@ def is_azure_openai_enabled() -> bool:
     )
     is_enabled = False
     if is_set_env:
+        os.environ["OPENAI_API_VERSION"] = "2024-12-01-preview"
         client = AzureOpenAI()
         try:
             client.models.retrieve(MODEL_NAME)
