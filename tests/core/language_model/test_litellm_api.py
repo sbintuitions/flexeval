@@ -12,12 +12,15 @@ from .base import BaseLanguageModelTest
 
 MODEL_NAME = "gpt-4o-mini"
 
+
 def is_openai_enabled() -> bool:
     return os.environ.get("OPENAI_API_KEY") is not None
 
+
 def is_azure_openai_enabled() -> bool:
-    is_set_env = (os.environ.get("AZURE_OPENAI_API_KEY") is not None) \
-        and (os.environ.get("AZURE_OPENAI_ENDPOINT") is not None)
+    is_set_env = (os.environ.get("AZURE_OPENAI_API_KEY") is not None) and (
+        os.environ.get("AZURE_OPENAI_ENDPOINT") is not None
+    )
     is_enabled = False
     if is_set_env:
         client = AzureOpenAI()
@@ -28,7 +31,9 @@ def is_azure_openai_enabled() -> bool:
             is_enabled = True
     return is_enabled
 
+
 MODEL_NAME = f"azure/{MODEL_NAME}" if is_azure_openai_enabled() else MODEL_NAME
+
 
 @pytest.fixture(scope="module")
 def chat_lm() -> LiteLLMChatAPI:
@@ -40,7 +45,7 @@ def chat_lm() -> LiteLLMChatAPI:
 
 @pytest.mark.skipif(not (is_openai_enabled() or is_azure_openai_enabled()), reason="OpenAI API Key is not set")
 class TestLiteLLMChatAPI(BaseLanguageModelTest):
-    @pytest.fixture
+    @pytest.fixture()
     def lm(self) -> LanguageModel:
         return LiteLLMChatAPI(
             MODEL_NAME,
@@ -50,11 +55,11 @@ class TestLiteLLMChatAPI(BaseLanguageModelTest):
             "Do not provide the answer or any other information.",
         )
 
-    @pytest.fixture
+    @pytest.fixture()
     def chat_lm(self, chat_lm: LiteLLMChatAPI) -> LanguageModel:
         return chat_lm
 
-    @pytest.fixture
+    @pytest.fixture()
     def chat_lm_for_tool_calling(self, chat_lm: LiteLLMChatAPI) -> LiteLLMChatAPI:
         return chat_lm
 
