@@ -5,12 +5,12 @@ import os
 import time
 from collections.abc import Callable
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from typing import Any, TypeVar
+from typing import Any, Literal, TypeVar
 
 import openai
 import tiktoken
 from loguru import logger
-from openai import BaseModel, OpenAI
+from openai import AzureOpenAI, BaseModel, OpenAI
 from openai.types.chat import ChatCompletion, ChatCompletionMessage
 from openai.types.chat.chat_completion import Choice
 
@@ -100,13 +100,12 @@ class OpenAIChatAPI(LanguageModel):
         max_num_trials: int | None = None,
         first_wait_time: int | None = None,
         max_wait_time: int | None = None,
+        backend: Literal["OpenAI", "AzureOpenAI"] | None = "OpenAI",
     ) -> None:
         super().__init__(string_processors=string_processors, tools=tools)
         self.model = model
         if api_headers is None:
             api_headers = {}
-        client = OpenAI(**api_headers)
-        self.api_call_func = client.chat.completions.create
         self.empty_response = EMPTY_RESPONSE
         self.default_gen_kwargs = default_gen_kwargs or {}
         # convert the flexeval-specific argument name to the OpenAI-specific name
@@ -119,6 +118,12 @@ class OpenAIChatAPI(LanguageModel):
         self.max_num_trials = max_num_trials
         self.first_wait_time = first_wait_time
         self.max_wait_time = max_wait_time
+        if backend == "OpenAI":
+            self.api_call_func = OpenAI(**api_headers).chat.completions.create
+        elif backend == "AzureOpenAI":
+            self.api_call_func = AzureOpenAI(**api_headers).chat.completions.create
+        else:
+            self.api_call_func = None
 
     def set_random_seed(self, seed: int) -> None:
         self.default_gen_kwargs["seed"] = seed

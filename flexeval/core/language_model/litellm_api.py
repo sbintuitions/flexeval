@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 from typing import Any, TypeVar
 
 from litellm import ModelResponse, completion
@@ -12,6 +13,13 @@ from .openai_api import EMPTY_RESPONSE as EMPTY_RESPONSE_OPENAI
 from .openai_api import OpenAIChatAPI
 
 T = TypeVar("T")
+
+# LiteLLM uses `AZURE_API_BASE` as the environment variable for the AzureOpenAI endpoint,
+# whereas the OpenAI SDK uses `AZURE_OPENAI_ENDPOINT`.
+# For convenience, if only `AZURE_OPENAI_ENDPOINT` is set,
+# also make it available to LiteLLM by assigning it to `AZURE_API_BASE`.
+if os.environ.get("AZURE_OPENAI_ENDPOINT") and os.environ.get("AZURE_API_BASE") is None:
+    os.environ["AZURE_API_BASE"] = os.environ["AZURE_OPENAI_ENDPOINT"]
 
 
 class LiteLLMChatAPI(OpenAIChatAPI):
@@ -54,6 +62,7 @@ class LiteLLMChatAPI(OpenAIChatAPI):
             model_limit_new_tokens=model_limit_completion_tokens,
             max_parallel_requests=max_parallel_requests,
             tools=tools,
+            backend=None,
         )
         self.model = model
         self.default_gen_kwargs = default_gen_kwargs or {}
@@ -61,12 +70,12 @@ class LiteLLMChatAPI(OpenAIChatAPI):
         if "max_new_tokens" in self.default_gen_kwargs:
             self.default_gen_kwargs["max_tokens"] = self.default_gen_kwargs.pop("max_new_tokens")
 
-        self.api_call_func = completion
         self.empty_response = convert_to_model_response_object(
             response_object=EMPTY_RESPONSE_OPENAI.to_dict(),
             model_response_object=ModelResponse(),
         )
         self.ignore_seed = ignore_seed
+        self.api_call_func = completion
 
     def set_random_seed(self, seed: int) -> None:
         self.default_gen_kwargs["seed"] = seed
