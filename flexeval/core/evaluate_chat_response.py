@@ -193,7 +193,7 @@ def evaluate_chat_response(  # noqa: C901, PLR0912
             references_list=[output["chat_instance"].references for output in outputs],
             extra_info_list=[
                 output["chat_instance"].extra_info
-                | {"messages": output["chat_instance"].messages, "tools": output["chat_instance"].tools}
+                | {"messages": output["messages"], "tools": output["chat_instance"].tools}
                 for output in outputs
             ],
         )
