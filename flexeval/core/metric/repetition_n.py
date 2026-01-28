@@ -29,9 +29,11 @@ class RepetitionN(Metric):
     ) -> None:
         self.n = n
         self.lm_output_processors = lm_output_processor
-        self.tokenizer = tokenizer \
-            if isinstance(tokenizer, Tokenizer) \
+        self.tokenizer = (
+            tokenizer
+            if isinstance(tokenizer, Tokenizer)
             else TransformersTokenizer("sbintuitions/sarashina2.2-3b-instruct-v0.1")
+        )
 
     def evaluate(
         self,
@@ -59,5 +61,5 @@ class RepetitionN(Metric):
         average_score = sum(scores) / len(scores) if scores else 0.0
         return MetricResult(
             summary={f"repetition_{self.n}": average_score},
-            instance_details=[{f"repetition_{self.n}": score} for score in scores]
+            instance_details=[{f"repetition_{self.n}": score} for score in scores],
         )
