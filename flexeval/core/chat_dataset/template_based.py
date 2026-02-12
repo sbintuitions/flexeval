@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import abc
 import json
 from ast import literal_eval
 from collections.abc import Callable
@@ -14,6 +15,13 @@ from smart_open import open  # noqa: A004
 from flexeval.core.utils.jinja2_utils import JINJA2_ENV
 
 from .base import ChatDataset, ChatInstance
+
+
+class Preprocessor(abc.ABC):
+    # An abstract base class for preprocessors
+    @abc.abstractmethod
+    def __call__(self, item: dict[str, Any]) -> dict[str, Any]:
+        pass
 
 
 def load_jinja2_template(template: str | PathLike[str]) -> Template:
@@ -69,7 +77,7 @@ class TemplateChatDataset(ChatDataset):
         keep_conditions: dict[str, str] | None = None,
         remove_conditions: dict[str, str] | None = None,
         parse_input_utterance: Literal["literal_eval", "json_loads"] | None = None,
-        preprocessor: Callable[[dict[str, Any]], dict[str, Any]] | None = None,
+        preprocessor: list[Preprocessor] | None = None,
     ) -> None:
         if reference_template and reference_list_template:
             msg = "Only one of reference_template and reference_list_template can be set."
@@ -115,7 +123,8 @@ class TemplateChatDataset(ChatDataset):
     def __getitem__(self, i: int) -> ChatInstance:
         item = self.items[i]
         if self.preprocessor:
-            item = self.preprocessor(item)
+            for preprocessor in self.preprocessor:
+                item = preprocessor(item)
         input_utterance = self.input_template.render(**item)
         if self.parse_input_utterance == "literal_eval":
             input_utterance = literal_eval(input_utterance)
