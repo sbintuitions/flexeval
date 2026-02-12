@@ -234,7 +234,7 @@ class JsonlChatDataset(TemplateChatDataset):
         keep_conditions: dict[str, str] | None = None,
         remove_conditions: dict[str, str] | None = None,
         parse_input_utterance: Literal["literal_eval", "json_loads"] | None = None,
-        preprocessor: Callable[[dict[str, Any]], dict[str, Any]] | None = None,
+        preprocessor: list[Preprocessor] | None = None,
     ) -> None:
         with open(path) as f:
             items = [json.loads(line) for line in f]
