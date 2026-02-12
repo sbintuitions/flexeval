@@ -235,7 +235,7 @@ def test_load_jinja2_template(dummy_template_file: Path) -> None:
 def test_parse_input_utterance(parse_input_utterance: str) -> None:
     input_template = """[
         {"type": "image_url", "image_url": {"url": "{{ image_url }}"}},
-        {"type": "text", "text": "{{ question }}"},
+        {"type": "text", "text": "{{ question }}"}
     ]"""
     dataset = TemplateChatDataset(
         items=[
