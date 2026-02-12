@@ -233,6 +233,11 @@ def test_load_jinja2_template(dummy_template_file: Path) -> None:
     ["literal_eval", "json_loads", None],
 )
 def test_parse_input_utterance(parse_input_utterance: str) -> None:
+    input_template = [
+        {"type": "image_url", "image_url": {"url": "{{ image_url }}"}},
+        {"type": "text", "text": "{{ question }}"},
+    ]
+    input_template = str(input_template)
     dataset = TemplateChatDataset(
         items=[
             {
@@ -241,11 +246,11 @@ def test_parse_input_utterance(parse_input_utterance: str) -> None:
                 "image_url": "http://example.com/image1.jpg",
             },
         ],
-        input_template='[{ "type": "image_url", "image_url": {"url": "{{ image_url }}"}},{ "type": "text", "text": "{{ question }}"}]',
+        input_template=input_template,
         parse_input_utterance=parse_input_utterance,
     )
 
-    input_utterance = dataset[0].messages[1]["content"]
+    input_utterance = dataset[0].messages[0]["content"]
 
     if parse_input_utterance is None:
         assert isinstance(input_utterance, str)

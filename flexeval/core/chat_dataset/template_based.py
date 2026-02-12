@@ -3,7 +3,6 @@ from __future__ import annotations
 import abc
 import json
 from ast import literal_eval
-from collections.abc import Callable
 from os import PathLike
 from pathlib import Path
 from typing import Any, Literal
@@ -61,7 +60,7 @@ class TemplateChatDataset(ChatDataset):
             The key is a Jinja2 template string to embed the item into a string, and the value is the value to remove.
         parse_input_utterance: If specified, parse the rendered `input_utterance` string using the given method,
             `ast.literal_eval` if "literal_eval" or `json.loads` if "json_loads". If None, do not parse.
-        preprocessor: A function to preprocess each item.
+        preprocessor: A list of Preprocessor instances to preprocess each item.
     """
 
     def __init__(
@@ -191,7 +190,7 @@ class HFChatDataset(TemplateChatDataset):
         keep_conditions: dict[str, str] | None = None,
         remove_conditions: dict[str, str] | None = None,
         parse_input_utterance: Literal["literal_eval", "json_loads"] | None = None,
-        preprocessor: Callable[[dict[str, Any]], dict[str, Any]] | None = None,
+        preprocessor: list[Preprocessor] | None = None,
     ) -> None:
         dataset_kwargs = dataset_kwargs or {}
         dataset = datasets.load_dataset(path, name=subset, split=split, **dataset_kwargs)
