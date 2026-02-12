@@ -6,7 +6,7 @@ from typing import Any, Literal, Protocol
 
 from loguru import logger
 
-from flexeval.core.chat_dataset.base import Preprocessor
+from flexeval.core.chat_dataset.template_based import Preprocessor
 
 
 class Image(Protocol):
