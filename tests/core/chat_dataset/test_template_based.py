@@ -226,3 +226,33 @@ def test_load_jinja2_template(dummy_template_file: Path) -> None:
     embed_result = template_from_string.render()
     assert isinstance(template_from_string, Template)
     assert embed_result == "a" * 1000
+
+
+@pytest.mark.parametrize(
+    "parse_input_utterance",
+    ["literal_eval", "json_loads", None],
+)
+def test_parse_input_utterance(parse_input_utterance: str) -> None:
+    dataset = TemplateChatDataset(
+        items=[
+            {
+                "question": "Describe the color of this object.",
+                "answer": "red",
+                "image_url": "http://example.com/image1.jpg",
+            },
+        ],
+        input_template='[{ "type": "image_url", "image_url": {"url": "{{ image_url }}"}},{ "type": "text", "text": "{{ question }}"}]',
+        parse_input_utterance=parse_input_utterance,
+    )
+
+    input_utterance = dataset[0].messages[1]["content"]
+
+    if parse_input_utterance is None:
+        assert isinstance(input_utterance, str)
+
+    else:
+        assert isinstance(input_utterance, list)
+        assert input_utterance[0]["type"] == "image_url"
+        assert input_utterance[0]["image_url"]["url"] == "http://example.com/image1.jpg"
+        assert input_utterance[1]["type"] == "text"
+        assert input_utterance[1]["text"] == "Describe the color of this object."
