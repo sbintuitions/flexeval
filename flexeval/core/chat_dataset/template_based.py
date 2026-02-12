@@ -2,9 +2,10 @@ from __future__ import annotations
 
 import json
 from ast import literal_eval
+from collections.abc import Callable
 from os import PathLike
 from pathlib import Path
-from typing import Any
+from typing import Any, Literal
 
 import datasets
 from jinja2 import Template
@@ -50,6 +51,9 @@ class TemplateChatDataset(ChatDataset):
             The key is a Jinja2 template string to embed the item into a string, and the value is the value to keep.
         remove_conditions: A dictionary to indicate the condition to remove certain items.
             The key is a Jinja2 template string to embed the item into a string, and the value is the value to remove.
+        parse_input_utterance: If specified, parse the rendered `input_utterance` string using the given method,
+            `ast.literal_eval` if "literal_eval" or `json.loads` if "json_loads". If None, do not parse.
+        preprocessor: A function to preprocess each item.
     """
 
     def __init__(
@@ -64,6 +68,8 @@ class TemplateChatDataset(ChatDataset):
         data_range: tuple[int, int] | None = None,
         keep_conditions: dict[str, str] | None = None,
         remove_conditions: dict[str, str] | None = None,
+        parse_input_utterance: Literal["literal_eval", "json_loads"] | None = None,
+        preprocessor: Callable[[dict[str, Any]], dict[str, Any]] | None = None,
     ) -> None:
         if reference_template and reference_list_template:
             msg = "Only one of reference_template and reference_list_template can be set."
@@ -100,12 +106,21 @@ class TemplateChatDataset(ChatDataset):
             load_jinja2_template(system_message_template) if system_message_template else None
         )
 
+        self.parse_input_utterance = parse_input_utterance
+        self.preprocessor = preprocessor
+
     def __len__(self) -> int:
         return len(self.items)
 
     def __getitem__(self, i: int) -> ChatInstance:
         item = self.items[i]
+        if self.preprocessor:
+            item = self.preprocessor(item)
         input_utterance = self.input_template.render(**item)
+        if self.parse_input_utterance == "literal_eval":
+            input_utterance = literal_eval(input_utterance)
+        elif self.parse_input_utterance == "json_loads":
+            input_utterance = json.loads(input_utterance, strict=False)
         messages = [{"role": "user", "content": input_utterance}]
 
         if self._system_message_template:
@@ -166,6 +181,8 @@ class HFChatDataset(TemplateChatDataset):
         data_range: tuple[int, int] | None = None,
         keep_conditions: dict[str, str] | None = None,
         remove_conditions: dict[str, str] | None = None,
+        parse_input_utterance: Literal["literal_eval", "json_loads"] | None = None,
+        preprocessor: Callable[[dict[str, Any]], dict[str, Any]] | None = None,
     ) -> None:
         dataset_kwargs = dataset_kwargs or {}
         dataset = datasets.load_dataset(path, name=subset, split=split, **dataset_kwargs)
@@ -182,6 +199,8 @@ class HFChatDataset(TemplateChatDataset):
             data_range=data_range,
             keep_conditions=keep_conditions,
             remove_conditions=remove_conditions,
+            parse_input_utterance=parse_input_utterance,
+            preprocessor=preprocessor,
         )
 
 
@@ -205,6 +224,8 @@ class JsonlChatDataset(TemplateChatDataset):
         data_range: tuple[int, int] | None = None,
         keep_conditions: dict[str, str] | None = None,
         remove_conditions: dict[str, str] | None = None,
+        parse_input_utterance: Literal["literal_eval", "json_loads"] | None = None,
+        preprocessor: Callable[[dict[str, Any]], dict[str, Any]] | None = None,
     ) -> None:
         with open(path) as f:
             items = [json.loads(line) for line in f]
@@ -220,4 +241,6 @@ class JsonlChatDataset(TemplateChatDataset):
             data_range=data_range,
             keep_conditions=keep_conditions,
             remove_conditions=remove_conditions,
+            parse_input_utterance=parse_input_utterance,
+            preprocessor=preprocessor,
         )
