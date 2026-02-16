@@ -234,7 +234,7 @@ def test_load_jinja2_template(dummy_template_file: Path) -> None:
 )
 def test_parse_input_utterance(parse_input_utterance: str) -> None:
     input_template = """[
-        {"type": "image_url", "image_url": {"url": "{{ image_url }}"}},
+        {"type": "image_url", "image_url": {"url": "{{ image }}"}},
         {"type": "text", "text": "{{ question }}"}
     ]"""
     dataset = TemplateChatDataset(
@@ -242,7 +242,7 @@ def test_parse_input_utterance(parse_input_utterance: str) -> None:
             {
                 "question": "Describe the color of this object.",
                 "answer": "red",
-                "image_url": "http://example.com/image1.jpg",
+                "image": "http://example.com/image1.jpg",
             },
         ],
         input_template=input_template,
@@ -260,3 +260,29 @@ def test_parse_input_utterance(parse_input_utterance: str) -> None:
         assert input_utterance[0]["image_url"]["url"] == "http://example.com/image1.jpg"
         assert input_utterance[1]["type"] == "text"
         assert input_utterance[1]["text"] == "Describe the color of this object."
+
+
+def test_preprocessor() -> None:
+    from flexeval.core.chat_dataset.template_based import Preprocessor
+
+    class ToBase64(Preprocessor):
+        def __call__(self, item: dict) -> dict:
+            image = item["image"]
+            item["image_base64"] = "data:image/jpeg;base64,..."
+            return item
+
+    input_template = "{{ image_base64 }}"
+    dataset = TemplateChatDataset(
+        items=[
+            {
+                "question": "Describe the color of this object.",
+                "answer": "red",
+                "image": "http://example.com/image1.jpg",
+            },
+        ],
+        input_template=input_template,
+        parse_input_utterance="literal_eval",
+        preprocessor=[ToBase64()],
+    )
+    input_utterance = dataset[0].messages[0]["content"]
+    assert input_utterance == "data:image/jpeg;base64,..."
