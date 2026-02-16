@@ -267,7 +267,7 @@ def test_preprocessor() -> None:
 
     class ToBase64(Preprocessor):
         def __call__(self, item: dict) -> dict:
-            image = item["image"]
+            image = item["image"]  # noqa: F841 # simulate using the image for conversion
             item["image_base64"] = "data:image/jpeg;base64,..."
             return item
 
