@@ -281,7 +281,6 @@ def test_preprocessor() -> None:
             },
         ],
         input_template=input_template,
-        parse_input_utterance="literal_eval",
         preprocessor=[ToBase64()],
     )
     input_utterance = dataset[0].messages[0]["content"]
