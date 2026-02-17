@@ -262,7 +262,7 @@ def test_parse_input_utterance(parse_input_utterance: str) -> None:
         assert input_utterance[1]["text"] == "Describe the color of this object."
 
 
-def test_preprocessor() -> None:
+def test_preprocessors() -> None:
     from flexeval.core.chat_dataset.template_based import Preprocessor
 
     class ToBase64(Preprocessor):
@@ -281,7 +281,7 @@ def test_preprocessor() -> None:
             },
         ],
         input_template=input_template,
-        preprocessor=[ToBase64()],
+        preprocessors=[ToBase64()],
     )
     input_utterance = dataset[0].messages[0]["content"]
     assert input_utterance == "data:image/jpeg;base64,..."
