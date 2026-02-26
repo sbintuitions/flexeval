@@ -30,14 +30,14 @@ def chat_lm() -> VLLMServeLM:
         model="sbintuitions/tiny-lm-chat",
         model_kwargs={
             "seed": 42,
-            "gpu_memory_utilization": 0.1,
+            "gpu_memory_utilization": 0.3,
             "enforce_eager": True,
             "disable_custom_all_reduce": True,
             "tokenizer_mode": "slow",
         },
     )
     yield llm
-    llm.manager.stop()
+    llm.cleanup_resources()
     if openai_api_key is not None:
         os.environ["OPENAI_API_KEY"] = openai_api_key
 

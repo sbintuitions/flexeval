@@ -22,7 +22,7 @@ def chat_lm_with_custom_chat_template() -> VLLM:
         model="sbintuitions/tiny-lm-chat",
         model_kwargs={
             "seed": 42,
-            "gpu_memory_utilization": 0.1,
+            "gpu_memory_utilization": 0.3,
             "enforce_eager": True,
             "disable_custom_all_reduce": True,
         },
@@ -30,9 +30,7 @@ def chat_lm_with_custom_chat_template() -> VLLM:
         custom_chat_template=custom_chat_template,
     )
     yield llm
-    from vllm.distributed.parallel_state import cleanup_dist_env_and_memory
-
-    cleanup_dist_env_and_memory()
+    llm.cleanup_resources()
 
 
 # With 1 1 1, the continuation was not 1.
@@ -54,7 +52,7 @@ def chat_lm_with_fill_zeros() -> VLLM:
         model="sbintuitions/tiny-lm-chat",
         model_kwargs={
             "seed": 42,
-            "gpu_memory_utilization": 0.1,
+            "gpu_memory_utilization": 0.3,
             "enforce_eager": True,
             "disable_custom_all_reduce": True,
         },
@@ -63,9 +61,7 @@ def chat_lm_with_fill_zeros() -> VLLM:
         chat_template_kwargs={"fill_with_zeros": True},
     )
     yield llm
-    from vllm.distributed.parallel_state import cleanup_dist_env_and_memory
-
-    cleanup_dist_env_and_memory()
+    llm.cleanup_resources()
 
 
 @pytest.fixture(scope="module")
@@ -77,7 +73,7 @@ def chat_lm_with_fill_xs() -> VLLM:
         model="sbintuitions/tiny-lm-chat",
         model_kwargs={
             "seed": 42,
-            "gpu_memory_utilization": 0.1,
+            "gpu_memory_utilization": 0.3,
             "enforce_eager": True,
             "disable_custom_all_reduce": True,
         },
@@ -86,9 +82,7 @@ def chat_lm_with_fill_xs() -> VLLM:
         chat_template_kwargs={"fill_with_zeros": False},
     )
     yield llm
-    from vllm.distributed.parallel_state import cleanup_dist_env_and_memory
-
-    cleanup_dist_env_and_memory()
+    llm.cleanup_resources()
 
 
 @pytest.mark.skipif(not is_vllm_enabled(), reason="vllm library is not installed")
