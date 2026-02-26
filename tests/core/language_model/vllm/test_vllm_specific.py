@@ -19,7 +19,10 @@ def chat_lm() -> VLLM:
         model="sbintuitions/tiny-lm-chat",
         model_kwargs={
             "seed": 42,
-            "gpu_memory_utilization": 0.3,
+            "gpu_memory_utilization": 0.1,
+            "max_model_len": 2048,
+            "enforce_eager": True,
+            "disable_custom_all_reduce": True,
         },
         tokenizer_kwargs={"use_fast": False},
     )
@@ -33,7 +36,8 @@ def chat_lm_qwen() -> Generator[VLLM, None, None]:
         model="Qwen/Qwen3-0.6B-Base",
         model_kwargs={
             "seed": 42,
-            "gpu_memory_utilization": 0.3,
+            "gpu_memory_utilization": 0.1,
+            "max_model_len": 2048,
         },
     )
     yield llm
@@ -46,7 +50,10 @@ def chat_lm_with_system_message() -> VLLM:
         model="sbintuitions/tiny-lm-chat",
         model_kwargs={
             "seed": 42,
-            "gpu_memory_utilization": 0.3,
+            "gpu_memory_utilization": 0.1,
+            "max_model_len": 2048,
+            "enforce_eager": True,
+            "disable_custom_all_reduce": True,
         },
         tokenizer_kwargs={"use_fast": False},
         system_message="You are a helpful assistant.",
@@ -62,7 +69,10 @@ def chat_lm_for_tool_calling() -> Generator[VLLM, None, None]:
         model="sbintuitions/tiny-lm-chat",
         model_kwargs={
             "seed": 42,
-            "gpu_memory_utilization": 0.3,
+            "gpu_memory_utilization": 0.1,
+            "max_model_len": 2048,
+            "enforce_eager": True,
+            "disable_custom_all_reduce": True,
         },
         tokenizer_kwargs={"use_fast": False},
         tool_parser=tool_parser,

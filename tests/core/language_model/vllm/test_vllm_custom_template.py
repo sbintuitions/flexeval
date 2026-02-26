@@ -22,7 +22,8 @@ def chat_lm_with_custom_chat_template() -> VLLM:
         model="sbintuitions/tiny-lm-chat",
         model_kwargs={
             "seed": 42,
-            "gpu_memory_utilization": 0.3,
+            "gpu_memory_utilization": 0.1,
+            "max_model_len": 2048,
             "enforce_eager": True,
             "disable_custom_all_reduce": True,
         },
@@ -52,7 +53,8 @@ def chat_lm_with_fill_zeros() -> VLLM:
         model="sbintuitions/tiny-lm-chat",
         model_kwargs={
             "seed": 42,
-            "gpu_memory_utilization": 0.3,
+            "gpu_memory_utilization": 0.1,
+            "max_model_len": 2048,
             "enforce_eager": True,
             "disable_custom_all_reduce": True,
         },
@@ -73,7 +75,8 @@ def chat_lm_with_fill_xs() -> VLLM:
         model="sbintuitions/tiny-lm-chat",
         model_kwargs={
             "seed": 42,
-            "gpu_memory_utilization": 0.3,
+            "gpu_memory_utilization": 0.1,
+            "max_model_len": 2048,
             "enforce_eager": True,
             "disable_custom_all_reduce": True,
         },
