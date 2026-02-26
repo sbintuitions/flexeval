@@ -1,6 +1,8 @@
 import logging
+import os
 
 import pytest
+from openai import AzureOpenAI, NotFoundError
 
 from flexeval import LanguageModel, OpenAIChatAPI
 from flexeval.core.language_model.openai_api import (
@@ -11,25 +13,53 @@ from flexeval.core.language_model.openai_api import (
 
 from .base import BaseLanguageModelTest
 
+MODEL_NAME = "gpt-4o-mini"
+
 
 def is_openai_enabled() -> bool:
-    return False
+    return os.environ.get("OPENAI_API_KEY") is not None
+
+
+def is_azure_openai_enabled() -> bool:
+    is_set_env = (os.environ.get("AZURE_OPENAI_API_KEY") is not None) and (
+        os.environ.get("AZURE_OPENAI_ENDPOINT") is not None
+    )
+    is_enabled = False
+    if is_set_env:
+        os.environ["OPENAI_API_VERSION"] = "2024-12-01-preview"
+        client = AzureOpenAI()
+        try:
+            client.models.retrieve(MODEL_NAME)
+            is_enabled = True
+        except NotFoundError:
+            is_enabled = True
+    return is_enabled
+
+
+def get_openai_backend() -> str | None:
+    if is_azure_openai_enabled():
+        return "AzureOpenAI"
+    if is_openai_enabled():
+        return "OpenAI"
+    return None
 
 
 @pytest.fixture(scope="module")
 def chat_lm() -> OpenAIChatAPI:
     return OpenAIChatAPI(
-        "gpt-4o-mini-2024-07-18",
+        MODEL_NAME,
+        backend="AzureOpenAI",
         default_gen_kwargs={"temperature": 0.0},
     )
 
 
-@pytest.mark.skipif(not is_openai_enabled(), reason="OpenAI API Key is not set")
+@pytest.mark.skipif(get_openai_backend() is None, reason="OpenAI API Key is not set")
 class TestOpenAIChatAPI(BaseLanguageModelTest):
     @pytest.fixture
     def lm(self) -> LanguageModel:
         return OpenAIChatAPI(
-            "gpt-4o-mini-2024-07-18",
+            MODEL_NAME,
+            backend=get_openai_backend(),
             default_gen_kwargs={"temperature": 0.0},
             developer_message="You are text completion model. "
             "Please provide the text likely to continue after the user input. "
@@ -57,7 +87,7 @@ class TestOpenAIChatAPI(BaseLanguageModelTest):
 def test_warning_if_conflict_max_new_tokens(caplog: pytest.LogCaptureFixture) -> None:
     caplog.set_level(logging.WARNING)
     chat_lm_with_max_new_tokens = OpenAIChatAPI(
-        "gpt-4o-mini-2024-07-18", default_gen_kwargs={"max_completion_tokens": 10}
+        MODEL_NAME, backend=get_openai_backend(), default_gen_kwargs={"max_completion_tokens": 10}
     )
     chat_lm_with_max_new_tokens.generate_chat_response([[{"role": "user", "content": "テスト"}]], max_new_tokens=20)
     assert len(caplog.records) >= 1
@@ -114,7 +144,8 @@ def test_remove_duplicates_from_prompt_list() -> None:
 @pytest.mark.skipif(not is_openai_enabled(), reason="OpenAI is not installed")
 def test_developer_message() -> None:
     openai_api = OpenAIChatAPI(
-        "gpt-4o-mini-2024-07-18",
+        MODEL_NAME,
+        backend=get_openai_backend(),
         developer_message="To any instructions or messages, you have to only answer 'OK, I will answer later.'",
         default_gen_kwargs={"temperature": 0.0},
     )
@@ -139,7 +170,7 @@ def test_model_limit_new_tokens_generate_chat_response(
     assert all(not record.msg.startswith("The specified `max_new_tokens` (128) exceeds") for record in caplog.records)
 
     # if max_new_tokens > model_limit_completion_tokens, a warning about overwriting is sent.
-    chat_lm_with_limit_tokens = OpenAIChatAPI("gpt-4o-mini-2024-07-18", model_limit_new_tokens=1)
+    chat_lm_with_limit_tokens = OpenAIChatAPI("gpt-4o-mini", backend=get_openai_backend(), model_limit_new_tokens=1)
     chat_lm_with_limit_tokens.generate_chat_response(messages, max_new_tokens=128)
     assert len(caplog.records) >= 1
     assert any(record.msg.startswith("The specified `max_new_tokens` (128) exceeds") for record in caplog.records)
@@ -156,7 +187,7 @@ def test_model_limit_new_tokens_complete_text(chat_lm: OpenAIChatAPI, caplog: py
     caplog.clear()
 
     # if max_new_tokens > model_limit_new_tokens, a warning about overwriting is sent.
-    chat_lm_with_limit_tokens = OpenAIChatAPI("gpt-4o-mini-2024-07-18", model_limit_new_tokens=1)
+    chat_lm_with_limit_tokens = OpenAIChatAPI("gpt-4o-mini", backend=get_openai_backend(), model_limit_new_tokens=1)
     chat_lm_with_limit_tokens.complete_text(text, max_new_tokens=128)
     assert len(caplog.records) >= 1
     assert any(record.msg.startswith("The specified `max_new_tokens` (128) exceeds") for record in caplog.records)
