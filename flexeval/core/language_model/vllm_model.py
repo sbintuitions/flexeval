@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 import time
 from collections.abc import Callable
 from typing import TYPE_CHECKING, Any, Literal
@@ -152,7 +153,7 @@ class VLLM(LanguageModel):
 
                 self.llm = LLM(self.model_name, **self.model_kwargs)
                 if self.model_limit_tokens == "default":
-                    self.model_limit_tokens = self.llm.llm_engine.get_model_config().max_model_len
+                    self.model_limit_tokens = self.llm.llm_engine.model_config.max_model_len
             return method(self, *args, **kwargs)
 
         return wrapper
@@ -306,7 +307,7 @@ class VLLM(LanguageModel):
             prefix + continuation for prefix, continuation in zip(batch_prefix_ids, batch_continuation_ids)
         ]
 
-        max_length = self.llm.llm_engine.get_model_config().max_seq_len_to_capture
+        max_length = self.llm.llm_engine.model_config.max_seq_len_to_capture
         stride = stride or max_length // 2
         if not (0 < stride < max_length):
             msg = f"stride must be in (0, {max_length}), but got {stride}"
