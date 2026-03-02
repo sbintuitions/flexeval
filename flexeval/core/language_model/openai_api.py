@@ -221,10 +221,11 @@ class OpenAIChatAPI(LanguageModel):
             max_new_tokens=max_new_tokens,
             **kwargs,
         )
+
         outputs = [
             LMOutput(
                 text=res.choices[0].message.content,
-                reasoning_text=getattr(res.choices[0].message, "reasoning_content", None),
+                reasoning_text=get_reasoning_text(res.choices[0].message),
                 finish_reason=res.choices[0].finish_reason,
             )
             for res in api_responses
@@ -244,7 +245,7 @@ class OpenAIChatAPI(LanguageModel):
         outputs = [
             LMOutput(
                 text=res.choices[0].message.content,
-                reasoning_text=getattr(res.choices[0].message, "reasoning_content", None),
+                reasoning_text=get_reasoning_text(res.choices[0].message),
                 finish_reason=res.choices[0].finish_reason,
                 tool_calls=[tool_call.to_dict() for tool_call in res.choices[0].message.tool_calls]
                 if res.choices[0].message.tool_calls
@@ -311,6 +312,10 @@ class OpenAIChatAPI(LanguageModel):
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(model={self.model})"
+
+
+def get_reasoning_text(message: ChatCompletionMessage) -> str | None:
+    return getattr(message, "reasoning", None) or getattr(message, "reasoning_content", None)
 
 
 def number_of_tokens_in_openai_model(model: str, content: str) -> int:
