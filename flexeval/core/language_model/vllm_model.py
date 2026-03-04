@@ -152,7 +152,7 @@ class VLLM(LanguageModel):
 
                 self.llm = LLM(self.model_name, **self.model_kwargs)
                 if self.model_limit_tokens == "default":
-                    self.model_limit_tokens = self.llm.llm_engine.get_model_config().max_model_len
+                    self.model_limit_tokens = self.llm.llm_engine.model_config.max_model_len
             return method(self, *args, **kwargs)
 
         return wrapper
@@ -306,7 +306,7 @@ class VLLM(LanguageModel):
             prefix + continuation for prefix, continuation in zip(batch_prefix_ids, batch_continuation_ids)
         ]
 
-        max_length = self.llm.llm_engine.get_model_config().max_seq_len_to_capture
+        max_length = self.llm.llm_engine.model_config.max_model_len
         stride = stride or max_length // 2
         if not (0 < stride < max_length):
             msg = f"stride must be in (0, {max_length}), but got {stride}"
@@ -315,7 +315,7 @@ class VLLM(LanguageModel):
 
         from vllm import RequestOutput, SamplingParams
         from vllm.inputs import TokensPrompt
-        from vllm.sequence import Logprob
+        from vllm.logprobs import Logprob
 
         sampling_params = SamplingParams(temperature=0.0, max_tokens=1, prompt_logprobs=1)
 
