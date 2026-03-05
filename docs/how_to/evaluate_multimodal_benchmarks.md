@@ -1,4 +1,5 @@
 # Evaluate Multimodal Benchmarks
+
 In this guide, we will walk you through the process of evaluating a Multimodal Language Model (MLM) on a multimodal benchmark using flexeval.
 We will take the benchmark DocVQA as an example and evaluate `Sarashina2.2-Vision-3B` on it.
 
@@ -45,6 +46,7 @@ In the configuration above, we use `literal_eval` because the template outputs a
 The `preprocessors` argument accepts a list of `Preprocessor` instances that sequentially transform each dataset item before prompt generation. In the configuration above, `ConvertImageToBase64` is used to encode image objects into Base64 strings.
 
 For `flexeval` to load this custom preprocessor, create `docvqa/preprocessors.py` and define `ConvertImageToBase64` by extending the base `Preprocessor` class and implementing the `__call__` method:
+
 ```python
 import base64
 from io import BytesIO
@@ -76,6 +78,7 @@ class ConvertImageToBase64(Preprocessor):
 ```
 
 ## Running the Benchmark
+
 With the benchmark defined and the preprocessor in place, you can now run the evaluation through `flexeval`.
 
 ```bash
