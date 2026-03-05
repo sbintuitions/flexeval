@@ -1,5 +1,5 @@
 # Evaluate Multimodal Benchmarks
-In this guide, we will walk you through the process of evaluating a VLM on a multimodal benchmark using flexeval.
+In this guide, we will walk you through the process of evaluating a Multimodal Language Model (MLM) on a multimodal benchmark using flexeval.
 We will take the benchmark DocVQA as an example and evaluate `Sarashina2.2-Vision-3B` on it.
 
 ## Defining the Multimodal Benchmark
@@ -36,7 +36,7 @@ Flexeval allows you to define a custom benchmark setup easily by configuring the
 }
 ```
 
-Vision-Language Models generally require structured input. The `HFChatDataset` templates output raw strings by default, and allows specifying the `parse_input_utterance` argument to convert them into these required structures. Accepted values are `literal_eval` (for `ast.literal_eval`), `json_loads` (for `json.loads`), or `None`.
+Multimodal Language Models generally require structured input. The `HFChatDataset` templates output raw strings by default, and allows specifying the `parse_input_utterance` argument to convert them into these required structures. Accepted values are `literal_eval` (for `ast.literal_eval`), `json_loads` (for `json.loads`), or `None`.
 
 In the configuration above, we use `literal_eval` because the template outputs a Python literal string rather than strict JSON. This safely evaluates the string directly into the Python list the model expects.
 
