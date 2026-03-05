@@ -9,25 +9,21 @@
       
       
       
-        <link rel="prev" href="../configuration_guide/">
       
       
-        <link rel="next" href="configure_few_shot_examples/">
-      
-      
-      <link rel="icon" href="../assets/images/favicon.png">
+      <link rel="icon" href="../../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.5">
     
     
       
-        <title>How to - flexeval</title>
+        <title>Evaluate Multimodal Benchmarks - flexeval</title>
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.8608ea7d.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.8608ea7d.min.css">
       
         
-        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
       
       
 
@@ -46,9 +42,9 @@
       
     
     
-      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
     
-    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -72,7 +68,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#how-to" class="md-skip">
+        <a href="#evaluate-multimodal-benchmarks" class="md-skip">
           Skip to content
         </a>
       
@@ -88,7 +84,7 @@
 
 <header class="md-header md-header--shadow" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href=".." title="flexeval" class="md-header__button md-logo" aria-label="flexeval" data-md-component="logo">
+    <a href="../.." title="flexeval" class="md-header__button md-logo" aria-label="flexeval" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -108,7 +104,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              How to
+              Evaluate Multimodal Benchmarks
             
           </span>
         </div>
@@ -183,7 +179,7 @@
 
 <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href=".." title="flexeval" class="md-nav__button md-logo" aria-label="flexeval" data-md-component="logo">
+    <a href="../.." title="flexeval" class="md-nav__button md-logo" aria-label="flexeval" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -201,7 +197,7 @@
   
   
     <li class="md-nav__item">
-      <a href=".." class="md-nav__link">
+      <a href="../.." class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -222,7 +218,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../installation/" class="md-nav__link">
+      <a href="../../installation/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -243,7 +239,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../getting_started/" class="md-nav__link">
+      <a href="../../getting_started/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -264,7 +260,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../configuration_guide/" class="md-nav__link">
+      <a href="../../configuration_guide/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -282,24 +278,22 @@
       
   
   
-    
   
   
-  
     
     
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
         
           
           
           <div class="md-nav__link md-nav__container">
-            <a href="./" class="md-nav__link md-nav__link--active">
+            <a href="../" class="md-nav__link ">
               
   
   <span class="md-ellipsis">
@@ -311,13 +305,13 @@
             </a>
             
               
-              <label class="md-nav__link md-nav__link--active" for="__nav_5" id="__nav_5_label" tabindex="0">
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="0">
                 <span class="md-nav__icon md-icon"></span>
               </label>
             
           </div>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_5">
             <span class="md-nav__icon md-icon"></span>
             How to
@@ -331,7 +325,7 @@
   
   
     <li class="md-nav__item">
-      <a href="configure_few_shot_examples/" class="md-nav__link">
+      <a href="../configure_few_shot_examples/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -353,7 +347,7 @@
   
   
     <li class="md-nav__item">
-      <a href="evaluate_with_llm_judges/" class="md-nav__link">
+      <a href="../evaluate_with_llm_judges/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -375,7 +369,7 @@
   
   
     <li class="md-nav__item">
-      <a href="implement_your_own_module/" class="md-nav__link">
+      <a href="../implement_your_own_module/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -404,7 +398,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../design_principles/" class="md-nav__link">
+      <a href="../../design_principles/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -437,7 +431,7 @@
           
           
           <div class="md-nav__link md-nav__container">
-            <a href="../preset_configs/" class="md-nav__link ">
+            <a href="../../preset_configs/" class="md-nav__link ">
               
   
   <span class="md-ellipsis">
@@ -481,7 +475,7 @@
           
           
           <div class="md-nav__link md-nav__container">
-            <a href="../preset_configs/EvalSetup/" class="md-nav__link ">
+            <a href="../../preset_configs/EvalSetup/" class="md-nav__link ">
               
   
   <span class="md-ellipsis">
@@ -513,7 +507,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../preset_configs/EvalSetup/code_chat/" class="md-nav__link">
+      <a href="../../preset_configs/EvalSetup/code_chat/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -535,7 +529,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../preset_configs/EvalSetup/code_generation/" class="md-nav__link">
+      <a href="../../preset_configs/EvalSetup/code_generation/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -557,7 +551,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../preset_configs/EvalSetup/en_chat/" class="md-nav__link">
+      <a href="../../preset_configs/EvalSetup/en_chat/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -579,7 +573,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../preset_configs/EvalSetup/en_generation/" class="md-nav__link">
+      <a href="../../preset_configs/EvalSetup/en_generation/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -601,7 +595,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../preset_configs/EvalSetup/en_multiple_choice/" class="md-nav__link">
+      <a href="../../preset_configs/EvalSetup/en_multiple_choice/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -623,7 +617,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../preset_configs/EvalSetup/en_perplexity/" class="md-nav__link">
+      <a href="../../preset_configs/EvalSetup/en_perplexity/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -645,7 +639,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../preset_configs/EvalSetup/ja_chat/" class="md-nav__link">
+      <a href="../../preset_configs/EvalSetup/ja_chat/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -667,7 +661,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../preset_configs/EvalSetup/ja_generation/" class="md-nav__link">
+      <a href="../../preset_configs/EvalSetup/ja_generation/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -689,7 +683,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../preset_configs/EvalSetup/ja_multiple_choice/" class="md-nav__link">
+      <a href="../../preset_configs/EvalSetup/ja_multiple_choice/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -711,7 +705,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../preset_configs/EvalSetup/translation/" class="md-nav__link">
+      <a href="../../preset_configs/EvalSetup/translation/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -733,7 +727,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../preset_configs/EvalSetup/translation_chat/" class="md-nav__link">
+      <a href="../../preset_configs/EvalSetup/translation_chat/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -763,7 +757,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../preset_configs/Metric/" class="md-nav__link">
+      <a href="../../preset_configs/Metric/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -785,7 +779,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../preset_configs/PairwiseJudge/" class="md-nav__link">
+      <a href="../../preset_configs/PairwiseJudge/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -826,7 +820,7 @@
           
           
           <div class="md-nav__link md-nav__container">
-            <a href="../api_reference/" class="md-nav__link ">
+            <a href="../../api_reference/" class="md-nav__link ">
               
   
   <span class="md-ellipsis">
@@ -858,7 +852,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api_reference/ChatDataset/" class="md-nav__link">
+      <a href="../../api_reference/ChatDataset/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -880,7 +874,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api_reference/EvalSetup/" class="md-nav__link">
+      <a href="../../api_reference/EvalSetup/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -902,7 +896,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api_reference/FewShotGenerator/" class="md-nav__link">
+      <a href="../../api_reference/FewShotGenerator/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -924,7 +918,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api_reference/FunctionToolCall/" class="md-nav__link">
+      <a href="../../api_reference/FunctionToolCall/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -946,7 +940,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api_reference/GenerationDataset/" class="md-nav__link">
+      <a href="../../api_reference/GenerationDataset/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -968,7 +962,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api_reference/HFMultipleChoiceDataset/" class="md-nav__link">
+      <a href="../../api_reference/HFMultipleChoiceDataset/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -990,7 +984,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api_reference/HFRewardBenchDataset/" class="md-nav__link">
+      <a href="../../api_reference/HFRewardBenchDataset/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1012,7 +1006,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api_reference/LMOutput/" class="md-nav__link">
+      <a href="../../api_reference/LMOutput/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1034,7 +1028,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api_reference/MatchMaker/" class="md-nav__link">
+      <a href="../../api_reference/MatchMaker/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1056,7 +1050,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api_reference/Metric/" class="md-nav__link">
+      <a href="../../api_reference/Metric/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1078,7 +1072,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api_reference/PairwiseJudge/" class="md-nav__link">
+      <a href="../../api_reference/PairwiseJudge/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1100,7 +1094,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api_reference/PairwiseScorer/" class="md-nav__link">
+      <a href="../../api_reference/PairwiseScorer/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1122,7 +1116,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api_reference/PromptTemplate/" class="md-nav__link">
+      <a href="../../api_reference/PromptTemplate/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1144,7 +1138,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api_reference/ResultRecorder/" class="md-nav__link">
+      <a href="../../api_reference/ResultRecorder/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1166,7 +1160,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api_reference/RewardModel/" class="md-nav__link">
+      <a href="../../api_reference/RewardModel/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1188,7 +1182,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api_reference/StringProcessor/" class="md-nav__link">
+      <a href="../../api_reference/StringProcessor/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1210,7 +1204,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api_reference/TextDataset/" class="md-nav__link">
+      <a href="../../api_reference/TextDataset/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1232,7 +1226,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api_reference/Tokenizer/" class="md-nav__link">
+      <a href="../../api_reference/Tokenizer/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1254,7 +1248,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api_reference/utils/" class="md-nav__link">
+      <a href="../../api_reference/utils/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1296,6 +1290,32 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#defining-the-multimodal-benchmark" class="md-nav__link">
+    <span class="md-ellipsis">
+      Defining the Multimodal Benchmark
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#running-the-benchmark" class="md-nav__link">
+    <span class="md-ellipsis">
+      Running the Benchmark
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -1310,13 +1330,81 @@
 
 
 
-<h1 id="how-to">How to<a class="headerlink" href="#how-to" title="Permanent link">&para;</a></h1>
-<ul>
-<li><a href="configure_few_shot_examples/">Configure Few-Shot Examples</a></li>
-<li><a href="evaluate_with_llm_judges/">Evaluate with LLM Judges</a></li>
-<li><a href="implement_your_own_module/">Implement Your Own Module</a></li>
-<li><a href="evaluate_multimodal_benchmarks/">Evaluate Multimodal Benchmarks</a></li>
-</ul>
+<h1 id="evaluate-multimodal-benchmarks">Evaluate Multimodal Benchmarks<a class="headerlink" href="#evaluate-multimodal-benchmarks" title="Permanent link">&para;</a></h1>
+<p>In this guide, we will walk you through the process of evaluating a Multimodal Language Model (MLM) on a multimodal benchmark using flexeval.
+We will take the benchmark DocVQA as an example and evaluate <code>Sarashina2.2-Vision-3B</code> on it.</p>
+<h2 id="defining-the-multimodal-benchmark">Defining the Multimodal Benchmark<a class="headerlink" href="#defining-the-multimodal-benchmark" title="Permanent link">&para;</a></h2>
+<p>Flexeval allows you to define a custom benchmark setup easily by configuring the <code>HFChatDataset</code> class. In this example, we showcase how to do this through a jsonnet configuration file (<code>docvqa.jsonnet</code>) as follows:</p>
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nv">class_path</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;ChatResponse&#39;</span><span class="p">,</span>
+<span class="w">  </span><span class="nv">init_args</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nv">eval_dataset</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nv">class_path</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;HFChatDataset&#39;</span><span class="p">,</span>
+<span class="w">      </span><span class="nv">init_args</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nv">path</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;lmms-lab/DocVQA&#39;</span><span class="p">,</span>
+<span class="w">        </span><span class="nv">split</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;validation&#39;</span><span class="p">,</span>
+<span class="w">        </span><span class="nv">subset</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;DocVQA&#39;</span><span class="p">,</span>
+<span class="w">        </span><span class="nv">input_template</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;[{ &quot;type&quot;: &quot;image_url&quot;, &quot;image_url&quot;: {&quot;url&quot;: &quot;{{ image_base64 }}&quot;}}, { &quot;type&quot;: &quot;text&quot;, &quot;text&quot;: &quot;&quot;&quot;{{ question }}</span><span class="se">\n</span><span class="s">Answer the question using a single word or phrase.&quot;&quot;&quot;},]&#39;</span><span class="p">,</span>
+<span class="w">        </span><span class="nv">reference_list_template</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;{{ answers }}&#39;</span><span class="p">,</span>
+<span class="w">        </span><span class="nv">parse_input_utterance</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;literal_eval&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nv">preprocessors</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">          </span><span class="p">{</span>
+<span class="w">            </span><span class="nv">class_path</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;docvqa.preprocessors.ConvertImageToBase64&#39;</span><span class="p">,</span>
+<span class="w">            </span><span class="nv">init_args</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">              </span><span class="nv">key</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;image&#39;</span><span class="p">,</span>
+<span class="w">            </span><span class="p">},</span>
+<span class="w">          </span><span class="p">},</span>
+<span class="w">        </span><span class="p">],</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nv">metrics</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">      </span><span class="p">{</span><span class="w"> </span><span class="nv">class_path</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;ExactMatch&#39;</span><span class="w"> </span><span class="p">},</span>
+<span class="w">    </span><span class="p">],</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>Multimodal Language Models generally require structured input. The <code>HFChatDataset</code> templates output raw strings by default, and allows specifying the <code>parse_input_utterance</code> argument to convert them into these required structures. Accepted values are <code>literal_eval</code> (for <code>ast.literal_eval</code>), <code>json_loads</code> (for <code>json.loads</code>), or <code>None</code>.</p>
+<p>In the configuration above, we use <code>literal_eval</code> because the template outputs a Python literal string rather than strict JSON. This safely evaluates the string directly into the Python list the model expects.</p>
+<h3 id="preprocessors">Preprocessors<a class="headerlink" href="#preprocessors" title="Permanent link">&para;</a></h3>
+<p>The <code>preprocessors</code> argument accepts a list of <code>Preprocessor</code> instances that sequentially transform each dataset item before prompt generation. In the configuration above, <code>ConvertImageToBase64</code> is used to encode image objects into Base64 strings.</p>
+<p>For <code>flexeval</code> to load this custom preprocessor, create <code>docvqa/preprocessors.py</code> and define <code>ConvertImageToBase64</code> by extending the base <code>Preprocessor</code> class and implementing the <code>__call__</code> method:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">base64</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">io</span><span class="w"> </span><span class="kn">import</span> <span class="n">BytesIO</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">PIL</span><span class="w"> </span><span class="kn">import</span> <span class="n">Image</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">flexeval.core.chat_dataset</span><span class="w"> </span><span class="kn">import</span> <span class="n">Preprocessor</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">image_to_base64</span><span class="p">(</span><span class="n">image</span><span class="p">:</span> <span class="n">Image</span><span class="o">.</span><span class="n">Image</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Converts a PIL Image to a base64 string.&quot;&quot;&quot;</span>
+    <span class="n">buffered</span> <span class="o">=</span> <span class="n">BytesIO</span><span class="p">()</span>
+    <span class="n">image</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">buffered</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="n">image</span><span class="o">.</span><span class="n">format</span> <span class="ow">or</span> <span class="s2">&quot;PNG&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">base64</span><span class="o">.</span><span class="n">b64encode</span><span class="p">(</span><span class="n">buffered</span><span class="o">.</span><span class="n">getvalue</span><span class="p">())</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">ConvertImageToBase64</span><span class="p">(</span><span class="n">Preprocessor</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert image to base64 string.&quot;&quot;&quot;</span>
+
+    <span class="n">key</span><span class="p">:</span> <span class="nb">str</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Data</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Data</span><span class="p">:</span>
+        <span class="n">image</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">image</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">base64_image</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">Image</span><span class="o">.</span><span class="n">Image</span><span class="p">):</span>
+            <span class="n">base64_image</span> <span class="o">=</span> <span class="n">image_to_base64</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unsupported image type: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">image</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="n">data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">_base64&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">base64_image</span>
+        <span class="k">return</span> <span class="n">data</span>
+</code></pre></div>
+<h2 id="running-the-benchmark">Running the Benchmark<a class="headerlink" href="#running-the-benchmark" title="Permanent link">&para;</a></h2>
+<p>With the benchmark defined and the preprocessor in place, you can now run the evaluation through <code>flexeval</code>.</p>
+<div class="highlight"><pre><span></span><code>flexeval_lm<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--language_model<span class="w"> </span>HuggingFaceLM<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--language_model.model<span class="w"> </span><span class="s2">&quot;sbintuitions/sarashina2.2-vision-3b&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--eval_setup<span class="w"> </span>docvqa.jsonnet<span class="se">\</span>
+<span class="w">  </span>--save_dir<span class="w"> </span>results/sarashina/docvqa
+</code></pre></div>
+<p>This command evaluates the <code>Sarashina2.2-Vision-3B</code> model on the DocVQA benchmark and saves the results to <code>results/sarashina/docvqa</code>.</p>
 
 
 
@@ -1363,10 +1451,10 @@
     </div>
     
     
-    <script id="__config" type="application/json">{"base": "..", "features": [], "search": "../assets/javascripts/workers/search.f8cc74c7.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    <script id="__config" type="application/json">{"base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.f8cc74c7.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
     
     
-      <script src="../assets/javascripts/bundle.f1b6f286.min.js"></script>
+      <script src="../../assets/javascripts/bundle.f1b6f286.min.js"></script>
       
     
   </body>
