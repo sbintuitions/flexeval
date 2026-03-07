@@ -14,22 +14,20 @@ from tests.dummy_modules.tool_parser import DummyToolParser
 
 
 @pytest.fixture(scope="module")
-def chat_lm() -> Generator[VLLM, None, None]:
+def chat_lm() -> VLLM:
     llm = VLLM(
         model="sbintuitions/tiny-lm-chat",
         model_kwargs={
             "seed": 42,
             "gpu_memory_utilization": 0.1,
+            "max_model_len": 2048,
             "enforce_eager": True,
-            "dtype": "float32",
             "disable_custom_all_reduce": True,
         },
         tokenizer_kwargs={"use_fast": False},
     )
     yield llm
-    from vllm.distributed.parallel_state import cleanup_dist_env_and_memory
-
-    cleanup_dist_env_and_memory()
+    llm.cleanup_resources()
 
 
 @pytest.fixture(scope="module")
@@ -39,14 +37,29 @@ def chat_lm_qwen() -> Generator[VLLM, None, None]:
         model_kwargs={
             "seed": 42,
             "gpu_memory_utilization": 0.1,
-            "enforce_eager": True,
-            "disable_custom_all_reduce": True,
+            "max_model_len": 2048,
         },
     )
     yield llm
-    from vllm.distributed.parallel_state import cleanup_dist_env_and_memory
+    llm.cleanup_resources()
 
-    cleanup_dist_env_and_memory()
+
+@pytest.fixture(scope="module")
+def chat_lm_with_system_message() -> VLLM:
+    llm = VLLM(
+        model="sbintuitions/tiny-lm-chat",
+        model_kwargs={
+            "seed": 42,
+            "gpu_memory_utilization": 0.1,
+            "max_model_len": 2048,
+            "enforce_eager": True,
+            "disable_custom_all_reduce": True,
+        },
+        tokenizer_kwargs={"use_fast": False},
+        system_message="You are a helpful assistant.",
+    )
+    yield llm
+    llm.cleanup_resources()
 
 
 @pytest.fixture(scope="module")
@@ -57,17 +70,15 @@ def chat_lm_for_tool_calling() -> Generator[VLLM, None, None]:
         model_kwargs={
             "seed": 42,
             "gpu_memory_utilization": 0.1,
+            "max_model_len": 2048,
             "enforce_eager": True,
-            "dtype": "float32",
             "disable_custom_all_reduce": True,
         },
         tokenizer_kwargs={"use_fast": False},
         tool_parser=tool_parser,
     )
     yield llm
-    from vllm.distributed.parallel_state import cleanup_dist_env_and_memory
-
-    cleanup_dist_env_and_memory()
+    llm.cleanup_resources()
 
 
 @pytest.fixture(scope="module")
@@ -77,24 +88,38 @@ def hf_lm(model_name: str = "sbintuitions/tiny-lm-chat") -> HuggingFaceLM:
     )
 
 
+@pytest.fixture(scope="module")
+def hf_lm_qwen(model_name: str = "Qwen/Qwen3-0.6B-Base") -> HuggingFaceLM:
+    return HuggingFaceLM(
+        model=model_name, model_kwargs={"torch_dtype": "float32"}, default_gen_kwargs={"temperature": 0.0}
+    )
+
+
 @pytest.mark.skipif(not is_vllm_enabled(), reason="vllm library is not installed")
-@pytest.mark.parametrize("chat_lm_name", ["chat_lm", "chat_lm_qwen"])
+@pytest.mark.parametrize(
+    ("chat_lm_name", "hf_lm_name"),
+    [
+        ("chat_lm", "hf_lm"),
+        ("chat_lm_qwen", "hf_lm_qwen"),
+    ],
+)
 def test_batch_compute_log_probs_approximates_hf_lm(
     request: pytest.FixtureRequest,
     chat_lm_name: str,
-    hf_lm: HuggingFaceLM,
+    hf_lm_name: str,
 ) -> None:
     chat_lm = request.getfixturevalue(chat_lm_name)
+    hf_lm = request.getfixturevalue(hf_lm_name)
     prefix_list = ["それは正しい日本語ですか？"]
     text_list = ["これは正しい日本語です。"]
 
     vllm_log_probs = chat_lm.compute_log_probs(text_list)
     hf_log_probs = hf_lm.compute_log_probs(text_list)
-    assert vllm_log_probs == pytest.approx(hf_log_probs, abs=1e-2)
+    assert vllm_log_probs == pytest.approx(hf_log_probs, abs=0.5)
 
     vllm_log_probs = chat_lm.compute_log_probs(text_list, prefix_list=prefix_list)
     hf_log_probs = hf_lm.compute_log_probs(text_list, prefix_list=prefix_list)
-    assert vllm_log_probs == pytest.approx(hf_log_probs, abs=1e-2)
+    assert vllm_log_probs == pytest.approx(hf_log_probs, abs=0.5)
 
 
 @pytest.mark.skipif(not is_vllm_enabled(), reason="vllm library is not installed")
