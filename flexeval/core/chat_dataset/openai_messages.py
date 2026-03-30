@@ -136,21 +136,21 @@ class OpenAIMessagesDataset(ChatDataset):
                 messages = messages[:-1]
 
             if references_key:
-              references = sample.pop(references_key, None)
-              if isinstance(references, str):
-                references = [references]
-              elif isinstance(references, list) and all(isinstance(ref, str) for ref in references):
-                pass
-              else:
-                msg = "Invalid format for references."
-                raise ValueError(msg)
+                references = sample.pop(references_key, None)
+                if isinstance(references, str):
+                    references = [references]
+                elif isinstance(references, list) and all(isinstance(ref, str) for ref in references):
+                    pass
+                else:
+                    msg = "Invalid format for references."
+                    raise ValueError(msg)
             elif references_key is None and last_assistant_content:
-              references = [last_assistant_content]
+                references = [last_assistant_content]
             else:
-              references = []
+                references = []
 
             self.conversations.append(
-              ChatInstance(messages=messages, tools=tool_dicts, references=references, extra_info=sample)
+                ChatInstance(messages=messages, tools=tool_dicts, references=references, extra_info=sample)
             )
 
     def __len__(self) -> int:
