@@ -27,10 +27,8 @@ class OpenAIMessagesDataset(ChatDataset):
         tool_definitions_key (str | None): Key used to extract the list of tool definitions from each JSON object.
             Set to `None` (default) for data without tool_calls.
         drop_if_last_from_assistant (bool): If true, when the last utterance is given by assistant, drop it.
-            If references_key is None and drop_if_last_from_assistant is True,
-            the last assistant utterance will be used as reference answer.
+            And the last assistant utterance will be used as reference answer if `references_key` is not given.
         references_key (str | None): Key used to extract the reference answers from each JSON object.
-            Set to `None` (default) for data without reference answers.
 
     In Jsonl, each line must have a following structure:
     ```json
