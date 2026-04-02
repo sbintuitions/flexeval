@@ -9,7 +9,7 @@ from flexeval.core.utils.json_util import Base64TruncatingJSONEncoder
 @dataclasses.dataclass
 class TestDataClass:
     field1: str
-    field2: int|float|bool|None
+    field2: int | float | bool | None
 
 
 class TestData:
@@ -30,8 +30,9 @@ def test_truncate_base64() -> None:
 
     assert json.loads(_json_dumps(TestDataClass("example", 123))) == {"field1": "example", "field2": 123}
 
-    assert json.loads(_json_dumps(TestDataClass("example", 1.23))) \
-        == pytest.approx({"field1": "example", "field2": 1.23})
+    assert json.loads(_json_dumps(TestDataClass("example", 1.23))) == pytest.approx(
+        {"field1": "example", "field2": 1.23}
+    )
 
     assert json.loads(_json_dumps(TestDataClass("example", True))) == {"field1": "example", "field2": True}
     assert json.loads(_json_dumps(TestDataClass("example", None))) == {"field1": "example", "field2": None}
