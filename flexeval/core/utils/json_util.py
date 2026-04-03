@@ -13,7 +13,7 @@ def _truncate_base64(o: Any) -> Any:  # noqa: ANN401
         return type(o)(_truncate_base64(item) for item in o)
     if isinstance(o, dict):
         return {k: _truncate_base64(v) for k, v in o.items()}
-    if isinstance(o, int | float | bool | type(None)):
+    if isinstance(o, (int, float, bool, type(None))):
         return o
 
     s = str(o)
