@@ -71,7 +71,7 @@ def summarize_evaluator_scores(
 
 
 def prepare_text_input_for_evaluator(
-    lm_outputs: list[str],
+    lm_outputs: list[LMOutput | str],
     references_list: list[list[str]],
     extra_info_list: list[dict[str, str]],
     prompt_template: PromptTemplate,

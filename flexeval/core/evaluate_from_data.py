@@ -18,7 +18,7 @@ def evaluate_from_data(
     eval_dataset: GenerationDataset | ChatDataset | None = None,
 ) -> tuple[dict[str, float], list[dict[str, Any]]]:
     extra_info_list: list[dict[str, Any]] = []
-    lm_output_list: list[str|LMOutput] = []
+    lm_output_list: list[str | LMOutput] = []
     references_list: list[list[str]] = []
     for item in eval_data:
         # ignore extra info if empty for backward compatibility
