@@ -122,6 +122,7 @@ def execute_conversation_flow(
                         "finish_reason": lm_output.finish_reason,
                     }
                     | ({"raw_content": lm_output.raw_text} if lm_output.raw_text else {})
+                    | ({"reasoning_content": lm_output.reasoning_content} if lm_output.reasoning_content else {})
                     | ({"tool_calls": lm_output.tool_calls} if lm_output.tool_calls else {})
                     | (
                         {"tool_call_validation_result": lm_output.tool_call_validation_result}
@@ -216,8 +217,6 @@ def evaluate_chat_response(  # noqa: C901, PLR0912
     restructured_outputs: list[dict[str, Any]] = []
     for output in outputs:
         extra_info = output["chat_instance"].extra_info | {"messages": output["messages"]}
-        if output["lm_output"].tool_calls:
-            extra_info["tool_calls"] = output["lm_output"].tool_calls
         if output["chat_instance"].tools:
             extra_info["tools"] = output["chat_instance"].tools
         restructured_output = {
@@ -231,6 +230,8 @@ def evaluate_chat_response(  # noqa: C901, PLR0912
             restructured_output["raw_lm_output"] = output["lm_output"].raw_text
         if output["lm_output"].reasoning_text:
             restructured_output["reasoning_text"] = output["lm_output"].reasoning_text
+        if output["lm_output"].tool_calls:
+            restructured_output["tool_calls"] = output["lm_output"].tool_calls
         restructured_outputs.append(restructured_output)
 
     return metrics_summary_dict, restructured_outputs
