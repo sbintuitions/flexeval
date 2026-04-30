@@ -13,6 +13,7 @@ from jsonargparse import ActionConfigFile, ArgumentParser
 from loguru import logger
 
 from flexeval import ChatDataset, GenerationDataset, LocalRecorder, Metric, ResultRecorder, evaluate_from_data
+from flexeval.core.language_model.base import LMOutput
 from flexeval.utils.module_utils import ConfigNameResolver
 
 from .common import (
@@ -26,7 +27,7 @@ class EvalDataLoader(ABC):
     A class to load evaluation data.
     The evaluation data should be a list of dictionaries with the following keys:
     - extra_info (dict[str, Any]): A dictionary containing the input data for the task and any other informations.
-    - lm_output (str): The output of the language model.
+    - lm_output (str|LMOutput): The output of the language model.
     - references (list[str]): A list of reference outputs.
     - extra_info (dict[str, Any]): alias for "extra_info". Older versions used this key.
     """
@@ -51,6 +52,12 @@ class JsonlEvalDataLoader(EvalDataLoader):
                 item = json.loads(line)
                 if "task_inputs" in item:
                     item["extra_info"] = item.pop("task_inputs")
+                item["lm_output"] = LMOutput(
+                    text=item.pop("lm_output"),
+                    raw_text=item.pop("raw_lm_output", None),
+                    reasoning_text=item.pop("reasoning_text", None),
+                    tool_calls=item.pop("tool_calls", None),
+                )
                 items.append(item)
         return items
 

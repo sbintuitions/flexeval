@@ -5,6 +5,8 @@ from typing import Any
 
 from loguru import logger
 
+from flexeval.core.language_model.base import LMOutput
+
 from .chat_dataset import ChatDataset
 from .generation_dataset import GenerationDataset
 from .metric import Metric
@@ -16,7 +18,7 @@ def evaluate_from_data(
     eval_dataset: GenerationDataset | ChatDataset | None = None,
 ) -> tuple[dict[str, float], list[dict[str, Any]]]:
     extra_info_list: list[dict[str, Any]] = []
-    lm_output_list: list[str] = []
+    lm_output_list: list[str|LMOutput] = []
     references_list: list[list[str]] = []
     for item in eval_data:
         # ignore extra info if empty for backward compatibility
