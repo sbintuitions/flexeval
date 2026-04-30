@@ -80,6 +80,10 @@ def prepare_text_input_for_evaluator(
     by integrating the extra_info, the model outputs, and the prompt template for evaluator.
     """
 
+    lm_outputs: list[LMOutput] = [
+        LMOutput(text=lm_output) if isinstance(lm_output, str) else lm_output for lm_output in lm_outputs
+    ]
+
     evaluator_input_list: list[str] = []
     for lm_output, extra_info, references in zip(
         lm_outputs,
@@ -97,7 +101,7 @@ def prepare_text_input_for_evaluator(
 
 
 def prepare_chat_input_for_evaluator(
-    lm_outputs: list[str],
+    lm_outputs: list[LMOutput | str],
     references_list: list[list[str]],
     extra_info_list: list[dict[str, str]],
     prompt_template: PromptTemplate,
@@ -106,6 +110,10 @@ def prepare_chat_input_for_evaluator(
     """Create input chat messages for the evaluator
     by integrating the extra_info, the model outputs, and the prompt template for evaluator.
     """
+
+    lm_outputs: list[LMOutput] = [
+        LMOutput(text=lm_output) if isinstance(lm_output, str) else lm_output for lm_output in lm_outputs
+    ]
 
     evaluator_input_list: list[list[dict[str, str]]] = []
     for lm_output, extra_info, references in zip(

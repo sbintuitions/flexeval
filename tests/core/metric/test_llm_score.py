@@ -291,6 +291,38 @@ def test_chat_llm_score(
         assert instance_detail["llm_score_output"] == lm_output
 
 
+def test_chat_llm_score_reasoning() -> None:
+    lm_outputs = [
+        LMOutput(text="This score is 1.", reasoning_text="Reasoning for score 2."),
+    ]
+    metric_for_text_explicit = ChatLLMScore(
+        language_model=EchoBackLanguageModel(),
+        prompt_template=Jinja2PromptTemplate("{{ lm_output.text }}"),
+    )
+    metric_output_for_text_explicit = metric_for_text_explicit.evaluate(
+        lm_outputs=lm_outputs,
+    )
+    assert metric_output_for_text_explicit.summary["llm_score"] == 1.0
+
+    metric_for_text_implicit = ChatLLMScore(
+        language_model=EchoBackLanguageModel(),
+        prompt_template=Jinja2PromptTemplate("{{ lm_output }}"),
+    )
+    metric_output_for_text_implicit = metric_for_text_implicit.evaluate(
+        lm_outputs=lm_outputs,
+    )
+    assert metric_output_for_text_implicit.summary["llm_score"] == 1.0
+
+    metric_for_reasoning = ChatLLMScore(
+        language_model=EchoBackLanguageModel(),
+        prompt_template=Jinja2PromptTemplate("{{ lm_output.reasoning_text }}"),
+    )
+    metric_output_for_reasoning = metric_for_reasoning.evaluate(
+        lm_outputs=lm_outputs,
+    )
+    assert metric_output_for_reasoning.summary["llm_score"] == 2.0
+
+
 @pytest.mark.parametrize(
     ("lm_outputs", "extra_info_list", "category_key", "expected_summary"),
     [
@@ -449,7 +481,7 @@ def test_chat_llm_score_metric_prefix(lm_outputs: list[str | LMOutput], metric_p
 
 
 def test_prepare_chat_input_for_evaluator() -> None:
-    lm_outputs = ["Output1", "Output2"]
+    lm_outputs = ["Output1", LMOutput("Output2", reasoning_text="Reasoning2")]
     references_list = [
         ["Reference1"],
         [],
@@ -459,7 +491,7 @@ def test_prepare_chat_input_for_evaluator() -> None:
         {"messages": [{"role": "user", "content": "Input2"}]},
     ]
     prompt_template = Jinja2PromptTemplate(
-        "{{ messages[0]['content'] }}, {{ lm_output }}{%- if references|length > 0 -%}, {{ references[0] }}{%- endif -%}"  # noqa: E501
+        "{{ messages[0]['content'] }}, {{ lm_output }}{%- if references|length > 0 -%}, {{ references[0] }}{%- endif -%}{%- if lm_output.reasoning_text -%}, {{ lm_output.reasoning_text }}{%- endif -%}"  # noqa: E501
     )
     system_messsage = Jinja2PromptTemplate(
         "{%- if references|length > 0 -%}With Reference{%- else -%}Without Reference{%- endif -%}"
@@ -473,4 +505,4 @@ def test_prepare_chat_input_for_evaluator() -> None:
     assert evaluator_input_list[0][1] == {"role": "user", "content": "Input1, Output1, Reference1"}
 
     assert evaluator_input_list[1][0] == {"role": "system", "content": "Without Reference"}
-    assert evaluator_input_list[1][1] == {"role": "user", "content": "Input2, Output2"}
+    assert evaluator_input_list[1][1] == {"role": "user", "content": "Input2, Output2, Reasoning2"}
