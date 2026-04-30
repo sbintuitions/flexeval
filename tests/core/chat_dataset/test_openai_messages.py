@@ -23,14 +23,21 @@ TEST_CHAT_MESSAGES = [
 @pytest.fixture
 def jsonl_data_factory(tmp_path) -> Callable:  # noqa: ANN001
     def _create(
-        message_key: str, messages_list: list[dict], num_samples: int = 10, extra_info: dict | None = None
+        message_key: str,
+        messages_list: list[dict],
+        num_samples: int = 10,
+        extra_info: dict | None = None,
+        references_key: str | None = None,
+        references_list: list[list[str]] | None = None,
     ) -> str:
         file_path = tmp_path / f"mock_data_{message_key}.jsonl"
         with open(file_path, "w") as f:
-            for messages in messages_list * num_samples:
+            for i, messages in enumerate(messages_list * num_samples):
                 sample = {message_key: messages}
                 if extra_info is not None:
                     sample = {**extra_info, **sample}
+                if references_key is not None and references_list is not None:
+                    sample[references_key] = references_list[i % len(references_list)]
                 f.write(json.dumps(sample) + "\n")
         return str(file_path)
 
@@ -68,7 +75,8 @@ def test_load_dataset_with_drop_if_last_from_assistant(jsonl_data_factory) -> No
             {"role": TEST_CHAT_MESSAGES[0][0]["role"], "content": TEST_CHAT_MESSAGES[0][0]["content"]},
             {"role": TEST_CHAT_MESSAGES[0][1]["role"], "content": TEST_CHAT_MESSAGES[0][1]["content"]},
             {"role": TEST_CHAT_MESSAGES[0][2]["role"], "content": TEST_CHAT_MESSAGES[0][2]["content"]},
-        ]
+        ],
+        references=["You're welcome!"],
     )
 
     test_chat_messages_with_last_user = deepcopy(TEST_CHAT_MESSAGES)
@@ -83,7 +91,7 @@ def test_load_dataset_with_drop_if_last_from_assistant(jsonl_data_factory) -> No
             {"role": TEST_CHAT_MESSAGES[0][0]["role"], "content": TEST_CHAT_MESSAGES[0][0]["content"]},
             {"role": TEST_CHAT_MESSAGES[0][1]["role"], "content": TEST_CHAT_MESSAGES[0][1]["content"]},
             {"role": TEST_CHAT_MESSAGES[0][2]["role"], "content": TEST_CHAT_MESSAGES[0][2]["content"]},
-        ]
+        ],
     )
 
 
@@ -101,6 +109,7 @@ def test_load_dataset_with_extra_info(jsonl_data_factory) -> None:  # noqa: ANN0
             {"role": TEST_CHAT_MESSAGES[0][2]["role"], "content": TEST_CHAT_MESSAGES[0][2]["content"]},
         ],
         extra_info={"extra_info": "some_info"},
+        references=["You're welcome!"],
     )
 
 
@@ -207,3 +216,62 @@ def test_load_dataset_with_tools(mock_chat_messages_with_tools_data_path: str) -
     assert processed_tool_response_2 == input_tool_response_2["content"]
     # assistant response turn
     assert chat_messages[4] == {"role": "assistant", "content": messages_dicts[4]["content"]}
+
+
+def test_load_dataset_with_references(jsonl_data_factory) -> None:  # noqa: ANN001
+    tmp_jsonl_path = jsonl_data_factory(
+        message_key="messages",
+        messages_list=[[{"role": "user", "content": "This is a user message."}]],
+        references_key="references",
+        references_list=[["This is a reference answer.", "This is another reference answer."]],
+    )
+
+    dataset = OpenAIMessagesDataset(file_path=tmp_jsonl_path, message_key="messages", references_key="references")
+
+    assert len(dataset) == 10
+    assert dataset[0] == ChatInstance(
+        messages=[{"role": "user", "content": "This is a user message."}],
+        references=["This is a reference answer.", "This is another reference answer."],
+    )
+
+
+def test_load_dataset_with_references_as_string(jsonl_data_factory) -> None:  # noqa: ANN001
+    tmp_jsonl_path = jsonl_data_factory(
+        message_key="messages",
+        messages_list=[[{"role": "user", "content": "This is a user message."}]],
+        references_key="references",
+        references_list=["This is a reference answer."],
+    )
+
+    dataset = OpenAIMessagesDataset(file_path=tmp_jsonl_path, message_key="messages", references_key="references")
+
+    assert len(dataset) == 10
+    assert dataset[0] == ChatInstance(
+        messages=[{"role": "user", "content": "This is a user message."}],
+        references=["This is a reference answer."],
+    )
+
+
+def test_load_dataset_with_references_and_drop_if_last_from_assistant(jsonl_data_factory) -> None:  # noqa: ANN001
+    tmp_jsonl_path = jsonl_data_factory(
+        message_key="messages",
+        messages_list=TEST_CHAT_MESSAGES,
+        references_key="references",
+        references_list=["This is a reference answer."],
+    )
+
+    dataset = OpenAIMessagesDataset(
+        file_path=tmp_jsonl_path, message_key="messages", references_key="references", drop_if_last_from_assistant=True
+    )
+
+    assert len(dataset) == 10
+    # When both drop_if_last_from_assistant and references_key are specified,
+    # the reference is always taken from the references_key field, not from the dropped assistant message.
+    assert dataset[0] == ChatInstance(
+        messages=[
+            {"role": TEST_CHAT_MESSAGES[0][0]["role"], "content": TEST_CHAT_MESSAGES[0][0]["content"]},
+            {"role": TEST_CHAT_MESSAGES[0][1]["role"], "content": TEST_CHAT_MESSAGES[0][1]["content"]},
+            {"role": TEST_CHAT_MESSAGES[0][2]["role"], "content": TEST_CHAT_MESSAGES[0][2]["content"]},
+        ],
+        references=["This is a reference answer."],
+    )
