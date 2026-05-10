@@ -13,7 +13,6 @@ from jsonargparse import ActionConfigFile, ArgumentParser
 from loguru import logger
 
 from flexeval import ChatDataset, GenerationDataset, LocalRecorder, Metric, ResultRecorder, evaluate_from_data
-from flexeval.core.language_model.base import LMOutput
 from flexeval.utils.module_utils import ConfigNameResolver
 
 from .common import (
@@ -52,12 +51,6 @@ class JsonlEvalDataLoader(EvalDataLoader):
                 item = json.loads(line)
                 if "task_inputs" in item:
                     item["extra_info"] = item.pop("task_inputs")
-                item["lm_output"] = LMOutput(
-                    text=item.pop("lm_output"),
-                    raw_text=item.pop("raw_lm_output", None),
-                    reasoning_text=item.pop("reasoning_text", None),
-                    tool_calls=item.pop("tool_calls", None),
-                )
                 items.append(item)
         return items
 

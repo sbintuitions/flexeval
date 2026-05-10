@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import itertools
+from typing import Any
 
 import pytest
 
@@ -11,7 +12,9 @@ from flexeval.core.evaluate_pairwise import Match, evaluate_pairwise
 from flexeval.core.evaluate_perplexity import evaluate_perplexity
 from flexeval.core.evaluate_reward_model import evaluate_reward_model
 from flexeval.core.few_shot_generator import RandomFewShotGenerator
+from flexeval.core.language_model.base import LMOutput
 from flexeval.core.metric import ExactMatch, FinishReasonCount
+from flexeval.core.metric.base import Metric, MetricResult
 from flexeval.core.prompt_template import Jinja2PromptTemplate
 from flexeval.core.reward_model.pairwise_judge_reward_model import PairwiseJudgeRewardModel
 from tests.dummy_modules import (
@@ -90,18 +93,105 @@ def test_evaluate_perplexity(max_instances: int) -> None:
     assert isinstance(metrics, dict)
 
 
+class LMOutputStats(Metric):
+    def evaluate(
+        self,
+        lm_outputs: list[str | LMOutput],
+        references_list: list[list[str]],
+        extra_info_list: list[dict[str, Any]],
+    ) -> MetricResult:
+        instance_details: list[dict[str, Any]] = []
+        for maybe_lm_output in lm_outputs:
+            if isinstance(maybe_lm_output, LMOutput):
+                instance_details.append(
+                    {
+                        "is_LMOutput_instance": True,
+                        "has_finish_reason": maybe_lm_output.finish_reason is not None,
+                        "has_raw_text": maybe_lm_output.raw_text is not None,
+                        "has_reasoning": maybe_lm_output.reasoning_text is not None,
+                        "has_tool_calls": maybe_lm_output.tool_calls is not None,
+                    }
+                )
+            elif isinstance(maybe_lm_output, str):
+                instance_details.append(
+                    {
+                        "is_LMOutput_instance": False,
+                        "has_finish_reason": False,
+                        "has_raw_text": False,
+                        "has_reasoning": False,
+                        "has_tool_calls": False,
+                    }
+                )
+
+        summary = {}
+        for instance_detail in instance_details:
+            for key, value in instance_detail.items():
+                summary[f"count_{key}"] = summary.get(f"count_{key}", 0) + value
+
+        return MetricResult(
+            summary=summary,
+            instance_details=instance_details,
+        )
+
+
 def test_evaluate_from_data() -> None:
     items = [
-        {"lm_output": "This is test", "references": ["This is test"]},
-        {"lm_output": "This is test", "references": ["This is not test"]},
+        {"lm_output": "This is test", "references": ["This is test"], "finish_reason": "stop"},
+        {"lm_output": "This is test", "references": ["This is test"], "raw_lm_output": "This is raw text."},
+        {"lm_output": "This is test", "references": ["This is not test"], "reasoning_text": "This is reasoning"},
+        {
+            "lm_output": "This is test",
+            "references": ["This is not test"],
+            "tool_calls": [{"id": "call_1", "function": {"name": "add", "arguments": '{"x": 1, "y": 2}'}}],
+        },
     ]
     metrics_summary_dict, instance_metrics_list = evaluate_from_data(
         eval_data=items,
-        metrics=[ExactMatch()],
+        metrics=[ExactMatch(), LMOutputStats()],
     )
 
-    assert metrics_summary_dict == {"exact_match": 0.5}
-    assert instance_metrics_list == [{"exact_match": 1.0}, {"exact_match": 0.0}]
+    assert metrics_summary_dict == {
+        "exact_match": 0.5,
+        "count_is_LMOutput_instance": 4,
+        "count_has_raw_text": 1,
+        "count_has_reasoning": 1,
+        "count_has_tool_calls": 1,
+        "count_has_finish_reason": 1,
+    }
+    assert instance_metrics_list == [
+        {
+            "exact_match": 1.0,
+            "is_LMOutput_instance": True,
+            "has_finish_reason": True,
+            "has_raw_text": False,
+            "has_reasoning": False,
+            "has_tool_calls": False,
+        },
+        {
+            "exact_match": 1.0,
+            "is_LMOutput_instance": True,
+            "has_finish_reason": False,
+            "has_raw_text": True,
+            "has_reasoning": False,
+            "has_tool_calls": False,
+        },
+        {
+            "exact_match": 0.0,
+            "is_LMOutput_instance": True,
+            "has_finish_reason": False,
+            "has_raw_text": False,
+            "has_reasoning": True,
+            "has_tool_calls": False,
+        },
+        {
+            "exact_match": 0.0,
+            "is_LMOutput_instance": True,
+            "has_finish_reason": False,
+            "has_raw_text": False,
+            "has_reasoning": False,
+            "has_tool_calls": True,
+        },
+    ]
 
 
 @pytest.mark.parametrize(
