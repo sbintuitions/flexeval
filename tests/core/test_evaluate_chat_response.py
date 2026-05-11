@@ -69,11 +69,11 @@ def test_evaluate_chat_response(
     assert outputs[0]["reasoning_text"] == "reasoning_text"
 
     if use_tools:
-        assert isinstance(outputs[0]["extra_info"]["tool_calls"], list)
+        assert isinstance(outputs[0]["tool_calls"], list)
         assert isinstance(outputs[0]["extra_info"]["tools"], list)
         assert metrics["tool_call_validation_result_ratio-CompleteToolCall"] == 1.0
     else:
-        assert "tool_calls" not in outputs[0]["extra_info"]
+        assert "tool_calls" not in outputs[0]
         assert "tools" not in outputs[0]["extra_info"]
         assert metrics["tool_call_validation_result_ratio-TextOnly"] == 1.0
 
