@@ -164,3 +164,35 @@ def test_chat_llm_label(
     for lm_output, instance_detail in zip(extract_text_from_outputs(lm_outputs), metric_output.instance_details):
         assert instance_detail[f"{metric_prefix}llm_label_input"] == [{"role": "user", "content": lm_output}]
         assert instance_detail[f"{metric_prefix}llm_label_output"] == lm_output
+
+
+def test_llm_label_reasoning() -> None:
+    lm_outputs = [
+        LMOutput(text="This label is Good.", reasoning_text="This label is Neutral."),
+    ]
+    metric_for_text_explicit = LLMLabel(
+        language_model=EchoBackLanguageModel(),
+        prompt_template=Jinja2PromptTemplate("{{ lm_output.text }}"),
+        label_names=["Good", "Neutral", "Bad"],
+        label_points=[1.0, 0.5, 0.0],
+    )
+    metric_output_for_text_explicit = metric_for_text_explicit.evaluate(lm_outputs=lm_outputs)
+    assert metric_output_for_text_explicit.summary["llm_score"] == 1.0
+
+    metric_for_text_implicit = LLMLabel(
+        language_model=EchoBackLanguageModel(),
+        prompt_template=Jinja2PromptTemplate("{{ lm_output }}"),
+        label_names=["Good", "Neutral", "Bad"],
+        label_points=[1.0, 0.5, 0.0],
+    )
+    metric_output_for_text_implicit = metric_for_text_implicit.evaluate(lm_outputs=lm_outputs)
+    assert metric_output_for_text_implicit.summary["llm_score"] == 1.0
+
+    metric_for_reasoning = LLMLabel(
+        language_model=EchoBackLanguageModel(),
+        prompt_template=Jinja2PromptTemplate("{{ lm_output.reasoning_text }}"),
+        label_names=["Good", "Neutral", "Bad"],
+        label_points=[1.0, 0.5, 0.0],
+    )
+    metric_output_for_reasoning = metric_for_reasoning.evaluate(lm_outputs=lm_outputs)
+    assert metric_output_for_reasoning.summary["llm_score"] == 0.5

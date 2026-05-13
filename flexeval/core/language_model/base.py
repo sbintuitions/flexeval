@@ -46,6 +46,17 @@ class LMOutput:
                 msg = "Both `text` and `tool_calls` are empty."
                 logger.warning(msg)
 
+    def __str__(self) -> str:
+        """Return the `text` attribute as a string for backward compatibility.
+
+        Before `LMOutput` was introduced, outputs were saved as plain strings.
+        Therefore, several existing configs using LLM-judge metrics such as `ChatLLMScore` assume
+        that `lm_output` is a plain string. By implementing `__str__`, an `LMOutput`
+        instance embedded in a Jinja2 template renders as its `text` attribute,
+        preserving that contract.
+        """
+        return self.text if self.text is not None else ""
+
 
 class LanguageModel:
     """LanguageModel is what you want to evaluate with this library.

@@ -5,6 +5,8 @@ from typing import Any
 
 from loguru import logger
 
+from flexeval.core.language_model.base import LMOutput
+
 from .chat_dataset import ChatDataset
 from .generation_dataset import GenerationDataset
 from .metric import Metric
@@ -16,7 +18,7 @@ def evaluate_from_data(
     eval_dataset: GenerationDataset | ChatDataset | None = None,
 ) -> tuple[dict[str, float], list[dict[str, Any]]]:
     extra_info_list: list[dict[str, Any]] = []
-    lm_output_list: list[str] = []
+    lm_output_list: list[str | LMOutput] = []
     references_list: list[list[str]] = []
     for item in eval_data:
         # ignore extra info if empty for backward compatibility
@@ -24,7 +26,16 @@ def evaluate_from_data(
         if "extra_info" not in item:
             item["extra_info"] = {}
         extra_info_list.append(item["extra_info"])
-        lm_output_list.append(item["lm_output"])
+        # We adapt the current output format of evaluate_chat_response(). This will be changed in the future.
+        lm_output = LMOutput(
+            text=item.pop("lm_output"),
+            raw_text=item.pop("raw_lm_output", None),
+            reasoning_text=item.pop("reasoning_text", None),
+            finish_reason=item.pop("finish_reason", None),
+            tool_calls=item.pop("tool_calls", None),
+            tool_call_validation_result=item.pop("tool_call_validation_result", None),
+        )
+        lm_output_list.append(lm_output)
         references_list.append(item["references"])
 
     if eval_dataset is not None:

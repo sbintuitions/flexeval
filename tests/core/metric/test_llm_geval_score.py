@@ -199,3 +199,32 @@ def test_chat_llm_geval_score(
 
     for lm_output, instance_detail in zip(extract_text_from_outputs(lm_outputs), metric_output.instance_details):
         assert instance_detail[f"{metric_prefix}llm_geval_score_input"] == [{"role": "user", "content": lm_output}]
+
+
+def test_llm_geval_score_reasoning() -> None:
+    lm_outputs = [
+        LMOutput(text="[C] Output a number from 1 to 5.", reasoning_text="[B] Output a number from 1 to 5."),
+    ]
+    metric_for_text_explicit = LLMGEvalScore(
+        language_model=EchoBackLanguageModel(),
+        prompt_template=Jinja2PromptTemplate("{{ lm_output.text }}"),
+        valid_score_range=(1, 5),
+    )
+    metric_output_for_text_explicit = metric_for_text_explicit.evaluate(lm_outputs=lm_outputs)
+    assert metric_output_for_text_explicit.summary["llm_geval_score"] == pytest.approx(3.0, rel=1e-5)
+
+    metric_for_text_implicit = LLMGEvalScore(
+        language_model=EchoBackLanguageModel(),
+        prompt_template=Jinja2PromptTemplate("{{ lm_output }}"),
+        valid_score_range=(1, 5),
+    )
+    metric_output_for_text_implicit = metric_for_text_implicit.evaluate(lm_outputs=lm_outputs)
+    assert metric_output_for_text_implicit.summary["llm_geval_score"] == pytest.approx(3.0, rel=1e-5)
+
+    metric_for_reasoning = LLMGEvalScore(
+        language_model=EchoBackLanguageModel(),
+        prompt_template=Jinja2PromptTemplate("{{ lm_output.reasoning_text }}"),
+        valid_score_range=(1, 5),
+    )
+    metric_output_for_reasoning = metric_for_reasoning.evaluate(lm_outputs=lm_outputs)
+    assert metric_output_for_reasoning.summary["llm_geval_score"] == pytest.approx(2.744237906010388, rel=1e-5)

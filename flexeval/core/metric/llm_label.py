@@ -14,7 +14,7 @@ from flexeval.core.metric.llm_score import (
 from flexeval.core.prompt_template import PromptTemplate
 
 from .base import Metric, MetricResult
-from .utils import extract_text_from_outputs, validate_inputs
+from .utils import validate_inputs
 
 
 def parse_label_from_evaluator_output(evaluator_output: str, label_names: list[str]) -> str | None:
@@ -180,9 +180,6 @@ class LLMLabel(Metric):
 
         validate_inputs(lm_outputs, references_list, extra_info_list)
 
-        # Extract text from LMOutput objects
-        lm_outputs = extract_text_from_outputs(lm_outputs)
-
         # Compute metrics
         evaluator_input_list: list[str] = prepare_text_input_for_evaluator(
             lm_outputs, references_list, extra_info_list, self.prompt_template
@@ -330,9 +327,6 @@ class ChatLLMLabel(Metric):
             references_list = [[] for _ in lm_outputs]
 
         validate_inputs(lm_outputs, references_list, extra_info_list)
-
-        # Extract text from LMOutput objects
-        lm_outputs = extract_text_from_outputs(lm_outputs)
 
         # Compute metrics
         evaluator_input_list = prepare_chat_input_for_evaluator(
