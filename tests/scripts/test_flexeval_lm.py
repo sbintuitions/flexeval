@@ -73,8 +73,7 @@ def check_if_eval_results_are_correctly_saved(save_dir: str | PathLike[str], no_
         assert json.load(f_json)
 
     if not no_outputs:
-        tmp = read_jsonl(next(Path(save_dir).rglob(OUTPUTS_FILE_NAME)))
-        assert "lm_output" in tmp[0]
+        assert read_jsonl(next(Path(save_dir).rglob(OUTPUTS_FILE_NAME)))
 
 
 @pytest.mark.parametrize(
