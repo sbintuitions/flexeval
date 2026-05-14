@@ -12,7 +12,7 @@ from .generation_dataset import GenerationDataset
 from .metric import Metric
 
 
-def evaluate_from_data(
+def evaluate_from_data(  # noqa: C901
     eval_data: Iterable[dict[str, Any]],
     metrics: list[Metric],
     eval_dataset: GenerationDataset | ChatDataset | None = None,
@@ -27,14 +27,21 @@ def evaluate_from_data(
             item["extra_info"] = {}
         extra_info_list.append(item["extra_info"])
         # We adapt the current output format of evaluate_chat_response(). This will be changed in the future.
-        lm_output = LMOutput(
-            text=item.pop("lm_output"),
-            raw_text=item.pop("raw_lm_output", None),
-            reasoning_text=item.pop("reasoning_text", None),
-            finish_reason=item.pop("finish_reason", None),
-            tool_calls=item.pop("tool_calls", None),
-            tool_call_validation_result=item.pop("tool_call_validation_result", None),
-        )
+        if isinstance(item["lm_output"], str):
+            lm_output = LMOutput(
+                text=item["lm_output"],
+                raw_text=item.get("raw_lm_output"),
+                reasoning_text=item.get("reasoning_text"),
+                finish_reason=item.get("finish_reason"),
+                tool_calls=item.get("tool_calls"),
+                tool_call_validation_result=item.get("tool_call_validation_result"),
+            )
+        elif isinstance(item["lm_output"], LMOutput):
+            lm_output = item["lm_output"]
+        else:
+            msg = f"Invalid type for lm_output: {type(item['lm_output'])}"
+            raise TypeError(msg)
+
         lm_output_list.append(lm_output)
         references_list.append(item["references"])
 
