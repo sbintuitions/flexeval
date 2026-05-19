@@ -15,7 +15,7 @@ from flexeval.core.utils.data_util import batch_iter
 
 from .base import Metric, MetricResult
 from .llm_score import prepare_chat_input_for_evaluator, prepare_text_input_for_evaluator
-from .utils import extract_text_from_outputs, validate_inputs
+from .utils import validate_inputs
 
 
 def calculate_weighted_average(
@@ -238,8 +238,6 @@ class LLMGEvalScore(Metric):
 
         validate_inputs(lm_outputs, references_list, extra_info_list)
 
-        lm_outputs = extract_text_from_outputs(lm_outputs)
-
         # Compute metrics
         evaluator_input_list: list[str] = prepare_text_input_for_evaluator(
             lm_outputs, references_list, extra_info_list, self.prompt_template
@@ -410,8 +408,6 @@ class ChatLLMGEvalScore(Metric):
             extra_info_list = [{} for _ in lm_outputs]
         if references_list is None:
             references_list = [[] for _ in lm_outputs]
-
-        lm_outputs = extract_text_from_outputs(lm_outputs)
 
         # Compute metrics
         evaluator_input_list = prepare_chat_input_for_evaluator(

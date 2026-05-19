@@ -26,7 +26,7 @@ class EvalDataLoader(ABC):
     A class to load evaluation data.
     The evaluation data should be a list of dictionaries with the following keys:
     - extra_info (dict[str, Any]): A dictionary containing the input data for the task and any other informations.
-    - lm_output (str): The output of the language model.
+    - lm_output (str|LMOutput): The output of the language model.
     - references (list[str]): A list of reference outputs.
     - extra_info (dict[str, Any]): alias for "extra_info". Older versions used this key.
     """

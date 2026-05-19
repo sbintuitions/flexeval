@@ -122,6 +122,7 @@ def execute_conversation_flow(
                         "finish_reason": lm_output.finish_reason,
                     }
                     | ({"raw_content": lm_output.raw_text} if lm_output.raw_text else {})
+                    | ({"reasoning_content": lm_output.reasoning_text} if lm_output.reasoning_text else {})
                     | ({"tool_calls": lm_output.tool_calls} if lm_output.tool_calls else {})
                     | (
                         {"tool_call_validation_result": lm_output.tool_call_validation_result}
@@ -215,22 +216,25 @@ def evaluate_chat_response(  # noqa: C901, PLR0912
     # legacy: `{"lm_output": "...", "finish_reason": "...", "task_inputs": {...}, "references": [...], **metrics}`
     restructured_outputs: list[dict[str, Any]] = []
     for output in outputs:
+        lm_output: LMOutput = output["lm_output"]
         extra_info = output["chat_instance"].extra_info | {"messages": output["messages"]}
-        if output["lm_output"].tool_calls:
-            extra_info["tool_calls"] = output["lm_output"].tool_calls
         if output["chat_instance"].tools:
             extra_info["tools"] = output["chat_instance"].tools
         restructured_output = {
-            "lm_output": output["lm_output"].text,
+            "lm_output": lm_output.text,
             "finish_reason": output["lm_output"].finish_reason,
             "extra_info": extra_info,
             "references": output["chat_instance"].references,
             **output["metrics"],
         }
-        if output["lm_output"].raw_text:
-            restructured_output["raw_lm_output"] = output["lm_output"].raw_text
-        if output["lm_output"].reasoning_text:
-            restructured_output["reasoning_text"] = output["lm_output"].reasoning_text
+        if lm_output.raw_text:
+            restructured_output["raw_lm_output"] = lm_output.raw_text
+        if lm_output.reasoning_text:
+            restructured_output["reasoning_text"] = lm_output.reasoning_text
+        if lm_output.tool_calls:
+            restructured_output["tool_calls"] = lm_output.tool_calls
+        if lm_output.tool_call_validation_result:
+            restructured_output["tool_call_validation_result"] = lm_output.tool_call_validation_result
         restructured_outputs.append(restructured_output)
 
     return metrics_summary_dict, restructured_outputs

@@ -11,7 +11,7 @@ from flexeval.core.prompt_template import PromptTemplate
 from flexeval.core.utils.data_util import batch_iter
 
 from .base import Metric, MetricResult
-from .utils import extract_text_from_outputs, validate_inputs
+from .utils import validate_inputs
 
 
 def parse_score_from_evaluator_output(
@@ -71,7 +71,7 @@ def summarize_evaluator_scores(
 
 
 def prepare_text_input_for_evaluator(
-    lm_outputs: list[str],
+    lm_outputs: list[LMOutput | str],
     references_list: list[list[str]],
     extra_info_list: list[dict[str, str]],
     prompt_template: PromptTemplate,
@@ -79,6 +79,10 @@ def prepare_text_input_for_evaluator(
     """Create input texts for the evaluator
     by integrating the extra_info, the model outputs, and the prompt template for evaluator.
     """
+
+    lm_outputs: list[LMOutput] = [
+        LMOutput(text=lm_output) if isinstance(lm_output, str) else lm_output for lm_output in lm_outputs
+    ]
 
     evaluator_input_list: list[str] = []
     for lm_output, extra_info, references in zip(
@@ -97,7 +101,7 @@ def prepare_text_input_for_evaluator(
 
 
 def prepare_chat_input_for_evaluator(
-    lm_outputs: list[str],
+    lm_outputs: list[LMOutput | str],
     references_list: list[list[str]],
     extra_info_list: list[dict[str, str]],
     prompt_template: PromptTemplate,
@@ -106,6 +110,10 @@ def prepare_chat_input_for_evaluator(
     """Create input chat messages for the evaluator
     by integrating the extra_info, the model outputs, and the prompt template for evaluator.
     """
+
+    lm_outputs: list[LMOutput] = [
+        LMOutput(text=lm_output) if isinstance(lm_output, str) else lm_output for lm_output in lm_outputs
+    ]
 
     evaluator_input_list: list[list[dict[str, str]]] = []
     for lm_output, extra_info, references in zip(
@@ -246,9 +254,6 @@ class LLMScore(Metric):
 
         validate_inputs(lm_outputs, references_list, extra_info_list)
 
-        # Extract text from LMOutput objects
-        lm_outputs = extract_text_from_outputs(lm_outputs)
-
         # Compute metrics
         evaluator_input_list: list[str] = prepare_text_input_for_evaluator(
             lm_outputs, references_list, extra_info_list, self.prompt_template
@@ -373,9 +378,6 @@ class ChatLLMScore(Metric):
             extra_info_list = [{} for _ in lm_outputs]
         if references_list is None:
             references_list = [[] for _ in lm_outputs]
-
-        # Extract text from LMOutput objects
-        lm_outputs = extract_text_from_outputs(lm_outputs)
 
         # Compute metrics
         evaluator_input_list = prepare_chat_input_for_evaluator(
