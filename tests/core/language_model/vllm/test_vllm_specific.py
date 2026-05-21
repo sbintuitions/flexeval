@@ -9,6 +9,7 @@ import pytest
 from transformers import AutoTokenizer
 
 from flexeval.core.language_model import VLLM, HuggingFaceLM
+from flexeval.core.language_model.base import LMOutput
 from tests.conftest import is_vllm_enabled
 from tests.dummy_modules.tool_parser import DummyToolParser
 
@@ -272,6 +273,12 @@ def test_prefix_str_for_chat(chat_lm: VLLM) -> None:
     prefix = "1 2 3 4"
     original_prefix = chat_lm.prefix_str_for_chat
     chat_lm.prefix_str_for_chat = prefix
-    output = chat_lm.generate_chat_response(chat_messages, max_new_tokens=10)
+
+    def _mock_batch_complete_text(text_list: list[str], **_: object) -> list[LMOutput]:
+        assert text_list[0].endswith(prefix)
+        return [LMOutput(text=" 5", finish_reason="stop")]
+
+    with patch.object(chat_lm, "_batch_complete_text", side_effect=_mock_batch_complete_text):
+        output = chat_lm.generate_chat_response(chat_messages, max_new_tokens=10)
     chat_lm.prefix_str_for_chat = original_prefix
-    assert output.text.startswith(prefix + " 5")
+    assert output.text == prefix + " 5"
