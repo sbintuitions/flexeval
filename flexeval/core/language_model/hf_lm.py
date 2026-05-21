@@ -417,6 +417,7 @@ class HuggingFaceLM(LanguageModel):
                 chat_template=self.custom_chat_template,
                 **self.chat_template_kwargs,
             )
+            + self.prefix_str_for_chat
             for chat_messages, tools in zip(chat_messages_list, tools_list)
         ]
         lm_outputs = self._batch_complete_text(chat_messages_as_string, **kwargs)
