@@ -188,6 +188,10 @@ class HuggingFaceLM(LanguageModel):
             If set to “default”, the value will be automatically determined when possible.
         tool_parser: A ToolParser object to extract the tool_calls from the model's output.
         tools: Default tools to use in chat responses when no tools are explicitly provided.
+        prefix_str_for_chat: A string to prepend to the assistant's response in chat generation.
+            This string is appended to the prompt (after `apply_chat_template`) so that the model
+            continues generation from it. The same string is also prepended to the final output
+            so that the returned text includes the forced prefix.
     """
 
     def __init__(
@@ -208,6 +212,7 @@ class HuggingFaceLM(LanguageModel):
         model_limit_tokens: int | None | Literal["default"] = "default",
         tool_parser: ToolParser | None = None,
         tools: list[dict[str, Any]] | None = None,
+        prefix_str_for_chat: str = "",
     ) -> None:
         super().__init__(string_processors=string_processors, tools=tools)
         self._model_name_or_path = model
@@ -226,6 +231,7 @@ class HuggingFaceLM(LanguageModel):
         self.amp_dtype = amp_dtype
         self.model_limit_tokens = model_limit_tokens
         self.tool_parser = tool_parser
+        self.prefix_str_for_chat = prefix_str_for_chat
         logger.info(f"amp_dtype: {amp_dtype}")
         logger.info(f"random seed: {random_seed}")
         transformers.set_seed(random_seed)
@@ -414,6 +420,8 @@ class HuggingFaceLM(LanguageModel):
             for chat_messages, tools in zip(chat_messages_list, tools_list)
         ]
         lm_outputs = self._batch_complete_text(chat_messages_as_string, **kwargs)
+        for lm_output in lm_outputs:
+            lm_output.text = self.prefix_str_for_chat + lm_output.text
         if self.tool_parser:
             for lm_output, tools in zip(lm_outputs, tools_list):
                 if tools is None:

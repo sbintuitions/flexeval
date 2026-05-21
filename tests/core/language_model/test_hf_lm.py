@@ -518,3 +518,13 @@ def test_system_message_prepended_to_batch_chat_messages(chat_lm_with_system_mes
 def test_set_random_seed(lm: HuggingFaceLM) -> None:
     # check that method is implemented
     assert lm.set_random_seed(42) is None
+
+
+def test_prefix_str_for_chat(chat_lm: HuggingFaceLM) -> None:
+    chat_messages = [{"role": "user", "content": "Please output the numbers from 1 to 5, separated by spaces."}]
+    prefix = "1 2 3 4"
+    original_prefix = chat_lm.prefix_str_for_chat
+    chat_lm.prefix_str_for_chat = prefix
+    output = chat_lm.generate_chat_response(chat_messages, max_new_tokens=10)
+    chat_lm.prefix_str_for_chat = original_prefix
+    assert output.text.startswith(prefix + " 5")
