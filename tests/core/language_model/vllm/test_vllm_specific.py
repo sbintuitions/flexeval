@@ -9,6 +9,7 @@ import pytest
 from transformers import AutoTokenizer
 
 from flexeval.core.language_model import VLLM, HuggingFaceLM
+from flexeval.core.language_model.base import LMOutput
 from tests.conftest import is_vllm_enabled
 from tests.dummy_modules.tool_parser import DummyToolParser
 
@@ -264,3 +265,20 @@ def test_system_message_prepended_to_batch_chat_messages(chat_lm_with_system_mes
 def test_set_random_seed(chat_lm: VLLM) -> None:
     chat_lm.set_random_seed(42)
     assert chat_lm.default_gen_kwargs["seed"] == 42
+
+
+@pytest.mark.skipif(not is_vllm_enabled(), reason="vllm library is not installed")
+def test_prefix_str_for_chat(chat_lm: VLLM) -> None:
+    chat_messages = [{"role": "user", "content": "Please output the numbers from 1 to 5, separated by spaces."}]
+    prefix = "1 2 3 4"
+    original_prefix = chat_lm.prefix_str_for_chat
+    chat_lm.prefix_str_for_chat = prefix
+
+    def _mock_batch_complete_text(text_list: list[str], **_: object) -> list[LMOutput]:
+        assert text_list[0].endswith(prefix)
+        return [LMOutput(text=" 5", finish_reason="stop")]
+
+    with patch.object(chat_lm, "_batch_complete_text", side_effect=_mock_batch_complete_text):
+        output = chat_lm.generate_chat_response(chat_messages, max_new_tokens=10)
+    chat_lm.prefix_str_for_chat = original_prefix
+    assert output.text == prefix + " 5"
