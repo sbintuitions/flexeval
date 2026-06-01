@@ -326,6 +326,7 @@ def test_no_reasoning_parser_leaves_chat_output_unchanged(chat_lm: VLLM) -> None
     assert response.reasoning_text is None
 
 
+@pytest.mark.skipif(not is_vllm_enabled(), reason="vllm library is not installed")
 def test_prefix_str_for_chat(chat_lm: VLLM) -> None:
     chat_messages = [{"role": "user", "content": "Please output the numbers from 1 to 5, separated by spaces."}]
     prefix = "1 2 3 4"
