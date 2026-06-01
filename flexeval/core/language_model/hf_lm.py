@@ -401,7 +401,7 @@ class HuggingFaceLM(LanguageModel):
         return lm_outputs
 
     @load_model
-    def _batch_generate_chat_response(  # noqa: C901
+    def _batch_generate_chat_response(
         self,
         chat_messages_list: list[list[dict[str, Any]]],
         tools_list: list[list[dict[str, Any]] | None] | None = None,
@@ -425,26 +425,21 @@ class HuggingFaceLM(LanguageModel):
             for chat_messages, tools in zip(chat_messages_list, tools_list)
         ]
         lm_outputs = self._batch_complete_text(chat_messages_as_string, **kwargs)
-        for lm_output in lm_outputs:
+
+        for lm_output, tools in zip(lm_outputs, tools_list):
             if lm_output.text is None:
                 continue
+
             lm_output.text = self.prefix_str_for_chat + lm_output.text
 
-        if self.reasoning_parser:
-            for lm_output in lm_outputs:
+            if self.reasoning_parser:
                 if lm_output.raw_text is None:
                     lm_output.raw_text = lm_output.text
                 reasoning = self.reasoning_parser(lm_output.text)
                 lm_output.text = reasoning.text
                 lm_output.reasoning_text = reasoning.reasoning_text
 
-        if self.tool_parser:
-            for lm_output, tools in zip(lm_outputs, tools_list):
-                if tools is None:
-                    continue
-                lm_output: LMOutput
-                if lm_output.text is None:
-                    continue
+            if self.tool_parser and tools is not None:
                 parsed_tool_calling_message = self.tool_parser(lm_output.text)
                 lm_output.tool_calls = parsed_tool_calling_message.tool_call_dicts
                 lm_output.text = parsed_tool_calling_message.text

@@ -588,7 +588,8 @@ def test_no_reasoning_parser_leaves_chat_output_unchanged(chat_lm: HuggingFaceLM
     with patch.object(chat_lm, "_batch_complete_text", return_value=[LMOutput(text=raw_output, finish_reason="stop")]):
         response = chat_lm.generate_chat_response([{"role": "user", "content": "test"}], max_new_tokens=1)
     assert response.text == raw_output
-    assert response.raw_text == raw_output
+    # If there's no post-processing, raw_text should be None.
+    assert response.raw_text is None
     assert response.reasoning_text is None
 
 
