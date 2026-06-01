@@ -8,6 +8,7 @@ import torch
 from loguru import logger
 from transformers import AutoTokenizer, PreTrainedTokenizer
 
+from flexeval.core.reasoning_parser.base import ReasoningParser
 from flexeval.core.string_processor import StringProcessor
 from flexeval.core.tool_parser.base import ToolParser
 
@@ -94,6 +95,7 @@ class VLLM(LanguageModel):
             If this value is set to less than or equal to the model's capacity and the input exceeds it,
             an empty string is returned instead of raising an error.
             If set to “default”, the value will be automatically determined when possible.
+        reasoning_parser: A ReasoningParser object to extract the reasoning and content from the model's output.
         tool_parser: A ToolParser object to extract the tool_calls from the model's output.
         tools: Default tools to use in chat responses when no tools are explicitly provided.
         prefix_str_for_chat: A string to prepend to the assistant's response in chat generation.
@@ -115,6 +117,7 @@ class VLLM(LanguageModel):
         default_gen_kwargs: dict[str, Any] | None = None,
         string_processors: StringProcessor | list[StringProcessor] | None = None,
         model_limit_tokens: int | None | Literal["default"] = "default",
+        reasoning_parser: ReasoningParser | None = None,
         tool_parser: ToolParser | None = None,
         tools: list[dict[str, Any]] | None = None,
         prefix_str_for_chat: str = "",
@@ -146,6 +149,7 @@ class VLLM(LanguageModel):
         self.llm: LLM | None = None
         self.model_limit_tokens = model_limit_tokens
         self.tool_parser = tool_parser
+        self.reasoning_parser = reasoning_parser
         self.prefix_str_for_chat = prefix_str_for_chat
 
     @staticmethod
@@ -245,7 +249,7 @@ class VLLM(LanguageModel):
         return outputs
 
     @load_model
-    def _batch_generate_chat_response(
+    def _batch_generate_chat_response(  # noqa: C901
         self,
         chat_messages_list: list[list[dict[str, Any]]],
         tools_list: list[list[dict[str, Any]] | None] | None = None,
@@ -270,15 +274,28 @@ class VLLM(LanguageModel):
         ]
         lm_outputs = self._batch_complete_text(chat_messages_as_string, **kwargs)
         for lm_output in lm_outputs:
+            if lm_output.text is None:
+                continue
             lm_output.text = self.prefix_str_for_chat + lm_output.text
+
+        if self.reasoning_parser:
+            for lm_output in lm_outputs:
+                if lm_output.raw_text is None:
+                    lm_output.raw_text = lm_output.text
+                reasoning = self.reasoning_parser(lm_output.text)
+                lm_output.text = reasoning.text
+                lm_output.reasoning_text = reasoning.reasoning_text
 
         if self.tool_parser:
             for lm_output, tools in zip(lm_outputs, tools_list):
                 if tools is None:
                     continue
+                if lm_output.text is None:
+                    continue
                 parsed_tool_calling_message = self.tool_parser(lm_output.text)
                 lm_output.tool_calls = parsed_tool_calling_message.tool_call_dicts
-                lm_output.raw_text = parsed_tool_calling_message.raw_text
+                if lm_output.raw_text is None:
+                    lm_output.raw_text = parsed_tool_calling_message.raw_text
                 lm_output.text = parsed_tool_calling_message.text
                 lm_output.tool_call_validation_result = parsed_tool_calling_message.validation_result
 

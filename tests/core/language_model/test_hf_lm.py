@@ -20,6 +20,7 @@ from flexeval.core.language_model.hf_lm import (
     tokenize_text_for_lm_continuation,
     tokenize_text_for_lm_prefix,
 )
+from flexeval.core.reasoning_parser import UnifiedRegexReasoningParser
 from tests.dummy_modules.tool_parser import DummyToolParser
 
 from .base import BaseLanguageModelTest
@@ -518,6 +519,77 @@ def test_system_message_prepended_to_batch_chat_messages(chat_lm_with_system_mes
 def test_set_random_seed(lm: HuggingFaceLM) -> None:
     # check that method is implemented
     assert lm.set_random_seed(42) is None
+
+
+def test_reasoning_parser_sets_fields_on_chat_response(chat_lm: HuggingFaceLM) -> None:
+    reasoning_parser = UnifiedRegexReasoningParser(pattern=r"<think>(?P<reasoning_content>.*?)</think>(?P<content>.*)")
+    raw_output = "<think>step by step</think>final answer"
+    original_parser = chat_lm.reasoning_parser
+    chat_lm.reasoning_parser = reasoning_parser
+    try:
+        with patch.object(
+            chat_lm, "_batch_complete_text", return_value=[LMOutput(text=raw_output, finish_reason="stop")]
+        ):
+            response = chat_lm.generate_chat_response([{"role": "user", "content": "test"}], max_new_tokens=1)
+        assert response.raw_text == raw_output
+        assert response.text == "final answer"
+        assert response.reasoning_text == "step by step"
+    finally:
+        chat_lm.reasoning_parser = original_parser
+
+
+def test_reasoning_parser_handles_batch_chat_response(chat_lm: HuggingFaceLM) -> None:
+    reasoning_parser = UnifiedRegexReasoningParser(pattern=r"<think>(?P<reasoning_content>.*?)</think>(?P<content>.*)")
+    raw_outputs = [
+        "<think>reasoning A</think>answer A",
+        "<think>reasoning B</think>answer B",
+    ]
+    original_parser = chat_lm.reasoning_parser
+    chat_lm.reasoning_parser = reasoning_parser
+    try:
+        with patch.object(
+            chat_lm,
+            "_batch_complete_text",
+            return_value=[LMOutput(text=t, finish_reason="stop") for t in raw_outputs],
+        ):
+            responses = chat_lm.generate_chat_response(
+                [[{"role": "user", "content": f"q{i}"}] for i in range(2)], max_new_tokens=1
+            )
+        assert responses[0].raw_text == raw_outputs[0]
+        assert responses[0].text == "answer A"
+        assert responses[0].reasoning_text == "reasoning A"
+        assert responses[1].raw_text == raw_outputs[1]
+        assert responses[1].text == "answer B"
+        assert responses[1].reasoning_text == "reasoning B"
+    finally:
+        chat_lm.reasoning_parser = original_parser
+
+
+def test_reasoning_parser_unmatched_pattern_sets_none(chat_lm: HuggingFaceLM) -> None:
+    reasoning_parser = UnifiedRegexReasoningParser(pattern=r"<think>(?P<reasoning_content>.*?)</think>(?P<content>.*)")
+    raw_output = "no think tags here"
+    original_parser = chat_lm.reasoning_parser
+    chat_lm.reasoning_parser = reasoning_parser
+    try:
+        with patch.object(
+            chat_lm, "_batch_complete_text", return_value=[LMOutput(text=raw_output, finish_reason="stop")]
+        ):
+            response = chat_lm.generate_chat_response([{"role": "user", "content": "test"}], max_new_tokens=1)
+        assert response.raw_text == raw_output
+        assert response.text is None
+        assert response.reasoning_text is raw_output
+    finally:
+        chat_lm.reasoning_parser = original_parser
+
+
+def test_no_reasoning_parser_leaves_chat_output_unchanged(chat_lm: HuggingFaceLM) -> None:
+    assert chat_lm.reasoning_parser is None
+    raw_output = "<think>step by step</think>final answer"
+    with patch.object(chat_lm, "_batch_complete_text", return_value=[LMOutput(text=raw_output, finish_reason="stop")]):
+        response = chat_lm.generate_chat_response([{"role": "user", "content": "test"}], max_new_tokens=1)
+    assert response.text == raw_output
+    assert response.raw_text == raw_output
+    assert response.reasoning_text is None
 
 
 def test_prefix_str_for_chat(chat_lm: HuggingFaceLM) -> None:

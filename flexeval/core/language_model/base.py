@@ -237,7 +237,10 @@ class LanguageModel:
         # Post-process the generated text
         if self.string_processors:
             for lm_output in lm_outputs:
-                lm_output.raw_text = lm_output.text
+                # If a subclass preprocesses the output (e.g., via ToolParser or ReasoningParser),
+                # lm_output.raw_text should already hold the unprocessed text.
+                if lm_output.raw_text is None:
+                    lm_output.raw_text = lm_output.text
                 for string_processor in self.string_processors:
                     lm_output.text = string_processor(lm_output.text)
 
