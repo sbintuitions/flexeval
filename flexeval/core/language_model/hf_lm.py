@@ -13,6 +13,7 @@ import transformers
 from loguru import logger
 from transformers import AutoModelForCausalLM, AutoTokenizer, BatchEncoding, PreTrainedModel, PreTrainedTokenizer
 
+from flexeval.core.reasoning_parser.base import ReasoningParser
 from flexeval.core.string_processor import StringProcessor
 from flexeval.core.tool_parser.base import ToolParser
 from flexeval.utils.hf_utils import get_default_model_kwargs
@@ -186,6 +187,7 @@ class HuggingFaceLM(LanguageModel):
             If this value is set to less than or equal to the model's capacity and the input exceeds it,
             an empty string is returned instead of raising an error.
             If set to “default”, the value will be automatically determined when possible.
+        reasoning_parser: A ReasoningParser object to extract the reasoning_text from the model's output.
         tool_parser: A ToolParser object to extract the tool_calls from the model's output.
         tools: Default tools to use in chat responses when no tools are explicitly provided.
         prefix_str_for_chat: A string to prepend to the assistant's response in chat generation.
@@ -210,6 +212,7 @@ class HuggingFaceLM(LanguageModel):
         default_gen_kwargs: dict[str, Any] | None = None,
         string_processors: StringProcessor | list[StringProcessor] | None = None,
         model_limit_tokens: int | None | Literal["default"] = "default",
+        reasoning_parser: ReasoningParser | None = None,
         tool_parser: ToolParser | None = None,
         tools: list[dict[str, Any]] | None = None,
         prefix_str_for_chat: str = "",
@@ -230,6 +233,7 @@ class HuggingFaceLM(LanguageModel):
         self.load_peft = load_peft
         self.amp_dtype = amp_dtype
         self.model_limit_tokens = model_limit_tokens
+        self.reasoning_parser = reasoning_parser
         self.tool_parser = tool_parser
         self.prefix_str_for_chat = prefix_str_for_chat
         logger.info(f"amp_dtype: {amp_dtype}")
@@ -421,17 +425,26 @@ class HuggingFaceLM(LanguageModel):
             for chat_messages, tools in zip(chat_messages_list, tools_list)
         ]
         lm_outputs = self._batch_complete_text(chat_messages_as_string, **kwargs)
-        for lm_output in lm_outputs:
+
+        for lm_output, tools in zip(lm_outputs, tools_list):
+            if lm_output.text is None:
+                continue
+
             lm_output.text = self.prefix_str_for_chat + lm_output.text
-        if self.tool_parser:
-            for lm_output, tools in zip(lm_outputs, tools_list):
-                if tools is None:
-                    continue
-                lm_output: LMOutput
+
+            if self.reasoning_parser:
+                if lm_output.raw_text is None:
+                    lm_output.raw_text = lm_output.text
+                reasoning = self.reasoning_parser(lm_output.text)
+                lm_output.text = reasoning.text
+                lm_output.reasoning_text = reasoning.reasoning_text
+
+            if self.tool_parser and tools is not None:
                 parsed_tool_calling_message = self.tool_parser(lm_output.text)
                 lm_output.tool_calls = parsed_tool_calling_message.tool_call_dicts
-                lm_output.raw_text = parsed_tool_calling_message.raw_text
                 lm_output.text = parsed_tool_calling_message.text
+                if lm_output.raw_text is None:
+                    lm_output.raw_text = parsed_tool_calling_message.raw_text
                 lm_output.tool_call_validation_result = parsed_tool_calling_message.validation_result
 
         return lm_outputs

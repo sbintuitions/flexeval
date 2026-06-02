@@ -13,6 +13,7 @@ from .core.metric import *
 from .core.multiple_choice_dataset import *
 from .core.pairwise_comparison import *
 from .core.prompt_template import *
+from .core.reasoning_parser import *
 from .core.result_recorder import *
 from .core.reward_bench_dataset import *
 from .core.reward_model import *
