@@ -577,7 +577,7 @@ def test_reasoning_parser_unmatched_pattern_sets_none(chat_lm: HuggingFaceLM) ->
             response = chat_lm.generate_chat_response([{"role": "user", "content": "test"}], max_new_tokens=1)
         assert response.raw_text == raw_output
         assert response.text is None
-        assert response.reasoning_text is raw_output
+        assert response.reasoning_text is None
     finally:
         chat_lm.reasoning_parser = original_parser
 
