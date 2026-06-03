@@ -1406,6 +1406,28 @@
   
   
     <li class="md-nav__item">
+      <a href="../Reasoning/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Reasoning
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../ResultRecorder/" class="md-nav__link">
         
   
@@ -5465,7 +5487,9 @@ return None (invalid) if sum of the all probability among vaild scores is less t
 
               <details class="quote">
                 <summary>Source code in <code>flexeval/core/metric/llm_geval_score.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">302</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">300</span>
+<span class="normal">301</span>
+<span class="normal">302</span>
 <span class="normal">303</span>
 <span class="normal">304</span>
 <span class="normal">305</span>
@@ -5631,11 +5655,7 @@ return None (invalid) if sum of the all probability among vaild scores is less t
 <span class="normal">465</span>
 <span class="normal">466</span>
 <span class="normal">467</span>
-<span class="normal">468</span>
-<span class="normal">469</span>
-<span class="normal">470</span>
-<span class="normal">471</span>
-<span class="normal">472</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ChatLLMGEvalScore</span><span class="p">(</span><span class="n">Metric</span><span class="p">):</span>
+<span class="normal">468</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ChatLLMGEvalScore</span><span class="p">(</span><span class="n">Metric</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;A metric that evaluates the output of `LanguageModel.batch_generate_chat_response`.</span>
 <span class="sd">    Unlike ChatLLMScore, this metric let the model output logprobs for all valid scores and</span>
 <span class="sd">    calculate weighted score among them.</span>
@@ -5746,8 +5766,6 @@ return None (invalid) if sum of the all probability among vaild scores is less t
             <span class="n">extra_info_list</span> <span class="o">=</span> <span class="p">[{}</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">lm_outputs</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">references_list</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">references_list</span> <span class="o">=</span> <span class="p">[[]</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">lm_outputs</span><span class="p">]</span>
-
-        <span class="n">lm_outputs</span> <span class="o">=</span> <span class="n">extract_text_from_outputs</span><span class="p">(</span><span class="n">lm_outputs</span><span class="p">)</span>
 
         <span class="c1"># Compute metrics</span>
         <span class="n">evaluator_input_list</span> <span class="o">=</span> <span class="n">prepare_chat_input_for_evaluator</span><span class="p">(</span>
@@ -6072,7 +6090,9 @@ return None (invalid) if sum of the all probability among vaild scores is less t
 
             <details class="quote">
               <summary>Source code in <code>flexeval/core/metric/llm_geval_score.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">380</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">378</span>
+<span class="normal">379</span>
+<span class="normal">380</span>
 <span class="normal">381</span>
 <span class="normal">382</span>
 <span class="normal">383</span>
@@ -6091,9 +6111,7 @@ return None (invalid) if sum of the all probability among vaild scores is less t
 <span class="normal">396</span>
 <span class="normal">397</span>
 <span class="normal">398</span>
-<span class="normal">399</span>
-<span class="normal">400</span>
-<span class="normal">401</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+<span class="normal">399</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">language_model</span><span class="p">:</span> <span class="n">LanguageModel</span><span class="p">,</span>
     <span class="n">prompt_template</span><span class="p">:</span> <span class="n">PromptTemplate</span><span class="p">,</span>
@@ -6141,7 +6159,9 @@ return None (invalid) if sum of the all probability among vaild scores is less t
 
             <details class="quote">
               <summary>Source code in <code>flexeval/core/metric/llm_geval_score.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">403</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">401</span>
+<span class="normal">402</span>
+<span class="normal">403</span>
 <span class="normal">404</span>
 <span class="normal">405</span>
 <span class="normal">406</span>
@@ -6198,11 +6218,7 @@ return None (invalid) if sum of the all probability among vaild scores is less t
 <span class="normal">457</span>
 <span class="normal">458</span>
 <span class="normal">459</span>
-<span class="normal">460</span>
-<span class="normal">461</span>
-<span class="normal">462</span>
-<span class="normal">463</span>
-<span class="normal">464</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">evaluate</span><span class="p">(</span>
+<span class="normal">460</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">evaluate</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">lm_outputs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span> <span class="o">|</span> <span class="n">LMOutput</span><span class="p">],</span>
     <span class="n">references_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -6212,8 +6228,6 @@ return None (invalid) if sum of the all probability among vaild scores is less t
         <span class="n">extra_info_list</span> <span class="o">=</span> <span class="p">[{}</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">lm_outputs</span><span class="p">]</span>
     <span class="k">if</span> <span class="n">references_list</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">references_list</span> <span class="o">=</span> <span class="p">[[]</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">lm_outputs</span><span class="p">]</span>
-
-    <span class="n">lm_outputs</span> <span class="o">=</span> <span class="n">extract_text_from_outputs</span><span class="p">(</span><span class="n">lm_outputs</span><span class="p">)</span>
 
     <span class="c1"># Compute metrics</span>
     <span class="n">evaluator_input_list</span> <span class="o">=</span> <span class="n">prepare_chat_input_for_evaluator</span><span class="p">(</span>
@@ -6286,8 +6300,8 @@ return None (invalid) if sum of the all probability among vaild scores is less t
 
             <details class="quote">
               <summary>Source code in <code>flexeval/core/metric/llm_geval_score.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">466</span>
-<span class="normal">467</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">cleanup_resources</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">462</span>
+<span class="normal">463</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">cleanup_resources</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">language_model</span><span class="o">.</span><span class="n">cleanup_resources</span><span class="p">()</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -6311,10 +6325,10 @@ return None (invalid) if sum of the all probability among vaild scores is less t
 
             <details class="quote">
               <summary>Source code in <code>flexeval/core/metric/llm_geval_score.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">469</span>
-<span class="normal">470</span>
-<span class="normal">471</span>
-<span class="normal">472</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">465</span>
+<span class="normal">466</span>
+<span class="normal">467</span>
+<span class="normal">468</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="k">return</span> <span class="p">(</span>
         <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">(language_model=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">language_model</span><span class="si">}</span><span class="s2">, prompt_template=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">prompt_template</span><span class="si">}</span><span class="s2">)&quot;</span>
     <span class="p">)</span>
@@ -6658,9 +6672,7 @@ return None (invalid) if sum of the all probability among vaild scores is less t
 <span class="normal">294</span>
 <span class="normal">295</span>
 <span class="normal">296</span>
-<span class="normal">297</span>
-<span class="normal">298</span>
-<span class="normal">299</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">LLMGEvalScore</span><span class="p">(</span><span class="n">Metric</span><span class="p">):</span>
+<span class="normal">297</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">LLMGEvalScore</span><span class="p">(</span><span class="n">Metric</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Let LanguageModel evaluate the output of another LanguageModel.</span>
 <span class="sd">    Unlike LLMScore, this metric let the model output logprobs for all valid scores and</span>
 <span class="sd">    calculate weighted score among them.</span>
@@ -6766,8 +6778,6 @@ return None (invalid) if sum of the all probability among vaild scores is less t
             <span class="n">references_list</span> <span class="o">=</span> <span class="p">[[]</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">lm_outputs</span><span class="p">]</span>
 
         <span class="n">validate_inputs</span><span class="p">(</span><span class="n">lm_outputs</span><span class="p">,</span> <span class="n">references_list</span><span class="p">,</span> <span class="n">extra_info_list</span><span class="p">)</span>
-
-        <span class="n">lm_outputs</span> <span class="o">=</span> <span class="n">extract_text_from_outputs</span><span class="p">(</span><span class="n">lm_outputs</span><span class="p">)</span>
 
         <span class="c1"># Compute metrics</span>
         <span class="n">evaluator_input_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">prepare_text_input_for_evaluator</span><span class="p">(</span>
@@ -7195,9 +7205,7 @@ return None (invalid) if sum of the all probability among vaild scores is less t
 <span class="normal">286</span>
 <span class="normal">287</span>
 <span class="normal">288</span>
-<span class="normal">289</span>
-<span class="normal">290</span>
-<span class="normal">291</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">evaluate</span><span class="p">(</span>
+<span class="normal">289</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">evaluate</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">lm_outputs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span> <span class="o">|</span> <span class="n">LMOutput</span><span class="p">],</span>
     <span class="n">references_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -7209,8 +7217,6 @@ return None (invalid) if sum of the all probability among vaild scores is less t
         <span class="n">references_list</span> <span class="o">=</span> <span class="p">[[]</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">lm_outputs</span><span class="p">]</span>
 
     <span class="n">validate_inputs</span><span class="p">(</span><span class="n">lm_outputs</span><span class="p">,</span> <span class="n">references_list</span><span class="p">,</span> <span class="n">extra_info_list</span><span class="p">)</span>
-
-    <span class="n">lm_outputs</span> <span class="o">=</span> <span class="n">extract_text_from_outputs</span><span class="p">(</span><span class="n">lm_outputs</span><span class="p">)</span>
 
     <span class="c1"># Compute metrics</span>
     <span class="n">evaluator_input_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">prepare_text_input_for_evaluator</span><span class="p">(</span>
@@ -7283,8 +7289,8 @@ return None (invalid) if sum of the all probability among vaild scores is less t
 
             <details class="quote">
               <summary>Source code in <code>flexeval/core/metric/llm_geval_score.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">293</span>
-<span class="normal">294</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">cleanup_resources</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">291</span>
+<span class="normal">292</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">cleanup_resources</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">language_model</span><span class="o">.</span><span class="n">cleanup_resources</span><span class="p">()</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -7308,10 +7314,10 @@ return None (invalid) if sum of the all probability among vaild scores is less t
 
             <details class="quote">
               <summary>Source code in <code>flexeval/core/metric/llm_geval_score.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">296</span>
-<span class="normal">297</span>
-<span class="normal">298</span>
-<span class="normal">299</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">294</span>
+<span class="normal">295</span>
+<span class="normal">296</span>
+<span class="normal">297</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="k">return</span> <span class="p">(</span>
         <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">(language_model=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">language_model</span><span class="si">}</span><span class="s2">, prompt_template=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">prompt_template</span><span class="si">}</span><span class="s2">)&quot;</span>
     <span class="p">)</span>
@@ -7475,7 +7481,10 @@ The category key is expected to be in extra_info.</p>
 
               <details class="quote">
                 <summary>Source code in <code>flexeval/core/metric/llm_label.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">242</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">239</span>
+<span class="normal">240</span>
+<span class="normal">241</span>
+<span class="normal">242</span>
 <span class="normal">243</span>
 <span class="normal">244</span>
 <span class="normal">245</span>
@@ -7618,13 +7627,7 @@ The category key is expected to be in extra_info.</p>
 <span class="normal">382</span>
 <span class="normal">383</span>
 <span class="normal">384</span>
-<span class="normal">385</span>
-<span class="normal">386</span>
-<span class="normal">387</span>
-<span class="normal">388</span>
-<span class="normal">389</span>
-<span class="normal">390</span>
-<span class="normal">391</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ChatLLMLabel</span><span class="p">(</span><span class="n">Metric</span><span class="p">):</span>
+<span class="normal">385</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ChatLLMLabel</span><span class="p">(</span><span class="n">Metric</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A metric that evaluates the output of `LanguageModel.batch_generate_chat_response`.</span>
 
@@ -7715,9 +7718,6 @@ The category key is expected to be in extra_info.</p>
             <span class="n">references_list</span> <span class="o">=</span> <span class="p">[[]</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">lm_outputs</span><span class="p">]</span>
 
         <span class="n">validate_inputs</span><span class="p">(</span><span class="n">lm_outputs</span><span class="p">,</span> <span class="n">references_list</span><span class="p">,</span> <span class="n">extra_info_list</span><span class="p">)</span>
-
-        <span class="c1"># Extract text from LMOutput objects</span>
-        <span class="n">lm_outputs</span> <span class="o">=</span> <span class="n">extract_text_from_outputs</span><span class="p">(</span><span class="n">lm_outputs</span><span class="p">)</span>
 
         <span class="c1"># Compute metrics</span>
         <span class="n">evaluator_input_list</span> <span class="o">=</span> <span class="n">prepare_chat_input_for_evaluator</span><span class="p">(</span>
@@ -8013,7 +8013,10 @@ The category key is expected to be in extra_info.</p>
 
             <details class="quote">
               <summary>Source code in <code>flexeval/core/metric/llm_label.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">289</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">286</span>
+<span class="normal">287</span>
+<span class="normal">288</span>
+<span class="normal">289</span>
 <span class="normal">290</span>
 <span class="normal">291</span>
 <span class="normal">292</span>
@@ -8040,10 +8043,7 @@ The category key is expected to be in extra_info.</p>
 <span class="normal">313</span>
 <span class="normal">314</span>
 <span class="normal">315</span>
-<span class="normal">316</span>
-<span class="normal">317</span>
-<span class="normal">318</span>
-<span class="normal">319</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+<span class="normal">316</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">language_model</span><span class="p">:</span> <span class="n">LanguageModel</span><span class="p">,</span>
     <span class="n">prompt_template</span><span class="p">:</span> <span class="n">PromptTemplate</span><span class="p">,</span>
@@ -8100,7 +8100,10 @@ The category key is expected to be in extra_info.</p>
 
             <details class="quote">
               <summary>Source code in <code>flexeval/core/metric/llm_label.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">321</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">318</span>
+<span class="normal">319</span>
+<span class="normal">320</span>
+<span class="normal">321</span>
 <span class="normal">322</span>
 <span class="normal">323</span>
 <span class="normal">324</span>
@@ -8156,13 +8159,7 @@ The category key is expected to be in extra_info.</p>
 <span class="normal">374</span>
 <span class="normal">375</span>
 <span class="normal">376</span>
-<span class="normal">377</span>
-<span class="normal">378</span>
-<span class="normal">379</span>
-<span class="normal">380</span>
-<span class="normal">381</span>
-<span class="normal">382</span>
-<span class="normal">383</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">evaluate</span><span class="p">(</span>
+<span class="normal">377</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">evaluate</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">lm_outputs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span> <span class="o">|</span> <span class="n">LMOutput</span><span class="p">],</span>
     <span class="n">references_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -8174,9 +8171,6 @@ The category key is expected to be in extra_info.</p>
         <span class="n">references_list</span> <span class="o">=</span> <span class="p">[[]</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">lm_outputs</span><span class="p">]</span>
 
     <span class="n">validate_inputs</span><span class="p">(</span><span class="n">lm_outputs</span><span class="p">,</span> <span class="n">references_list</span><span class="p">,</span> <span class="n">extra_info_list</span><span class="p">)</span>
-
-    <span class="c1"># Extract text from LMOutput objects</span>
-    <span class="n">lm_outputs</span> <span class="o">=</span> <span class="n">extract_text_from_outputs</span><span class="p">(</span><span class="n">lm_outputs</span><span class="p">)</span>
 
     <span class="c1"># Compute metrics</span>
     <span class="n">evaluator_input_list</span> <span class="o">=</span> <span class="n">prepare_chat_input_for_evaluator</span><span class="p">(</span>
@@ -8247,8 +8241,8 @@ The category key is expected to be in extra_info.</p>
 
             <details class="quote">
               <summary>Source code in <code>flexeval/core/metric/llm_label.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">385</span>
-<span class="normal">386</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">cleanup_resources</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">379</span>
+<span class="normal">380</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">cleanup_resources</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">language_model</span><span class="o">.</span><span class="n">cleanup_resources</span><span class="p">()</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -8272,10 +8266,10 @@ The category key is expected to be in extra_info.</p>
 
             <details class="quote">
               <summary>Source code in <code>flexeval/core/metric/llm_label.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">388</span>
-<span class="normal">389</span>
-<span class="normal">390</span>
-<span class="normal">391</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">382</span>
+<span class="normal">383</span>
+<span class="normal">384</span>
+<span class="normal">385</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="k">return</span> <span class="p">(</span>
         <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">(language_model=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">language_model</span><span class="si">}</span><span class="s2">, prompt_template=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">prompt_template</span><span class="si">}</span><span class="s2">)&quot;</span>
     <span class="p">)</span>
@@ -8579,10 +8573,7 @@ The category key is expected to be in extra_info.</p>
 <span class="normal">233</span>
 <span class="normal">234</span>
 <span class="normal">235</span>
-<span class="normal">236</span>
-<span class="normal">237</span>
-<span class="normal">238</span>
-<span class="normal">239</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">LLMLabel</span><span class="p">(</span><span class="n">Metric</span><span class="p">):</span>
+<span class="normal">236</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">LLMLabel</span><span class="p">(</span><span class="n">Metric</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Let LanguageModel to evaluate the output of another LanguageModel.</span>
 
 <span class="sd">    You can specify the evaluation criteria in `PromptTemplate`.</span>
@@ -8675,9 +8666,6 @@ The category key is expected to be in extra_info.</p>
             <span class="n">references_list</span> <span class="o">=</span> <span class="p">[[]</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">lm_outputs</span><span class="p">]</span>
 
         <span class="n">validate_inputs</span><span class="p">(</span><span class="n">lm_outputs</span><span class="p">,</span> <span class="n">references_list</span><span class="p">,</span> <span class="n">extra_info_list</span><span class="p">)</span>
-
-        <span class="c1"># Extract text from LMOutput objects</span>
-        <span class="n">lm_outputs</span> <span class="o">=</span> <span class="n">extract_text_from_outputs</span><span class="p">(</span><span class="n">lm_outputs</span><span class="p">)</span>
 
         <span class="c1"># Compute metrics</span>
         <span class="n">evaluator_input_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">prepare_text_input_for_evaluator</span><span class="p">(</span>
@@ -9117,10 +9105,7 @@ The category key is expected to be in extra_info.</p>
 <span class="normal">225</span>
 <span class="normal">226</span>
 <span class="normal">227</span>
-<span class="normal">228</span>
-<span class="normal">229</span>
-<span class="normal">230</span>
-<span class="normal">231</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">evaluate</span><span class="p">(</span>
+<span class="normal">228</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">evaluate</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">lm_outputs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span> <span class="o">|</span> <span class="n">LMOutput</span><span class="p">],</span>
     <span class="n">references_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -9132,9 +9117,6 @@ The category key is expected to be in extra_info.</p>
         <span class="n">references_list</span> <span class="o">=</span> <span class="p">[[]</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">lm_outputs</span><span class="p">]</span>
 
     <span class="n">validate_inputs</span><span class="p">(</span><span class="n">lm_outputs</span><span class="p">,</span> <span class="n">references_list</span><span class="p">,</span> <span class="n">extra_info_list</span><span class="p">)</span>
-
-    <span class="c1"># Extract text from LMOutput objects</span>
-    <span class="n">lm_outputs</span> <span class="o">=</span> <span class="n">extract_text_from_outputs</span><span class="p">(</span><span class="n">lm_outputs</span><span class="p">)</span>
 
     <span class="c1"># Compute metrics</span>
     <span class="n">evaluator_input_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">prepare_text_input_for_evaluator</span><span class="p">(</span>
@@ -9204,8 +9186,8 @@ The category key is expected to be in extra_info.</p>
 
             <details class="quote">
               <summary>Source code in <code>flexeval/core/metric/llm_label.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">233</span>
-<span class="normal">234</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">cleanup_resources</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">230</span>
+<span class="normal">231</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">cleanup_resources</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">language_model</span><span class="o">.</span><span class="n">cleanup_resources</span><span class="p">()</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -9229,10 +9211,10 @@ The category key is expected to be in extra_info.</p>
 
             <details class="quote">
               <summary>Source code in <code>flexeval/core/metric/llm_label.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">236</span>
-<span class="normal">237</span>
-<span class="normal">238</span>
-<span class="normal">239</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">233</span>
+<span class="normal">234</span>
+<span class="normal">235</span>
+<span class="normal">236</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="k">return</span> <span class="p">(</span>
         <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">(language_model=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">language_model</span><span class="si">}</span><span class="s2">, prompt_template=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">prompt_template</span><span class="si">}</span><span class="s2">)&quot;</span>
     <span class="p">)</span>
@@ -9393,12 +9375,7 @@ The category keys are expected to be in extra_info.</p>
 
               <details class="quote">
                 <summary>Source code in <code>flexeval/core/metric/llm_score.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">302</span>
-<span class="normal">303</span>
-<span class="normal">304</span>
-<span class="normal">305</span>
-<span class="normal">306</span>
-<span class="normal">307</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">307</span>
 <span class="normal">308</span>
 <span class="normal">309</span>
 <span class="normal">310</span>
@@ -9518,7 +9495,9 @@ The category keys are expected to be in extra_info.</p>
 <span class="normal">424</span>
 <span class="normal">425</span>
 <span class="normal">426</span>
-<span class="normal">427</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ChatLLMScore</span><span class="p">(</span><span class="n">Metric</span><span class="p">):</span>
+<span class="normal">427</span>
+<span class="normal">428</span>
+<span class="normal">429</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ChatLLMScore</span><span class="p">(</span><span class="n">Metric</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A metric that evaluates the output of `LanguageModel.batch_generate_chat_response`.</span>
 
@@ -9592,9 +9571,6 @@ The category keys are expected to be in extra_info.</p>
             <span class="n">extra_info_list</span> <span class="o">=</span> <span class="p">[{}</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">lm_outputs</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">references_list</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">references_list</span> <span class="o">=</span> <span class="p">[[]</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">lm_outputs</span><span class="p">]</span>
-
-        <span class="c1"># Extract text from LMOutput objects</span>
-        <span class="n">lm_outputs</span> <span class="o">=</span> <span class="n">extract_text_from_outputs</span><span class="p">(</span><span class="n">lm_outputs</span><span class="p">)</span>
 
         <span class="c1"># Compute metrics</span>
         <span class="n">evaluator_input_list</span> <span class="o">=</span> <span class="n">prepare_chat_input_for_evaluator</span><span class="p">(</span>
@@ -9883,12 +9859,7 @@ The category keys are expected to be in extra_info.</p>
 
             <details class="quote">
               <summary>Source code in <code>flexeval/core/metric/llm_score.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">344</span>
-<span class="normal">345</span>
-<span class="normal">346</span>
-<span class="normal">347</span>
-<span class="normal">348</span>
-<span class="normal">349</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">349</span>
 <span class="normal">350</span>
 <span class="normal">351</span>
 <span class="normal">352</span>
@@ -9903,7 +9874,12 @@ The category keys are expected to be in extra_info.</p>
 <span class="normal">361</span>
 <span class="normal">362</span>
 <span class="normal">363</span>
-<span class="normal">364</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+<span class="normal">364</span>
+<span class="normal">365</span>
+<span class="normal">366</span>
+<span class="normal">367</span>
+<span class="normal">368</span>
+<span class="normal">369</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">language_model</span><span class="p">:</span> <span class="n">LanguageModel</span><span class="p">,</span>
     <span class="n">prompt_template</span><span class="p">:</span> <span class="n">PromptTemplate</span><span class="p">,</span>
@@ -9950,12 +9926,7 @@ The category keys are expected to be in extra_info.</p>
 
             <details class="quote">
               <summary>Source code in <code>flexeval/core/metric/llm_score.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">366</span>
-<span class="normal">367</span>
-<span class="normal">368</span>
-<span class="normal">369</span>
-<span class="normal">370</span>
-<span class="normal">371</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">371</span>
 <span class="normal">372</span>
 <span class="normal">373</span>
 <span class="normal">374</span>
@@ -10003,7 +9974,9 @@ The category keys are expected to be in extra_info.</p>
 <span class="normal">416</span>
 <span class="normal">417</span>
 <span class="normal">418</span>
-<span class="normal">419</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">evaluate</span><span class="p">(</span>
+<span class="normal">419</span>
+<span class="normal">420</span>
+<span class="normal">421</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">evaluate</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">lm_outputs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span> <span class="o">|</span> <span class="n">LMOutput</span><span class="p">],</span>
     <span class="n">references_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -10013,9 +9986,6 @@ The category keys are expected to be in extra_info.</p>
         <span class="n">extra_info_list</span> <span class="o">=</span> <span class="p">[{}</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">lm_outputs</span><span class="p">]</span>
     <span class="k">if</span> <span class="n">references_list</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">references_list</span> <span class="o">=</span> <span class="p">[[]</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">lm_outputs</span><span class="p">]</span>
-
-    <span class="c1"># Extract text from LMOutput objects</span>
-    <span class="n">lm_outputs</span> <span class="o">=</span> <span class="n">extract_text_from_outputs</span><span class="p">(</span><span class="n">lm_outputs</span><span class="p">)</span>
 
     <span class="c1"># Compute metrics</span>
     <span class="n">evaluator_input_list</span> <span class="o">=</span> <span class="n">prepare_chat_input_for_evaluator</span><span class="p">(</span>
@@ -10079,8 +10049,8 @@ The category keys are expected to be in extra_info.</p>
 
             <details class="quote">
               <summary>Source code in <code>flexeval/core/metric/llm_score.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">421</span>
-<span class="normal">422</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">cleanup_resources</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">423</span>
+<span class="normal">424</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">cleanup_resources</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">language_model</span><span class="o">.</span><span class="n">cleanup_resources</span><span class="p">()</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -10104,10 +10074,10 @@ The category keys are expected to be in extra_info.</p>
 
             <details class="quote">
               <summary>Source code in <code>flexeval/core/metric/llm_score.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">424</span>
-<span class="normal">425</span>
-<span class="normal">426</span>
-<span class="normal">427</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">426</span>
+<span class="normal">427</span>
+<span class="normal">428</span>
+<span class="normal">429</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="k">return</span> <span class="p">(</span>
         <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">(language_model=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">language_model</span><span class="si">}</span><span class="s2">, prompt_template=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">prompt_template</span><span class="si">}</span><span class="s2">)&quot;</span>
     <span class="p">)</span>
@@ -10259,15 +10229,7 @@ The category keys are expected to be in extra_info.</p>
 
               <details class="quote">
                 <summary>Source code in <code>flexeval/core/metric/llm_score.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">174</span>
-<span class="normal">175</span>
-<span class="normal">176</span>
-<span class="normal">177</span>
-<span class="normal">178</span>
-<span class="normal">179</span>
-<span class="normal">180</span>
-<span class="normal">181</span>
-<span class="normal">182</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">182</span>
 <span class="normal">183</span>
 <span class="normal">184</span>
 <span class="normal">185</span>
@@ -10384,7 +10346,12 @@ The category keys are expected to be in extra_info.</p>
 <span class="normal">296</span>
 <span class="normal">297</span>
 <span class="normal">298</span>
-<span class="normal">299</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">LLMScore</span><span class="p">(</span><span class="n">Metric</span><span class="p">):</span>
+<span class="normal">299</span>
+<span class="normal">300</span>
+<span class="normal">301</span>
+<span class="normal">302</span>
+<span class="normal">303</span>
+<span class="normal">304</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">LLMScore</span><span class="p">(</span><span class="n">Metric</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Let LanguageModel to evaluate the output of another LanguageModel.</span>
 
 <span class="sd">    You can specify the evaluation criteria in `PromptTemplate`.</span>
@@ -10458,9 +10425,6 @@ The category keys are expected to be in extra_info.</p>
             <span class="n">references_list</span> <span class="o">=</span> <span class="p">[[]</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">lm_outputs</span><span class="p">]</span>
 
         <span class="n">validate_inputs</span><span class="p">(</span><span class="n">lm_outputs</span><span class="p">,</span> <span class="n">references_list</span><span class="p">,</span> <span class="n">extra_info_list</span><span class="p">)</span>
-
-        <span class="c1"># Extract text from LMOutput objects</span>
-        <span class="n">lm_outputs</span> <span class="o">=</span> <span class="n">extract_text_from_outputs</span><span class="p">(</span><span class="n">lm_outputs</span><span class="p">)</span>
 
         <span class="c1"># Compute metrics</span>
         <span class="n">evaluator_input_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">prepare_text_input_for_evaluator</span><span class="p">(</span>
@@ -10726,15 +10690,7 @@ The category keys are expected to be in extra_info.</p>
 
             <details class="quote">
               <summary>Source code in <code>flexeval/core/metric/llm_score.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">216</span>
-<span class="normal">217</span>
-<span class="normal">218</span>
-<span class="normal">219</span>
-<span class="normal">220</span>
-<span class="normal">221</span>
-<span class="normal">222</span>
-<span class="normal">223</span>
-<span class="normal">224</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">224</span>
 <span class="normal">225</span>
 <span class="normal">226</span>
 <span class="normal">227</span>
@@ -10744,7 +10700,15 @@ The category keys are expected to be in extra_info.</p>
 <span class="normal">231</span>
 <span class="normal">232</span>
 <span class="normal">233</span>
-<span class="normal">234</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+<span class="normal">234</span>
+<span class="normal">235</span>
+<span class="normal">236</span>
+<span class="normal">237</span>
+<span class="normal">238</span>
+<span class="normal">239</span>
+<span class="normal">240</span>
+<span class="normal">241</span>
+<span class="normal">242</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">language_model</span><span class="p">:</span> <span class="n">LanguageModel</span><span class="p">,</span>
     <span class="n">prompt_template</span><span class="p">:</span> <span class="n">PromptTemplate</span><span class="p">,</span>
@@ -10789,15 +10753,7 @@ The category keys are expected to be in extra_info.</p>
 
             <details class="quote">
               <summary>Source code in <code>flexeval/core/metric/llm_score.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">236</span>
-<span class="normal">237</span>
-<span class="normal">238</span>
-<span class="normal">239</span>
-<span class="normal">240</span>
-<span class="normal">241</span>
-<span class="normal">242</span>
-<span class="normal">243</span>
-<span class="normal">244</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">244</span>
 <span class="normal">245</span>
 <span class="normal">246</span>
 <span class="normal">247</span>
@@ -10844,7 +10800,12 @@ The category keys are expected to be in extra_info.</p>
 <span class="normal">288</span>
 <span class="normal">289</span>
 <span class="normal">290</span>
-<span class="normal">291</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">evaluate</span><span class="p">(</span>
+<span class="normal">291</span>
+<span class="normal">292</span>
+<span class="normal">293</span>
+<span class="normal">294</span>
+<span class="normal">295</span>
+<span class="normal">296</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">evaluate</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">lm_outputs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span> <span class="o">|</span> <span class="n">LMOutput</span><span class="p">],</span>
     <span class="n">references_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -10856,9 +10817,6 @@ The category keys are expected to be in extra_info.</p>
         <span class="n">references_list</span> <span class="o">=</span> <span class="p">[[]</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">lm_outputs</span><span class="p">]</span>
 
     <span class="n">validate_inputs</span><span class="p">(</span><span class="n">lm_outputs</span><span class="p">,</span> <span class="n">references_list</span><span class="p">,</span> <span class="n">extra_info_list</span><span class="p">)</span>
-
-    <span class="c1"># Extract text from LMOutput objects</span>
-    <span class="n">lm_outputs</span> <span class="o">=</span> <span class="n">extract_text_from_outputs</span><span class="p">(</span><span class="n">lm_outputs</span><span class="p">)</span>
 
     <span class="c1"># Compute metrics</span>
     <span class="n">evaluator_input_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">prepare_text_input_for_evaluator</span><span class="p">(</span>
@@ -10922,8 +10880,8 @@ The category keys are expected to be in extra_info.</p>
 
             <details class="quote">
               <summary>Source code in <code>flexeval/core/metric/llm_score.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">293</span>
-<span class="normal">294</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">cleanup_resources</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">298</span>
+<span class="normal">299</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">cleanup_resources</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">language_model</span><span class="o">.</span><span class="n">cleanup_resources</span><span class="p">()</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -10947,10 +10905,10 @@ The category keys are expected to be in extra_info.</p>
 
             <details class="quote">
               <summary>Source code in <code>flexeval/core/metric/llm_score.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">296</span>
-<span class="normal">297</span>
-<span class="normal">298</span>
-<span class="normal">299</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">301</span>
+<span class="normal">302</span>
+<span class="normal">303</span>
+<span class="normal">304</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="k">return</span> <span class="p">(</span>
         <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">(language_model=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">language_model</span><span class="si">}</span><span class="s2">, prompt_template=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">prompt_template</span><span class="si">}</span><span class="s2">)&quot;</span>
     <span class="p">)</span>
