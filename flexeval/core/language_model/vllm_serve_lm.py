@@ -193,7 +193,7 @@ class VLLMServeLM(OpenAIChatAPI):
         logging.getLogger("httpx").setLevel(logging.WARNING)
         logging.getLogger("httpcore").setLevel(logging.WARNING)
         model_kwargs = model_kwargs or {}
-        if "tensor_parallel_size" not in model_kwargs:
+        if "tensor_parallel_size" not in model_kwargs and "tensor-parallel-size" not in model_kwargs:
             model_kwargs["tensor_parallel_size"] = torch.cuda.device_count()
         self.manager = VLLMServerManager(model=model, model_kwargs=model_kwargs, timeout=booting_timeout)
         if api_headers is None:
