@@ -295,17 +295,21 @@ class OpenAIChatAPI(LanguageModel):
         )
 
         log_probs = []
-        top_logprobs_list = [res.choices[0].logprobs.content[0].top_logprobs for res in api_responses]
+        top_logprobs_list = [
+            None if res is self.empty_response else res.choices[0].logprobs.content[0].top_logprobs
+            for res in api_responses
+        ]
         for index, prompt in enumerate(prompt_list):
             target_token = response_contents[index]
             index_in_unique = unique_prompt_list.index(prompt)
 
-            log_prob = None  # if target token not in top_logprobs, return None for log_prob of the token
+            log_prob = None  # if target token not in top_logprobs, or the request errored, return None
             top_logprobs = top_logprobs_list[index_in_unique]
-            for token_logprob in top_logprobs:
-                if token_logprob.token == target_token:
-                    log_prob = token_logprob.logprob
-                    break
+            if top_logprobs is not None:
+                for token_logprob in top_logprobs:
+                    if token_logprob.token == target_token:
+                        log_prob = token_logprob.logprob
+                        break
             log_probs.append(log_prob)
 
         return log_probs
