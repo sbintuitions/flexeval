@@ -257,7 +257,9 @@ class OpenAIChatBatchAPI(LanguageModel):
             **kwargs,
         )
         return [
-            LMOutput(text=res["choices"][0]["message"]["content"], finish_reason=res["choices"][0]["finish_reason"])
+            LMOutput(text="", finish_reason="error")
+            if isinstance(res, str)
+            else LMOutput(text=res["choices"][0]["message"]["content"], finish_reason=res["choices"][0]["finish_reason"])
             for res in api_responses
         ]
 
@@ -273,7 +275,9 @@ class OpenAIChatBatchAPI(LanguageModel):
             **kwargs,
         )
         return [
-            LMOutput(
+            LMOutput(text="", finish_reason="error")
+            if isinstance(res, str)
+            else LMOutput(
                 text=res["choices"][0]["message"]["content"],
                 finish_reason=res["choices"][0]["finish_reason"],
                 tool_calls=res["choices"][0]["message"].get("tool_calls", None),
