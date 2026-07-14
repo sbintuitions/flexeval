@@ -226,7 +226,7 @@ class OpenAIChatAPI(LanguageModel):
             LMOutput(
                 text=res.choices[0].message.content,
                 reasoning_text=get_reasoning_text(res.choices[0].message),
-                finish_reason="error" if res is self.empty_response else res.choices[0].finish_reason,
+                finish_reason="empty" if res is self.empty_response else res.choices[0].finish_reason,
             )
             for res in api_responses
         ]
@@ -246,7 +246,7 @@ class OpenAIChatAPI(LanguageModel):
             LMOutput(
                 text=res.choices[0].message.content,
                 reasoning_text=get_reasoning_text(res.choices[0].message),
-                finish_reason="error" if res is self.empty_response else res.choices[0].finish_reason,
+                finish_reason="empty" if res is self.empty_response else res.choices[0].finish_reason,
                 tool_calls=[tool_call.to_dict() for tool_call in res.choices[0].message.tool_calls]
                 if res.choices[0].message.tool_calls
                 else None,
@@ -455,7 +455,7 @@ class OpenAICompletionAPI(LanguageModel):
         )
 
         return [
-            LMOutput(text="", finish_reason="error")
+            LMOutput(text="", finish_reason="empty")
             if res is self.empty_response
             else LMOutput(text=res.choices[0].text, finish_reason=res.choices[0].finish_reason)
             for res in api_responses
