@@ -565,7 +565,7 @@ def test_reasoning_parser_handles_batch_chat_response(chat_lm: HuggingFaceLM) ->
         chat_lm.reasoning_parser = original_parser
 
 
-def test_reasoning_parser_unmatched_pattern_sets_none(chat_lm: HuggingFaceLM) -> None:
+def test_reasoning_parser_unmatched_pattern_sets_empty_text(chat_lm: HuggingFaceLM) -> None:
     reasoning_parser = UnifiedRegexReasoningParser(pattern=r"<think>(?P<reasoning_content>.*?)</think>(?P<content>.*)")
     raw_output = "no think tags here"
     original_parser = chat_lm.reasoning_parser
@@ -576,7 +576,8 @@ def test_reasoning_parser_unmatched_pattern_sets_none(chat_lm: HuggingFaceLM) ->
         ):
             response = chat_lm.generate_chat_response([{"role": "user", "content": "test"}], max_new_tokens=1)
         assert response.raw_text == raw_output
-        assert response.text is None
+        # LMOutput.text must never be None (see LMOutput.__post_init__), so a failed match falls back to "".
+        assert response.text == ""
         assert response.reasoning_text is None
     finally:
         chat_lm.reasoning_parser = original_parser
