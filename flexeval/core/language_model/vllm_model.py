@@ -284,13 +284,17 @@ class VLLM(LanguageModel):
                 if lm_output.raw_text is None:
                     lm_output.raw_text = lm_output.text
                 reasoning = self.reasoning_parser(lm_output.text)
-                lm_output.text = reasoning.text
+                # `reasoning.text` is None when the reasoning pattern fails to match.
+                # LMOutput.text must never be None (see LMOutput.__post_init__), so fall back to "".
+                lm_output.text = reasoning.text if reasoning.text is not None else ""
                 lm_output.reasoning_text = reasoning.reasoning_text
 
             if self.tool_parser and tools is not None:
                 parsed_tool_calling_message = self.tool_parser(lm_output.text)
                 lm_output.tool_calls = parsed_tool_calling_message.tool_call_dicts
-                lm_output.text = parsed_tool_calling_message.text
+                lm_output.text = (
+                    parsed_tool_calling_message.text if parsed_tool_calling_message.text is not None else ""
+                )
                 if lm_output.raw_text is None:
                     lm_output.raw_text = parsed_tool_calling_message.raw_text
                 lm_output.tool_call_validation_result = parsed_tool_calling_message.validation_result
