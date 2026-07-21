@@ -12,12 +12,12 @@ Translated and adapted from [lm-sys/FastChat](https://github.com/lm-sys/FastChat
       class_path: 'Jinja2PromptTemplate',
       init_args: {
         template: std.stripChars(|||
-          {% set question = model1_item["extra_info"]["messages"][0]["content"] -%}
           {% set model1_messages = model1_item["extra_info"]["messages"] -%}
           {% set model2_messages = model2_item["extra_info"]["messages"] -%}
+          {% set model1_user_messages = model1_messages | selectattr("role", "equalto", "user") | list -%}
 
           [ユーザの質問]
-          {{ question }}
+          {{ model1_user_messages[-1]["content"] }}
 
           {% if references|length > 0 -%}
           [参考回答の開始]
@@ -25,10 +25,10 @@ Translated and adapted from [lm-sys/FastChat](https://github.com/lm-sys/FastChat
           [参考回答の終了]
           {% endif -%}
           [アシスタント1の回答開始]
-          {% if model1_messages|length == 1 %}{{ model1_item["lm_output"] }}{% else %}{{ model1_messages[1]["content"] }}{% endif %}
+          {{ model1_item["lm_output"] }}
           [アシスタント1の回答終了]
           [アシスタント2の回答開始]
-          {% if model2_messages|length == 1 %}{{ model2_item["lm_output"] }}{% else %}{{ model2_messages[1]["content"] }}{% endif %}
+          {{ model2_item["lm_output"] }}
           [アシスタント2の回答終了]
         |||, '\n'),
       },

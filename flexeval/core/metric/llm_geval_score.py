@@ -114,20 +114,28 @@ def generate_evaluation_logprobs(
             evaluator_input_list,
             batch_size=batch_size,
         ):
+            expanded_inputs = [evaluator_input for evaluator_input in evaluator_inputs for _ in valid_labels]
+            expanded_labels = valid_labels * len(evaluator_inputs)
             if all(isinstance(elem, str) for elem in evaluator_inputs):
                 evaluator_logprobs = language_model.compute_log_probs(
-                    valid_labels * batch_size,  # for openai models, len(valid_labels) <= 20 due to constraint
-                    [evaluator_input for evaluator_input in evaluator_inputs for _ in valid_labels],
+                    expanded_labels,  # for openai models, len(valid_labels) <= 20 due to constraint
+                    expanded_inputs,
                     # we have to provide len(valid_labels) same inputs for generate logprob
                 )
             else:
                 evaluator_logprobs = language_model.compute_chat_log_probs(
-                    [evaluator_input for evaluator_input in evaluator_inputs for _ in valid_labels],
-                    [{"role": "assistant", "content": label} for _ in valid_labels for label in valid_labels],
+                    expanded_inputs,
+                    [{"role": "assistant", "content": label} for label in expanded_labels],
                 )
+            if len(evaluator_logprobs) != len(expanded_inputs):
+                msg = (
+                    "The language model returned an unexpected number of log probabilities: "
+                    f"expected {len(expanded_inputs)}, got {len(evaluator_logprobs)}."
+                )
+                raise ValueError(msg)
             for evaluator_logprobs_for_single in batch_iter(evaluator_logprobs, batch_size=len(valid_labels)):
                 evaluator_logprobs_list += [dict(zip(valid_labels, evaluator_logprobs_for_single))]
-            pbar.update(batch_size)
+            pbar.update(len(evaluator_inputs))
     return evaluator_logprobs_list
 
 
