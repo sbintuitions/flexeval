@@ -81,3 +81,39 @@ def test_if_few_show_sampler_avoids_leak() -> None:
     with pytest.raises(ValueError):  # noqa: PT012
         for _ in range(100):
             few_shot_generator(eval_inputs=eval_inputs)
+
+
+def test_with_seed_increment_returns_new_instance_with_shared_dataset() -> None:
+    dataset = DummyGenerationDataset()
+    few_shot_generator = BalancedFewShotGenerator(dataset=dataset, num_shots=2, seed=42)
+    new_few_shot_generator = few_shot_generator.with_seed_increment(1)
+
+    assert new_few_shot_generator is not few_shot_generator
+    assert isinstance(new_few_shot_generator, BalancedFewShotGenerator)
+    assert new_few_shot_generator.dataset is dataset
+
+
+def test_with_seed_increment_is_reproducible_from_seed_alone() -> None:
+    dataset = DummyGenerationDataset()
+    few_shot_generator = BalancedFewShotGenerator(dataset=dataset, num_shots=2, seed=42)
+    new_few_shot_generator = few_shot_generator.with_seed_increment(1)
+
+    directly_constructed = BalancedFewShotGenerator(dataset=dataset, num_shots=2, seed=43)
+
+    assert new_few_shot_generator() == directly_constructed()
+
+
+def test_with_seed_increment_is_independent_of_prior_sampling() -> None:
+    # Regression test for the bug where a shared, stateful generator's output
+    # for a given repeat depended on how many times it had already been sampled
+    # (i.e., execution order), rather than being determined by the seed alone.
+    dataset = DummyGenerationDataset()
+    few_shot_generator = BalancedFewShotGenerator(dataset=dataset, num_shots=2, seed=42)
+    # Consume some samples from the original generator before deriving a new one.
+    for _ in range(5):
+        few_shot_generator()
+    new_few_shot_generator = few_shot_generator.with_seed_increment(1)
+
+    directly_constructed = BalancedFewShotGenerator(dataset=dataset, num_shots=2, seed=43)
+
+    assert new_few_shot_generator() == directly_constructed()
