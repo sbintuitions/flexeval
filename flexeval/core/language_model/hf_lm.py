@@ -383,15 +383,36 @@ class HuggingFaceLM(LanguageModel):
 
         # We strip the input text and stop sequences from the output text.
         lm_outputs: list[LMOutput] = []
-        for generated_tensor in generated_tokens:
+        for attention_mask, generated_tensor in zip(model_inputs["attention_mask"], generated_tokens):
             input_tensor = generated_tensor[:input_token_length]
             output_tensor = generated_tensor[input_token_length:]
 
-            input_tokens = [t for t in input_tensor.tolist() if t != self.tokenizer.pad_token_id]
-            output_tokens = [t for t in output_tensor.tolist() if t != self.tokenizer.pad_token_id]
+            # Use the attention mask (rather than filtering by `pad_token_id`) to strip the
+            # left-padding from the input, since `pad_token_id` may equal `eos_token_id` (the
+            # tokenizer has no native pad token), in which case a value-based filter would also
+            # strip genuine EOS tokens that are part of the actual prompt content.
+            input_tokens = [t for t, m in zip(input_tensor.tolist(), attention_mask.tolist()) if m != 0]
+
+            # Find where generation actually stopped: the first occurrence of a stop token id in
+            # the output. Everything from that point on (the stop token itself and the padding
+            # that follows it) is discarded. Note that `pad_token_id` may equal one of the
+            # `stop_token_ids` (when the tokenizer has no native pad token), so a value-based pad
+            # filter would incorrectly strip the genuine stop token as well, making it impossible
+            # to tell "stop" from "length" below.
+            stop_token_pos = next(
+                (i for i, t in enumerate(output_tensor.tolist()) if t in stop_token_ids),
+                None,
+            )
+            if stop_token_pos is not None:
+                finish_reason = "stop"
+                output_tokens = output_tensor[:stop_token_pos].tolist()
+            else:
+                finish_reason = "length"
+                # Fall back to filtering by `pad_token_id`, as a safety net for models with a
+                # dedicated pad token (distinct from eos) that may still pad the output.
+                output_tokens = [t for t in output_tensor.tolist() if t != self.tokenizer.pad_token_id]
             decoded_text = decode_for_lm_continuation(output_tokens, input_tokens, self.tokenizer)
 
-            finish_reason = "length"
             for stop_seq in stop_sequences:
                 idx = decoded_text.find(stop_seq)
                 if idx != -1:

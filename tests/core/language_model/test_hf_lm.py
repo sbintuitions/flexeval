@@ -88,6 +88,31 @@ def chat_lm_without_system_message(model_name: str = "sbintuitions/tiny-lm-chat"
     )
 
 
+class _StubGenerateModel:
+    """A fake `model` object that stands in for the lazily-loaded HF model.
+
+    `HuggingFaceLM._batch_complete_text` calls `self.model.generate(**model_inputs, **gen_kwargs)`.
+    By assigning an instance of this class directly to `lm.model` before calling `complete_text`,
+    the `@load_model` decorator's lazy-loading branch is skipped (since `self.model is not None`),
+    and `generate()` deterministically returns the real (padded) input ids concatenated with a
+    pre-specified sequence of "generated" token ids per batch row. This lets us test the
+    post-processing logic in `_batch_complete_text` without depending on non-deterministic
+    real generation.
+    """
+
+    def __init__(self, generated_tokens: list[list[int]]) -> None:
+        self.device = torch.device("cpu")
+        self._generated_tokens = generated_tokens
+
+    def generate(self, **kwargs) -> torch.Tensor:
+        input_ids = kwargs["input_ids"]
+        rows = []
+        for i, ids in enumerate(input_ids):
+            gen = torch.tensor(self._generated_tokens[i], dtype=ids.dtype)
+            rows.append(torch.cat([ids, gen]))
+        return torch.stack(rows)
+
+
 class TestHuggingFaceLM(BaseLanguageModelTest):
     @pytest.fixture
     def lm(self, lm: HuggingFaceLM) -> LanguageModel:
@@ -305,6 +330,119 @@ def test_if_stop_sequences_work_as_expected(chat_lm: HuggingFaceLM) -> None:
     response = chat_lm.generate_chat_response(test_inputs, max_new_tokens=50, ignore_eos=True)[0]
     assert response.text
     assert response.finish_reason == "length"
+
+
+def test_finish_reason_is_stop_when_eos_generated_with_padless_tokenizer() -> None:
+    """Regression test for the bug where `finish_reason` was always "length" for tokenizers
+    without a native pad_token (e.g. GPT-2/Llama family), because `tokenize_text_for_lm_prefix`
+    falls back to `pad_token = eos_token`, and the output post-processing used to strip *all*
+    tokens equal to `pad_token_id` -- including the genuine EOS token that caused generation to
+    stop -- before the text-level stop-sequence search ran.
+    """
+    lm = HuggingFaceLM(
+        model="tokyotech-llm/Swallow-7b-instruct-hf",
+        tokenizer_kwargs={"use_fast": False},
+        default_gen_kwargs={"do_sample": False},
+        model_limit_tokens=None,
+    )
+    assert lm.tokenizer.pad_token is None  # sanity check: this tokenizer has no native pad_token
+
+    eos_id = lm.tokenizer.eos_token_id
+    # Simulate: 2 generated content tokens, then EOS (the real stop), then EOS-valued padding.
+    generated_tokens = [100, 200, eos_id, eos_id, eos_id]
+    lm.model = _StubGenerateModel(generated_tokens=[generated_tokens])
+
+    output = lm.complete_text("hello", max_new_tokens=5)
+    assert output.finish_reason == "stop"
+
+
+def test_finish_reason_is_length_when_max_new_tokens_reached_without_eos() -> None:
+    """Sanity check: without any EOS token among the generated tokens, `finish_reason` should
+    remain "length" both before and after the fix."""
+    lm = HuggingFaceLM(
+        model="tokyotech-llm/Swallow-7b-instruct-hf",
+        tokenizer_kwargs={"use_fast": False},
+        default_gen_kwargs={"do_sample": False},
+        model_limit_tokens=None,
+    )
+    assert lm.tokenizer.pad_token is None
+
+    generated_tokens = [100, 200, 300]  # no EOS among these
+    lm.model = _StubGenerateModel(generated_tokens=[generated_tokens])
+
+    output = lm.complete_text("hello", max_new_tokens=3)
+    assert output.finish_reason == "length"
+
+
+def test_finish_reason_mixed_batch_with_padless_tokenizer() -> None:
+    """A batch with one sequence that stops early (EOS + EOS-padding) and one that runs to
+    max_new_tokens should independently get "stop" and "length" as their finish_reason."""
+    lm = HuggingFaceLM(
+        model="tokyotech-llm/Swallow-7b-instruct-hf",
+        tokenizer_kwargs={"use_fast": False},
+        default_gen_kwargs={"do_sample": False},
+        model_limit_tokens=None,
+    )
+    assert lm.tokenizer.pad_token is None
+
+    eos_id = lm.tokenizer.eos_token_id
+    stopped_row = [100, 200, eos_id, eos_id]
+    length_row = [100, 200, 300, 400]
+    lm.model = _StubGenerateModel(generated_tokens=[stopped_row, length_row])
+
+    outputs = lm.complete_text(["hello", "world"], max_new_tokens=4)
+    assert outputs[0].finish_reason == "stop"
+    assert outputs[1].finish_reason == "length"
+
+
+def test_input_side_pad_filter_preserves_genuine_eos_in_prompt() -> None:
+    """Regression test for the input-side counterpart of the same bug: filtering the prompt's
+    tokens by `token != pad_token_id` removes genuine EOS tokens that are part of the actual
+    prompt content (not just left-padding), corrupting `decode_for_lm_continuation`'s boundary
+    computation. The fix filters using `attention_mask` instead, which correctly identifies only
+    the left-padding positions.
+
+    We use a SentencePiece-based tokenizer (no native pad_token) because the corruption manifests
+    as a lost leading space: SentencePiece's decode() strips a leading space only from the very
+    first token of the tokens passed to it, so if the buggy filter empties out the "prompt" token
+    list entirely, the leading space that should have belonged to the prompt gets attributed to
+    the continuation and stripped away instead.
+    """
+    tokenizer_name = "tokyotech-llm/Swallow-7b-instruct-hf"
+    tokenizer = AutoTokenizer.from_pretrained(tokenizer_name, use_fast=False)
+    assert tokenizer.pad_token is None  # sanity check: this tokenizer has no native pad_token
+
+    # item 0: the entire prompt content is just the eos_token itself (so after left-padding with
+    # pad_token==eos_token, the row is *entirely* composed of eos-valued tokens, both the fake
+    # padding and the one genuine content token).
+    # item 1: a long, unrelated prompt to force item 0 to be left-padded.
+    text_list = [
+        tokenizer.eos_token,
+        "これはとても長い日本語の文章です、パディングを発生させるために十分な長さがあります。",
+    ]
+
+    # Compute the padded input ids exactly as `_batch_complete_text` will internally, so we know
+    # what the stub model will receive and can compute the expected (correct) continuation text.
+    model_inputs = tokenize_text_for_lm_prefix(text_list, tokenizer, add_special_tokens=False)
+    row0_ids = model_inputs.input_ids[0].tolist()
+    row0_mask = model_inputs.attention_mask[0].tolist()
+    correct_input_tokens_row0 = [t for t, m in zip(row0_ids, row0_mask) if m == 1]
+    assert correct_input_tokens_row0, "the genuine eos token in the prompt should be preserved"
+
+    generated_tokens = tokenizer("です。", add_special_tokens=False)["input_ids"]
+    expected_text_row0 = decode_for_lm_continuation(generated_tokens, correct_input_tokens_row0, tokenizer)
+
+    lm = HuggingFaceLM(
+        model=tokenizer_name,
+        tokenizer_kwargs={"use_fast": False},
+        default_gen_kwargs={"do_sample": False},
+        model_limit_tokens=None,
+    )
+    lm.model = _StubGenerateModel(generated_tokens=[generated_tokens, generated_tokens])
+
+    outputs = lm.complete_text(text_list, max_new_tokens=len(generated_tokens))
+    assert outputs[0].text == expected_text_row0
+    assert outputs[0].text.startswith(" ")  # the leading space that belongs to the prompt/continuation boundary
 
 
 def test_if_gen_kwargs_work_as_expected() -> None:
