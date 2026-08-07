@@ -106,6 +106,17 @@ class VLLMServerManager:
 
         interval_second = 1
         for _ in range(self.timeout // interval_second):
+            # Fail fast if the vLLM process disappears or exits while the server is starting.
+            if self.process is None:
+                msg = "vLLM server process is not initialized."
+                raise RuntimeError(msg)
+
+            returncode = self.process.poll()
+            if returncode is not None:
+                self.stop()
+                msg = f"vLLM server process terminated unexpectedly. {returncode=}"
+                raise RuntimeError(msg)
+
             if self.is_ready():
                 logger.info(f"vLLM server is ready at {self.base_url}")
                 return self.host, self.port
