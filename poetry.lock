@@ -9921,4 +9921,4 @@ wandb = ["wandb"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.10,<3.13"
-content-hash = "bc1a211ceac17a1019848a508f58e4f28b1a8e9ace041144d2dbe4250f2e0e88"
+content-hash = "9bdcc2e3ee946c3727c38d51737337c8215d4e94b513ae548e15ac288d033b4a"
