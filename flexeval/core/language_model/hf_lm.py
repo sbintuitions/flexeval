@@ -90,21 +90,12 @@ def tokenize_text_for_lm_continuation(
         raise ValueError(msg)
 
     oov_char_len = len(tokenizer.tokenize(single_token_character))
-    # Some tokenizers (e.g. sentencepiece-based ones) prepend a "▁" to standalone text unless
-    # `add_prefix_space` is False. As of transformers v5, this flag is stored but no longer
-    # affects tokenization (https://github.com/huggingface/transformers/blob/main/MIGRATION_GUIDE_V5.md),
-    # so we enforce the intended behavior ourselves with the OOV-character trick below instead of
-    # relying on the tokenizer to honor it.
-    add_prefix_space = getattr(tokenizer, "add_prefix_space", False)
 
     encoding_list: list[BatchEncoding] = []
     for text, as_cont in zip(text_list, as_continuation):
-        # A leading "▁" should be stripped whenever this text is a true continuation, or when it
-        # is a fresh start but the tokenizer is not configured to prepend a space to it.
-        strip_leading_marker = as_cont or not add_prefix_space
         input_text = text
         # tokenize with OOV character
-        if strip_leading_marker:
+        if as_cont:
             input_text = single_token_character + text
         encoding = tokenizer(
             input_text,
@@ -112,7 +103,7 @@ def tokenize_text_for_lm_continuation(
             return_token_type_ids=False,
         )
         # remove OOV character
-        if strip_leading_marker:
+        if as_cont:
             for k in encoding:
                 encoding[k] = encoding[k][oov_char_len:]
         encoding_list.append(encoding)

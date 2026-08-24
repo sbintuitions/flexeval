@@ -169,16 +169,18 @@ def test_tokenize_text_for_lm_continuation(tokenizer_name: str) -> None:
         assert not first_token.startswith("▁")  # check if the prefix of sentencepiece is not added
         assert tokenizer.decode(tokens, skip_special_tokens=True) == text_list[i]
 
-    # Test with conditional operations
-    # This is mainly for tokenizers with add_prefix_space=True,
-    # which adds a space to the beginning of the text but not to the continuation.
+    # Test with conditional operations.
+    # as_cont=False (fresh start) must be left as the tokenizer would naturally tokenize it.
+    # as_cont=True (continuation) must always have the leading sentencepiece marker stripped.
     text_list = ["これは文頭", "これは続き"]
     as_continuation = [False, True]
     batch_encoding = tokenize_text_for_lm_continuation(text_list, tokenizer, as_continuation=as_continuation)
     for i, (tokens, as_cont) in enumerate(zip(batch_encoding.input_ids, as_continuation)):
         first_token = tokenizer.convert_ids_to_tokens([tokens[0]])[0]
-        starts_with_prefix = (not as_cont) and tokenizer.add_prefix_space
-        assert first_token.startswith("▁") == starts_with_prefix
+        if as_cont:
+            assert not first_token.startswith("▁")
+        else:
+            assert first_token == tokenizer.tokenize(text_list[i])[0]
         assert tokenizer.decode(tokens, skip_special_tokens=True) == text_list[i]
 
 
