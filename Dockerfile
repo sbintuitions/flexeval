@@ -1,8 +1,7 @@
-FROM nvidia/cuda:11.2.2-cudnn8-runtime-ubuntu20.04 as base
+FROM nvidia/cuda:13.0.2-cudnn-devel-ubuntu22.04 as base
 
-### Install python 3.10 and set it as default python interpreter
-RUN  apt update &&  apt install software-properties-common -y && \
-add-apt-repository ppa:deadsnakes/ppa -y &&  apt update && \
+### Install python 3.10 (available directly from Ubuntu 22.04's repos) and set it as default python interpreter
+RUN apt update && \
 apt install curl python3.10 build-essential vim jq git -y && \
 update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.10 1 && \
 update-alternatives --install /usr/bin/python python /usr/bin/python3.10 1 && \
@@ -13,8 +12,7 @@ apt-get clean && rm -rf /var/lib/apt/lists/
 FROM base as build
 
 WORKDIR /tmp
-
-RUN pip install poetry
+RUN pip install poetry poetry-plugin-export
 
 COPY ./pyproject.toml ./poetry.lock* /tmp/
 
@@ -23,6 +21,7 @@ RUN poetry export --with dev --extras "vllm" -f requirements.txt --output requir
 FROM base as runtime
 
 WORKDIR /app
+ENV PYTHONNOUSERSITE=1
 
 COPY --from=build /tmp/requirements.txt /code/requirements.txt
 
@@ -34,7 +33,6 @@ RUN python -m unidic download  # required for fugashi
 COPY docs /app/docs
 COPY flexeval /app/flexeval
 COPY tests /app/tests
-COPY internal /app/internal
 COPY README.md /app/README.md
 COPY ./pyproject.toml /app/
 # git hash の情報をプログラム内で使用するためにコピー
