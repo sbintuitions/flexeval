@@ -25,11 +25,20 @@ class RandomFewShotGenerator(FewShotGenerator):
 
         self.dataset = dataset
         self.num_shots = num_shots
+        self._seed = seed
         self._rnd = random.Random(seed)
 
     def _sample_instances(self, eval_inputs: list[dict[str, Any]] | dict[str, Any] | None = None) -> list[Instance]:
         sampled_indices = self._rnd.sample(range(len(self.dataset)), self.num_shots)
         return [self.dataset[i] for i in sampled_indices]
+
+    def with_seed_increment(self, seed_increment: int) -> RandomFewShotGenerator:
+        return RandomFewShotGenerator(
+            dataset=self.dataset,
+            num_shots=self.num_shots,
+            seed=self._seed + seed_increment,
+            num_trials_to_avoid_leak=self._num_trials_to_avoid_leak,
+        )
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(dataset={self.dataset}, num_shots={self.num_shots})"
