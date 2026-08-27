@@ -75,9 +75,13 @@ class LiteLLMChatAPI(OpenAIChatAPI):
             model_response_object=ModelResponse(),
         )
         self.ignore_seed = ignore_seed
+        if self.ignore_seed and "seed" in self.default_gen_kwargs:
+            self.default_gen_kwargs.pop("seed")
         self.api_call_func = completion
 
     def set_random_seed(self, seed: int) -> None:
+        if self.ignore_seed:
+            return
         self.default_gen_kwargs["seed"] = seed
 
     def _batch_complete_text(
