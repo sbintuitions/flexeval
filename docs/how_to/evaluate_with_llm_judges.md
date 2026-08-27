@@ -31,6 +31,9 @@ flexeval_presets assistant_eval_en_single_turn
 In this metric, GPT4 is asked to rate the responses with the score from 1 to 10.
 The score is extracted as the last digit found in the evaluator's output.
 
+For multi-turn data such as `mt-en`, this single-turn metric evaluates only the final response, using the last user
+message and the corresponding last reference. It does not average scores over every turn in the conversation.
+
 !!! tip
     To take a closer look at the prompt template, combine pipeline with `jsonnet` and `jq`:
 
@@ -79,6 +82,9 @@ Sometimes, evaluating chat models individually cannot capture a subtle differenc
 In such cases, pairwise evaluation is useful.
 
 The overview of process is generating the responses using `flexeval_lm` and evaluating them with `flexeval_pairwise`.
+
+The `assistant_judge_en_single_turn` preset compares the final response of each conversation. For multi-turn data,
+it does not produce a separate comparison for each turn.
 
 In this example, we will compare the responses from GPT3.5 and GPT-4o.
 

@@ -1,5 +1,8 @@
 import math
 
+import numpy as np
+import pytest
+
 from flexeval.core.pairwise_comparison import BradleyTerryScorer
 from flexeval.core.pairwise_comparison.judge.base import Winner
 
@@ -34,3 +37,42 @@ def test_bradley_terry_scorer() -> None:
 
     model_scores = scorer.compute_scores(match_results)
     assert model_scores["モデルD"] > model_scores["モデルB"] > model_scores["モデルC"] > model_scores["モデルA"]
+
+
+@pytest.mark.parametrize(
+    "match_results",
+    [
+        [("A", "B", Winner.MODEL1)],
+        [
+            ("A", "B", Winner.MODEL1),
+            ("B", "C", Winner.MODEL1),
+            ("C", "A", Winner.MODEL2),
+            ("A", "D", Winner.MODEL1),
+            ("B", "D", Winner.MODEL1),
+            ("C", "D", Winner.MODEL1),
+        ],
+    ],
+)
+def test_bradley_terry_rejects_non_strongly_connected_results(
+    match_results: list[tuple[str, str, Winner]],
+) -> None:
+    with pytest.raises(ValueError, match="not strongly connected"):
+        BradleyTerryScorer().compute_scores(match_results)
+
+
+def test_bradley_terry_returns_finite_scores_for_strongly_connected_results() -> None:
+    match_results = [
+        ("A", "B", Winner.MODEL1),
+        ("B", "C", Winner.MODEL1),
+        ("C", "A", Winner.MODEL1),
+    ]
+
+    model_scores = BradleyTerryScorer().compute_scores(match_results)
+
+    assert set(model_scores) == {"A", "B", "C"}
+    assert all(np.isfinite(score) for score in model_scores.values())
+
+
+def test_bradley_terry_deprecates_eps_argument() -> None:
+    with pytest.warns(FutureWarning, match="deprecated and ignored"):
+        BradleyTerryScorer(eps=1e-8)

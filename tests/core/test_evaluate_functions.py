@@ -15,6 +15,7 @@ from flexeval.core.few_shot_generator import RandomFewShotGenerator
 from flexeval.core.language_model.base import LMOutput
 from flexeval.core.metric import ExactMatch, FinishReasonCount
 from flexeval.core.metric.base import Metric, MetricResult
+from flexeval.core.pairwise_comparison import PairwiseScorer, Winner, WinRateScorer
 from flexeval.core.prompt_template import Jinja2PromptTemplate
 from flexeval.core.reward_model.pairwise_judge_reward_model import PairwiseJudgeRewardModel
 from tests.dummy_modules import (
@@ -226,6 +227,93 @@ def test_evaluate_pairwise(cached_matches: list[Match] | None) -> None:
     assert len(match_info_list) == 2 * num_items
     if cached_matches:
         assert match_info_list[0]["rationale"] == "cache test"
+
+
+class FailingPairwiseScorer(PairwiseScorer):
+    name = "failing"
+
+    def compute_scores(self, match_results: list[tuple[str, str, Winner]]) -> dict[str, float]:
+        msg = "scoring failed"
+        raise ValueError(msg)
+
+
+def test_evaluate_pairwise_returns_matches_when_a_scorer_fails() -> None:
+    model_scores_dict, match_info_list = evaluate_pairwise(
+        model_items={
+            "model1": [{"lm_output": "answer1"}],
+            "model2": [{"lm_output": "answer2"}],
+        },
+        judge=DummyPairwiseJudge(),
+        scorers=[WinRateScorer(), FailingPairwiseScorer()],
+    )
+
+    assert set(model_scores_dict) == {"win_rate"}
+    assert len(match_info_list) == 2
+
+
+def test_evaluate_pairwise_rejects_misaligned_items() -> None:
+    with pytest.raises(ValueError, match="not aligned at index 0"):
+        evaluate_pairwise(
+            model_items={
+                "model1": [
+                    {"lm_output": "answer1", "references": ["ref1"], "extra_info": {"id": 1}},
+                    {"lm_output": "answer2", "references": ["ref2"], "extra_info": {"id": 2}},
+                ],
+                "model2": [
+                    {"lm_output": "answer2", "references": ["ref2"], "extra_info": {"id": 2}},
+                    {"lm_output": "answer1", "references": ["ref1"], "extra_info": {"id": 1}},
+                ],
+            },
+            judge=DummyPairwiseJudge(),
+        )
+
+
+def test_evaluate_pairwise_rejects_missing_identity_on_one_side() -> None:
+    with pytest.raises(ValueError, match="not aligned at index 0"):
+        evaluate_pairwise(
+            model_items={
+                "model1": [{"lm_output": "answer1", "references": ["reference"]}],
+                "model2": [{"lm_output": "answer2"}],
+            },
+            judge=DummyPairwiseJudge(),
+        )
+
+
+def test_evaluate_pairwise_allows_different_assistant_history() -> None:
+    model_scores_dict, match_info_list = evaluate_pairwise(
+        model_items={
+            "model1": [
+                {
+                    "lm_output": "final answer 1",
+                    "references": ["reference"],
+                    "extra_info": {
+                        "messages": [
+                            {"role": "user", "content": "question 1"},
+                            {"role": "assistant", "content": "model 1 answer"},
+                            {"role": "user", "content": "question 2"},
+                        ]
+                    },
+                }
+            ],
+            "model2": [
+                {
+                    "lm_output": "final answer 2",
+                    "references": ["reference"],
+                    "extra_info": {
+                        "messages": [
+                            {"role": "user", "content": "question 1"},
+                            {"role": "assistant", "content": "model 2 answer"},
+                            {"role": "user", "content": "question 2"},
+                        ]
+                    },
+                }
+            ],
+        },
+        judge=DummyPairwiseJudge(),
+    )
+
+    assert set(model_scores_dict) == {"win_rate", "bradley_terry"}
+    assert len(match_info_list) == 2
 
 
 def test_evaluate_reward_model() -> None:

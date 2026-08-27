@@ -13,6 +13,7 @@ Translated and adapted from [lm-sys/FastChat](https://github.com/lm-sys/FastChat
       class_path: 'Jinja2PromptTemplate',
       init_args: {
         template: std.stripChars(|||
+          {% set user_messages = messages | selectattr("role", "equalto", "user") | list -%}
           [指示]
           {% if references|length > 0 -%}
           以下に表示されるユーザの質問に対するアシスタントの応答の品質を評価してください。評価は正確さと有用性を考慮すべきです。アシスタントの回答の言語は、ユーザが使用している言語と一致しているべきで、そうでない場合は減点されるべきです。参照回答とアシスタントの回答が与えられます。あなたの評価は、アシスタントの回答と参照回答を比較することから始めてください。ミスを特定し、訂正してください。できるだけ客観的であること。評価の説明をした後、"[[rating]]"という形式で、1から10までの整数の評価値を出力してください（例 "rating：[[5]]"）。
@@ -21,7 +22,7 @@ Translated and adapted from [lm-sys/FastChat](https://github.com/lm-sys/FastChat
           {%- endif %}
 
           [ユーザの質問]
-          {{ messages[0]["content"] }}
+          {{ user_messages[-1]["content"] }}
 
           {% if references|length > 0 -%}
           [参考回答の開始]
@@ -29,7 +30,7 @@ Translated and adapted from [lm-sys/FastChat](https://github.com/lm-sys/FastChat
           [参考回答の終了]
           {% endif -%}
           [アシスタントの回答開始]
-          {% if messages|length == 1 %}{{ lm_output }}{% else %}{{ messages[1]["content"] }}{% endif %}
+          {{ lm_output }}
           [アシスタントの回答終了]
         |||, '\n'),
       },
