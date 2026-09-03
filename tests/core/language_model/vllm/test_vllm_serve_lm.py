@@ -72,6 +72,41 @@ def test_start_invokes_subprocess_and_waits_for_http() -> None:
         mock_get.assert_called_with(f"http://localhost:{port}/v1/models", timeout=1)
 
 
+def test_start_raises_immediately_when_process_exits_and_can_retry() -> None:
+    failed_process = mock.Mock()
+    failed_process.stdout = DummyStream([""])
+    failed_process.stderr = DummyStream([""])
+    failed_process.poll.return_value = 1
+
+    running_process = mock.Mock()
+    running_process.stdout = DummyStream([""])
+    running_process.stderr = DummyStream([""])
+    running_process.poll.return_value = None
+    running_process.wait.return_value = 0
+
+    with (
+        mock.patch("subprocess.Popen", side_effect=[failed_process, running_process]) as mock_popen,
+        mock.patch("requests.get") as mock_get,
+        mock.patch("time.sleep") as mock_sleep,
+    ):
+        mock_get.return_value.status_code = 200
+        manager = VLLMServerManager(model="dummy")
+
+        with pytest.raises(RuntimeError, match="returncode=1"):
+            manager.start()
+
+        assert manager.process is None
+        mock_sleep.assert_not_called()
+        mock_get.assert_not_called()
+
+        host, port = manager.start()
+        manager.stop()
+
+        assert host == "localhost"
+        assert isinstance(port, int)
+        assert mock_popen.call_count == 2
+
+
 def test_stop_terminates_process() -> None:
     mock_process = mock.Mock()
     mock_process.poll.return_value = None

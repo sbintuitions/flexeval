@@ -315,6 +315,46 @@ def test_reasoning_parser_handles_batch_chat_response(chat_lm: VLLM) -> None:
 
 
 @pytest.mark.skipif(not is_vllm_enabled(), reason="vllm library is not installed")
+def test_reasoning_parser_unmatched_pattern_sets_empty_text(chat_lm: VLLM) -> None:
+    reasoning_parser = UnifiedRegexReasoningParser(pattern=r"<think>(?P<reasoning_content>.*?)</think>(?P<content>.*)")
+    raw_output = "no think tags here"
+    original_parser = chat_lm.reasoning_parser
+    chat_lm.reasoning_parser = reasoning_parser
+    try:
+        with patch.object(
+            chat_lm, "_batch_complete_text", return_value=[LMOutput(text=raw_output, finish_reason="stop")]
+        ):
+            response = chat_lm.generate_chat_response([{"role": "user", "content": "test"}], max_new_tokens=1)
+        assert response.raw_text == raw_output
+        # LMOutput.text must never be None (see LMOutput.__post_init__), so a failed match falls back to "".
+        assert response.text == ""
+        assert response.reasoning_text is None
+    finally:
+        chat_lm.reasoning_parser = original_parser
+
+
+@pytest.mark.skipif(not is_vllm_enabled(), reason="vllm library is not installed")
+def test_reasoning_parser_unclosed_think_tag_sets_empty_text(chat_lm: VLLM) -> None:
+    reasoning_parser = UnifiedRegexReasoningParser(pattern=r"<think>(?P<reasoning_content>.*?)</think>(?P<content>.*)")
+    # Simulates generation truncated (e.g. by max_new_tokens) before the closing </think> tag.
+    raw_output = "<think>reasoning that got cut off"
+    original_parser = chat_lm.reasoning_parser
+    chat_lm.reasoning_parser = reasoning_parser
+    try:
+        with patch.object(
+            chat_lm, "_batch_complete_text", return_value=[LMOutput(text=raw_output, finish_reason="length")]
+        ):
+            response = chat_lm.generate_chat_response([{"role": "user", "content": "test"}], max_new_tokens=1)
+        assert response.raw_text == raw_output
+        # The pattern requires a closing </think>, so an unclosed tag fails to match just like no tags at all,
+        # and the unfinished reasoning must not leak into `text` (see LMOutput.__post_init__ for the None -> "" rule).
+        assert response.text == ""
+        assert response.reasoning_text is None
+    finally:
+        chat_lm.reasoning_parser = original_parser
+
+
+@pytest.mark.skipif(not is_vllm_enabled(), reason="vllm library is not installed")
 def test_no_reasoning_parser_leaves_chat_output_unchanged(chat_lm: VLLM) -> None:
     assert chat_lm.reasoning_parser is None
     raw_output = "<think>step by step</think>final answer"
