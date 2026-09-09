@@ -93,6 +93,7 @@ class LLMLabel(Metric):
     The last label value found in the output of the evaluator is used to compute the evaluation score.
     You can assign a score to each label.
     The final output is the average score and the distribution of the labels.
+    If the evaluator returns reasoning content, it is stored as `llm_label_reasoning_text` in the instance details.
 
     Args:
         language_model: An instance of `LanguageModel` to evaluate the output of the model.
@@ -218,6 +219,11 @@ class LLMLabel(Metric):
                     f"{self.metric_prefix}llm_label_input": eval_in,
                     f"{self.metric_prefix}llm_label_output": eval_out.text,
                 }
+                | (
+                    {f"{self.metric_prefix}llm_label_reasoning_text": eval_out.reasoning_text}
+                    if eval_out.reasoning_text
+                    else {}
+                )
                 for eval_label, eval_score, eval_in, eval_out in zip(
                     evaluator_label_list,
                     evaluator_score_list,
@@ -239,6 +245,7 @@ class LLMLabel(Metric):
 class ChatLLMLabel(Metric):
     """
     A metric that evaluates the output of `LanguageModel.batch_generate_chat_response`.
+    If the evaluator returns reasoning content, it is stored as `llm_label_reasoning_text` in the instance details.
 
     Args:
         language_model: An instance of `LanguageModel` to evaluate the output of the model.
@@ -367,6 +374,11 @@ class ChatLLMLabel(Metric):
                     f"{self.metric_prefix}llm_label_input": eval_in,
                     f"{self.metric_prefix}llm_label_output": eval_out.text,
                 }
+                | (
+                    {f"{self.metric_prefix}llm_label_reasoning_text": eval_out.reasoning_text}
+                    if eval_out.reasoning_text
+                    else {}
+                )
                 for eval_label, eval_score, eval_in, eval_out in zip(
                     evaluator_label_list,
                     evaluator_score_list,

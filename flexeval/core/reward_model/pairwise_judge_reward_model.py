@@ -4,7 +4,7 @@ from dataclasses import asdict, dataclass
 from enum import Enum
 from typing import Any
 
-from flexeval.core.language_model.base import LanguageModel
+from flexeval.core.language_model.base import LanguageModel, LMOutput
 from flexeval.core.prompt_template.base import PromptTemplate
 from flexeval.core.reward_bench_dataset import RewardBenchInstance
 from flexeval.core.reward_model.base import RewardModel
@@ -40,7 +40,7 @@ def evaluate_model_output(model_output: str, gold_label: PairwiseChoice) -> bool
 
 def aggregate_judge_results(
     outputs: list[dict],
-    judge_outputs: list,
+    judge_outputs: list[LMOutput],
     chosen_is_better_list: list[bool],
 ) -> tuple[list[bool], list[dict]]:
     """
@@ -50,28 +50,32 @@ def aggregate_judge_results(
     Returns:
         final_results: list[bool]
             A list indicating whether each instance is ultimately judged as correct.
+        aggregated_outputs: list[dict]
+            A list of per-instance details.
+            `llm_reasoning_texts` is added only when the judge returns reasoning content.
     """
     aggregated_results: list[bool] = []
     aggregated_outputs: list[dict] = []
 
     for i, output in enumerate(outputs):
-        ab_output_text = judge_outputs[i * 2].text
-        ba_output_text = judge_outputs[i * 2 + 1].text
+        ab_output = judge_outputs[i * 2]
+        ba_output = judge_outputs[i * 2 + 1]
         ab_eval = chosen_is_better_list[i * 2]
         ba_eval = chosen_is_better_list[i * 2 + 1]
 
         consistent = ab_eval == ba_eval
         is_correct = consistent and ab_eval
 
-        aggregated_outputs.append(
-            {
-                "llm_outputs": [ab_output_text, ba_output_text],
-                "evaluation_results": [ab_eval, ba_eval],
-                "consistent": consistent,
-                "is_correct": is_correct,
-                **output,
-            }
-        )
+        aggregated_output = {
+            "llm_outputs": [ab_output.text, ba_output.text],
+            "evaluation_results": [ab_eval, ba_eval],
+            "consistent": consistent,
+            "is_correct": is_correct,
+            **output,
+        }
+        if ab_output.reasoning_text or ba_output.reasoning_text:
+            aggregated_output["llm_reasoning_texts"] = [ab_output.reasoning_text, ba_output.reasoning_text]
+        aggregated_outputs.append(aggregated_output)
         aggregated_results.append(is_correct)
 
     return aggregated_results, aggregated_outputs

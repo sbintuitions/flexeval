@@ -161,7 +161,7 @@ def generate_evaluations(
         disable=disable_tqdm,
         desc=desc_for_tqdm,
     ) as pbar:
-        evaluator_output_list: list[str] = []
+        evaluator_output_list: list[LMOutput] = []
         for batch_inputs in batch_iter(
             evaluator_input_list,
             batch_size=batch_size,
@@ -184,6 +184,7 @@ class LLMScore(Metric):
 
     You can specify the evaluation criteria in `PromptTemplate`.
     The last integer value in the output of the evaluator is used as the evaluation score.
+    If the evaluator returns reasoning content, it is stored as `llm_score_reasoning_text` in the instance details.
 
     Args:
         language_model: An instance of `LanguageModel` to evaluate the output of the model.
@@ -287,6 +288,11 @@ class LLMScore(Metric):
                     f"{self.metric_prefix}llm_score_input": eval_in,
                     f"{self.metric_prefix}llm_score_output": eval_out.text,
                 }
+                | (
+                    {f"{self.metric_prefix}llm_score_reasoning_text": eval_out.reasoning_text}
+                    if eval_out.reasoning_text
+                    else {}
+                )
                 for eval_score, eval_in, eval_out in zip(
                     evaluator_score_list,
                     evaluator_input_list,
@@ -307,6 +313,7 @@ class LLMScore(Metric):
 class ChatLLMScore(Metric):
     """
     A metric that evaluates the output of `LanguageModel.batch_generate_chat_response`.
+    If the evaluator returns reasoning content, it is stored as `llm_score_reasoning_text` in the instance details.
 
     Args:
         language_model: An instance of `LanguageModel` to evaluate the output of the model.
@@ -412,6 +419,11 @@ class ChatLLMScore(Metric):
                     f"{self.metric_prefix}llm_score_input": eval_in,
                     f"{self.metric_prefix}llm_score_output": eval_out.text,
                 }
+                | (
+                    {f"{self.metric_prefix}llm_score_reasoning_text": eval_out.reasoning_text}
+                    if eval_out.reasoning_text
+                    else {}
+                )
                 for eval_score, eval_in, eval_out in zip(
                     evaluator_score_list,
                     evaluator_input_list,
