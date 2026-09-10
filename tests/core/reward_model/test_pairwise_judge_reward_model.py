@@ -99,6 +99,19 @@ def test_aggregate_judge_results_with_reasoning() -> None:
         LMOutput(text="ba_text"),
     ]
 
-    _, final_outputs = aggregate_judge_results(outputs, judge_outputs, [True, True])
+    _, final_outputs = aggregate_judge_results(outputs, judge_outputs, [True, True], output_reasoning_text=True)
 
     assert final_outputs[0]["llm_reasoning_texts"] == ["ab_reasoning", None]
+
+
+def test_aggregate_judge_results_without_reasoning() -> None:
+    """Reasoning is not stored unless `output_reasoning_text` is enabled."""
+    outputs = [{"llm_inputs": ["ab", "ba"]}]
+    judge_outputs = [
+        LMOutput(text="ab_text", reasoning_text="ab_reasoning"),
+        LMOutput(text="ba_text", reasoning_text="ba_reasoning"),
+    ]
+
+    _, final_outputs = aggregate_judge_results(outputs, judge_outputs, [True, True])
+
+    assert "llm_reasoning_texts" not in final_outputs[0]

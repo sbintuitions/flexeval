@@ -184,7 +184,6 @@ class LLMScore(Metric):
 
     You can specify the evaluation criteria in `PromptTemplate`.
     The last integer value in the output of the evaluator is used as the evaluation score.
-    If the evaluator returns reasoning content, it is stored as `llm_score_reasoning_text` in the instance details.
 
     Args:
         language_model: An instance of `LanguageModel` to evaluate the output of the model.
@@ -197,6 +196,8 @@ class LLMScore(Metric):
             The category keys are expected to be in extra_info.
         metric_prefix: A prefix to be added to the metric keys in the summary and instance details.
         regex_to_parse_score: A regular expression to parse score.
+        output_reasoning_text: If True, store the evaluator's reasoning content
+            as `llm_score_reasoning_text` in the instance details.
 
     Examples:
         >>> from flexeval import LLMScore, OpenAIChatAPI, Jinja2PromptTemplate
@@ -232,6 +233,7 @@ class LLMScore(Metric):
         category_key: str | list[str] | None = None,
         metric_prefix: str | None = None,
         regex_to_parse_score: str = r"(\d+)",
+        output_reasoning_text: bool = False,
     ) -> None:
         self.language_model = language_model
         self.prompt_template = prompt_template
@@ -241,6 +243,7 @@ class LLMScore(Metric):
         self.category_key = category_key
         self.metric_prefix = f"{metric_prefix}-" if metric_prefix else ""
         self.regex_to_parse_score = regex_to_parse_score
+        self.output_reasoning_text = output_reasoning_text
 
     def evaluate(
         self,
@@ -290,7 +293,7 @@ class LLMScore(Metric):
                 }
                 | (
                     {f"{self.metric_prefix}llm_score_reasoning_text": eval_out.reasoning_text}
-                    if eval_out.reasoning_text
+                    if self.output_reasoning_text
                     else {}
                 )
                 for eval_score, eval_in, eval_out in zip(
@@ -313,7 +316,6 @@ class LLMScore(Metric):
 class ChatLLMScore(Metric):
     """
     A metric that evaluates the output of `LanguageModel.batch_generate_chat_response`.
-    If the evaluator returns reasoning content, it is stored as `llm_score_reasoning_text` in the instance details.
 
     Args:
         language_model: An instance of `LanguageModel` to evaluate the output of the model.
@@ -327,6 +329,8 @@ class ChatLLMScore(Metric):
             The category keys are expected to be in extra_info.
         metric_prefix: A prefix to be added to the metric keys in the summary and instance details.
         regex_to_parse_score: A regular expression to parse score.
+        output_reasoning_text: If True, store the evaluator's reasoning content
+            as `llm_score_reasoning_text` in the instance details.
 
     Examples:
         >>> from flexeval import ChatLLMScore, OpenAIChatAPI, Jinja2PromptTemplate
@@ -364,6 +368,7 @@ class ChatLLMScore(Metric):
         category_key: str | list[str] | None = None,
         metric_prefix: str | None = None,
         regex_to_parse_score: str = r"(\d+)",
+        output_reasoning_text: bool = False,
     ) -> None:
         self.language_model = language_model
         self.prompt_template = prompt_template
@@ -374,6 +379,7 @@ class ChatLLMScore(Metric):
         self.category_key = category_key
         self.metric_prefix = f"{metric_prefix}-" if metric_prefix else ""
         self.regex_to_parse_score = regex_to_parse_score
+        self.output_reasoning_text = output_reasoning_text
 
     def evaluate(
         self,
@@ -421,7 +427,7 @@ class ChatLLMScore(Metric):
                 }
                 | (
                     {f"{self.metric_prefix}llm_score_reasoning_text": eval_out.reasoning_text}
-                    if eval_out.reasoning_text
+                    if self.output_reasoning_text
                     else {}
                 )
                 for eval_score, eval_in, eval_out in zip(

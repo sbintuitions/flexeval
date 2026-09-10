@@ -124,6 +124,7 @@ def test_llm_label_with_reasoning(metric_prefix: str) -> None:
         label_names=["Good", "Neutral", "Bad"],
         label_points=[1.0, 0.5, 0.0],
         metric_prefix=metric_prefix,
+        output_reasoning_text=True,
     )
     metric_output = metric.evaluate(
         lm_outputs=["This is Good."],
@@ -136,8 +137,9 @@ def test_llm_label_with_reasoning(metric_prefix: str) -> None:
 
 
 def test_llm_label_without_reasoning() -> None:
+    """Reasoning is not stored unless `output_reasoning_text` is enabled."""
     metric = LLMLabel(
-        language_model=EchoBackLanguageModel(),
+        language_model=EchoBackLanguageModel(reasoning_text="reasoning"),
         prompt_template=Jinja2PromptTemplate("{{ lm_output }}"),
         label_names=["Good", "Neutral", "Bad"],
         label_points=[1.0, 0.5, 0.0],
@@ -219,6 +221,7 @@ def test_chat_llm_label_with_reasoning(metric_prefix: str) -> None:
         label_names=["Good", "Neutral", "Bad"],
         label_points=[1.0, 0.5, 0.0],
         metric_prefix=metric_prefix,
+        output_reasoning_text=True,
     )
     metric_output = metric.evaluate(
         lm_outputs=["This is Good."],
@@ -231,8 +234,9 @@ def test_chat_llm_label_with_reasoning(metric_prefix: str) -> None:
 
 
 def test_chat_llm_label_without_reasoning() -> None:
+    """Reasoning is not stored unless `output_reasoning_text` is enabled."""
     metric = ChatLLMLabel(
-        language_model=EchoBackLanguageModel(),
+        language_model=EchoBackLanguageModel(reasoning_text="reasoning"),
         prompt_template=Jinja2PromptTemplate("{{ lm_output }}"),
         label_names=["Good", "Neutral", "Bad"],
         label_points=[1.0, 0.5, 0.0],

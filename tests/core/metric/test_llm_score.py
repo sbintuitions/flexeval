@@ -272,6 +272,7 @@ def test_llm_score_with_reasoning(metric_prefix: str) -> None:
         language_model=EchoBackLanguageModel(reasoning_text="reasoning"),
         prompt_template=Jinja2PromptTemplate("{{ lm_output }}"),
         metric_prefix=metric_prefix,
+        output_reasoning_text=True,
     )
     metric_output = metric.evaluate(
         lm_outputs=["This score is 1."],
@@ -284,8 +285,9 @@ def test_llm_score_with_reasoning(metric_prefix: str) -> None:
 
 
 def test_llm_score_without_reasoning() -> None:
+    """Reasoning is not stored unless `output_reasoning_text` is enabled."""
     metric = LLMScore(
-        language_model=EchoBackLanguageModel(),
+        language_model=EchoBackLanguageModel(reasoning_text="reasoning"),
         prompt_template=Jinja2PromptTemplate("{{ lm_output }}"),
     )
     metric_output = metric.evaluate(
@@ -529,6 +531,7 @@ def test_chat_llm_score_with_reasoning(metric_prefix: str) -> None:
         language_model=EchoBackLanguageModel(reasoning_text="reasoning"),
         prompt_template=Jinja2PromptTemplate("{{ lm_output }}"),
         metric_prefix=metric_prefix,
+        output_reasoning_text=True,
     )
     metric_output = metric.evaluate(
         lm_outputs=["This score is 1."],
@@ -541,8 +544,9 @@ def test_chat_llm_score_with_reasoning(metric_prefix: str) -> None:
 
 
 def test_chat_llm_score_without_reasoning() -> None:
+    """Reasoning is not stored unless `output_reasoning_text` is enabled."""
     metric = ChatLLMScore(
-        language_model=EchoBackLanguageModel(),
+        language_model=EchoBackLanguageModel(reasoning_text="reasoning"),
         prompt_template=Jinja2PromptTemplate("{{ lm_output }}"),
     )
     metric_output = metric.evaluate(
