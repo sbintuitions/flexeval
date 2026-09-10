@@ -22,7 +22,7 @@ Flexeval allows you to define a custom benchmark setup easily by configuring the
         parse_input_utterance: "literal_eval",
         preprocessors: [
           {
-            class_path: 'docvqa.preprocessors.ConvertImageToBase64',
+            class_path: 'ConvertImageToBase64',
             init_args: {
               key: 'image',
             },
@@ -43,43 +43,15 @@ In the configuration above, we use `literal_eval` because the template outputs a
 
 ### Preprocessors
 
-The `preprocessors` argument accepts a list of `Preprocessor` instances that sequentially transform each dataset item before prompt generation. In the configuration above, `ConvertImageToBase64` is used to encode image objects into Base64 strings.
+The `preprocessors` argument accepts a list of `Preprocessor` instances that sequentially transform each dataset item before prompt generation. In the configuration above, the built-in `ConvertImageToBase64` encodes image objects into Base64 data URLs under `image_base64`.
 
-For `flexeval` to load this custom preprocessor, create `docvqa/preprocessors.py` and define `ConvertImageToBase64` by extending the base `Preprocessor` class and implementing the `__call__` method:
+Other built-in preprocessors: `ConvertImageListToBase64` (list of images → `images_base64`) and `EnsureMinSize` (upscale tiny images in place).
 
-```python
-import base64
-from io import BytesIO
-from PIL import Image
-from flexeval.core.chat_dataset import Preprocessor
-
-def image_to_base64(image: Image.Image) -> str:
-    """Converts a PIL Image to a base64 string."""
-    buffered = BytesIO()
-    image.save(buffered, format=image.format or "PNG")
-    return base64.b64encode(buffered.getvalue()).decode("utf-8")
-
-class ConvertImageToBase64(Preprocessor):
-    """Convert image to base64 string."""
-
-    key: str
-
-    def __call__(self, data: Data) -> Data:
-        image = data[self.key]
-        if image is None:
-            base64_image = None
-        elif isinstance(image, Image.Image):
-            base64_image = image_to_base64(image)
-        else:
-            raise NotImplementedError(f"Unsupported image type: {type(image)}")
-
-        data[f"{self.key}_base64"] = base64_image
-        return data
-```
+If a benchmark needs a transformation not covered by the built-ins, define a custom preprocessor by extending the base `Preprocessor` class and implementing the `__call__` method, then reference it in the config by its import path (made importable via `PYTHONPATH`).
 
 ## Running the Benchmark
 
-With the benchmark defined and the preprocessor in place, you can now run the evaluation through `flexeval`.
+With the benchmark defined, you can now run the evaluation through `flexeval`.
 
 ```bash
 flexeval_lm \

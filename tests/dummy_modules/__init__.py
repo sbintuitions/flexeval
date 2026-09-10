@@ -6,3 +6,4 @@ from .pairwise_comparison import DummyPairwiseJudge, DummyPairwiseScorer
 from .reward_bench_dataset import DummyRewardBenchDataset
 from .reward_lm import DummyRewardLanguageModel
 from .text_dataset import DummyTextDataset
+from .vlm import DummyVLM
