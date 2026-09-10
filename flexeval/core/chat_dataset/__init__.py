@@ -1,5 +1,6 @@
 from .base import ChatDataset, ChatInstance
 from .chatbot_bench import ChatbotBench
+from .image_preprocessors import ConvertImageListToBase64, ConvertImageToBase64, EnsureMinSize
 from .openai_messages import OpenAIMessagesDataset
 from .sacrebleu_dataset import SacreBleuChatDataset
 from .template_based import HFChatDataset, JsonlChatDataset, Preprocessor, TemplateChatDataset, load_jinja2_template
