@@ -46,6 +46,9 @@ In the configuration above, we use `literal_eval` because the template outputs a
 The `preprocessors` argument accepts a list of `Preprocessor` instances that sequentially transform each dataset item before prompt generation. In the configuration above, the built-in `ConvertImageToBase64` encodes image objects into Base64 data URLs under `image_base64`.
 
 Other built-in preprocessors: `ConvertImageListToBase64` (list of images → `images_base64`) and `EnsureMinSize` (upscale tiny images in place).
+Benchmark-specific text shaping (e.g. normalizing `<image 1>` tags, labeling an options list) belongs in each config's `input_template` instead of new preprocessor classes.
+The filters used there — `regex_replace`, `literal_eval` — are generic string utilities of the shared template environment, not benchmark logic; the benchmark-specific part is only how each config composes them.
+See `flexeval/preset_configs/EvalSetup/en_vision/mmmu.jsonnet` and `ja_vision/jmmmu.jsonnet` for complete examples.
 
 If a benchmark needs a transformation not covered by the built-ins, define a custom preprocessor by extending the base `Preprocessor` class and implementing the `__call__` method, then reference it in the config by its import path (made importable via `PYTHONPATH`).
 
