@@ -4,7 +4,7 @@ from dataclasses import asdict, dataclass
 from enum import Enum
 from typing import Any
 
-from flexeval.core.language_model.base import LanguageModel
+from flexeval.core.language_model.base import LanguageModel, LMOutput
 from flexeval.core.prompt_template.base import PromptTemplate
 from flexeval.core.reward_bench_dataset import RewardBenchInstance
 from flexeval.core.reward_model.base import RewardModel
@@ -40,38 +40,48 @@ def evaluate_model_output(model_output: str, gold_label: PairwiseChoice) -> bool
 
 def aggregate_judge_results(
     outputs: list[dict],
-    judge_outputs: list,
+    judge_outputs: list[LMOutput],
     chosen_is_better_list: list[bool],
+    output_reasoning_text: bool = False,
 ) -> tuple[list[bool], list[dict]]:
     """
     Aggregates the doubled-length `judge_outputs` and `chosen_is_better_list`
     into final results for each individual instance.
 
+    Args:
+        outputs: Per-instance details to merge into the aggregated outputs.
+        judge_outputs: Judge outputs, twice the length of `outputs`.
+        chosen_is_better_list: Whether the chosen answer won, twice the length of `outputs`.
+        output_reasoning_text: If True, add `llm_reasoning_texts` to the aggregated outputs.
+
     Returns:
         final_results: list[bool]
             A list indicating whether each instance is ultimately judged as correct.
+        aggregated_outputs: list[dict]
+            A list of per-instance details.
     """
     aggregated_results: list[bool] = []
     aggregated_outputs: list[dict] = []
 
     for i, output in enumerate(outputs):
-        ab_output_text = judge_outputs[i * 2].text
-        ba_output_text = judge_outputs[i * 2 + 1].text
+        ab_output = judge_outputs[i * 2]
+        ba_output = judge_outputs[i * 2 + 1]
         ab_eval = chosen_is_better_list[i * 2]
         ba_eval = chosen_is_better_list[i * 2 + 1]
 
         consistent = ab_eval == ba_eval
         is_correct = consistent and ab_eval
 
-        aggregated_outputs.append(
-            {
-                "llm_outputs": [ab_output_text, ba_output_text],
-                "evaluation_results": [ab_eval, ba_eval],
-                "consistent": consistent,
-                "is_correct": is_correct,
-                **output,
-            }
-        )
+        aggregated_output = {
+            "llm_outputs": [ab_output.text, ba_output.text],
+            "evaluation_results": [ab_eval, ba_eval],
+            "consistent": consistent,
+            "is_correct": is_correct,
+            **output,
+        }
+        if output_reasoning_text:
+            aggregated_output["llm_reasoning_texts"] = [ab_output.reasoning_text, ba_output.reasoning_text]
+        aggregated_outputs.append(aggregated_output)
         aggregated_results.append(is_correct)
 
     return aggregated_results, aggregated_outputs
@@ -102,6 +112,8 @@ class PairwiseJudgeRewardModel(RewardModel):
                          Be sure to include {{prompt}}, {{answer_a}}, and {{answer_b}}.
         system_message: The system message to prepend to the chat messages.
         gen_kwargs: Generation kwargs for the language model.
+        output_reasoning_text: If True, store the judge's reasoning content
+            as `llm_reasoning_texts` in the outputs.
     """
 
     def __init__(
@@ -110,6 +122,7 @@ class PairwiseJudgeRewardModel(RewardModel):
         prompt_template: PromptTemplate,
         system_message: str | PromptTemplate | None = None,
         gen_kwargs: dict[str, Any] | None = None,
+        output_reasoning_text: bool = False,
     ) -> None:
         if gen_kwargs is None:
             gen_kwargs = {}
@@ -117,6 +130,7 @@ class PairwiseJudgeRewardModel(RewardModel):
         self.prompt_template = prompt_template
         self.system_message = system_message
         self.gen_kwargs = gen_kwargs
+        self.output_reasoning_text = output_reasoning_text
 
     def _create_input_chat_messages_list(self, pairwise_instance: PairwiseInstance) -> list[dict[str, str]]:
         pairwise_instance_asdict = asdict(pairwise_instance)
@@ -182,6 +196,8 @@ class PairwiseJudgeRewardModel(RewardModel):
             msg = "The number of outputs should be twice the number of inputs."
             raise ValueError(msg)
 
-        aggregated_results, aggregated_outputs = aggregate_judge_results(outputs, judge_outputs, chosen_is_better_list)
+        aggregated_results, aggregated_outputs = aggregate_judge_results(
+            outputs, judge_outputs, chosen_is_better_list, self.output_reasoning_text
+        )
 
         return aggregated_results, aggregated_outputs

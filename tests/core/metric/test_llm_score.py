@@ -14,6 +14,15 @@ from flexeval.core.metric.utils import extract_text_from_outputs
 
 
 class EchoBackLanguageModel(LanguageModel):
+    """Echo back the input as the output.
+
+    Args:
+        reasoning_text: If given, returned as the reasoning content of every output.
+    """
+
+    def __init__(self, reasoning_text: str | None = None) -> None:
+        self.reasoning_text = reasoning_text
+
     def complete_text(
         self,
         text_list: list[str],
@@ -21,7 +30,7 @@ class EchoBackLanguageModel(LanguageModel):
         max_new_tokens: int | None = None,
         **kwargs,
     ) -> list[LMOutput]:
-        return [LMOutput(text=text, finish_reason="length") for text in text_list]
+        return [LMOutput(text=text, reasoning_text=self.reasoning_text, finish_reason="length") for text in text_list]
 
     def generate_chat_response(
         self,
@@ -29,7 +38,12 @@ class EchoBackLanguageModel(LanguageModel):
         **kwargs,
     ) -> list[LMOutput]:
         return [
-            LMOutput(text=chat_messages[-1]["content"], finish_reason="length") for chat_messages in chat_messages_list
+            LMOutput(
+                text=chat_messages[-1]["content"],
+                reasoning_text=self.reasoning_text,
+                finish_reason="length",
+            )
+            for chat_messages in chat_messages_list
         ]
 
 
@@ -250,6 +264,37 @@ def test_llm_score_metric_prefix(lm_outputs: list[str | LMOutput], metric_prefix
     for lm_output, instance_detail in zip(extract_text_from_outputs(lm_outputs), metric_output.instance_details):
         assert instance_detail[f"{metric_prefix}llm_score_input"] == lm_output
         assert instance_detail[f"{metric_prefix}llm_score_output"] == lm_output
+
+
+@pytest.mark.parametrize("metric_prefix", ["", "prefix"])
+def test_llm_score_with_reasoning(metric_prefix: str) -> None:
+    metric = LLMScore(
+        language_model=EchoBackLanguageModel(reasoning_text="reasoning"),
+        prompt_template=Jinja2PromptTemplate("{{ lm_output }}"),
+        metric_prefix=metric_prefix,
+        output_reasoning_text=True,
+    )
+    metric_output = metric.evaluate(
+        lm_outputs=["This score is 1."],
+    )
+
+    if metric_prefix:
+        metric_prefix += "-"
+    instance_detail = metric_output.instance_details[0]
+    assert instance_detail[f"{metric_prefix}llm_score_reasoning_text"] == "reasoning"
+
+
+def test_llm_score_without_reasoning() -> None:
+    """Reasoning is not stored unless `output_reasoning_text` is enabled."""
+    metric = LLMScore(
+        language_model=EchoBackLanguageModel(reasoning_text="reasoning"),
+        prompt_template=Jinja2PromptTemplate("{{ lm_output }}"),
+    )
+    metric_output = metric.evaluate(
+        lm_outputs=["This score is 1."],
+    )
+
+    assert "llm_score_reasoning_text" not in metric_output.instance_details[0]
 
 
 @pytest.mark.parametrize(
@@ -478,6 +523,37 @@ def test_chat_llm_score_metric_prefix(lm_outputs: list[str | LMOutput], metric_p
     for lm_output, instance_detail in zip(extract_text_from_outputs(lm_outputs), metric_output.instance_details):
         assert instance_detail[f"{metric_prefix}llm_score_input"] == [{"role": "user", "content": lm_output}]
         assert instance_detail[f"{metric_prefix}llm_score_output"] == lm_output
+
+
+@pytest.mark.parametrize("metric_prefix", ["", "prefix"])
+def test_chat_llm_score_with_reasoning(metric_prefix: str) -> None:
+    metric = ChatLLMScore(
+        language_model=EchoBackLanguageModel(reasoning_text="reasoning"),
+        prompt_template=Jinja2PromptTemplate("{{ lm_output }}"),
+        metric_prefix=metric_prefix,
+        output_reasoning_text=True,
+    )
+    metric_output = metric.evaluate(
+        lm_outputs=["This score is 1."],
+    )
+
+    if metric_prefix:
+        metric_prefix += "-"
+    instance_detail = metric_output.instance_details[0]
+    assert instance_detail[f"{metric_prefix}llm_score_reasoning_text"] == "reasoning"
+
+
+def test_chat_llm_score_without_reasoning() -> None:
+    """Reasoning is not stored unless `output_reasoning_text` is enabled."""
+    metric = ChatLLMScore(
+        language_model=EchoBackLanguageModel(reasoning_text="reasoning"),
+        prompt_template=Jinja2PromptTemplate("{{ lm_output }}"),
+    )
+    metric_output = metric.evaluate(
+        lm_outputs=["This score is 1."],
+    )
+
+    assert "llm_score_reasoning_text" not in metric_output.instance_details[0]
 
 
 def test_prepare_chat_input_for_evaluator() -> None:

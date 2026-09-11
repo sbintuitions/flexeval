@@ -104,6 +104,8 @@ class LLMLabel(Metric):
         category_key: A key to create category-wise mean score.
             The category key is expected to be in extra_info.
         metric_prefix: A prefix to be added to the metric keys in the summary and instance details.
+        output_reasoning_text: If True, store the evaluator's reasoning content
+            as `llm_label_reasoning_text` in the instance details.
 
     Examples:
         >>> from flexeval import OpenAIChatAPI, Jinja2PromptTemplate, LLMLabel
@@ -146,6 +148,7 @@ class LLMLabel(Metric):
         valid_score_range: tuple[int, int] | None = None,
         category_key: str | None = None,
         metric_prefix: str | None = None,
+        output_reasoning_text: bool = False,
     ) -> None:
         self.language_model = language_model
         self.prompt_template = prompt_template
@@ -166,6 +169,7 @@ class LLMLabel(Metric):
         self.valid_score_range = valid_score_range
         self.category_key = category_key
         self.metric_prefix = f"{metric_prefix}-" if metric_prefix else ""
+        self.output_reasoning_text = output_reasoning_text
 
     def evaluate(
         self,
@@ -218,6 +222,11 @@ class LLMLabel(Metric):
                     f"{self.metric_prefix}llm_label_input": eval_in,
                     f"{self.metric_prefix}llm_label_output": eval_out.text,
                 }
+                | (
+                    {f"{self.metric_prefix}llm_label_reasoning_text": eval_out.reasoning_text}
+                    if self.output_reasoning_text
+                    else {}
+                )
                 for eval_label, eval_score, eval_in, eval_out in zip(
                     evaluator_label_list,
                     evaluator_score_list,
@@ -251,6 +260,8 @@ class ChatLLMLabel(Metric):
         category_key: A key to create category-wise mean score.
             The category key is expected to be in extra_info.
         metric_prefix: A prefix to be added to the metric keys in the summary and instance details.
+        output_reasoning_text: If True, store the evaluator's reasoning content
+            as `llm_label_reasoning_text` in the instance details.
 
     Examples:
         >>> from flexeval import ChatLLMScore, OpenAIChatAPI, Jinja2PromptTemplate
@@ -294,6 +305,7 @@ class ChatLLMLabel(Metric):
         disable_tqdm: bool = False,
         category_key: str | None = None,
         metric_prefix: str | None = None,
+        output_reasoning_text: bool = False,
     ) -> None:
         self.language_model = language_model
         self.prompt_template = prompt_template
@@ -314,6 +326,7 @@ class ChatLLMLabel(Metric):
         self.disable_tqdm = disable_tqdm
         self.category_key = category_key
         self.metric_prefix = f"{metric_prefix}-" if metric_prefix else ""
+        self.output_reasoning_text = output_reasoning_text
 
     def evaluate(
         self,
@@ -367,6 +380,11 @@ class ChatLLMLabel(Metric):
                     f"{self.metric_prefix}llm_label_input": eval_in,
                     f"{self.metric_prefix}llm_label_output": eval_out.text,
                 }
+                | (
+                    {f"{self.metric_prefix}llm_label_reasoning_text": eval_out.reasoning_text}
+                    if self.output_reasoning_text
+                    else {}
+                )
                 for eval_label, eval_score, eval_in, eval_out in zip(
                     evaluator_label_list,
                     evaluator_score_list,

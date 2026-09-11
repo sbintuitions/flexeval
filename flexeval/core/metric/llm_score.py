@@ -161,7 +161,7 @@ def generate_evaluations(
         disable=disable_tqdm,
         desc=desc_for_tqdm,
     ) as pbar:
-        evaluator_output_list: list[str] = []
+        evaluator_output_list: list[LMOutput] = []
         for batch_inputs in batch_iter(
             evaluator_input_list,
             batch_size=batch_size,
@@ -196,6 +196,8 @@ class LLMScore(Metric):
             The category keys are expected to be in extra_info.
         metric_prefix: A prefix to be added to the metric keys in the summary and instance details.
         regex_to_parse_score: A regular expression to parse score.
+        output_reasoning_text: If True, store the evaluator's reasoning content
+            as `llm_score_reasoning_text` in the instance details.
 
     Examples:
         >>> from flexeval import LLMScore, OpenAIChatAPI, Jinja2PromptTemplate
@@ -231,6 +233,7 @@ class LLMScore(Metric):
         category_key: str | list[str] | None = None,
         metric_prefix: str | None = None,
         regex_to_parse_score: str = r"(\d+)",
+        output_reasoning_text: bool = False,
     ) -> None:
         self.language_model = language_model
         self.prompt_template = prompt_template
@@ -240,6 +243,7 @@ class LLMScore(Metric):
         self.category_key = category_key
         self.metric_prefix = f"{metric_prefix}-" if metric_prefix else ""
         self.regex_to_parse_score = regex_to_parse_score
+        self.output_reasoning_text = output_reasoning_text
 
     def evaluate(
         self,
@@ -287,6 +291,11 @@ class LLMScore(Metric):
                     f"{self.metric_prefix}llm_score_input": eval_in,
                     f"{self.metric_prefix}llm_score_output": eval_out.text,
                 }
+                | (
+                    {f"{self.metric_prefix}llm_score_reasoning_text": eval_out.reasoning_text}
+                    if self.output_reasoning_text
+                    else {}
+                )
                 for eval_score, eval_in, eval_out in zip(
                     evaluator_score_list,
                     evaluator_input_list,
@@ -320,6 +329,8 @@ class ChatLLMScore(Metric):
             The category keys are expected to be in extra_info.
         metric_prefix: A prefix to be added to the metric keys in the summary and instance details.
         regex_to_parse_score: A regular expression to parse score.
+        output_reasoning_text: If True, store the evaluator's reasoning content
+            as `llm_score_reasoning_text` in the instance details.
 
     Examples:
         >>> from flexeval import ChatLLMScore, OpenAIChatAPI, Jinja2PromptTemplate
@@ -357,6 +368,7 @@ class ChatLLMScore(Metric):
         category_key: str | list[str] | None = None,
         metric_prefix: str | None = None,
         regex_to_parse_score: str = r"(\d+)",
+        output_reasoning_text: bool = False,
     ) -> None:
         self.language_model = language_model
         self.prompt_template = prompt_template
@@ -367,6 +379,7 @@ class ChatLLMScore(Metric):
         self.category_key = category_key
         self.metric_prefix = f"{metric_prefix}-" if metric_prefix else ""
         self.regex_to_parse_score = regex_to_parse_score
+        self.output_reasoning_text = output_reasoning_text
 
     def evaluate(
         self,
@@ -412,6 +425,11 @@ class ChatLLMScore(Metric):
                     f"{self.metric_prefix}llm_score_input": eval_in,
                     f"{self.metric_prefix}llm_score_output": eval_out.text,
                 }
+                | (
+                    {f"{self.metric_prefix}llm_score_reasoning_text": eval_out.reasoning_text}
+                    if self.output_reasoning_text
+                    else {}
+                )
                 for eval_score, eval_in, eval_out in zip(
                     evaluator_score_list,
                     evaluator_input_list,

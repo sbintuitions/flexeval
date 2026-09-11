@@ -9,6 +9,15 @@ from flexeval.core.metric.utils import extract_text_from_outputs
 
 
 class EchoBackLanguageModel(LanguageModel):
+    """Echo back the input as the output.
+
+    Args:
+        reasoning_text: If given, returned as the reasoning content of every output.
+    """
+
+    def __init__(self, reasoning_text: str | None = None) -> None:
+        self.reasoning_text = reasoning_text
+
     def complete_text(
         self,
         text_list: list[str],
@@ -16,14 +25,17 @@ class EchoBackLanguageModel(LanguageModel):
         max_new_tokens: int | None = None,
         **kwargs,
     ) -> list[LMOutput]:
-        return [LMOutput(text=text, finish_reason="length") for text in text_list]
+        return [LMOutput(text=text, reasoning_text=self.reasoning_text, finish_reason="length") for text in text_list]
 
     def generate_chat_response(
         self,
         chat_messages_list: list[list[dict[str, str]]],
         **kwargs,
     ) -> list[LMOutput]:
-        return [LMOutput(text=mes[-1]["content"], finish_reason="length") for mes in chat_messages_list]
+        return [
+            LMOutput(text=mes[-1]["content"], reasoning_text=self.reasoning_text, finish_reason="length")
+            for mes in chat_messages_list
+        ]
 
 
 @pytest.mark.parametrize(
@@ -104,6 +116,41 @@ def test_llm_label(
         assert instance_detail[f"{metric_prefix}llm_label_output"] == lm_output
 
 
+@pytest.mark.parametrize("metric_prefix", ["", "prefix"])
+def test_llm_label_with_reasoning(metric_prefix: str) -> None:
+    metric = LLMLabel(
+        language_model=EchoBackLanguageModel(reasoning_text="reasoning"),
+        prompt_template=Jinja2PromptTemplate("{{ lm_output }}"),
+        label_names=["Good", "Neutral", "Bad"],
+        label_points=[1.0, 0.5, 0.0],
+        metric_prefix=metric_prefix,
+        output_reasoning_text=True,
+    )
+    metric_output = metric.evaluate(
+        lm_outputs=["This is Good."],
+    )
+
+    if metric_prefix:
+        metric_prefix += "-"
+    instance_detail = metric_output.instance_details[0]
+    assert instance_detail[f"{metric_prefix}llm_label_reasoning_text"] == "reasoning"
+
+
+def test_llm_label_without_reasoning() -> None:
+    """Reasoning is not stored unless `output_reasoning_text` is enabled."""
+    metric = LLMLabel(
+        language_model=EchoBackLanguageModel(reasoning_text="reasoning"),
+        prompt_template=Jinja2PromptTemplate("{{ lm_output }}"),
+        label_names=["Good", "Neutral", "Bad"],
+        label_points=[1.0, 0.5, 0.0],
+    )
+    metric_output = metric.evaluate(
+        lm_outputs=["This is Good."],
+    )
+
+    assert "llm_label_reasoning_text" not in metric_output.instance_details[0]
+
+
 @pytest.mark.parametrize(
     ("lm_outputs", "extra_info_list", "expected_summary"),
     [
@@ -164,6 +211,41 @@ def test_chat_llm_label(
     for lm_output, instance_detail in zip(extract_text_from_outputs(lm_outputs), metric_output.instance_details):
         assert instance_detail[f"{metric_prefix}llm_label_input"] == [{"role": "user", "content": lm_output}]
         assert instance_detail[f"{metric_prefix}llm_label_output"] == lm_output
+
+
+@pytest.mark.parametrize("metric_prefix", ["", "prefix"])
+def test_chat_llm_label_with_reasoning(metric_prefix: str) -> None:
+    metric = ChatLLMLabel(
+        language_model=EchoBackLanguageModel(reasoning_text="reasoning"),
+        prompt_template=Jinja2PromptTemplate("{{ lm_output }}"),
+        label_names=["Good", "Neutral", "Bad"],
+        label_points=[1.0, 0.5, 0.0],
+        metric_prefix=metric_prefix,
+        output_reasoning_text=True,
+    )
+    metric_output = metric.evaluate(
+        lm_outputs=["This is Good."],
+    )
+
+    if metric_prefix:
+        metric_prefix += "-"
+    instance_detail = metric_output.instance_details[0]
+    assert instance_detail[f"{metric_prefix}llm_label_reasoning_text"] == "reasoning"
+
+
+def test_chat_llm_label_without_reasoning() -> None:
+    """Reasoning is not stored unless `output_reasoning_text` is enabled."""
+    metric = ChatLLMLabel(
+        language_model=EchoBackLanguageModel(reasoning_text="reasoning"),
+        prompt_template=Jinja2PromptTemplate("{{ lm_output }}"),
+        label_names=["Good", "Neutral", "Bad"],
+        label_points=[1.0, 0.5, 0.0],
+    )
+    metric_output = metric.evaluate(
+        lm_outputs=["This is Good."],
+    )
+
+    assert "llm_label_reasoning_text" not in metric_output.instance_details[0]
 
 
 def test_llm_label_reasoning() -> None:
