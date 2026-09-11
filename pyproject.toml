@@ -15,7 +15,7 @@ flexeval_presets = "flexeval.scripts.flexeval_presets:main"
 
 
 [tool.poetry.dependencies]
-python = ">=3.10,<3.13"  # set version bound because we get "Unable to find installation candidates" with torch 2.5.1
+python = ">=3.10,<3.16"  # set version bound because we get "Unable to find installation candidates" with torch 2.5.1
 transformers = {extras = ["ja", "sentencepiece", "torch"], version = ">=5.5.3,<6"}
 datasets = "^2.14.6"
 evaluate = "^0.4.6"  # 0.4.1-0.4.5 call huggingface_hub's removed `HfFolder` API and break with huggingface_hub>=1.0
