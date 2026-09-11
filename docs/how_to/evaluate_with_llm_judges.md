@@ -58,6 +58,8 @@ You can check the output of the evaluator LLM in the `llm_score_output` field.
 head -n 1 results/mt-en-gpt3.5-turbo/eval_by_gpt/outputs.jsonl | jq -r ".llm_output"
 ```
 
+To also save the judge's reasoning content, set `output_reasoning_text` to `true` in the metric config. The reasoning is then stored in the `llm_score_reasoning_text` field. This requires a judge that returns reasoning content, e.g., by setting `--reasoning-parser` in vLLM serve, or `reasoning_parser` in `HuggingFaceLM` and `VLLM`.
+
 !!! info
     `flexeval_file` just runs the same evaluation as `flexeval_lm` but with the given file.
     So, theoretically, you can perform the same evaluation with `flexeval_lm` in one go:

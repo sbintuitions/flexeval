@@ -1,6 +1,7 @@
 import pytest
 
 from flexeval import Jinja2PromptTemplate
+from flexeval.core.language_model.base import LMOutput
 from flexeval.core.reward_bench_dataset import RewardBenchInstance
 from flexeval.core.reward_model.pairwise_judge_reward_model import (
     PairwiseChoice,
@@ -54,13 +55,6 @@ def test_pairwise_judge_reward_model(num_samples: int) -> None:
     assert not any(final_results), "All evaluation results should be False"
 
 
-class _MockOut:
-    """dummy judge_output element with text field"""
-
-    def __init__(self, text: str) -> None:
-        self.text = text
-
-
 @pytest.mark.parametrize(
     ("pairs", "expected_finals", "expected_consistencies"),
     [
@@ -83,8 +77,8 @@ def test_aggregate_multiple_instances(pairs: list, expected_finals: list, expect
     judge_outputs = []
     chosen_is_better_list = []
     for i, (ab_eval, ba_eval) in enumerate(pairs):
-        judge_outputs.append(_MockOut(f"ab_text_{i}"))
-        judge_outputs.append(_MockOut(f"ba_text_{i}"))
+        judge_outputs.append(LMOutput(text=f"ab_text_{i}"))
+        judge_outputs.append(LMOutput(text=f"ba_text_{i}"))
         chosen_is_better_list.extend([ab_eval, ba_eval])
 
     final_results, final_outputs = aggregate_judge_results(outputs, judge_outputs, chosen_is_better_list)
@@ -95,3 +89,29 @@ def test_aggregate_multiple_instances(pairs: list, expected_finals: list, expect
         assert final_outputs[i]["is_correct"] == expected_finals[i]
         assert final_outputs[i]["llm_outputs"] == [f"ab_text_{i}", f"ba_text_{i}"]
         assert final_outputs[i]["evaluation_results"] == list(pairs[i])
+        assert "llm_reasoning_texts" not in final_outputs[i]
+
+
+def test_aggregate_judge_results_with_reasoning() -> None:
+    outputs = [{"llm_inputs": ["ab", "ba"]}]
+    judge_outputs = [
+        LMOutput(text="ab_text", reasoning_text="ab_reasoning"),
+        LMOutput(text="ba_text"),
+    ]
+
+    _, final_outputs = aggregate_judge_results(outputs, judge_outputs, [True, True], output_reasoning_text=True)
+
+    assert final_outputs[0]["llm_reasoning_texts"] == ["ab_reasoning", None]
+
+
+def test_aggregate_judge_results_without_reasoning() -> None:
+    """Reasoning is not stored unless `output_reasoning_text` is enabled."""
+    outputs = [{"llm_inputs": ["ab", "ba"]}]
+    judge_outputs = [
+        LMOutput(text="ab_text", reasoning_text="ab_reasoning"),
+        LMOutput(text="ba_text", reasoning_text="ba_reasoning"),
+    ]
+
+    _, final_outputs = aggregate_judge_results(outputs, judge_outputs, [True, True])
+
+    assert "llm_reasoning_texts" not in final_outputs[0]
