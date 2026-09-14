@@ -28,6 +28,9 @@ COPY --from=build /tmp/requirements.txt /code/requirements.txt
 RUN pip install --no-cache-dir -r /code/requirements.txt
 RUN python -m unidic download  # required for fugashi
 
+# uv/uvx: used by VLLMServeLM to run `vllm serve` in an isolated environment when `vllm_version` is set.
+RUN pip install --no-cache-dir uv
+
 # アプリケーションのコードをコピー
 
 COPY docs /app/docs
