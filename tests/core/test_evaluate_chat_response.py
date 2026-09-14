@@ -11,7 +11,7 @@ from flexeval.core.evaluate_chat_response import (
     evaluate_chat_response,
     execute_conversation_flow,
 )
-from flexeval.core.few_shot_generator import RandomFewShotGenerator
+from flexeval.core.few_shot_generator import FixedFewShotGenerator, RandomFewShotGenerator
 from flexeval.core.metric import FinishReasonCount, ToolCallCount
 from flexeval.core.string_processor import StringProcessor
 from tests.dummy_modules import (
@@ -181,6 +181,41 @@ def test_add_few_shot_messages_to_chat_instance() -> None:
     # Original user message should still be present at the end
     assert chat_instance.messages[-1]["role"] == "user"
     assert chat_instance.messages[-1]["content"] == "Hello"
+
+
+def test_evaluate_chat_response_does_not_mutate_cached_instances_with_few_shot() -> None:
+    cached_instance = ChatInstance(messages=[{"role": "user", "content": "Hello"}], references=["Hi"])
+    eval_dataset = [cached_instance]
+    few_shot_generator = FixedFewShotGenerator(
+        instance_class="ChatInstance",
+        instance_params=[
+            {
+                "messages": [{"role": "user", "content": "Example question"}],
+                "references": ["Example answer"],
+            }
+        ],
+    )
+
+    first_metrics, first_outputs = evaluate_chat_response(
+        language_model=DummyLanguageModel(),
+        gen_kwargs={},
+        eval_dataset=eval_dataset,
+        few_shot_generator=few_shot_generator,
+        metrics=[FinishReasonCount()],
+        batch_size=1,
+    )
+    second_metrics, second_outputs = evaluate_chat_response(
+        language_model=DummyLanguageModel(),
+        gen_kwargs={},
+        eval_dataset=eval_dataset,
+        few_shot_generator=few_shot_generator,
+        metrics=[FinishReasonCount()],
+        batch_size=1,
+    )
+
+    assert cached_instance.messages == [{"role": "user", "content": "Hello"}]
+    assert first_metrics == second_metrics
+    assert first_outputs == second_outputs
 
 
 @pytest.mark.parametrize("batch_size", [1, 2])
