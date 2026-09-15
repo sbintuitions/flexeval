@@ -170,7 +170,9 @@ class HFChatDataset(TemplateChatDataset):
         path: The path to the Hugging Face dataset.
         split: The split of the dataset.
         input_template: A Jinja2 template for the user input.
-        subset: The subset of the dataset.
+        subset: The subset of the dataset. If a list is given, all subsets are
+            loaded and concatenated, and each item gains a "subset" key with
+            its subset name (unless the column already exists).
         dataset_kwargs: The keyword arguments to pass to the Hugging Face dataset.
     """
 
@@ -179,7 +181,7 @@ class HFChatDataset(TemplateChatDataset):
         path: str,
         split: str,
         input_template: str | PathLike[str],
-        subset: str | None = None,
+        subset: str | list[str] | None = None,
         dataset_kwargs: dict[str, Any] | None = None,
         reference_template: str | PathLike[str] | None = None,
         reference_list_template: str | PathLike[str] | None = None,
@@ -193,8 +195,17 @@ class HFChatDataset(TemplateChatDataset):
         preprocessors: list[Preprocessor] | None = None,
     ) -> None:
         dataset_kwargs = dataset_kwargs or {}
-        dataset = datasets.load_dataset(path, name=subset, split=split, **dataset_kwargs)
-        items = [dict(item) for item in dataset]
+        if isinstance(subset, list):
+            items = []
+            for subset_name in subset:
+                dataset = datasets.load_dataset(path, name=subset_name, split=split, **dataset_kwargs)
+                for item in dataset:
+                    item_dict = dict(item)
+                    item_dict.setdefault("subset", subset_name)
+                    items.append(item_dict)
+        else:
+            dataset = datasets.load_dataset(path, name=subset, split=split, **dataset_kwargs)
+            items = [dict(item) for item in dataset]
 
         super().__init__(
             items=items,
