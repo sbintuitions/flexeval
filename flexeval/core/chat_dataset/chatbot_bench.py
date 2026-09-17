@@ -106,9 +106,13 @@ class ChatbotBench(ChatDataset):
         category = self._id_to_category[i]
         references: list[str] = []
         if category in self.need_ref_categories:
-            references = self._references_dict.get(question_id, [])
+            references_for_turns = self._references_dict.get(question_id, [])
+            num_user_messages = sum(message["role"] == "user" for message in self._messages_dict[question_id])
+            reference_index = num_user_messages - 1
+            if 0 <= reference_index < len(references_for_turns):
+                references = [references_for_turns[reference_index]]
         return ChatInstance(
-            self._messages_dict[question_id],
+            list(self._messages_dict[question_id]),
             tools=self._tools_dict[question_id],
             references=references,
             extra_info={"category": category},
