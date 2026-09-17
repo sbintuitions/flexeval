@@ -9,7 +9,7 @@
       
       
       
-        <link rel="prev" href="../en_perplexity/">
+        <link rel="prev" href="../en_vision/">
       
       
         <link rel="next" href="../ja_generation/">
@@ -644,6 +644,28 @@
                 
   
   
+  
+  
+    <li class="md-nav__item">
+      <a href="../en_vision/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    En vision
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
     
   
   
@@ -709,6 +731,25 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#jamcqa_chat" class="md-nav__link">
+    <span class="md-ellipsis">
+      jamcqa_chat
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#jamc-qa-for-instructionchat-models" class="md-nav__link">
+    <span class="md-ellipsis">
+      JamC-QA (for instruction/chat models)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="JamC-QA (for instruction/chat models)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
   <a href="#mgsm_ja_chat" class="md-nav__link">
     <span class="md-ellipsis">
       mgsm_ja_chat
@@ -716,8 +757,8 @@
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
+        
+          <li class="md-nav__item">
   <a href="#mt-ja" class="md-nav__link">
     <span class="md-ellipsis">
       mt-ja
@@ -725,8 +766,8 @@
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
+        
+          <li class="md-nav__item">
   <a href="#rakuda-v2-ja" class="md-nav__link">
     <span class="md-ellipsis">
       rakuda-v2-ja
@@ -734,13 +775,18 @@
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
+        
+          <li class="md-nav__item">
   <a href="#vicuna-ja" class="md-nav__link">
     <span class="md-ellipsis">
       vicuna-ja
     </span>
   </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -787,6 +833,28 @@
   
   <span class="md-ellipsis">
     Ja multiple choice
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ja_vision/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Ja vision
     
   </span>
   
@@ -1434,6 +1502,25 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#jamcqa_chat" class="md-nav__link">
+    <span class="md-ellipsis">
+      jamcqa_chat
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#jamc-qa-for-instructionchat-models" class="md-nav__link">
+    <span class="md-ellipsis">
+      JamC-QA (for instruction/chat models)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="JamC-QA (for instruction/chat models)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
   <a href="#mgsm_ja_chat" class="md-nav__link">
     <span class="md-ellipsis">
       mgsm_ja_chat
@@ -1441,8 +1528,8 @@
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
+        
+          <li class="md-nav__item">
   <a href="#mt-ja" class="md-nav__link">
     <span class="md-ellipsis">
       mt-ja
@@ -1450,8 +1537,8 @@
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
+        
+          <li class="md-nav__item">
   <a href="#rakuda-v2-ja" class="md-nav__link">
     <span class="md-ellipsis">
       rakuda-v2-ja
@@ -1459,13 +1546,18 @@
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
+        
+          <li class="md-nav__item">
   <a href="#vicuna-ja" class="md-nav__link">
     <span class="md-ellipsis">
       vicuna-ja
     </span>
   </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -1484,8 +1576,6 @@
                   
 
 
-
-  <h1>Ja chat</h1>
 
 <h2 id="aio_chat">aio_chat<a class="headerlink" href="#aio_chat" title="Permanent link">&para;</a></h2>
 <p>AI王 (AI king) is a Japanese quiz dataset developed for research and competition purposes.
@@ -1561,6 +1651,58 @@ This is a evaluation setup for chat LLMs.</p>
       { class_path: &#39;OutputLengthStats&#39; },
     ],
     gen_kwargs: { max_new_tokens: 1024 },
+    batch_size: 4,
+  },
+}
+</code></pre></div></li>
+</ul>
+<h2 id="jamcqa_chat">jamcqa_chat<a class="headerlink" href="#jamcqa_chat" title="Permanent link">&para;</a></h2>
+<h1 id="jamc-qa-for-instructionchat-models">JamC-QA (for instruction/chat models)<a class="headerlink" href="#jamc-qa-for-instructionchat-models" title="Permanent link">&para;</a></h1>
+<p>This benchmark evaluates knowledge specific to Japan through multiple-choice questions.
+It covers eight categories: culture, custom, regional_identity, geography, history, government, law, and healthcare.
+Achieving high performance requires broad and detailed understanding of Japan across these categories.</p>
+<p>Although this benchmark was originally designed for pre-trained models, this configuration is provided for instruction/chat models.
+We prompt the model to generate responses in a zero-shot setting and calculate the exact-match rate.</p>
+<p>References:</p>
+<ul>
+<li><a href="https://huggingface.co/datasets/sbintuitions/JamC-QA">Hugging Face Dataset</a>
+<div class="highlight"><pre><span></span><code>{
+  class_path: &#39;ChatResponse&#39;,
+  init_args: {
+    eval_dataset: {
+      class_path: &#39;HFChatDataset&#39;,
+      init_args: {
+        path: &#39;sbintuitions/JamC-QA&#39;,
+        input_template: std.stripChars(
+          |||
+            以下の質問に回答してください。最後に「答え: (E)」のように、「答え: (ここにどの選択肢を選んだか書く)」というフォーマットで回答してください。
+
+            {{question}}
+
+            (A) {{ choice0 }}
+            (B) {{ choice1 }}
+            (C) {{ choice2 }}
+            (D) {{ choice3 }}
+          |||, &#39;\n&#39;
+        ),
+        reference_template: &#39;{% set choices = [&quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;D&quot;] %}{{ choices[answer_index] }}&#39;,
+        split: &#39;test&#39;,
+        subset: &#39;v1.0&#39;
+      },
+    },
+    metrics: [
+      {
+        class_path: &#39;ExactMatch&#39;,
+        init_args: {
+          lm_output_processor: [
+            { class_path: &#39;RegexExtractor&#39;, init_args: { pattern: &#39;^(?:.*&lt;/think&gt;\\s*)?(.*)$&#39; } },
+            { class_path: &#39;RegexExtractor&#39;, init_args: { pattern: &#39;答え: \\((.)\\)&#39; } },
+          ],
+        },
+      },
+      { class_path: &#39;flexeval.core.metric.repetition_n.RepetitionN&#39; },
+    ],
+    gen_kwargs: { max_new_tokens: 8192 },
     batch_size: 4,
   },
 }

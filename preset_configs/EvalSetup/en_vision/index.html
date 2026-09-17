@@ -9,21 +9,25 @@
       
       
       
+        <link rel="prev" href="../en_perplexity/">
       
       
-      <link rel="icon" href="../../assets/images/favicon.png">
+        <link rel="next" href="../ja_chat/">
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.5">
     
     
       
-        <title>Evaluate Multimodal Benchmarks - flexeval</title>
+        <title>En vision - flexeval</title>
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.8608ea7d.min.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.8608ea7d.min.css">
       
         
-        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.06af60db.min.css">
       
       
 
@@ -42,9 +46,9 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+      <link rel="stylesheet" href="../../../assets/_mkdocstrings.css">
     
-    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -68,7 +72,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#evaluate-multimodal-benchmarks" class="md-skip">
+        <a href="#mmmu" class="md-skip">
           Skip to content
         </a>
       
@@ -84,7 +88,7 @@
 
 <header class="md-header md-header--shadow" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../.." title="flexeval" class="md-header__button md-logo" aria-label="flexeval" data-md-component="logo">
+    <a href="../../.." title="flexeval" class="md-header__button md-logo" aria-label="flexeval" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -104,7 +108,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Evaluate Multimodal Benchmarks
+              En vision
             
           </span>
         </div>
@@ -179,7 +183,7 @@
 
 <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../.." title="flexeval" class="md-nav__button md-logo" aria-label="flexeval" data-md-component="logo">
+    <a href="../../.." title="flexeval" class="md-nav__button md-logo" aria-label="flexeval" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -197,7 +201,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../.." class="md-nav__link">
+      <a href="../../.." class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -218,7 +222,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../installation/" class="md-nav__link">
+      <a href="../../../installation/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -239,7 +243,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../getting_started/" class="md-nav__link">
+      <a href="../../../getting_started/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -260,7 +264,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../configuration_guide/" class="md-nav__link">
+      <a href="../../../configuration_guide/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -293,7 +297,7 @@
           
           
           <div class="md-nav__link md-nav__container">
-            <a href="../" class="md-nav__link ">
+            <a href="../../../how_to/" class="md-nav__link ">
               
   
   <span class="md-ellipsis">
@@ -325,7 +329,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../configure_few_shot_examples/" class="md-nav__link">
+      <a href="../../../how_to/configure_few_shot_examples/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -347,7 +351,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../evaluate_with_llm_judges/" class="md-nav__link">
+      <a href="../../../how_to/evaluate_with_llm_judges/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -369,7 +373,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../implement_your_own_module/" class="md-nav__link">
+      <a href="../../../how_to/implement_your_own_module/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -398,7 +402,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../design_principles/" class="md-nav__link">
+      <a href="../../../design_principles/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -416,22 +420,24 @@
       
   
   
+    
   
   
+  
     
     
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" checked>
         
           
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../preset_configs/" class="md-nav__link ">
+            <a href="../../" class="md-nav__link ">
               
   
   <span class="md-ellipsis">
@@ -449,7 +455,7 @@
             
           </div>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_7">
             <span class="md-nav__icon md-icon"></span>
             Preset Configs
@@ -460,22 +466,24 @@
                 
   
   
+    
   
   
+  
     
     
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_1" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_1" checked>
         
           
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../preset_configs/EvalSetup/" class="md-nav__link ">
+            <a href="../" class="md-nav__link ">
               
   
   <span class="md-ellipsis">
@@ -493,7 +501,7 @@
             
           </div>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_1_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_1_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_7_1">
             <span class="md-nav__icon md-icon"></span>
             EvalSetup
@@ -507,7 +515,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../preset_configs/EvalSetup/code_chat/" class="md-nav__link">
+      <a href="../code_chat/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -529,7 +537,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../preset_configs/EvalSetup/code_generation/" class="md-nav__link">
+      <a href="../code_generation/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -551,7 +559,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../preset_configs/EvalSetup/en_chat/" class="md-nav__link">
+      <a href="../en_chat/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -573,7 +581,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../preset_configs/EvalSetup/en_generation/" class="md-nav__link">
+      <a href="../en_generation/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -595,7 +603,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../preset_configs/EvalSetup/en_multiple_choice/" class="md-nav__link">
+      <a href="../en_multiple_choice/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -617,7 +625,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../preset_configs/EvalSetup/en_perplexity/" class="md-nav__link">
+      <a href="../en_perplexity/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -636,10 +644,29 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../../preset_configs/EvalSetup/en_vision/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    En vision
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   <span class="md-ellipsis">
@@ -649,6 +676,33 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#mmmu" class="md-nav__link">
+    <span class="md-ellipsis">
+      mmmu
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -661,7 +715,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../preset_configs/EvalSetup/ja_chat/" class="md-nav__link">
+      <a href="../ja_chat/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -683,7 +737,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../preset_configs/EvalSetup/ja_generation/" class="md-nav__link">
+      <a href="../ja_generation/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -705,7 +759,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../preset_configs/EvalSetup/ja_multiple_choice/" class="md-nav__link">
+      <a href="../ja_multiple_choice/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -727,7 +781,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../preset_configs/EvalSetup/ja_vision/" class="md-nav__link">
+      <a href="../ja_vision/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -749,7 +803,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../preset_configs/EvalSetup/translation/" class="md-nav__link">
+      <a href="../translation/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -771,7 +825,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../preset_configs/EvalSetup/translation_chat/" class="md-nav__link">
+      <a href="../translation_chat/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -801,7 +855,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../preset_configs/Metric/" class="md-nav__link">
+      <a href="../../Metric/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -823,7 +877,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../preset_configs/PairwiseJudge/" class="md-nav__link">
+      <a href="../../PairwiseJudge/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -864,7 +918,7 @@
           
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../api_reference/" class="md-nav__link ">
+            <a href="../../../api_reference/" class="md-nav__link ">
               
   
   <span class="md-ellipsis">
@@ -896,7 +950,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../api_reference/ChatDataset/" class="md-nav__link">
+      <a href="../../../api_reference/ChatDataset/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -918,7 +972,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../api_reference/EvalSetup/" class="md-nav__link">
+      <a href="../../../api_reference/EvalSetup/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -940,7 +994,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../api_reference/FewShotGenerator/" class="md-nav__link">
+      <a href="../../../api_reference/FewShotGenerator/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -962,7 +1016,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../api_reference/FunctionToolCall/" class="md-nav__link">
+      <a href="../../../api_reference/FunctionToolCall/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -984,7 +1038,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../api_reference/GenerationDataset/" class="md-nav__link">
+      <a href="../../../api_reference/GenerationDataset/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1006,7 +1060,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../api_reference/HFMultipleChoiceDataset/" class="md-nav__link">
+      <a href="../../../api_reference/HFMultipleChoiceDataset/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1028,7 +1082,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../api_reference/HFRewardBenchDataset/" class="md-nav__link">
+      <a href="../../../api_reference/HFRewardBenchDataset/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1050,7 +1104,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../api_reference/LMOutput/" class="md-nav__link">
+      <a href="../../../api_reference/LMOutput/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1072,7 +1126,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../api_reference/MatchMaker/" class="md-nav__link">
+      <a href="../../../api_reference/MatchMaker/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1094,7 +1148,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../api_reference/Metric/" class="md-nav__link">
+      <a href="../../../api_reference/Metric/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1116,7 +1170,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../api_reference/PairwiseJudge/" class="md-nav__link">
+      <a href="../../../api_reference/PairwiseJudge/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1138,7 +1192,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../api_reference/PairwiseScorer/" class="md-nav__link">
+      <a href="../../../api_reference/PairwiseScorer/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1160,7 +1214,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../api_reference/PromptTemplate/" class="md-nav__link">
+      <a href="../../../api_reference/PromptTemplate/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1182,7 +1236,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../api_reference/Reasoning/" class="md-nav__link">
+      <a href="../../../api_reference/Reasoning/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1204,7 +1258,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../api_reference/ResultRecorder/" class="md-nav__link">
+      <a href="../../../api_reference/ResultRecorder/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1226,7 +1280,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../api_reference/RewardModel/" class="md-nav__link">
+      <a href="../../../api_reference/RewardModel/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1248,7 +1302,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../api_reference/StringProcessor/" class="md-nav__link">
+      <a href="../../../api_reference/StringProcessor/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1270,7 +1324,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../api_reference/TextDataset/" class="md-nav__link">
+      <a href="../../../api_reference/TextDataset/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1292,7 +1346,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../api_reference/Tokenizer/" class="md-nav__link">
+      <a href="../../../api_reference/Tokenizer/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1314,7 +1368,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../api_reference/utils/" class="md-nav__link">
+      <a href="../../../api_reference/utils/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1353,8 +1407,6 @@
   
   
   
-    
-  
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
@@ -1363,18 +1415,9 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#defining-the-multimodal-benchmark" class="md-nav__link">
+  <a href="#mmmu" class="md-nav__link">
     <span class="md-ellipsis">
-      Defining the Multimodal Benchmark
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#running-the-benchmark" class="md-nav__link">
-    <span class="md-ellipsis">
-      Running the Benchmark
+      mmmu
     </span>
   </a>
   
@@ -1396,57 +1439,107 @@
 
 
 
-<h1 id="evaluate-multimodal-benchmarks">Evaluate Multimodal Benchmarks<a class="headerlink" href="#evaluate-multimodal-benchmarks" title="Permanent link">&para;</a></h1>
-<p>In this guide, we will walk you through the process of evaluating a Multimodal Language Model (MLM) on a multimodal benchmark using flexeval.
-We will take the benchmark DocVQA as an example and evaluate <code>Sarashina2.2-Vision-3B</code> on it.</p>
-<h2 id="defining-the-multimodal-benchmark">Defining the Multimodal Benchmark<a class="headerlink" href="#defining-the-multimodal-benchmark" title="Permanent link">&para;</a></h2>
-<p>Flexeval allows you to define a custom benchmark setup easily by configuring the <code>HFChatDataset</code> class. In this example, we showcase how to do this through a jsonnet configuration file (<code>docvqa.jsonnet</code>) as follows:</p>
-<div class="highlight"><pre><span></span><code><span class="p">{</span>
-<span class="w">  </span><span class="nv">class_path</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;ChatResponse&#39;</span><span class="p">,</span>
-<span class="w">  </span><span class="nv">init_args</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="nv">eval_dataset</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="nv">class_path</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;HFChatDataset&#39;</span><span class="p">,</span>
-<span class="w">      </span><span class="nv">init_args</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="nv">path</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;lmms-lab/DocVQA&#39;</span><span class="p">,</span>
-<span class="w">        </span><span class="nv">split</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;validation&#39;</span><span class="p">,</span>
-<span class="w">        </span><span class="nv">subset</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;DocVQA&#39;</span><span class="p">,</span>
-<span class="w">        </span><span class="nv">input_template</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;[{ &quot;type&quot;: &quot;image_url&quot;, &quot;image_url&quot;: {&quot;url&quot;: &quot;{{ image_base64 }}&quot;}}, { &quot;type&quot;: &quot;text&quot;, &quot;text&quot;: &quot;&quot;&quot;{{ question }}</span><span class="se">\n</span><span class="s">Answer the question using a single word or phrase.&quot;&quot;&quot;},]&#39;</span><span class="p">,</span>
-<span class="w">        </span><span class="nv">reference_list_template</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;{{ answers }}&#39;</span><span class="p">,</span>
-<span class="w">        </span><span class="nv">parse_input_utterance</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;literal_eval&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nv">preprocessors</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">          </span><span class="p">{</span>
-<span class="w">            </span><span class="nv">class_path</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;ConvertImageToBase64&#39;</span><span class="p">,</span>
-<span class="w">            </span><span class="nv">init_args</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">              </span><span class="nv">key</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;image&#39;</span><span class="p">,</span>
-<span class="w">            </span><span class="p">},</span>
-<span class="w">          </span><span class="p">},</span>
-<span class="w">        </span><span class="p">],</span>
-<span class="w">      </span><span class="p">},</span>
-<span class="w">    </span><span class="p">},</span>
-<span class="w">    </span><span class="nv">metrics</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">      </span><span class="p">{</span><span class="w"> </span><span class="nv">class_path</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;ExactMatch&#39;</span><span class="w"> </span><span class="p">},</span>
-<span class="w">    </span><span class="p">],</span>
-<span class="w">  </span><span class="p">},</span>
-<span class="p">}</span>
-</code></pre></div>
-<p>Multimodal Language Models generally require structured input. The <code>HFChatDataset</code> templates output raw strings by default, and allows specifying the <code>parse_input_utterance</code> argument to convert them into these required structures. Accepted values are <code>literal_eval</code> (for <code>ast.literal_eval</code>), <code>json_loads</code> (for <code>json.loads</code>), or <code>None</code>.</p>
-<p>In the configuration above, we use <code>literal_eval</code> because the template outputs a Python literal string rather than strict JSON. This safely evaluates the string directly into the Python list the model expects.</p>
-<h3 id="preprocessors">Preprocessors<a class="headerlink" href="#preprocessors" title="Permanent link">&para;</a></h3>
-<p>The <code>preprocessors</code> argument accepts a list of <code>Preprocessor</code> instances that sequentially transform each dataset item before prompt generation. In the configuration above, the built-in <code>ConvertImageToBase64</code> encodes image objects into Base64 data URLs under <code>image_base64</code>.</p>
-<p>Other built-in preprocessors: <code>ConvertImageListToBase64</code> (list of images → <code>images_base64</code>) and <code>EnsureMinSize</code> (upscale tiny images in place).
-Benchmark-specific text shaping (e.g. normalizing <code>&lt;image 1&gt;</code> tags, labeling an options list) belongs in each config's <code>input_template</code> instead of new preprocessor classes.
-The filters used there — <code>regex_replace</code>, <code>literal_eval</code> — are generic string utilities of the shared template environment, not benchmark logic; the benchmark-specific part is only how each config composes them.
-See <code>flexeval/preset_configs/EvalSetup/en_vision/mmmu.jsonnet</code> and <code>ja_vision/jmmmu.jsonnet</code> for complete examples.</p>
-<p>If a benchmark needs a transformation not covered by the built-ins, define a custom preprocessor by extending the base <code>Preprocessor</code> class and implementing the <code>__call__</code> method, then reference it in the config by its import path (made importable via <code>PYTHONPATH</code>).</p>
-<h2 id="running-the-benchmark">Running the Benchmark<a class="headerlink" href="#running-the-benchmark" title="Permanent link">&para;</a></h2>
-<p>With the benchmark defined, you can now run the evaluation through <code>flexeval</code>.</p>
-<div class="highlight"><pre><span></span><code>flexeval_lm<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--language_model<span class="w"> </span>HuggingFaceLM<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--language_model.model<span class="w"> </span><span class="s2">&quot;sbintuitions/sarashina2.2-vision-3b&quot;</span><span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--eval_setup<span class="w"> </span>docvqa.jsonnet<span class="se">\</span>
-<span class="w">  </span>--save_dir<span class="w"> </span>results/sarashina/docvqa
-</code></pre></div>
-<p>This command evaluates the <code>Sarashina2.2-Vision-3B</code> model on the DocVQA benchmark and saves the results to <code>results/sarashina/docvqa</code>.</p>
+  <h1>En vision</h1>
+
+<h2 id="mmmu">mmmu<a class="headerlink" href="#mmmu" title="Permanent link">&para;</a></h2>
+<p>MMMU (Massive Multi-discipline Multimodal Understanding) is a benchmark of
+college-level multiple-choice questions that require reasoning over images
+(diagrams, charts, photographs, ...) across 30 subjects.</p>
+<p>This preset evaluates the multiple-choice questions of all 30 subjects on the
+<code>validation</code> split (answers on the <code>test</code> split are withheld). Scoring is
+deterministic: <code>last_choice_exact_match</code> extracts the last
+mentioned option letter from the response and compares it with the reference
+letter; responses without an extractable letter count as wrong.</p>
+<p>References:</p>
+<ul>
+<li><a href="https://huggingface.co/datasets/MMMU/MMMU">Hugging Face Dataset</a></li>
+<li><a href="https://arxiv.org/abs/2311.16502">MMMU: A Massive Multi-discipline Multimodal Understanding and Reasoning Benchmark for Expert AGI</a>
+<div class="highlight"><pre><span></span><code>local subjects = [
+  &#39;Accounting&#39;, &#39;Agriculture&#39;, &#39;Architecture_and_Engineering&#39;, &#39;Art&#39;, &#39;Art_Theory&#39;,
+  &#39;Basic_Medical_Science&#39;, &#39;Biology&#39;, &#39;Chemistry&#39;, &#39;Clinical_Medicine&#39;, &#39;Computer_Science&#39;,
+  &#39;Design&#39;, &#39;Diagnostics_and_Laboratory_Medicine&#39;, &#39;Economics&#39;, &#39;Electronics&#39;, &#39;Energy_and_Power&#39;,
+  &#39;Finance&#39;, &#39;Geography&#39;, &#39;History&#39;, &#39;Literature&#39;, &#39;Manage&#39;,
+  &#39;Marketing&#39;, &#39;Materials&#39;, &#39;Math&#39;, &#39;Mechanical_Engineering&#39;, &#39;Music&#39;,
+  &#39;Pharmacy&#39;, &#39;Physics&#39;, &#39;Psychology&#39;, &#39;Public_Health&#39;, &#39;Sociology&#39;,
+];
+
+{
+  class_path: &#39;ChatResponse&#39;,
+  init_args: {
+    eval_dataset: {
+      class_path: &#39;HFChatDataset&#39;,
+      init_args: {
+        path: &#39;MMMU/MMMU&#39;,
+        subset: subjects,
+        split: &#39;validation&#39;,
+        keep_conditions: {
+          &#39;{{ question_type }}&#39;: &#39;multiple-choice&#39;,
+        },
+        input_template: std.stripChars(|||
+          {%- set image_list = [
+              image_1_base64,
+              image_2_base64,
+              image_3_base64,
+              image_4_base64,
+              image_5_base64,
+              image_6_base64,
+              image_7_base64
+          ] -%}
+          [
+          {%- for image_base64 in image_list if image_base64 %}
+          {&quot;type&quot;: &quot;image_url&quot;, &quot;image_url&quot;: {&quot;url&quot;: {{ image_base64 | tojson }} }},
+          {%- endfor %}
+          { &quot;type&quot;: &quot;text&quot;, &quot;text&quot;: r&quot;&quot;&quot;{{ question | regex_replace(&#39;&lt;image \d&gt;&#39;, &#39;&lt;image&gt;&#39;) }}
+          {%- for option in options | literal_eval %}
+          {{ &#39;ABCDEFGHIJ&#39;[loop.index0] }}. {{ option | regex_replace(&#39;&lt;image \d&gt;&#39;, &#39;&lt;image&gt;&#39;) }}
+          {%- endfor %}
+
+          Answer with the option&#39;s letter from the given choices directly.&quot;&quot;&quot;},
+          ]
+        |||, &#39;\n&#39;),
+        reference_template: &#39;{{ answer }}&#39;,
+        parse_input_utterance: &#39;literal_eval&#39;,
+        preprocessors: [
+                        {
+                          class_path: &#39;EnsureMinSize&#39;,
+                          init_args: { key: &#39;image_%d&#39; % i, min_size: 30 },
+                        }
+                        for i in std.range(1, 7)
+                      ]
+                      +
+                      [
+                        {
+                          class_path: &#39;ConvertImageToBase64&#39;,
+                          init_args: { key: &#39;image_%d&#39; % i },
+                        }
+                        for i in std.range(1, 7)
+                      ],
+      },
+    },
+    metrics: [
+      { class_path: &#39;OutputLengthStats&#39; },
+      { class_path: &#39;ExactMatch&#39; },
+      {
+        class_path: &#39;ExactMatch&#39;,
+        init_args: {
+          lm_output_processor: {
+            class_path: &#39;LastChoiceExtractor&#39;,
+            init_args: {
+              lang: &#39;en&#39;,
+              max_num_options: 5,  // MMMU contains a small number of 5-choice questions.
+            },
+          },
+          metric_key: &#39;last_choice_exact_match&#39;,
+          category_key: &#39;subset&#39;,
+        },
+      },
+    ],
+    gen_kwargs: { temperature: 0 },
+    batch_size: 1,
+  },
+}
+</code></pre></div></li>
+</ul>
 
 
 
@@ -1493,10 +1586,10 @@ See <code>flexeval/preset_configs/EvalSetup/en_vision/mmmu.jsonnet</code> and <c
     </div>
     
     
-    <script id="__config" type="application/json">{"base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.f8cc74c7.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    <script id="__config" type="application/json">{"base": "../../..", "features": [], "search": "../../../assets/javascripts/workers/search.f8cc74c7.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.f1b6f286.min.js"></script>
+      <script src="../../../assets/javascripts/bundle.f1b6f286.min.js"></script>
       
     
   </body>

@@ -713,6 +713,28 @@
   
   
     <li class="md-nav__item">
+      <a href="../../preset_configs/EvalSetup/en_vision/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    En vision
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../preset_configs/EvalSetup/ja_chat/" class="md-nav__link">
         
   
@@ -762,6 +784,28 @@
   
   <span class="md-ellipsis">
     Ja multiple choice
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../preset_configs/EvalSetup/ja_vision/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Ja vision
     
   </span>
   
@@ -1475,6 +1519,7 @@ The evaluation for each response is stored in <code>results/mt-en-gpt3.5-turbo/e
 <p>You can check the output of the evaluator LLM in the <code>llm_score_output</code> field.</p>
 <div class="highlight"><pre><span></span><code>head<span class="w"> </span>-n<span class="w"> </span><span class="m">1</span><span class="w"> </span>results/mt-en-gpt3.5-turbo/eval_by_gpt/outputs.jsonl<span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span>-r<span class="w"> </span><span class="s2">&quot;.llm_output&quot;</span>
 </code></pre></div>
+<p>To also save the judge's reasoning content, set <code>output_reasoning_text</code> to <code>true</code> in the metric config. The reasoning is then stored in the <code>llm_score_reasoning_text</code> field. This requires a judge that returns reasoning content, e.g., by setting <code>--reasoning-parser</code> in vLLM serve, or <code>reasoning_parser</code> in <code>HuggingFaceLM</code> and <code>VLLM</code>.</p>
 <div class="admonition info">
 <p class="admonition-title">Info</p>
 <p><code>flexeval_file</code> just runs the same evaluation as <code>flexeval_lm</code> but with the given file.

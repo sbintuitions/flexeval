@@ -643,6 +643,28 @@
   
   
     <li class="md-nav__item">
+      <a href="../../preset_configs/EvalSetup/en_vision/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    En vision
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../preset_configs/EvalSetup/ja_chat/" class="md-nav__link">
         
   
@@ -692,6 +714,28 @@
   
   <span class="md-ellipsis">
     Ja multiple choice
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../preset_configs/EvalSetup/ja_vision/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Ja vision
     
   </span>
   
@@ -1957,6 +2001,17 @@ when given (A = chosen, B = rejected) it prefers <strong>A</strong>, and when th
             <p>Generation kwargs for the language model.</p>
           </div>
         </li>
+        <li class="doc-section-item field-body">
+            <b><code>output_reasoning_text</code></b>
+              (<code><span title="bool">bool</span></code>, default:
+                  <code>False</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>If True, store the judge's reasoning content
+as <code>llm_reasoning_texts</code> in the outputs.</p>
+          </div>
+        </li>
     </ul>
 
 
@@ -1967,17 +2022,7 @@ when given (A = chosen, B = rejected) it prefers <strong>A</strong>, and when th
 
               <details class="quote">
                 <summary>Source code in <code>flexeval/core/reward_model/pairwise_judge_reward_model.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 80</span>
-<span class="normal"> 81</span>
-<span class="normal"> 82</span>
-<span class="normal"> 83</span>
-<span class="normal"> 84</span>
-<span class="normal"> 85</span>
-<span class="normal"> 86</span>
-<span class="normal"> 87</span>
-<span class="normal"> 88</span>
-<span class="normal"> 89</span>
-<span class="normal"> 90</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 90</span>
 <span class="normal"> 91</span>
 <span class="normal"> 92</span>
 <span class="normal"> 93</span>
@@ -2074,7 +2119,23 @@ when given (A = chosen, B = rejected) it prefers <strong>A</strong>, and when th
 <span class="normal">184</span>
 <span class="normal">185</span>
 <span class="normal">186</span>
-<span class="normal">187</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">PairwiseJudgeRewardModel</span><span class="p">(</span><span class="n">RewardModel</span><span class="p">):</span>
+<span class="normal">187</span>
+<span class="normal">188</span>
+<span class="normal">189</span>
+<span class="normal">190</span>
+<span class="normal">191</span>
+<span class="normal">192</span>
+<span class="normal">193</span>
+<span class="normal">194</span>
+<span class="normal">195</span>
+<span class="normal">196</span>
+<span class="normal">197</span>
+<span class="normal">198</span>
+<span class="normal">199</span>
+<span class="normal">200</span>
+<span class="normal">201</span>
+<span class="normal">202</span>
+<span class="normal">203</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">PairwiseJudgeRewardModel</span><span class="p">(</span><span class="n">RewardModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Pairwise judge using a chat language model to compare two model or human</span>
 <span class="sd">    outputs.</span>
 <span class="sd">    The reward model’s judgment is counted as **correct only if it is order‑invariant**:</span>
@@ -2099,6 +2160,8 @@ when given (A = chosen, B = rejected) it prefers <strong>A</strong>, and when th
 <span class="sd">                         Be sure to include {{prompt}}, {{answer_a}}, and {{answer_b}}.</span>
 <span class="sd">        system_message: The system message to prepend to the chat messages.</span>
 <span class="sd">        gen_kwargs: Generation kwargs for the language model.</span>
+<span class="sd">        output_reasoning_text: If True, store the judge&#39;s reasoning content</span>
+<span class="sd">            as `llm_reasoning_texts` in the outputs.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
@@ -2107,6 +2170,7 @@ when given (A = chosen, B = rejected) it prefers <strong>A</strong>, and when th
         <span class="n">prompt_template</span><span class="p">:</span> <span class="n">PromptTemplate</span><span class="p">,</span>
         <span class="n">system_message</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">PromptTemplate</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">gen_kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">output_reasoning_text</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">gen_kwargs</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">gen_kwargs</span> <span class="o">=</span> <span class="p">{}</span>
@@ -2114,6 +2178,7 @@ when given (A = chosen, B = rejected) it prefers <strong>A</strong>, and when th
         <span class="bp">self</span><span class="o">.</span><span class="n">prompt_template</span> <span class="o">=</span> <span class="n">prompt_template</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">system_message</span> <span class="o">=</span> <span class="n">system_message</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">gen_kwargs</span> <span class="o">=</span> <span class="n">gen_kwargs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output_reasoning_text</span> <span class="o">=</span> <span class="n">output_reasoning_text</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_create_input_chat_messages_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pairwise_instance</span><span class="p">:</span> <span class="n">PairwiseInstance</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]:</span>
         <span class="n">pairwise_instance_asdict</span> <span class="o">=</span> <span class="n">asdict</span><span class="p">(</span><span class="n">pairwise_instance</span><span class="p">)</span>
@@ -2179,7 +2244,9 @@ when given (A = chosen, B = rejected) it prefers <strong>A</strong>, and when th
             <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;The number of outputs should be twice the number of inputs.&quot;</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
-        <span class="n">aggregated_results</span><span class="p">,</span> <span class="n">aggregated_outputs</span> <span class="o">=</span> <span class="n">aggregate_judge_results</span><span class="p">(</span><span class="n">outputs</span><span class="p">,</span> <span class="n">judge_outputs</span><span class="p">,</span> <span class="n">chosen_is_better_list</span><span class="p">)</span>
+        <span class="n">aggregated_results</span><span class="p">,</span> <span class="n">aggregated_outputs</span> <span class="o">=</span> <span class="n">aggregate_judge_results</span><span class="p">(</span>
+            <span class="n">outputs</span><span class="p">,</span> <span class="n">judge_outputs</span><span class="p">,</span> <span class="n">chosen_is_better_list</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_reasoning_text</span>
+        <span class="p">)</span>
 
         <span class="k">return</span> <span class="n">aggregated_results</span><span class="p">,</span> <span class="n">aggregated_outputs</span>
 </code></pre></div></td></tr></table></div>
@@ -2283,6 +2350,28 @@ when given (A = chosen, B = rejected) it prefers <strong>A</strong>, and when th
 
 </div>
 
+<div class="doc doc-object doc-attribute">
+
+
+
+<h3 id="flexeval.core.reward_model.pairwise_judge_reward_model.PairwiseJudgeRewardModel.output_reasoning_text" class="doc doc-heading">
+            <span class="doc doc-object-name doc-attribute-name">output_reasoning_text</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+<a href="#flexeval.core.reward_model.pairwise_judge_reward_model.PairwiseJudgeRewardModel.output_reasoning_text" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">output_reasoning_text</span> <span class="o">=</span> <span class="n">output_reasoning_text</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+    </div>
+
+</div>
+
 
 
 <div class="doc doc-object doc-function">
@@ -2298,6 +2387,7 @@ when given (A = chosen, B = rejected) it prefers <strong>A</strong>, and when th
     <span class="n">prompt_template</span><span class="p">:</span> <span class="n">PromptTemplate</span><span class="p">,</span>
     <span class="n">system_message</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">PromptTemplate</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">gen_kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">output_reasoning_text</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
 </code></pre></div>
 
@@ -2306,24 +2396,27 @@ when given (A = chosen, B = rejected) it prefers <strong>A</strong>, and when th
 
             <details class="quote">
               <summary>Source code in <code>flexeval/core/reward_model/pairwise_judge_reward_model.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">107</span>
-<span class="normal">108</span>
-<span class="normal">109</span>
-<span class="normal">110</span>
-<span class="normal">111</span>
-<span class="normal">112</span>
-<span class="normal">113</span>
-<span class="normal">114</span>
-<span class="normal">115</span>
-<span class="normal">116</span>
-<span class="normal">117</span>
-<span class="normal">118</span>
-<span class="normal">119</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">119</span>
+<span class="normal">120</span>
+<span class="normal">121</span>
+<span class="normal">122</span>
+<span class="normal">123</span>
+<span class="normal">124</span>
+<span class="normal">125</span>
+<span class="normal">126</span>
+<span class="normal">127</span>
+<span class="normal">128</span>
+<span class="normal">129</span>
+<span class="normal">130</span>
+<span class="normal">131</span>
+<span class="normal">132</span>
+<span class="normal">133</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">language_model</span><span class="p">:</span> <span class="n">LanguageModel</span><span class="p">,</span>
     <span class="n">prompt_template</span><span class="p">:</span> <span class="n">PromptTemplate</span><span class="p">,</span>
     <span class="n">system_message</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">PromptTemplate</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">gen_kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">output_reasoning_text</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="k">if</span> <span class="n">gen_kwargs</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">gen_kwargs</span> <span class="o">=</span> <span class="p">{}</span>
@@ -2331,6 +2424,7 @@ when given (A = chosen, B = rejected) it prefers <strong>A</strong>, and when th
     <span class="bp">self</span><span class="o">.</span><span class="n">prompt_template</span> <span class="o">=</span> <span class="n">prompt_template</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">system_message</span> <span class="o">=</span> <span class="n">system_message</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">gen_kwargs</span> <span class="o">=</span> <span class="n">gen_kwargs</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">output_reasoning_text</span> <span class="o">=</span> <span class="n">output_reasoning_text</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -2355,21 +2449,7 @@ when given (A = chosen, B = rejected) it prefers <strong>A</strong>, and when th
 
             <details class="quote">
               <summary>Source code in <code>flexeval/core/reward_model/pairwise_judge_reward_model.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">139</span>
-<span class="normal">140</span>
-<span class="normal">141</span>
-<span class="normal">142</span>
-<span class="normal">143</span>
-<span class="normal">144</span>
-<span class="normal">145</span>
-<span class="normal">146</span>
-<span class="normal">147</span>
-<span class="normal">148</span>
-<span class="normal">149</span>
-<span class="normal">150</span>
-<span class="normal">151</span>
-<span class="normal">152</span>
-<span class="normal">153</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">153</span>
 <span class="normal">154</span>
 <span class="normal">155</span>
 <span class="normal">156</span>
@@ -2403,7 +2483,23 @@ when given (A = chosen, B = rejected) it prefers <strong>A</strong>, and when th
 <span class="normal">184</span>
 <span class="normal">185</span>
 <span class="normal">186</span>
-<span class="normal">187</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">batch_judge</span><span class="p">(</span>
+<span class="normal">187</span>
+<span class="normal">188</span>
+<span class="normal">189</span>
+<span class="normal">190</span>
+<span class="normal">191</span>
+<span class="normal">192</span>
+<span class="normal">193</span>
+<span class="normal">194</span>
+<span class="normal">195</span>
+<span class="normal">196</span>
+<span class="normal">197</span>
+<span class="normal">198</span>
+<span class="normal">199</span>
+<span class="normal">200</span>
+<span class="normal">201</span>
+<span class="normal">202</span>
+<span class="normal">203</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">batch_judge</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">batch_reward_bench_instances</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">RewardBenchInstance</span><span class="p">],</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">bool</span><span class="p">],</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]]:</span>
@@ -2449,7 +2545,9 @@ when given (A = chosen, B = rejected) it prefers <strong>A</strong>, and when th
         <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;The number of outputs should be twice the number of inputs.&quot;</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
-    <span class="n">aggregated_results</span><span class="p">,</span> <span class="n">aggregated_outputs</span> <span class="o">=</span> <span class="n">aggregate_judge_results</span><span class="p">(</span><span class="n">outputs</span><span class="p">,</span> <span class="n">judge_outputs</span><span class="p">,</span> <span class="n">chosen_is_better_list</span><span class="p">)</span>
+    <span class="n">aggregated_results</span><span class="p">,</span> <span class="n">aggregated_outputs</span> <span class="o">=</span> <span class="n">aggregate_judge_results</span><span class="p">(</span>
+        <span class="n">outputs</span><span class="p">,</span> <span class="n">judge_outputs</span><span class="p">,</span> <span class="n">chosen_is_better_list</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_reasoning_text</span>
+    <span class="p">)</span>
 
     <span class="k">return</span> <span class="n">aggregated_results</span><span class="p">,</span> <span class="n">aggregated_outputs</span>
 </code></pre></div></td></tr></table></div>
