@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import re
 from collections import Counter, defaultdict
+from typing import Any
 
 from loguru import logger
 
@@ -42,21 +43,25 @@ def calc_label_dist(valid_labels: list[int], label_names: list[str]) -> dict[str
 
 
 def summarize_evaluator_labels(
-    evaluator_label_list: list[int | None],
-    extra_info_list: list[dict[str, str]],
+    evaluator_label_list: list[str | None],
+    extra_info_list: list[dict[str, Any]],
     label_names: list[str],
     weights: list[float],
-    category_key: str | None = None,
+    category_key: str | list[str] | None = None,
 ) -> dict[str, float]:
-    """Summarize evaluator_score_list. If category_key is given, return
-    category-wise mean score as well as overall mean score.
+    """Summarize evaluator_label_list. If category_key is given, return
+    category-wise mean score and label distribution as well as overall ones.
+
+    Category-wise stats are stored under `llm_score/<category_key>/<category>` and
+    `llm_label_distribution/<category_key>/<category>`.
+    If the value in extra_info is a list (or tuple / set), the instance is counted for each category in it.
     """
     score_key = "llm_score"
     dist_key = "llm_label_distribution"
 
     label2point = dict(zip(label_names, weights))
     # compute overall mean score and label distribution
-    all_valid_labels: list[int] = [label for label in evaluator_label_list if label is not None]
+    all_valid_labels: list[str] = [label for label in evaluator_label_list if label is not None]
     score = sum([label2point[label] for label in all_valid_labels])
     score /= len(all_valid_labels)
     dist = calc_label_dist(all_valid_labels, label_names)
@@ -64,24 +69,26 @@ def summarize_evaluator_labels(
     summary = {score_key: score, dist_key: dist, "num_failed_score_parses": num_failed_score_parses}
 
     # compute category-wise stats if category_key is given
-    category2valid_labels: dict[str, list[str]] = defaultdict(list)
-    for label, extra_info in zip(evaluator_label_list, extra_info_list):
-        if label is None or category_key is None:
-            continue
-        if category_key in extra_info:
-            category2valid_labels[extra_info[category_key]].append(label)
+    if category_key is None:
+        return summary
+    keys_to_check = [category_key] if isinstance(category_key, str) else category_key
 
-    category2mean_score: dict[str, float] = {}
-    category2dist: dict[str, float] = {}
-    for category, valid_labels in category2valid_labels.items():
-        score = sum([label2point[label] for label in valid_labels])
-        score /= len(valid_labels)
-        category2mean_score[category] = score
-        category2dist[category] = calc_label_dist(valid_labels, label_names)
+    for key in keys_to_check:
+        category2valid_labels: dict[Any, list[str]] = defaultdict(list)
+        for label, extra_info in zip(evaluator_label_list, extra_info_list):
+            if label is None or key not in extra_info:
+                continue
+            categories = extra_info[key]
+            if not isinstance(categories, (list, tuple, set)):
+                categories = [categories]
+            for category in categories:
+                category2valid_labels[category].append(label)
 
-    for category in category2mean_score:  # noqa: PLC0206
-        summary[f"{score_key}/{category}"] = category2mean_score[category]
-        summary[f"{dist_key}/{category}"] = category2dist[category]
+        for category, valid_labels in category2valid_labels.items():
+            category_score = sum([label2point[label] for label in valid_labels])
+            category_score /= len(valid_labels)
+            summary[f"{score_key}/{key}/{category}"] = category_score
+            summary[f"{dist_key}/{key}/{category}"] = calc_label_dist(valid_labels, label_names)
 
     return summary
 
@@ -101,8 +108,9 @@ class LLMLabel(Metric):
         label_points: A list of points for each label specified in label_names.
         batch_size: The batch size for the evaluator.
         disable_tqdm: Whether to disable the progress bar.
-        category_key: A key to create category-wise mean score.
+        category_key: A key or list of keys to create category-wise mean score.
             The category key is expected to be in extra_info.
+            Category-wise stats are stored under `llm_score/<category_key>/<category>`.
         metric_prefix: A prefix to be added to the metric keys in the summary and instance details.
         output_reasoning_text: If True, store the evaluator's reasoning content
             as `llm_label_reasoning_text` in the instance details.
@@ -146,7 +154,7 @@ class LLMLabel(Metric):
         batch_size: int = 4,
         disable_tqdm: bool = False,
         valid_score_range: tuple[int, int] | None = None,
-        category_key: str | None = None,
+        category_key: str | list[str] | None = None,
         metric_prefix: str | None = None,
         output_reasoning_text: bool = False,
     ) -> None:
@@ -257,8 +265,9 @@ class ChatLLMLabel(Metric):
         system_message: A system message to be prepended to the input for the evaluator.
         batch_size: The batch size for the evaluator.
         disable_tqdm: Whether to disable the progress bar.
-        category_key: A key to create category-wise mean score.
+        category_key: A key or list of keys to create category-wise mean score.
             The category key is expected to be in extra_info.
+            Category-wise stats are stored under `llm_score/<category_key>/<category>`.
         metric_prefix: A prefix to be added to the metric keys in the summary and instance details.
         output_reasoning_text: If True, store the evaluator's reasoning content
             as `llm_label_reasoning_text` in the instance details.
@@ -303,7 +312,7 @@ class ChatLLMLabel(Metric):
         system_message: str | PromptTemplate | None = None,
         batch_size: int = 4,
         disable_tqdm: bool = False,
-        category_key: str | None = None,
+        category_key: str | list[str] | None = None,
         metric_prefix: str | None = None,
         output_reasoning_text: bool = False,
     ) -> None:
