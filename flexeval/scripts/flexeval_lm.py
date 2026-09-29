@@ -61,6 +61,23 @@ def maybe_replace_random_seed(
         new_eval_setup = dataclasses.replace(eval_setup, random_seed=new_random_seed)
         new_config_content = copy.deepcopy(config_content)
         new_config_content["init_args"]["random_seed"] = new_random_seed
+
+        # Replace the few-shot generator with a new instance derived from the seed increment,
+        # so that each repeat's few-shot examples are reproducible from the seed alone,
+        # instead of depending on the shared generator's prior sampling history.
+        few_shot_generator = getattr(eval_setup, "few_shot_generator", None)
+        if few_shot_generator is not None:
+            new_eval_setup = dataclasses.replace(
+                new_eval_setup,
+                few_shot_generator=few_shot_generator.with_seed_increment(seed_increment),
+            )
+
+            fsg_config = new_config_content["init_args"].get("few_shot_generator")
+            if isinstance(fsg_config, dict):
+                fsg_init_args = fsg_config.get("init_args")
+                if isinstance(fsg_init_args, dict) and "seed" in fsg_init_args:
+                    fsg_init_args["seed"] += seed_increment
+
         return new_eval_setup, new_config_content
     return eval_setup, config_content
 
