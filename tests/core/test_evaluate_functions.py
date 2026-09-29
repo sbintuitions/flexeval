@@ -79,6 +79,26 @@ def test_evaluate_multiple_choice(use_few_shot: bool, max_instances: int) -> Non
     assert set(metrics.keys()) == {"accuracy", "byte_norm_accuracy", "macro_f1_score", "micro_f1_score"}
 
 
+def test_evaluate_multiple_choice_detects_few_shot_leak() -> None:
+    # Sampling all instances of the dataset used as both the evaluation dataset and the
+    # few-shot pool guarantees the evaluation instance is always among the sampled shots.
+    few_shot_generator = RandomFewShotGenerator(
+        dataset=DummyMultipleChoiceDataset(),
+        num_shots=len(DummyMultipleChoiceDataset()),
+        num_trials_to_avoid_leak=3,
+    )
+
+    with pytest.raises(ValueError, match="data leak"):
+        evaluate_multiple_choice(
+            language_model=DummyLanguageModel(),
+            eval_dataset=DummyMultipleChoiceDataset(),
+            prompt_template=Jinja2PromptTemplate("{{text}}"),
+            few_shot_generator=few_shot_generator,
+            batch_size=1,
+            max_instances=1,
+        )
+
+
 @pytest.mark.parametrize(
     "max_instances",
     [None, 1],
