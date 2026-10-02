@@ -39,15 +39,25 @@ class VLLMServerManager:
         model_kwargs: Additional keyword arguments to pass as command-line options to `vllm serve`.
             Each key-value pair is converted to a corresponding CLI argument.
         timeout: Maximum time in seconds to wait for the server to become available.
+        vllm_version: If specified, `vllm serve` is launched via `uvx --from vllm==<vllm_version>` instead of
+            the `vllm` command on the current environment. This allows running any vllm version regardless of
+            what (if anything) is installed in the current Python environment.
     """
 
-    def __init__(self, model: str, model_kwargs: dict[str, Any] | None = None, timeout: int = 3600) -> None:
+    def __init__(
+        self,
+        model: str,
+        model_kwargs: dict[str, Any] | None = None,
+        timeout: int = 3600,
+        vllm_version: str | None = None,
+    ) -> None:
         self.model = model
         self.model_kwargs = model_kwargs or {}
         self.host = "localhost"
         self.port = find_free_port()
         self.base_url = f"http://{self.host}:{self.port}/v1"
         self.timeout = timeout
+        self.vllm_version = vllm_version
         self.process: subprocess.Popen | None = None
         self._log_threads: list[threading.Thread] = []
 
@@ -59,8 +69,8 @@ class VLLMServerManager:
             logger.warning("vLLM server is already running. Skipping start.")
             return self.host, self.port
 
-        cmd = [
-            "vllm",
+        cmd = ["uvx", "--from", f"vllm=={self.vllm_version}", "vllm"] if self.vllm_version is not None else ["vllm"]
+        cmd += [
             "serve",
             self.model,
             "--host",
@@ -175,6 +185,10 @@ class VLLMServeLM(OpenAIChatAPI):
             Do not include the prefix "--".
             See also: https://docs.vllm.ai/en/latest/cli/index.html#options
         booting_timeout: Maximum time in seconds to wait for the server to become available.
+        vllm_version: If specified, `vllm serve` is launched via `uvx --from vllm==<vllm_version>` instead of
+            the `vllm` command on the current environment, so that any vllm version can be used regardless
+            of the version (if any) installed in the current Python environment. Requires `uv`/`uvx` to be
+            available on PATH.
         default_gen_kwargs: Default generation kwargs to use when calling the API.
         developer_message: Instructions to the model that are prioritized ahead of user messages.
             Previously called the system prompt.
@@ -191,6 +205,7 @@ class VLLMServeLM(OpenAIChatAPI):
         api_headers: dict[str, str] | None = None,
         model_kwargs: dict[str, Any] | None = None,
         booting_timeout: int = 3600,
+        vllm_version: str | None = None,
         default_gen_kwargs: dict[str, Any] | None = None,
         developer_message: str | None = None,
         string_processors: StringProcessor | list[StringProcessor] | None = None,
@@ -206,7 +221,9 @@ class VLLMServeLM(OpenAIChatAPI):
         model_kwargs = model_kwargs or {}
         if "tensor_parallel_size" not in model_kwargs and "tensor-parallel-size" not in model_kwargs:
             model_kwargs["tensor_parallel_size"] = torch.cuda.device_count()
-        self.manager = VLLMServerManager(model=model, model_kwargs=model_kwargs, timeout=booting_timeout)
+        self.manager = VLLMServerManager(
+            model=model, model_kwargs=model_kwargs, timeout=booting_timeout, vllm_version=vllm_version
+        )
         if api_headers is None:
             api_headers = {}
         api_headers["base_url"] = self.manager.base_url

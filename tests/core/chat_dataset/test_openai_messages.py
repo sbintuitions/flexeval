@@ -275,3 +275,50 @@ def test_load_dataset_with_references_and_drop_if_last_from_assistant(jsonl_data
         ],
         references=["This is a reference answer."],
     )
+
+
+TEST_HF_MESSAGES_AS_LIST_OF_DICTS = [
+    {"role": "user", "content": "Hello"},
+    {"role": "assistant", "content": "Hi, how can I help you?"},
+    {"role": "user", "content": "Tell me a joke."},
+]
+# A list of structs stored as a `Sequence` of a dict (Arrow `struct<list>`) is materialized as a dict of lists,
+# and struct columns fill missing optional fields with None.
+TEST_HF_MESSAGES_AS_DICT_OF_LISTS = {
+    "role": ["user", "assistant", "user"],
+    "content": ["Hello", "Hi, how can I help you?", "Tell me a joke."],
+    "tool_calls": [None, None, None],
+}
+
+
+@pytest.mark.parametrize("messages", [TEST_HF_MESSAGES_AS_LIST_OF_DICTS, TEST_HF_MESSAGES_AS_DICT_OF_LISTS])
+def test_load_dataset_from_hf(mocker, messages: list[dict] | dict[str, list]) -> None:  # noqa: ANN001
+    mock_items = [{"conversation": messages, "axis": "INFERENCE_MEMORY", "flag": True} for _ in range(3)]
+    mock_load_dataset = mocker.patch("datasets.load_dataset", return_value=mock_items)
+
+    dataset = OpenAIMessagesDataset(
+        path="dummy/dataset",
+        split="test",
+        message_key="conversation",
+        subset="default",
+        dataset_kwargs={"data_files": {"test": "data/test-*.parquet"}},
+    )
+
+    mock_load_dataset.assert_called_once_with(
+        "dummy/dataset", name="default", split="test", data_files={"test": "data/test-*.parquet"}
+    )
+    assert len(dataset) == 3
+    assert dataset[0] == ChatInstance(
+        messages=TEST_HF_MESSAGES_AS_LIST_OF_DICTS,
+        extra_info={"axis": "INFERENCE_MEMORY", "flag": True},
+    )
+
+
+def test_file_path_and_path_are_mutually_exclusive(jsonl_data_factory) -> None:  # noqa: ANN001
+    tmp_jsonl_path = jsonl_data_factory("messages", TEST_CHAT_MESSAGES)
+    with pytest.raises(ValueError):
+        OpenAIMessagesDataset()
+    with pytest.raises(ValueError):
+        OpenAIMessagesDataset(file_path=tmp_jsonl_path, path="dummy/dataset", split="test")
+    with pytest.raises(ValueError):
+        OpenAIMessagesDataset(path="dummy/dataset")

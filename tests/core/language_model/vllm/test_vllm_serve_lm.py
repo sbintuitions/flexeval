@@ -72,6 +72,31 @@ def test_start_invokes_subprocess_and_waits_for_http() -> None:
         mock_get.assert_called_with(f"http://localhost:{port}/v1/models", timeout=1)
 
 
+def test_start_uses_uvx_when_vllm_version_is_specified() -> None:
+    dummy_stdout = DummyStream([""])
+    dummy_stderr = DummyStream([""])
+
+    mock_popen = mock.Mock()
+    mock_popen.stdout = dummy_stdout
+    mock_popen.stderr = dummy_stderr
+    mock_popen.poll.return_value = None
+    mock_popen.wait.return_value = 0
+
+    with (
+        mock.patch("subprocess.Popen", return_value=mock_popen) as mock_popen_call,
+        mock.patch("requests.get") as mock_get,
+    ):
+        mock_get.return_value.status_code = 200
+
+        manager = VLLMServerManager(model="dummy", vllm_version="0.6.3")
+        manager.start()
+        manager.stop()
+
+        called_cmd = mock_popen_call.call_args.args[0]
+        assert called_cmd[:4] == ["uvx", "--from", "vllm==0.6.3", "vllm"]
+        assert "serve" in called_cmd
+
+
 def test_start_raises_immediately_when_process_exits_and_can_retry() -> None:
     failed_process = mock.Mock()
     failed_process.stdout = DummyStream([""])
