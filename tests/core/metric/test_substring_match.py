@@ -3,6 +3,7 @@ from __future__ import annotations
 import pytest
 
 from flexeval import MetricResult, SubstringMatch
+from flexeval.core.string_processor import RegexExtractor, StringLower, StringProcessor
 
 
 @pytest.mark.parametrize(
@@ -109,3 +110,31 @@ def test_substring_match_with_category_key() -> None:
     assert pytest.approx(result.summary["substring_match-any/binary"]) == 2 / 3
     # Open category accuracy: 1/1 = 1.0 (1 correct out of 1)
     assert result.summary["substring_match-any/open"] == 1.0
+
+
+@pytest.mark.parametrize(
+    ("mode", "lm_outputs", "expected_outputs", "lm_output_processor", "reference_processor", "score"),
+    [
+        ("any", ["This is a CAT"], [["cat"]], None, None, 0.0),
+        ("any", ["This is a CAT"], [["cat"]], StringLower(), None, 1.0),
+        ("any", ["This is a CAT"], [["CAT"]], None, StringLower(), 0.0),
+        ("any", ["This is a CAT"], [["CAT"]], StringLower(), StringLower(), 1.0),
+        ("any", ["The answer is 10."], [["Answer: 10"]], RegexExtractor(r"\d+"), RegexExtractor(r"\d+"), 1.0),
+        ("any", ["The answer is 10."], [["Answer: 10"]], RegexExtractor(r"\d+"), None, 0.0),
+        ("all", ["CAT and DOG"], [["Cat", "Dog"]], [StringLower()], [StringLower()], 1.0),
+        ("all", ["CAT and DOG"], [["Cat", "Mouse"]], [StringLower()], [StringLower()], 0.0),
+    ],
+    indirect=["lm_outputs"],
+)
+def test_substring_match_with_string_processors(
+    mode: str,
+    lm_outputs: list[str],
+    expected_outputs: list[list[str]],
+    lm_output_processor: StringProcessor | list[StringProcessor] | None,
+    reference_processor: StringProcessor | list[StringProcessor] | None,
+    score: float,
+) -> None:
+    metric = SubstringMatch(mode=mode, lm_output_processor=lm_output_processor, reference_processor=reference_processor)
+    metric_result = metric.evaluate(lm_outputs=lm_outputs, references_list=expected_outputs)
+    assert metric_result.summary[f"substring_match-{mode}"] == score
+    assert len(metric_result.instance_details) == len(lm_outputs)
