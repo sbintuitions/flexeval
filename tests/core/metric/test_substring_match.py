@@ -134,9 +134,7 @@ def test_substring_match_with_string_processors(
     reference_processor: StringProcessor | list[StringProcessor] | None,
     score: float,
 ) -> None:
-    metric = SubstringMatch(
-        mode=mode, lm_output_processor=lm_output_processor, reference_processor=reference_processor
-    )
+    metric = SubstringMatch(mode=mode, lm_output_processor=lm_output_processor, reference_processor=reference_processor)
     metric_result = metric.evaluate(lm_outputs=lm_outputs, references_list=expected_outputs)
     assert metric_result.summary[f"substring_match-{mode}"] == score
     assert len(metric_result.instance_details) == len(lm_outputs)
