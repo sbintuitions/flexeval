@@ -3,9 +3,10 @@ from __future__ import annotations
 from typing import Literal
 
 from flexeval.core.language_model.base import LMOutput
+from flexeval.core.string_processor import StringProcessor
 
 from .base import Metric, MetricResult
-from .utils import aggregate_category_wise_scores, extract_text_from_outputs, validate_inputs
+from .utils import aggregate_category_wise_scores, apply_string_processors, extract_text_from_outputs, validate_inputs
 
 
 class SubstringMatch(Metric):
@@ -16,6 +17,9 @@ class SubstringMatch(Metric):
         mode: The mode to calculate the substring match.
             - "any": If any of the expected substrings are in the output, it is a match.
             - "all": If all of the expected substrings are in the output, it is a match.
+        lm_output_processor:
+            StringProcessor or a list of StringProcessor to be applied to the model outputs before comparison.
+        reference_processor: StringProcessor or list of StringProcessor to apply to the references before comparison.
         category_key: Optional key to group scores by category from extra_info_list.
 
     Examples:
@@ -31,8 +35,16 @@ class SubstringMatch(Metric):
         )
     """
 
-    def __init__(self, mode: Literal["any", "all"] = "any", category_key: str | None = None) -> None:
+    def __init__(
+        self,
+        mode: Literal["any", "all"] = "any",
+        lm_output_processor: StringProcessor | list[StringProcessor] | None = None,
+        reference_processor: StringProcessor | list[StringProcessor] | None = None,
+        category_key: str | None = None,
+    ) -> None:
         self.mode = mode
+        self.lm_output_processors = lm_output_processor
+        self.reference_processors = reference_processor
         self.category_key = category_key
         if mode == "all":
             self.match_func = all
@@ -51,6 +63,12 @@ class SubstringMatch(Metric):
         validate_inputs(lm_outputs, references_list, extra_info_list)
 
         lm_outputs = extract_text_from_outputs(lm_outputs)
+
+        lm_outputs = [apply_string_processors(output, self.lm_output_processors) for output in lm_outputs]
+        references_list = [
+            [apply_string_processors(ref, self.reference_processors) for ref in references]
+            for references in references_list
+        ]
 
         # Compute metrics
         match_list = [
