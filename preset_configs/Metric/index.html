@@ -886,6 +886,24 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#j_multi_challenge_eval" class="md-nav__link">
+    <span class="md-ellipsis">
+      j_multi_challenge_eval
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#multi_challenge_eval" class="md-nav__link">
+    <span class="md-ellipsis">
+      multi_challenge_eval
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1475,6 +1493,24 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#j_multi_challenge_eval" class="md-nav__link">
+    <span class="md-ellipsis">
+      j_multi_challenge_eval
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#multi_challenge_eval" class="md-nav__link">
+    <span class="md-ellipsis">
+      multi_challenge_eval
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1664,6 +1700,99 @@ model; report the judge model together with the numbers.</p>
     },
   },
 }</code></p>
+<h2 id="j_multi_challenge_eval">j_multi_challenge_eval<a class="headerlink" href="#j_multi_challenge_eval" title="Permanent link">&para;</a></h2>
+<p>LLM-as-a-judge metric for the <code>j_multi_challenge</code> eval setup.</p>
+<p>The judge checks whether the last assistant response satisfies the YES/NO check question (<code>TARGET_QUESTION</code>),
+and <code>llm_score</code> is the pass rate. Category-wise pass rates are reported as
+<code>llm_score/AXIS/&lt;AXIS&gt;</code> and <code>llm_score/REQUIRES_EXTERNAL_KNOWLEDGE/&lt;True|False&gt;</code>.</p>
+<p>The prompt is a Japanese translation of the official evaluator's prompt:
+https://github.com/ekwinox117/multi-challenge/blob/5ccefcca6a39020d66c1383c4e6a809cb07afa33/src/evaluator.py</p>
+<p>The default judge is the open-weight model <code>openai/gpt-oss-120b</code>, served locally with <code>VLLMServeLM</code>
+(requires the <code>vllm</code> extra and GPUs), so that the results do not depend on the availability of a proprietary API.
+To use an already running OpenAI-compatible server instead, override the judge with <code>OpenAIChatAPI</code>, e.g.</p>
+<p>--metrics.init_args.language_model OpenAIChatAPI \
+  --metrics.init_args.language_model.init_args.model openai/gpt-oss-120b \
+  --metrics.init_args.language_model.init_args.api_headers.base_url http://localhost:8000/v1
+<div class="highlight"><pre><span></span><code>{
+  class_path: &#39;ChatLLMLabel&#39;,
+  init_args: {
+    language_model: {
+      class_path: &#39;VLLMServeLM&#39;,
+      init_args: { model: &#39;openai/gpt-oss-120b&#39;, default_gen_kwargs: { temperature: 0.0 } },
+    },
+    label_names: [&#39;YES&#39;, &#39;NO&#39;],
+    label_points: [1.0, 0.0],
+    prompt_template: {
+      class_path: &#39;Jinja2PromptTemplate&#39;,
+      init_args: {
+        template: std.stripChars(|||
+          あなたは、モデルの回答が特定の基準を満たしているかどうかを評価する役割を担っています。
+          基準は常に「YES」または「NO」の2択評価となります。
+
+          モデルの回答は以下の通りです：
+          &lt;MODEL_RESPONSE&gt;
+          {{ lm_output }}
+          &lt;/MODEL_RESPONSE&gt;
+
+          モデルの回答が満たすべき基準は以下の通りです。**厳格に**評価してください：
+          &lt;CRITERIA&gt;
+          {{ TARGET_QUESTION }}
+          &lt;/CRITERIA&gt;
+
+          まずあなたの推論（評価理由）を出力し、その後に最終判定として「YES」または「NO」のいずれかを出力してください。
+        |||, &#39;\n&#39;),
+      },
+    },
+    category_key: [&#39;AXIS&#39;, &#39;REQUIRES_EXTERNAL_KNOWLEDGE&#39;],
+  },
+}
+</code></pre></div></p>
+<h2 id="multi_challenge_eval">multi_challenge_eval<a class="headerlink" href="#multi_challenge_eval" title="Permanent link">&para;</a></h2>
+<p>LLM-as-a-judge metric for the <code>multi_challenge</code> eval setup.</p>
+<p>The judge checks whether the last assistant response satisfies the YES/NO check question (<code>target_question</code>),
+and <code>llm_score</code> is the pass rate. Category-wise pass rates are reported as <code>llm_score/axis/&lt;AXIS&gt;</code>.</p>
+<p>The prompt follows the official evaluator:
+https://github.com/ekwinox117/multi-challenge/blob/5ccefcca6a39020d66c1383c4e6a809cb07afa33/src/evaluator.py</p>
+<p>The default judge is the open-weight model <code>openai/gpt-oss-120b</code>, served locally with <code>VLLMServeLM</code>
+(requires the <code>vllm</code> extra and GPUs), so that the results do not depend on the availability of a proprietary API.
+To use an already running OpenAI-compatible server instead, override the judge with <code>OpenAIChatAPI</code>, e.g.</p>
+<p>--metrics.init_args.language_model OpenAIChatAPI \
+  --metrics.init_args.language_model.init_args.model openai/gpt-oss-120b \
+  --metrics.init_args.language_model.init_args.api_headers.base_url http://localhost:8000/v1
+<div class="highlight"><pre><span></span><code>{
+  class_path: &#39;ChatLLMLabel&#39;,
+  init_args: {
+    language_model: {
+      class_path: &#39;VLLMServeLM&#39;,
+      init_args: { model: &#39;openai/gpt-oss-120b&#39;, default_gen_kwargs: { temperature: 0.0 } },
+    },
+    label_names: [&#39;YES&#39;, &#39;NO&#39;],
+    label_points: [1.0, 0.0],
+    prompt_template: {
+      class_path: &#39;Jinja2PromptTemplate&#39;,
+      init_args: {
+        template: std.stripChars(|||
+          You are tasked with evaluating a model response to see if it meets a specific criteria.
+          The criteria will always be YES/NO evaluation.
+
+          The model response is as follows:
+          &lt;MODEL_RESPONSE&gt;
+          {{ lm_output }}
+          &lt;/MODEL_RESPONSE&gt;
+
+          The criteria that the model response must meet is as follows. Be VERY STRICT!:
+          &lt;CRITERIA&gt;
+          {{ target_question }}
+          &lt;/CRITERIA&gt;
+
+          Print your reasoning followed by your verdict, either &quot;YES&quot; or &quot;NO&quot;.
+        |||, &#39;\n&#39;),
+      },
+    },
+    category_key: &#39;axis&#39;,
+  },
+}
+</code></pre></div></p>
 
 
 

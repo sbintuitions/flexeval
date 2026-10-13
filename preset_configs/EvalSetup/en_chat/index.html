@@ -612,6 +612,15 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#multi_challenge" class="md-nav__link">
+    <span class="md-ellipsis">
+      multi_challenge
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#vicuna-en" class="md-nav__link">
     <span class="md-ellipsis">
       vicuna-en
@@ -1433,6 +1442,15 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#multi_challenge" class="md-nav__link">
+    <span class="md-ellipsis">
+      multi_challenge
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#vicuna-en" class="md-nav__link">
     <span class="md-ellipsis">
       vicuna-en
@@ -1479,6 +1497,43 @@
       { class_path: &#39;OutputLengthStats&#39; },
     ],
     gen_kwargs: { max_new_tokens: 1024 },
+    batch_size: 4,
+  },
+}
+</code></pre></div></li>
+</ul>
+<h2 id="multi_challenge">multi_challenge<a class="headerlink" href="#multi_challenge" title="Permanent link">&para;</a></h2>
+<p>MultiChallenge: a multi-turn conversation benchmark for LLMs (English).</p>
+<p>Each instance is a conversation with three or more turns, where the assistant has to respond to the last user turn.
+The conversations are categorized into four axes:</p>
+<ul>
+<li>Inference Memory: recall and use the information given by the user in earlier turns</li>
+<li>Instruction Retention: keep following the instructions given in earlier turns</li>
+<li>Reliable Version Editing: iteratively edit a piece of work through the conversation</li>
+<li>Self-Coherence: stay consistent with the assistant's own earlier responses</li>
+</ul>
+<p>Each conversation has a YES/NO check question (<code>target_question</code>) for the last assistant response.
+Use the <code>multi_challenge_eval</code> metric preset with <code>flexeval_file</code> to let an LLM judge the responses.</p>
+<p>References:</p>
+<ul>
+<li><a href="https://huggingface.co/datasets/ScaleAI/MultiChallenge">Hugging Face Dataset</a></li>
+<li><a href="https://github.com/ekwinox117/multi-challenge">Data Source</a></li>
+<li><a href="https://aclanthology.org/2025.findings-acl.958/">MultiChallenge: A Realistic Multi-Turn Conversation Evaluation Benchmark Challenging to Frontier LLMs</a>
+<div class="highlight"><pre><span></span><code>{
+  class_path: &#39;ChatResponse&#39;,
+  init_args: {
+    eval_dataset: {
+      class_path: &#39;OpenAIMessagesDataset&#39;,
+      init_args: {
+        path: &#39;ScaleAI/MultiChallenge&#39;,
+        split: &#39;test&#39;,
+        message_key: &#39;conversation&#39;,
+      },
+    },
+    metrics: [
+      { class_path: &#39;OutputLengthStats&#39; },
+      { class_path: &#39;flexeval.core.metric.repetition_n.RepetitionN&#39; },
+    ],
     batch_size: 4,
   },
 }

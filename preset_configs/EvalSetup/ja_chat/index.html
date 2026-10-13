@@ -731,6 +731,15 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#j_multi_challenge" class="md-nav__link">
+    <span class="md-ellipsis">
+      j_multi_challenge
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#jamcqa_chat" class="md-nav__link">
     <span class="md-ellipsis">
       jamcqa_chat
@@ -1502,6 +1511,15 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#j_multi_challenge" class="md-nav__link">
+    <span class="md-ellipsis">
+      j_multi_challenge
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#jamcqa_chat" class="md-nav__link">
     <span class="md-ellipsis">
       jamcqa_chat
@@ -1651,6 +1669,45 @@ This is a evaluation setup for chat LLMs.</p>
       { class_path: &#39;OutputLengthStats&#39; },
     ],
     gen_kwargs: { max_new_tokens: 1024 },
+    batch_size: 4,
+  },
+}
+</code></pre></div></li>
+</ul>
+<h2 id="j_multi_challenge">j_multi_challenge<a class="headerlink" href="#j_multi_challenge" title="Permanent link">&para;</a></h2>
+<p>J-MultiChallenge: a Japanese adaptation of MultiChallenge, a multi-turn conversation benchmark for LLMs.</p>
+<p>Each instance is a conversation with three or more turns, where the assistant has to respond to the last user turn.
+The conversations are categorized into four axes (<code>AXIS</code>):</p>
+<ul>
+<li>INFERENCE_MEMORY: recall and use the information given by the user in earlier turns</li>
+<li>INSTRUCTION_RETENTION: keep following the instructions given in earlier turns</li>
+<li>RELIABLE_VERSION_EDITING: iteratively edit a piece of work through the conversation</li>
+<li>SELF_COHERENCE: stay consistent with the assistant's own earlier responses</li>
+</ul>
+<p>Each conversation has a YES/NO check question (<code>TARGET_QUESTION</code>) for the last assistant response.
+Use the <code>j_multi_challenge_eval</code> metric preset with <code>flexeval_file</code> to let an LLM judge the responses.</p>
+<p>In addition to the original data, instances that require external world knowledge to be answered and judged
+are flagged with <code>REQUIRES_EXTERNAL_KNOWLEDGE</code>, so that the pure multi-turn ability can be measured separately.</p>
+<p>References:</p>
+<ul>
+<li><a href="https://huggingface.co/datasets/sbintuitions/J-MultiChallenge">Hugging Face Dataset</a></li>
+<li><a href="https://github.com/ekwinox117/multi-challenge">Original Data Source</a></li>
+<li><a href="https://aclanthology.org/2025.findings-acl.958/">MultiChallenge: A Realistic Multi-Turn Conversation Evaluation Benchmark Challenging to Frontier LLMs</a>
+<div class="highlight"><pre><span></span><code>{
+  class_path: &#39;ChatResponse&#39;,
+  init_args: {
+    eval_dataset: {
+      class_path: &#39;OpenAIMessagesDataset&#39;,
+      init_args: {
+        path: &#39;sbintuitions/J-MultiChallenge&#39;,
+        split: &#39;test&#39;,
+        message_key: &#39;CONVERSATION&#39;,
+      },
+    },
+    metrics: [
+      { class_path: &#39;OutputLengthStats&#39; },
+      { class_path: &#39;flexeval.core.metric.repetition_n.RepetitionN&#39; },
+    ],
     batch_size: 4,
   },
 }
