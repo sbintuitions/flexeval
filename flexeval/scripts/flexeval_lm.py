@@ -157,7 +157,7 @@ def main() -> None:  # noqa: C901, PLR0912, PLR0915
     parser.add_argument(
         "--lock_timeout",
         type=float,
-        default=600.0,
+        default=300.0,
         help="Seconds after which a lock file that is not being updated is regarded as left by a dead process.",
     )
     parser.add_argument(
