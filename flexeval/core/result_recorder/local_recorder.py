@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import json
 import os
-import socket
 import threading
 import time
 from collections.abc import Iterable
@@ -61,7 +60,7 @@ class LocalRecorder(ResultRecorder):
         self,
         output_dir: str,
         force: bool = False,
-        lock_timeout: float = 600.0,
+        lock_timeout: float = 300.0,
         heartbeat_interval: float | None = None,
     ) -> None:
         self.output_dir = Path(output_dir)
@@ -133,8 +132,7 @@ class LocalRecorder(ResultRecorder):
             fd = os.open(lock_path, os.O_CREAT | os.O_EXCL | os.O_WRONLY)
         except FileExistsError:
             return False
-        with os.fdopen(fd, "w") as f:
-            f.write(f"host={socket.gethostname()} pid={os.getpid()}\n")
+        os.close(fd)
         return True
 
     def _is_stale(self, path: Path) -> bool:
