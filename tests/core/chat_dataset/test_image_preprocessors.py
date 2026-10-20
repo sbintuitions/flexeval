@@ -55,10 +55,18 @@ def test_load_image(image: Image.Image, tmp_path: Path) -> None:
     assert load_image({"bytes": None, "path": str(image_path)}).size == (80, 100)
 
     # Intentionally pass a wrong-typed value to exercise the runtime TypeError
-    # guard. The signature stays `Image.Image | dict` (not `Any`), so the static
-    # checker must be suppressed for this one deliberate violation.
+    # guard. The signature stays a union of supported types (not `Any`), so the
+    # static checker must be suppressed for this one deliberate violation.
     with pytest.raises(TypeError):
         load_image("not-an-image")  # type: ignore[arg-type]  # ty: ignore[invalid-argument-type]
+
+
+def test_load_image_raw_bytes(image: Image.Image) -> None:
+    """Raw encoded image bytes (HF `binary` dataset feature) are decoded."""
+    buffer = io.BytesIO()
+    image.save(buffer, format="PNG")
+    assert load_image(buffer.getvalue()).size == (80, 100)
+    assert load_image(bytearray(buffer.getvalue())).size == (80, 100)
 
 
 def test_convert_image_to_base64(image: Image.Image) -> None:

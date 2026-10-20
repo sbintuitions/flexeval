@@ -38,16 +38,19 @@ def image_to_base64(image: Image.Image, image_format: str, max_length: int | Non
     return f"data:image/{image_format.lower()};base64,{base64_image}"
 
 
-def load_image(image: Image.Image | dict) -> Image.Image:
+def load_image(image: Image.Image | bytes | bytearray | dict) -> Image.Image:
     """Normalize an image value into a PIL Image.
 
-    Accepts PIL Image objects or dicts of the form `{"bytes": ..., "path": ...}`
-    (the raw form stored in parquet files that is obtained when images are
-    loaded without the HF `Image` feature metadata, e.g. via the `parquet`
-    dataset loader).
+    Accepts PIL Image objects, raw encoded image bytes (the value obtained for
+    HF `binary` dataset features, e.g. `ahmed-masry/ChartQAPro`), or dicts of
+    the form `{"bytes": ..., "path": ...}` (the raw form stored in parquet
+    files that is obtained when images are loaded without the HF `Image`
+    feature metadata, e.g. via the `parquet` dataset loader).
     """
     if isinstance(image, Image.Image):
         return image
+    if isinstance(image, (bytes, bytearray)):
+        return Image.open(BytesIO(image))
     if isinstance(image, dict):
         if image.get("bytes") is not None:
             return Image.open(BytesIO(image["bytes"]))
