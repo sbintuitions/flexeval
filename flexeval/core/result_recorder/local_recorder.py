@@ -128,7 +128,6 @@ class LocalRecorder(ResultRecorder):
     @staticmethod
     def _create_lock_file(lock_path: Path) -> bool:
         try:
-            # O_EXCL makes the creation atomic, so only one process can succeed.
             fd = os.open(lock_path, os.O_CREAT | os.O_EXCL | os.O_WRONLY)
         except FileExistsError:
             return False
@@ -156,8 +155,6 @@ class LocalRecorder(ResultRecorder):
         self._heartbeats[lock_path] = (thread, stop_event)
 
     def _take_over_stale_lock(self, lock_path: Path) -> bool:
-        # Only one process can hold the guard, so that a process does not remove the lock
-        # that another process has just taken over.
         guard_path = lock_path.with_name(LOCK_STEAL_GUARD_FILE_NAME)
         if not self._create_lock_file(guard_path):
             if self._is_stale(guard_path):

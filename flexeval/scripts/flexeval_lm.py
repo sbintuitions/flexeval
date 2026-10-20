@@ -303,7 +303,6 @@ def main() -> None:  # noqa: C901, PLR0912, PLR0915
                 if len(acquired_recorders) < len(result_recorders):
                     logger.info(f"Skipping the evaluation for group: {group} as it is locked by another process.")
                     continue
-                # Unfinished outputs left by a failed run can be overwritten.
                 for result_recorder in result_recorders:
                     if hasattr(result_recorder, "force"):
                         result_recorder.force = True
