@@ -11,7 +11,7 @@ from typing import Any
 
 import pytest
 
-from flexeval import Generation, Perplexity
+from flexeval import Generation, Perplexity, RandomFewShotGenerator
 from flexeval.core.result_recorder.local_recorder import CONFIG_FILE_NAME, METRIC_FILE_NAME, OUTPUTS_FILE_NAME
 from flexeval.scripts.flexeval_lm import generate_eval_entries, maybe_replace_random_seed
 from tests.dummy_modules import DummyGenerationDataset, DummyTextDataset
@@ -399,6 +399,142 @@ def test_maybe_replace_random_seed() -> None:
     )
     assert id(new_perplexity_config) == id(perplexity_config)
     assert id(new_perplexity_eval_setup) == id(perplexity_eval_setup)
+
+
+def test_maybe_replace_random_seed_replaces_few_shot_generator_with_new_instance() -> None:
+    dataset = DummyGenerationDataset()
+    few_shot_generator = RandomFewShotGenerator(dataset=dataset, num_shots=1, seed=42)
+    generation_eval_setup = Generation(
+        eval_dataset=dataset,
+        gen_kwargs={},
+        prompt_template="dummy",
+        few_shot_generator=few_shot_generator,
+        random_seed=42,
+    )
+    generation_config = {
+        "init_args": {
+            "random_seed": 42,
+            "few_shot_generator": {
+                "class_path": "flexeval.RandomFewShotGenerator",
+                "init_args": {"dataset": "dummy", "num_shots": 1, "seed": 42, "num_trials_to_avoid_leak": 3},
+            },
+        },
+    }
+
+    new_eval_setup, new_config = maybe_replace_random_seed(generation_eval_setup, generation_config, seed_increment=1)
+
+    # a new, distinct few_shot_generator instance is used, but the dataset is shared (not deep-copied)
+    assert new_eval_setup.few_shot_generator is not few_shot_generator
+    assert new_eval_setup.few_shot_generator.dataset is dataset
+
+    # the derived generator's samples are reproducible from seed alone,
+    # matching an independently constructed generator with the incremented seed
+    directly_constructed = RandomFewShotGenerator(dataset=dataset, num_shots=1, seed=43)
+    assert new_eval_setup.few_shot_generator() == directly_constructed()
+
+    # the config's few_shot_generator seed is incremented too, for reproducibility
+    assert new_config["init_args"]["few_shot_generator"]["init_args"]["seed"] == 43
+    # the original config is untouched
+    assert generation_config["init_args"]["few_shot_generator"]["init_args"]["seed"] == 42
+
+
+def test_maybe_replace_random_seed_without_few_shot_generator_seed_key_in_config_is_defensive() -> None:
+    # if the config's few_shot_generator init_args has no "seed" key, nothing should be touched there
+    dataset = DummyGenerationDataset()
+    few_shot_generator = RandomFewShotGenerator(dataset=dataset, num_shots=1, seed=42)
+    generation_eval_setup = Generation(
+        eval_dataset=dataset,
+        gen_kwargs={},
+        prompt_template="dummy",
+        few_shot_generator=few_shot_generator,
+        random_seed=42,
+    )
+    generation_config = {
+        "init_args": {
+            "random_seed": 42,
+            "few_shot_generator": {
+                "class_path": "flexeval.RandomFewShotGenerator",
+                "init_args": {"dataset": "dummy", "num_shots": 1, "num_trials_to_avoid_leak": 3},
+            },
+        },
+    }
+
+    new_eval_setup, new_config = maybe_replace_random_seed(generation_eval_setup, generation_config, seed_increment=1)
+
+    assert new_eval_setup.few_shot_generator is not few_shot_generator
+    assert "seed" not in new_config["init_args"]["few_shot_generator"]["init_args"]
+
+
+def test_maybe_replace_random_seed_with_none_few_shot_generator_does_not_error() -> None:
+    dataset = DummyGenerationDataset()
+    generation_eval_setup = Generation(
+        eval_dataset=dataset,
+        gen_kwargs={},
+        prompt_template="dummy",
+        few_shot_generator=None,
+        random_seed=42,
+    )
+    generation_config = {"init_args": {"random_seed": 42}}
+
+    new_eval_setup, new_config = maybe_replace_random_seed(generation_eval_setup, generation_config, seed_increment=1)
+
+    assert new_eval_setup.few_shot_generator is None
+    assert new_eval_setup.random_seed == 43
+    assert new_config["init_args"]["random_seed"] == 43
+
+
+def test_generate_eval_entries_gives_each_repeat_a_distinct_few_shot_generator() -> None:
+    dataset = DummyGenerationDataset()
+    few_shot_generator = RandomFewShotGenerator(dataset=dataset, num_shots=1, seed=42)
+    generation_eval_setup = Generation(
+        eval_dataset=dataset,
+        gen_kwargs={},
+        prompt_template="dummy",
+        few_shot_generator=few_shot_generator,
+        random_seed=42,
+    )
+    generation_config = {
+        "init_args": {
+            "random_seed": 42,
+            "few_shot_generator": {
+                "class_path": "flexeval.RandomFewShotGenerator",
+                "init_args": {"dataset": "dummy", "num_shots": 1, "seed": 42, "num_trials_to_avoid_leak": 3},
+            },
+        },
+    }
+
+    entries = generate_eval_entries(
+        eval_setup=generation_eval_setup,
+        config_content=generation_config,
+        group="test_group",
+        num_repeats=3,
+    )
+
+    generators = [entry[0].few_shot_generator for entry in entries]
+    # all generators must be distinct objects from each other and from the original
+    assert len({id(g) for g in generators}) == len(generators)
+    assert few_shot_generator not in generators
+
+    # run0 (seed_increment=0) must be reproducible from the original seed alone,
+    # regardless of the fact that it's derived via with_seed_increment(0)
+    directly_constructed = RandomFewShotGenerator(dataset=dataset, num_shots=1, seed=42)
+    assert generators[0]() == directly_constructed()
+
+
+def test_generate_eval_entries_with_perplexity_setup_does_not_error() -> None:
+    # Perplexity has neither `random_seed` nor `few_shot_generator`
+    perplexity_eval_setup = Perplexity(eval_dataset=DummyTextDataset())
+    perplexity_config = {"init_args": {}}
+
+    entries = generate_eval_entries(
+        eval_setup=perplexity_eval_setup,
+        config_content=perplexity_config,
+        group="test_group",
+        num_repeats=3,
+    )
+    assert len(entries) == 3
+    for entry in entries:
+        assert entry[0] is perplexity_eval_setup
 
 
 @pytest.mark.parametrize(
