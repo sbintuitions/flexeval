@@ -115,3 +115,28 @@ def test_if_not_ignore_seed() -> None:
 def test_set_random_seed(chat_lm: OpenAIChatAPI) -> None:
     chat_lm.set_random_seed(42)
     assert chat_lm.default_gen_kwargs["seed"] == 42
+
+
+@pytest.mark.skipif(not is_openai_enabled(), reason="OpenAI is not installed")
+def test_set_random_seed_is_noop_when_ignore_seed() -> None:
+    chat_lm = LiteLLMChatAPI(MODEL_NAME, ignore_seed=True)
+    chat_lm.set_random_seed(42)
+    assert "seed" not in chat_lm.default_gen_kwargs
+
+
+@pytest.mark.skipif(not is_openai_enabled(), reason="OpenAI is not installed")
+def test_ignore_seed_removes_seed_from_default_gen_kwargs() -> None:
+    chat_lm = LiteLLMChatAPI(MODEL_NAME, default_gen_kwargs={"seed": 42, "temperature": 0.0}, ignore_seed=True)
+    assert "seed" not in chat_lm.default_gen_kwargs
+    assert chat_lm.default_gen_kwargs["temperature"] == 0.0
+
+
+@pytest.mark.skipif(not is_openai_enabled(), reason="OpenAI is not installed")
+def test_if_ignore_seed_after_set_random_seed() -> None:
+    chat_lm = LiteLLMChatAPI(MODEL_NAME, ignore_seed=True)
+    chat_lm.set_random_seed(42)
+    chat_messages = [{"role": "user", "content": "Hello"}]
+    with patch.object(OpenAIChatAPI, "_batch_generate_chat_response", return_value=[LMOutput("Hello!")]) as mock_method:
+        chat_lm.generate_chat_response(chat_messages, temperature=0.7)
+        # `seed` should not be passed even though set_random_seed() was called
+        mock_method.assert_called_once_with([chat_messages], [None], temperature=0.7)
