@@ -13,7 +13,7 @@ import pytest
 
 from flexeval import Generation, Perplexity
 from flexeval.core.result_recorder.local_recorder import CONFIG_FILE_NAME, METRIC_FILE_NAME, OUTPUTS_FILE_NAME
-from flexeval.scripts.flexeval_lm import generate_eval_entries, maybe_replace_random_seed
+from flexeval.scripts.flexeval_lm import RUN_LOG_FILE_NAME, generate_eval_entries, maybe_replace_random_seed
 from tests.dummy_modules import DummyGenerationDataset, DummyTextDataset
 
 # fmt: off
@@ -463,3 +463,25 @@ def test_flexeval_lm_with_retry(retry: bool, force: bool) -> None:
         elif not retry and not force:
             assert not Path(f"{f}/run1/{METRIC_FILE_NAME}").exists()
             assert not Path(f"{f}/run1/{OUTPUTS_FILE_NAME}").exists()
+
+
+def test_flexeval_lm_saves_log_file_without_group() -> None:
+    with tempfile.TemporaryDirectory() as f:
+        result = subprocess.run([*CHAT_RESPONSE_CMD, "--save_dir", f], check=False)
+        assert result.returncode == os.EX_OK
+        log_path = Path(f) / RUN_LOG_FILE_NAME
+        assert log_path.exists()
+        assert "Elapsed time" in log_path.read_text()
+
+
+def test_flexeval_lm_saves_log_file_per_group() -> None:
+    with tempfile.TemporaryDirectory() as f:
+        num_repeats = 3
+        command = [*CHAT_RESPONSE_CMD, "--num_repeats", str(num_repeats), "--save_dir", f]
+        result = subprocess.run(command, check=False)
+        assert result.returncode == os.EX_OK
+        assert not (Path(f) / RUN_LOG_FILE_NAME).exists()
+        for i in range(num_repeats):
+            log_path = Path(f) / f"run{i}" / RUN_LOG_FILE_NAME
+            assert log_path.exists()
+            assert "Elapsed time" in log_path.read_text()

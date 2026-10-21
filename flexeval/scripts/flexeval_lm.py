@@ -26,6 +26,8 @@ from .common import (
     override_jsonargparse_params,
 )
 
+RUN_LOG_FILE_NAME = "flexeval.log"
+
 
 def as_dict(self: Namespace) -> dict[str, Any]:
     """Converts the nested namespaces into nested dictionaries.
@@ -275,6 +277,8 @@ def main() -> None:  # noqa: C901, PLR0912, PLR0915
             },
         }
 
+        acquired_recorders: list[ResultRecorder] = []
+        log_sink_id: int | None = None
         try:
             if args.retry and not args.force:
                 to_skip = all(result_recorder.is_metrics_saved(group) for result_recorder in result_recorders)
@@ -284,6 +288,11 @@ def main() -> None:  # noqa: C901, PLR0912, PLR0915
                 for result_recorder in result_recorders:
                     if hasattr(result_recorder, "force"):
                         result_recorder.force = True
+
+            if args.save_dir:
+                run_dir = Path(args.save_dir) / group if group else Path(args.save_dir)
+                run_dir.mkdir(parents=True, exist_ok=True)
+                log_sink_id = logger.add(run_dir / RUN_LOG_FILE_NAME, mode="a")
 
             for result_recorder in result_recorders:
                 result_recorder.record_config(task_config, group)
@@ -307,6 +316,11 @@ def main() -> None:  # noqa: C901, PLR0912, PLR0915
                 f"Error in evaluation:\n{e}\n{stack_trace_str}",
             )
             exit_code = os.EX_DATAERR
+        finally:
+            if log_sink_id is not None:
+                logger.remove(log_sink_id)
+            for result_recorder in acquired_recorders:
+                result_recorder.release_lock(group)
 
     sys.exit(exit_code)
 
