@@ -26,6 +26,8 @@ from .common import (
     override_jsonargparse_params,
 )
 
+RUN_LOG_FILE_NAME = "flexeval.log"
+
 
 def as_dict(self: Namespace) -> dict[str, Any]:
     """Converts the nested namespaces into nested dictionaries.
@@ -161,6 +163,13 @@ def main() -> None:  # noqa: C901, PLR0912, PLR0915
         help="Seconds after which a lock file that is not being updated is regarded as left by a dead process.",
     )
     parser.add_argument(
+        "--save_log",
+        type=bool,
+        default=True,
+        help=f"Whether to save the run log to `{RUN_LOG_FILE_NAME}` in the output directory of each evaluation run. "
+        "Only effective when `--save_dir` is specified.",
+    )
+    parser.add_argument(
         "--result_recorder",
         type=ResultRecorder,
         default=None,
@@ -291,6 +300,7 @@ def main() -> None:  # noqa: C901, PLR0912, PLR0915
         }
 
         acquired_recorders: list[ResultRecorder] = []
+        log_sink_id: int | None = None
         try:
             if args.lock and not args.force:
                 if any(result_recorder.is_metrics_saved(group) for result_recorder in result_recorders):
@@ -315,6 +325,11 @@ def main() -> None:  # noqa: C901, PLR0912, PLR0915
                     if hasattr(result_recorder, "force"):
                         result_recorder.force = True
 
+            if args.save_dir and args.save_log:
+                run_dir = Path(args.save_dir) / group if group else Path(args.save_dir)
+                run_dir.mkdir(parents=True, exist_ok=True)
+                log_sink_id = logger.add(run_dir / RUN_LOG_FILE_NAME, mode="a")
+
             for result_recorder in result_recorders:
                 result_recorder.record_config(task_config, group)
 
@@ -338,6 +353,8 @@ def main() -> None:  # noqa: C901, PLR0912, PLR0915
             )
             exit_code = os.EX_DATAERR
         finally:
+            if log_sink_id is not None:
+                logger.remove(log_sink_id)
             for result_recorder in acquired_recorders:
                 result_recorder.release_lock(group)
 
