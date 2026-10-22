@@ -146,6 +146,21 @@ def main() -> None:  # noqa: C901, PLR0912, PLR0915
         help="Re-run only the failed evaluation runs. Skip runs if metrics are already saved.",
     )
     parser.add_argument(
+        "--lock",
+        type=bool,
+        default=False,
+        help="Acquire a lock file (`.lock`) in the output directory of each evaluation run. "
+        "Runs that are already finished or locked by another process are skipped, "
+        "so that multiple processes with the same `--eval_setups` and `--save_dir` can share the work. "
+        "A lock that has not been updated for `--lock_timeout` seconds is regarded as stale.",
+    )
+    parser.add_argument(
+        "--lock_timeout",
+        type=float,
+        default=300.0,
+        help="Seconds after which a lock file that is not being updated is regarded as left by a dead process.",
+    )
+    parser.add_argument(
         "--result_recorder",
         type=ResultRecorder,
         default=None,
@@ -232,7 +247,7 @@ def main() -> None:  # noqa: C901, PLR0912, PLR0915
 
     result_recorders: list[ResultRecorder] = []
     if args.save_dir:
-        result_recorders.append(LocalRecorder(args.save_dir, force=args.force))
+        result_recorders.append(LocalRecorder(args.save_dir, force=args.force, lock_timeout=args.lock_timeout))
     if args.result_recorder:
         result_recorders.append(args.result_recorder)
 
@@ -275,8 +290,23 @@ def main() -> None:  # noqa: C901, PLR0912, PLR0915
             },
         }
 
+        acquired_recorders: list[ResultRecorder] = []
         try:
-            if args.retry and not args.force:
+            if args.lock and not args.force:
+                if any(result_recorder.is_metrics_saved(group) for result_recorder in result_recorders):
+                    logger.info(f"Skipping the evaluation for group: {group} as the metrics are already saved.")
+                    continue
+                for result_recorder in result_recorders:
+                    if not result_recorder.acquire_lock(group):
+                        break
+                    acquired_recorders.append(result_recorder)
+                if len(acquired_recorders) < len(result_recorders):
+                    logger.info(f"Skipping the evaluation for group: {group} as it is locked by another process.")
+                    continue
+                for result_recorder in result_recorders:
+                    if hasattr(result_recorder, "force"):
+                        result_recorder.force = True
+            elif args.retry and not args.force:
                 to_skip = all(result_recorder.is_metrics_saved(group) for result_recorder in result_recorders)
                 if to_skip:
                     logger.info(f"Skipping the evaluation for group: {group} as the metrics are already saved.")
@@ -307,6 +337,9 @@ def main() -> None:  # noqa: C901, PLR0912, PLR0915
                 f"Error in evaluation:\n{e}\n{stack_trace_str}",
             )
             exit_code = os.EX_DATAERR
+        finally:
+            for result_recorder in acquired_recorders:
+                result_recorder.release_lock(group)
 
     sys.exit(exit_code)
 
