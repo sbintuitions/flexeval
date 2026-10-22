@@ -13,7 +13,7 @@ from .base import Metric, MetricResult
 from .utils import validate_inputs
 
 _MISSING = object()
-_OPERATORS = {"eq", "ne", "in", "not_in", "regex", "exists"}
+_OPERATORS = {"eq", "ne", "in", "not_in", "regex", "exists", "gt", "gte", "lt", "lte", "==", "!=", ">", ">=", "<", "<="}
 
 
 def _lookup(extra_info: dict[str, Any], key: str) -> Any:  # noqa: ANN401
@@ -86,8 +86,11 @@ class MetricRoute:
 
             - a scalar: equality (``{"task": "qa"}``)
             - a list: membership (``{"task": ["qa", "mt"]}``)
-            - a dict of operators: ``eq``, ``ne``, ``in``, ``not_in``, ``regex`` (``re.search``), ``exists``.
-              Multiple operators are AND-ed (``{"title": {"regex": "^A", "ne": "AB"}}``).
+            - a dict of operators: ``eq``, ``ne``, ``in``, ``not_in``, ``regex`` (``re.search``), ``exists``,
+              ``gt``, ``gte``, ``lt``, ``lte``.
+              ``==``, ``!=``, ``>``, ``>=``, ``<``, ``<=`` are accepted as aliases of the named operators.
+              Multiple operators are AND-ed (``{"title": {"regex": "^A", "ne": "AB"}}``,
+              ``{"score": {"gte": 1, "lt": 5}}``).
 
             Instances lacking a queried key do not match (except for ``exists: false``).
         group_by: If given, additionally reports the mean of each numeric instance-level value

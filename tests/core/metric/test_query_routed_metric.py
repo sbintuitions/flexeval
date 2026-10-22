@@ -7,10 +7,10 @@ from flexeval.core.metric import ExactMatch, Metric, MetricResult, MetricRoute, 
 OUTPUTS = ["a", "b", "c", "d"]
 REFS = [["a"], ["x"], ["c"], ["d"]]
 INFOS = [
-    {"task": "qa", "meta": {"lang": "ja"}, "domain": "x"},
-    {"task": "qa", "meta": {"lang": "en"}, "domain": "y"},
-    {"task": "mt", "meta": {"lang": "ja"}, "domain": "x"},
-    {"task": "other"},
+    {"task": "qa", "meta": {"lang": "ja"}, "domain": "x", "score": 1},
+    {"task": "qa", "meta": {"lang": "en"}, "domain": "y", "score": 5},
+    {"task": "mt", "meta": {"lang": "ja"}, "domain": "x", "score": 3},
+    {"task": "other", "score": 3},
 ]
 
 
@@ -40,6 +40,18 @@ def test_basic_routing_and_namespacing() -> None:
         ({"task": {"regex": "^(qa|other)$"}}, 3),
         ({"domain": {"exists": False}}, 1),
         ({"meta.lang": {"exists": True}}, 3),
+        ({"score": {"gt": 3}}, 1),
+        ({"score": {"gte": 3}}, 3),
+        ({"score": {"lt": 3}}, 1),
+        ({"score": {"lte": 3}}, 3),
+        ({"score": {"gte": 3, "lt": 5}}, 2),
+        ({"missing": {"gt": 0}}, 0),
+        ({"task": {"==": "qa"}}, 2),
+        ({"task": {"!=": "qa"}}, 2),
+        ({"score": {">": 3}}, 1),
+        ({"score": {">=": 3, "<": 5}}, 2),
+        ({"score": {"<=": 3}}, 3),
+        ({"score": {"gt": 1, ">": 3}}, 1),
     ],
 )
 def test_where_operators(where: dict, expected: int) -> None:
