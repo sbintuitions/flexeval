@@ -34,7 +34,7 @@ uv = {version = "^0.12.14", optional = true}
 loguru = "^0.7.2"
 wandb = {version = "^0.17.2", optional = true}
 pyarrow = "16.1.0"  # set the version because we get "Unable to find installation candidates" with 17.0.0
-litellm = "^1.52.9"
+litellm = ">=1.88.6,<2.0.0,!=1.107.0"
 scipy = "^1.13.0"
 smart-open = "^7.1.0"
 # The "ja" component of Transformers depends on sudachipy 0.6.6 or later. For aarch64 Linux h
