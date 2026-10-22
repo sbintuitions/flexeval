@@ -4,6 +4,7 @@ from .char_f1 import CharF1
 from .code_eval import CodeEval
 from .common_prefix_length import CommonPrefixLength
 from .common_string_length import CommonStringLength
+from .query_routed_metric import MetricRoute, QueryRoutedMetric
 from .correlation import Correlation
 from .exact_match import ExactMatch
 from .finish_reason import FinishReasonCount
