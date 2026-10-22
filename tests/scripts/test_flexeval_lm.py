@@ -4,6 +4,7 @@ import json
 import os
 import subprocess
 import tempfile
+import time
 from importlib.metadata import version
 from os import PathLike
 from pathlib import Path
@@ -485,3 +486,34 @@ def test_flexeval_lm_saves_log_file_per_group() -> None:
             log_path = Path(f) / f"run{i}" / RUN_LOG_FILE_NAME
             assert log_path.exists()
             assert "Elapsed time" in log_path.read_text()
+
+
+def test_flexeval_lm_with_lock() -> None:
+    with tempfile.TemporaryDirectory() as f:
+        num_repeats = 3
+        # run0 is locked by another process
+        Path(f"{f}/run0").mkdir()
+        Path(f"{f}/run0/.lock").touch()
+        command = [*CHAT_RESPONSE_CMD, "--num_repeats", "3", "--save_dir", f, "--lock", "true"]
+        result = subprocess.run(command, check=False, capture_output=True)
+        assert result.returncode == os.EX_OK
+        stderr = result.stderr.decode()
+        assert "Skipping the evaluation for group: run0 as it is locked" in stderr
+        assert not Path(f"{f}/run0/{METRIC_FILE_NAME}").exists()
+        for i in range(1, num_repeats):
+            check_if_eval_results_are_correctly_saved(f"{f}/run{i}")
+            assert not Path(f"{f}/run{i}/.lock").exists()
+
+        # Second run: finished runs are skipped, and the fresh lock still blocks run0
+        result = subprocess.run(command, check=False, capture_output=True)
+        stderr = result.stderr.decode()
+        assert "Skipping the evaluation for group: run1 as the metrics are already saved" in stderr
+        assert "Skipping the evaluation for group: run0 as it is locked" in stderr
+
+        # Third run: the stale lock of run0 is taken over
+        old_time = time.time() - 1000
+        os.utime(f"{f}/run0/.lock", (old_time, old_time))
+        result = subprocess.run([*command, "--lock_timeout", "100"], check=False, capture_output=True)
+        assert result.returncode == os.EX_OK
+        check_if_eval_results_are_correctly_saved(f"{f}/run0")
+        assert not Path(f"{f}/run0/.lock").exists()
