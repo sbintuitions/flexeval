@@ -123,5 +123,3 @@ def test_same_key_metrics_collide_and_empty_metrics_rejected() -> None:
         QueryRoutedMetric(routes=[route]).evaluate(OUTPUTS, REFS, INFOS)
     with pytest.raises(ValueError, match="at least one"):
         MetricRoute(name="r", metrics=[])
-
-
