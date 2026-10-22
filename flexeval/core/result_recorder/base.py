@@ -55,3 +55,19 @@ class ResultRecorder(ABC):
             group: An optional group name to check for saved metrics.
         """
         return False
+
+    def acquire_lock(self, group: str | None = None) -> bool:
+        """
+        Try to acquire an exclusive lock for the evaluation run of the given group,
+        so that multiple processes can share the same output location without running the same evaluation.
+
+        Returns:
+            True if the lock is acquired (or the recorder does not support locking),
+            False if another process already holds the lock.
+        """
+        return True
+
+    def release_lock(self, group: str | None = None) -> None:  # noqa: B027
+        """
+        Release the lock acquired by `acquire_lock`.
+        """
