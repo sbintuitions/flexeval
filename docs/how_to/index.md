@@ -4,3 +4,4 @@
 - [Evaluate with LLM Judges](./evaluate_with_llm_judges.md)
 - [Implement Your Own Module](./implement_your_own_module.md)
 - [Evaluate Multimodal Benchmarks](./evaluate_multimodal_benchmarks.md)
+- [Use Different Metrics for Different Subsets of a Dataset](./use_different_metrics_per_subset.md)
