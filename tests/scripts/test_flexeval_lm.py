@@ -517,3 +517,11 @@ def test_flexeval_lm_with_lock() -> None:
         assert result.returncode == os.EX_OK
         check_if_eval_results_are_correctly_saved(f"{f}/run0")
         assert not Path(f"{f}/run0/.lock").exists()
+
+
+def test_flexeval_lm_does_not_save_log_file_when_disabled() -> None:
+    with tempfile.TemporaryDirectory() as f:
+        result = subprocess.run([*CHAT_RESPONSE_CMD, "--save_dir", f, "--save_log", "false"], check=False)
+        assert result.returncode == os.EX_OK
+        assert not (Path(f) / RUN_LOG_FILE_NAME).exists()
+        assert (Path(f) / METRIC_FILE_NAME).exists()

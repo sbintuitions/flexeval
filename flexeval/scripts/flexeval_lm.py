@@ -163,6 +163,13 @@ def main() -> None:  # noqa: C901, PLR0912, PLR0915
         help="Seconds after which a lock file that is not being updated is regarded as left by a dead process.",
     )
     parser.add_argument(
+        "--save_log",
+        type=bool,
+        default=True,
+        help=f"Whether to save the run log to `{RUN_LOG_FILE_NAME}` in the output directory of each evaluation run. "
+        "Only effective when `--save_dir` is specified.",
+    )
+    parser.add_argument(
         "--result_recorder",
         type=ResultRecorder,
         default=None,
@@ -318,7 +325,7 @@ def main() -> None:  # noqa: C901, PLR0912, PLR0915
                     if hasattr(result_recorder, "force"):
                         result_recorder.force = True
 
-            if args.save_dir:
+            if args.save_dir and args.save_log:
                 run_dir = Path(args.save_dir) / group if group else Path(args.save_dir)
                 run_dir.mkdir(parents=True, exist_ok=True)
                 log_sink_id = logger.add(run_dir / RUN_LOG_FILE_NAME, mode="a")
