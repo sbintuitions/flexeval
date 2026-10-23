@@ -2,7 +2,8 @@ FROM nvidia/cuda:13.0.2-cudnn-devel-ubuntu22.04 as base
 
 ### Install python 3.10 (available directly from Ubuntu 22.04's repos) and set it as default python interpreter
 RUN apt update && \
-apt install curl python3.10 build-essential vim jq git -y && \
+apt install curl ca-certificates python3.10 build-essential vim jq git -y && \
+apt install --only-upgrade ca-certificates -y && \
 update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.10 1 && \
 update-alternatives --install /usr/bin/python python /usr/bin/python3.10 1 && \
 apt install python3.10-venv python3.10-dev -y && \
