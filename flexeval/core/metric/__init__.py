@@ -13,6 +13,7 @@ from .llm_score import ChatLLMScore, LLMScore
 from .math import MathVerify
 from .output_length_stats import OutputLengthStats
 from .perspective_api import PerspectiveAPI
+from .query_routed_metric import MetricRoute, QueryRoutedMetric
 from .repetition_count import RepetitionCount
 from .rouge import ROUGE
 from .sari import SARI
