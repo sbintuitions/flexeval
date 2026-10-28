@@ -6,7 +6,12 @@ import pytest
 
 from flexeval import Jinja2PromptTemplate, LanguageModel
 from flexeval.core.language_model.base import LMOutput
-from flexeval.core.metric.llm_geval_score import ChatLLMGEvalScore, LLMGEvalScore, calculate_weighted_average
+from flexeval.core.metric.llm_geval_score import (
+    ChatLLMGEvalScore,
+    LLMGEvalScore,
+    calculate_weighted_average,
+    generate_evaluation_logprobs,
+)
 from flexeval.core.metric.utils import extract_text_from_outputs
 
 
@@ -43,6 +48,26 @@ class EchoBackLanguageModel(LanguageModel):
         )
 
 
+class StrictLengthLanguageModel(LanguageModel):
+    def compute_log_probs(
+        self,
+        text_list: list[str],
+        prefix_list: list[str] | None = None,
+        stride: int | None = None,
+    ) -> list[float]:
+        assert prefix_list is not None
+        assert len(text_list) == len(prefix_list)
+        return [float(text) for text in text_list]
+
+    def compute_chat_log_probs(
+        self,
+        prompt_list: list[list[dict[str, str]]],
+        response_list: list[dict[str, str]],
+    ) -> list[float]:
+        assert len(prompt_list) == len(response_list)
+        return [float(response["content"]) for response in response_list]
+
+
 @pytest.mark.parametrize(
     ("evaluator_logprobs", "valid_score_range", "prob_threshold", "expected_score"),
     [
@@ -61,6 +86,47 @@ def test_calculate_weighted_average(
 ) -> None:
     score, _ = calculate_weighted_average(evaluator_logprobs, valid_score_range, prob_threshold)
     assert score == expected_score
+
+
+@pytest.mark.parametrize("use_chat_inputs", [False, True])
+@pytest.mark.parametrize(("num_inputs", "batch_size"), [(3, 4), (6, 6)])
+def test_generate_evaluation_logprobs_uses_actual_batch_length(
+    use_chat_inputs: bool,
+    num_inputs: int,
+    batch_size: int,
+) -> None:
+    text_inputs = [f"input-{i}" for i in range(num_inputs)]
+    evaluator_inputs = [[{"role": "user", "content": text}] for text in text_inputs] if use_chat_inputs else text_inputs
+    valid_labels = ["1", "2", "3", "4", "5"]
+
+    results = generate_evaluation_logprobs(
+        evaluator_input_list=evaluator_inputs,
+        language_model=StrictLengthLanguageModel(),
+        valid_labels=valid_labels,
+        batch_size=batch_size,
+        disable_tqdm=True,
+    )
+
+    assert results == [{label: float(label) for label in valid_labels} for _ in range(num_inputs)]
+
+
+def test_generate_evaluation_logprobs_rejects_wrong_output_length() -> None:
+    class ShortOutputLanguageModel(StrictLengthLanguageModel):
+        def compute_log_probs(
+            self,
+            text_list: list[str],
+            prefix_list: list[str] | None = None,
+            stride: int | None = None,
+        ) -> list[float]:
+            return super().compute_log_probs(text_list, prefix_list, stride)[:-1]
+
+    with pytest.raises(ValueError, match="unexpected number of log probabilities"):
+        generate_evaluation_logprobs(
+            evaluator_input_list=["input"],
+            language_model=ShortOutputLanguageModel(),
+            valid_labels=["1", "2"],
+            disable_tqdm=True,
+        )
 
 
 @pytest.mark.parametrize(

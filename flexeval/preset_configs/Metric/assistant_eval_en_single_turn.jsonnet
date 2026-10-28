@@ -13,6 +13,7 @@ Adapted from [lm-sys/FastChat](https://github.com/lm-sys/FastChat/blob/main/fast
       class_path: 'Jinja2PromptTemplate',
       init_args: {
         template: std.stripChars(|||
+          {% set user_messages = messages | selectattr("role", "equalto", "user") | list -%}
           [Instruction]
           {% if references|length > 0 -%}
           Please act as an impartial judge and evaluate the quality of the response provided by an AI assistant to the user question displayed below. Your evaluation should consider correctness and helpfulness. You will be given a reference answer and the assistant's answer. Begin your evaluation by comparing the assistant's answer with the reference answer. Identify and correct any mistakes. Be as objective as possible. After providing your explanation, you must rate the response on a scale of 1 to 10 by strictly following this format: "[[rating]]", for example: "Rating: [[5]]".
@@ -21,7 +22,7 @@ Adapted from [lm-sys/FastChat](https://github.com/lm-sys/FastChat/blob/main/fast
           {%- endif %}
 
           [Question]
-          {{ messages[0]["content"] }}
+          {{ user_messages[-1]["content"] }}
 
           {% if references|length > 0 -%}
           [The Start of Reference Answer]
@@ -29,7 +30,7 @@ Adapted from [lm-sys/FastChat](https://github.com/lm-sys/FastChat/blob/main/fast
           [The End of Reference Answer]
           {% endif -%}
           [The Start of Assistant's Answer]
-          {% if messages|length == 1 %}{{ lm_output }}{% else %}{{ messages[1]["content"] }}{% endif %}
+          {{ lm_output }}
           [The End of Assistant's Answer]
         |||, '\n'),
       },
