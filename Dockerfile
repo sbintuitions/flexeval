@@ -8,7 +8,7 @@ apt-get clean && rm -rf /var/lib/apt/lists/
 ### Install python 3.13 with uv into a virtualenv (with pip) that is first on PATH
 COPY --from=ghcr.io/astral-sh/uv:0.13.6 /uv /uvx /usr/local/bin/
 ENV UV_PYTHON_INSTALL_DIR=/opt/uv/python
-RUN uv venv --seed --python 3.13.18 /opt/venv
+RUN uv venv --seed --python ">=3.13.18,<3.14" /opt/venv
 ENV VIRTUAL_ENV=/opt/venv
 ENV PATH="/opt/venv/bin:${PATH}"
 
