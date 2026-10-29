@@ -10541,10 +10541,10 @@ test = ["big-O", "importlib-resources ; python_version < \"3.9\"", "jaraco.funct
 type = ["pytest-mypy"]
 
 [extras]
-vllm = ["uv", "vllm"]
+vllm = ["cuda-tile", "uv", "vllm"]
 wandb = ["wandb"]
 
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.12.16,<3.13"
-content-hash = "cab1f7e35c0d42271e5368c0ca1fb70fa61145b2e29eb5ba9eaf11331d43cc5c"
+content-hash = "5710c8f6a8aa8ca96ee3e5dd27e760dc1dd8dd19b56c7f574db1de9cbf7a3e04"
