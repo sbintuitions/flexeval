@@ -85,7 +85,40 @@ A key can refer to a nested value with dots (e.g. `"meta.lang"`).
 |---|---|---|
 | scalar | equality | `{ task: 'qa' }` |
 | list | membership | `{ task: ['qa', 'mt'] }` |
-| dict of operators | `eq`, `ne`, `in`, `not_in`, `regex`, `exists` | `{ title: { regex: '^A', ne: 'AB' } }` |
+| dict of operators | `eq`, `ne`, `in`, `not_in`, `regex`, `exists`, `gt`, `gte`, `lt`, `lte`, `elem_match` | `{ title: { regex: '^A', ne: 'AB' } }` |
+
+### Query the conversation
+
+For `ChatResponse`, `extra_info` also has `messages` (the conversation given to the model, excluding the model's response) and `tools`, so you can select instances by the content of the prompt, such as the system prompt or the user input.
+List items can be addressed by index or by `*`:
+
+```jsonnet
+// Instances whose first message is a system prompt
+{ 'messages.0.role': 'system' }
+
+// Instances whose last message (the final user turn) starts with "Translate"
+{ 'messages.-1.content': { regex: '^Translate' } }
+
+// Instances having at least one assistant turn
+{ 'messages.*.role': 'assistant' }
+```
+
+- `messages.0.role`, `messages.-1.content`: an index (negative values count from the end). Out-of-range indices do not match.
+- `messages.*.role`: all the items. A positive operator (`eq`, `in`, `regex`, ...) matches if **any** item satisfies it, while `ne` and `not_in` match only if **all** items do.
+
+Each key is evaluated independently, so `{ 'messages.*.role': 'user', 'messages.*.content': { regex: '^h' } }` can be satisfied by different messages.
+To require the conditions on the **same** item, use `elem_match`, which takes a query on each item:
+
+```jsonnet
+// A user message starting with "h"
+{ messages: { elem_match: { role: 'user', content: { regex: '^h' } } } }
+
+// For lists of scalars, give a condition on the item itself
+{ tags: { elem_match: { regex: '^a' } } }
+```
+
+Keys missing in an item just make it not match, even with `on_missing_key: 'error'`.
+`group_by` accepts an index but not `*`.
 
 Omit `where` (or set it to `null`) to apply the metrics to all the instances.
 This is handy to combine subset-specific metrics with a metric for the whole dataset.

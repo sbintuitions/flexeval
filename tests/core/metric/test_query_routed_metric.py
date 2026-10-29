@@ -135,3 +135,49 @@ def test_same_key_metrics_collide_and_empty_metrics_rejected() -> None:
         QueryRoutedMetric(routes=[route]).evaluate(OUTPUTS, REFS, INFOS)
     with pytest.raises(ValueError, match="at least one"):
         MetricRoute(name="r", metrics=[])
+
+
+def test_where_supports_list_index_and_wildcard() -> None:
+    infos = [
+        {"messages": [{"role": "system", "content": "be nice"}, {"role": "user", "content": "hi"}]},
+        {"messages": [{"role": "user", "content": "hello"}]},
+    ]
+
+    def count(where: dict) -> int:
+        route = MetricRoute(name="r", metrics=[ExactMatch()], where=where)
+        return sum(route.matches(i) for i in infos)
+
+    assert count({"messages.0.role": "system"}) == 1
+    assert count({"messages.-1.content": {"regex": "^h"}}) == 2
+    assert count({"messages.*.role": "system"}) == 1
+    assert count({"messages.*.role": {"ne": "system"}}) == 1
+    assert count({"messages.5.role": "user"}) == 0
+
+
+def test_group_by_rejects_wildcard() -> None:
+    with pytest.raises(ValueError, match="group_by"):
+        MetricRoute(name="r", metrics=[ExactMatch()], group_by="messages.*.role")
+
+
+def test_where_elem_match() -> None:
+    infos = [
+        {"messages": [{"role": "system", "content": "hi"}, {"role": "user", "content": "yo"}], "tags": ["abc", "x"]},
+        {"messages": [{"role": "user", "content": "hi"}], "tags": []},
+        {"messages": [{"role": "assistant"}, {"content": "hi"}], "tags": "abc"},
+    ]
+
+    def matched(where: dict, on_missing_key: str = "skip") -> list[bool]:
+        route = MetricRoute(name="r", metrics=[ExactMatch()], where=where)
+        return [route.matches(i, on_missing_key) for i in infos]
+
+    # same item must satisfy both conditions (independent `*` keys would match the first instance too)
+    where = {"messages": {"elem_match": {"role": "user", "content": {"regex": "^h"}}}}
+    assert matched(where) == [False, True, False]
+    assert matched({"messages.*.role": "user", "messages.*.content": {"regex": "^h"}}) == [True, True, False]
+    # missing keys in items never raise
+    assert matched(where, on_missing_key="error") == [False, True, False]
+    # scalar items; non-list values do not match
+    assert matched({"tags": {"elem_match": {"regex": "^a"}}}) == [True, False, False]
+    assert matched({"tags": {"elem_match": "x"}}) == [True, False, False]
+    # nested dotted keys and indices inside the item query
+    assert matched({"messages": {"elem_match": {"role": ["user", "assistant"]}}}) == [True, True, True]

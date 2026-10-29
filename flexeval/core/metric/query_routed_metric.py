@@ -13,20 +13,62 @@ from .base import Metric, MetricResult
 from .utils import validate_inputs
 
 _MISSING = object()
-_OPERATORS = {"eq", "ne", "in", "not_in", "regex", "exists", "gt", "gte", "lt", "lte", "==", "!=", ">", ">=", "<", "<="}
+_OPERATORS = {
+    "eq",
+    "ne",
+    "in",
+    "not_in",
+    "regex",
+    "exists",
+    "gt",
+    "gte",
+    "lt",
+    "lte",
+    "==",
+    "!=",
+    ">",
+    ">=",
+    "<",
+    "<=",
+    "elem_match",
+}
+
+
+def _resolve(current: Any, parts: list[str]) -> list[Any]:  # noqa: ANN401
+    """Resolve path parts against `current`. A ``*`` part fans out over all list items."""
+    if not parts:
+        return [current]
+    part, rest = parts[0], parts[1:]
+    if isinstance(current, dict):
+        return _resolve(current[part], rest) if part in current else []
+    if isinstance(current, list):
+        if part == "*":
+            return [v for item in current for v in _resolve(item, rest)]
+        try:
+            return _resolve(current[int(part)], rest)
+        except (ValueError, IndexError):
+            return []
+    return []
 
 
 def _lookup(extra_info: dict[str, Any], key: str) -> Any:  # noqa: ANN401
-    """Resolve a (possibly dotted) key in extra_info. Returns `_MISSING` if absent."""
+    """
+    Resolve a (possibly dotted) key in extra_info. Returns `_MISSING` if absent.
+
+    List items can be addressed by index (``messages.0.role``, ``messages.-1.content``).
+    ``*`` fans out over all list items (``messages.*.role``) and returns a `_Multi` of the matched values.
+    """
     if key in extra_info:
         return extra_info[key]
-    current: Any = extra_info
-    for part in key.split("."):
-        if isinstance(current, dict) and part in current:
-            current = current[part]
-        else:
-            return _MISSING
-    return current
+    parts = key.split(".")
+    values = _resolve(extra_info, parts)
+    if "*" in parts:
+        return _Multi(values) if values else _MISSING
+    return values[0] if values else _MISSING
+
+
+class _Multi(list):
+    """Values collected by a ``*`` path. Positive operators match if any value matches."""
 
 
 def _normalize_condition(condition: Any) -> dict[str, Any]:  # noqa: ANN401
@@ -36,17 +78,58 @@ def _normalize_condition(condition: Any) -> dict[str, Any]:  # noqa: ANN401
         if unknown:
             msg = f"Unknown operator(s) {sorted(unknown)} in where clause. Supported: {sorted(_OPERATORS)}."
             raise ValueError(msg)
+        if "elem_match" in condition:
+            condition = {**condition, "elem_match": _normalize_elem_query(condition["elem_match"])}
         return condition
     if isinstance(condition, list):
         return {"in": condition}
     return {"eq": condition}
 
 
-def _check_operator(op: str, operand: Any, value: Any) -> bool:  # noqa: ANN401, C901, PLR0911
+def _normalize_where(where: dict[str, Any] | None) -> dict[str, dict[str, Any]]:
+    return {key: _normalize_condition(cond) for key, cond in (where or {}).items()}
+
+
+def _normalize_elem_query(query: Any) -> tuple[str, Any]:  # noqa: ANN401
+    """
+    Normalize the operand of `elem_match`.
+
+    A dict with keys other than operators is a `where` query on each (dict) item: ``("where", conditions)``.
+    Anything else is a condition on each (scalar) item itself: ``("cond", {operator: operand})``.
+    """
+    if isinstance(query, dict) and not set(query) <= _OPERATORS:
+        return "where", _normalize_where(query)
+    return "cond", _normalize_condition(query)
+
+
+def _where_matches(conditions: dict[str, dict[str, Any]], info: dict[str, Any]) -> bool:
+    return all(
+        all(_check_operator(op, operand, _lookup(info, key)) for op, operand in ops.items())
+        for key, ops in conditions.items()
+    )
+
+
+def _elem_matches(operand: tuple[str, Any], value: Any) -> bool:  # noqa: ANN401
+    """Whether at least one item of the list `value` satisfies the normalized `elem_match` operand."""
+    if not isinstance(value, list):
+        return False
+    kind, query = operand
+    if kind == "where":
+        return any(isinstance(item, dict) and _where_matches(query, item) for item in value)
+    return any(all(_check_operator(op, o, item) for op, o in query.items()) for item in value)
+
+
+def _check_operator(op: str, operand: Any, value: Any) -> bool:  # noqa: ANN401, C901, PLR0911, PLR0912
     if op == "exists":
         return (value is not _MISSING) == bool(operand)
     if value is _MISSING:
         return False
+    if isinstance(value, _Multi):
+        # negative operators must hold for every value, the others for at least one
+        aggregate = all if op in {"ne", "!=", "not_in"} else any
+        return aggregate(_check_operator(op, operand, v) for v in value)
+    if op == "elem_match":
+        return _elem_matches(operand, value)
     if op in {"eq", "=="}:
         return value == operand
     if op in {"ne", "!="}:
@@ -82,15 +165,24 @@ class MetricRoute:
             Metrics emitting the same key cause a collision error; distinguish them with e.g. `metric_key`.
         where: Query on `extra_info`. ``None`` selects all instances.
             Keys are AND-ed. Each key may use dotted notation for nested dicts (e.g. ``"meta.lang"``).
+            List items are addressed by index (``"messages.0.role"``, ``"messages.-1.content"``),
+            or by ``*`` for all items (``"messages.*.role"``): positive operators match if any item matches,
+            ``ne`` / ``not_in`` only if all items do.
+            Each key is evaluated independently, so conditions on different keys
+            may be satisfied by different list items; use ``elem_match`` to constrain a single item.
             A value is one of:
 
             - a scalar: equality (``{"task": "qa"}``)
             - a list: membership (``{"task": ["qa", "mt"]}``)
             - a dict of operators: ``eq``, ``ne``, ``in``, ``not_in``, ``regex`` (``re.search``), ``exists``,
-              ``gt``, ``gte``, ``lt``, ``lte``.
+              ``gt``, ``gte``, ``lt``, ``lte``, ``elem_match``.
               ``==``, ``!=``, ``>``, ``>=``, ``<``, ``<=`` are accepted as aliases of the named operators.
               Multiple operators are AND-ed (``{"title": {"regex": "^A", "ne": "AB"}}``,
               ``{"score": {"gte": 1, "lt": 5}}``).
+            - ``elem_match``: matches a list if at least one item satisfies all the given conditions.
+              For dict items, give a `where`-style query (``{"messages": {"elem_match": {"role": "user",
+              "content": {"regex": "^h"}}}}``); for scalar items, give a condition on the item itself
+              (``{"tags": {"elem_match": {"regex": "^a"}}}``). A key missing in an item just makes it not match.
 
             Instances lacking a queried key do not match (except for ``exists: false``).
         group_by: If given, additionally reports the mean of each numeric instance-level value
@@ -107,7 +199,10 @@ class MetricRoute:
         if not self.metrics:
             msg = f"Route '{self.name}' must have at least one metric."
             raise ValueError(msg)
-        self._conditions = {key: _normalize_condition(cond) for key, cond in (self.where or {}).items()}
+        if self.group_by is not None and "*" in self.group_by.split("."):
+            msg = f"Route '{self.name}': group_by does not support '*' (got '{self.group_by}'). Use an index instead."
+            raise ValueError(msg)
+        self._conditions = _normalize_where(self.where)
 
     def matches(self, extra_info: dict[str, Any] | None, on_missing_key: str = "skip") -> bool:
         if not self._conditions:
