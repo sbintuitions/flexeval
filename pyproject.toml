@@ -15,7 +15,7 @@ flexeval_presets = "flexeval.scripts.flexeval_presets:main"
 
 
 [tool.poetry.dependencies]
-python = ">=3.13.18,<3.14"
+python = ">=3.12.16,<3.13"
 transformers = {extras = ["ja", "sentencepiece", "torch"], version = ">=5.5.3,<6"}
 datasets = "^2.14.6"
 evaluate = "^0.4.6"  # 0.4.1-0.4.5 call huggingface_hub's removed `HfFolder` API and break with huggingface_hub>=1.0
@@ -23,7 +23,7 @@ peft = "^0.19.1"
 jsonargparse = {extras = ["jsonnet"], version = "^4.26.1"}
 jinja2 = "^3.1.2"
 fuzzywuzzy = "^0.18.0"
-python-levenshtein = ">=0.25.0,<1"
+python-levenshtein = "^0.23.0"
 rouge = "^1.0.1"
 sacrebleu = {extras = ["ja"], version = "^2.4.1"}
 jiwer = "^3.0.4"
@@ -34,7 +34,7 @@ uv = {version = "^0.13.4", optional = true}
 cuda-tile = {version = "<1.4", optional = true}  # 1.7.0 needs cuda-toolkit>=13.2 but torch pins 13.0.2 on Linux
 loguru = "^0.7.2"
 wandb = {version = "^0.17.2", optional = true}
-pyarrow = ">=18.1.0,<21"  # 16.1.0 has no wheel for python 3.13; <21 because datasets 2.x uses pa.PyExtensionType (removed in 21)
+pyarrow = "16.1.0"  # set the version because we get "Unable to find installation candidates" with 17.0.0
 litellm = ">=1.88.6,<2.0.0,!=1.107.0"
 scipy = "^1.13.0"
 smart-open = "^7.1.0"

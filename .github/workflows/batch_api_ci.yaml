@@ -27,7 +27,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: "3.13"
+          python-version: "3.12"
           check-latest: true
           cache: "poetry"
           cache-dependency-path: "poetry.lock"
