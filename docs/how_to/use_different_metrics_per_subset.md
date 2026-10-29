@@ -87,6 +87,9 @@ A key can refer to a nested value with dots (e.g. `"meta.lang"`).
 | list | membership | `{ task: ['qa', 'mt'] }` |
 | dict of operators | `eq`, `ne`, `in`, `not_in`, `regex`, `exists`, `gt`, `gte`, `lt`, `lte`, `elem_match` | `{ title: { regex: '^A', ne: 'AB' } }` |
 
+`==`, `!=`, `>`, `>=`, `<`, `<=` can be used as aliases of `eq`, `ne`, `gt`, `gte`, `lt`, `lte`.
+Multiple operators are AND-ed, so `{ score: { '>=': 1, '<': 5 } }` is the same as `{ score: { gte: 1, lt: 5 } }`.
+
 ### Query the conversation
 
 For `ChatResponse`, `extra_info` also has `messages` (the conversation given to the model, excluding the model's response) and `tools`, so you can select instances by the content of the prompt, such as the system prompt or the user input.
