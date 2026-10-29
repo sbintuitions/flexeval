@@ -68,6 +68,14 @@ def test_group_by() -> None:
     assert summary["r/y/exact_match"] == 0.0
 
 
+@pytest.mark.parametrize("bad_value", [["x", "y"], {"k": "v"}])
+def test_group_by_rejects_non_scalar_value(bad_value: object) -> None:
+    metric = QueryRoutedMetric(routes=[MetricRoute(name="r", group_by="domain", metrics=[ExactMatch()])])
+    infos = [{"domain": bad_value}, {"domain": "x"}, {"domain": "x"}, {"domain": "y"}]
+    with pytest.raises(TypeError, match="scalar"):
+        metric.evaluate(OUTPUTS, REFS, infos)
+
+
 def test_nesting() -> None:
     inner = QueryRoutedMetric(routes=[MetricRoute(name="ja", where={"meta.lang": "ja"}, metrics=[ExactMatch()])])
     outer = QueryRoutedMetric(routes=[MetricRoute(name="qa", where={"task": "qa"}, metrics=[inner])])

@@ -367,6 +367,12 @@ class QueryRoutedMetric(Metric):
                     msg = f"group_by key '{route.group_by}' is missing in extra_info: {infos[i]}"
                     raise KeyError(msg)
                 continue
+            if isinstance(group, (list, dict)):
+                msg = (
+                    f"group_by key '{route.group_by}' must resolve to a scalar value, "
+                    f"but got {type(group).__name__}: {group!r}"
+                )
+                raise TypeError(msg)
             for key, value in detail.items():
                 if isinstance(value, (bool, int, float)):
                     scores[(group, key)].append(value)
