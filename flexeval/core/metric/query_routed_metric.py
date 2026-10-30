@@ -179,6 +179,10 @@ class MetricRoute:
               ``==``, ``!=``, ``>``, ``>=``, ``<``, ``<=`` are accepted as aliases of the named operators.
               Multiple operators are AND-ed (``{"title": {"regex": "^A", "ne": "AB"}}``,
               ``{"score": {"gte": 1, "lt": 5}}``).
+              Operands and values are not type-checked; the operators are applied as Python does.
+              Note that ``in`` / ``not_in`` with a string operand do substring matching,
+              that comparisons between strings are lexicographic (``"10" < "9"``),
+              and that comparing incompatible types (e.g. ``int`` and ``str``) raises ``TypeError``.
             - ``elem_match``: matches a list if at least one item satisfies all the given conditions.
               For dict items, give a `where`-style query (``{"messages": {"elem_match": {"role": "user",
               "content": {"regex": "^h"}}}}``); for scalar items, give a condition on the item itself

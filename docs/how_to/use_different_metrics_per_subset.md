@@ -90,6 +90,13 @@ A key can refer to a nested value with dots (e.g. `"meta.lang"`).
 `==`, `!=`, `>`, `>=`, `<`, `<=` can be used as aliases of `eq`, `ne`, `gt`, `gte`, `lt`, `lte`.
 Multiple operators are AND-ed, so `{ score: { '>=': 1, '<': 5 } }` is the same as `{ score: { gte: 1, lt: 5 } }`.
 
+!!! note
+    Operands and values are **not type-checked**; the operators behave as in Python.
+
+    - `in` / `not_in` with a string operand do substring matching. Pass a list for membership.
+    - Comparisons between strings are lexicographic (`'10' < '9'`). This is handy for ISO dates (`'2024-01-01'`), but store numbers as numbers.
+    - Comparing incompatible types (e.g. a number with a string) raises an error.
+
 ### Query the conversation
 
 For `ChatResponse`, `extra_info` also has `messages` (the conversation given to the model, excluding the model's response) and `tools`, so you can select instances by the content of the prompt, such as the system prompt or the user input.
