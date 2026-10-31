@@ -23,6 +23,26 @@ class FewShotGenerator(ABC):
         """
         raise NotImplementedError
 
+    def with_seed_increment(self, seed_increment: int) -> FewShotGenerator:
+        """
+        Return a new `FewShotGenerator` instance to be used for a repeated evaluation run.
+
+        The default implementation simply returns `self`, which is appropriate for
+        generators that do not hold any sampling state (e.g., no internal RNG).
+        Subclasses that hold a stateful RNG (e.g., `self._rnd = random.Random(seed)`)
+        should override this method to return a new instance constructed with
+        `seed + seed_increment`, so that each repeat's few-shot examples are
+        reproducible from the seed alone, independent of how many times the
+        original instance has already been sampled from.
+
+        Args:
+            seed_increment: The value to add to the original seed for the new instance.
+
+        Returns:
+            A `FewShotGenerator` instance to use for the repeated run.
+        """
+        return self
+
     def __call__(self, eval_inputs: list[dict[str, Any]] | dict[str, Any] | None = None) -> list[Instance]:
         """
         Sample instances for few-shot learning.
