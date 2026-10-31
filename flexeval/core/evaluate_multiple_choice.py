@@ -37,7 +37,9 @@ def evaluate_multiple_choice(
                 template_inputs = {**eval_instance.inputs, "choices": eval_instance.choices}
 
                 if few_shot_generator is not None:
-                    few_shot_instances = few_shot_generator(template_inputs)
+                    # Pass the raw inputs (without the injected "choices" key) so that
+                    # the data-leak check can compare them against the sampled instances' inputs.
+                    few_shot_instances = few_shot_generator(eval_instance.inputs)
                     few_shot_item_list: list[dict[str, Any]] = []
                     for few_shot_instance in few_shot_instances:
                         if isinstance(few_shot_instance, MultipleChoiceInstance):
