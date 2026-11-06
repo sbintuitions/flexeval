@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import copy
 import json
 from collections.abc import Iterable, Iterator, Sequence
 from typing import Any
@@ -158,7 +159,9 @@ def evaluate_chat_response(  # noqa: C901, PLR0912
     logger.info(f"Evaluate the model with gen_kwargs: {gen_kwargs}")
 
     max_instances = len(eval_dataset) if max_instances is None else min(max_instances, len(eval_dataset))
-    eval_instances: list[ChatInstance] = [eval_dataset[i] for i in range(max_instances)]
+    eval_instances: list[ChatInstance] = [
+        copy.deepcopy(eval_dataset[i]) if few_shot_generator else eval_dataset[i] for i in range(max_instances)
+    ]
 
     if few_shot_generator:
         for eval_instance in eval_instances:
