@@ -60,12 +60,16 @@ class PerspectiveAPI(Metric):
             )
     """
 
-    def __init__(self, languages: list[str]) -> None:
+    def __init__(
+        self, languages: list[str], api_endpoint: str | None = None, discovery_service_url: str | None = None
+    ) -> None:
         self.client = discovery.build(
             "commentanalyzer",
             "v1alpha1",
             developerKey=PERSPECTIVE_API_KEY,
-            discoveryServiceUrl="https://commentanalyzer.googleapis.com/$discovery/rest?version=v1alpha1",
+            discoveryServiceUrl=discovery_service_url
+            or "https://commentanalyzer.googleapis.com/$discovery/rest?version=v1alpha1",
+            client_options={"api_endpoint": api_endpoint} if api_endpoint else None,
             static_discovery=False,
         )
         self.languages = languages

@@ -69,3 +69,12 @@ Besides the [Transformers](https://github.com/huggingface/transformers) model, y
 * Run `flexeval_presets` to check the list of off-the-shelf presets in addition to `commonsense_qa`. You can find the details in the [Preset Configs](https://sbintuitions.github.io/flexeval/preset_configs/) section.
 * See [Getting Started](https://sbintuitions.github.io/flexeval/getting_started/) to check the tutorial examples for other kinds of tasks.
 * See the [Configuration Guide](https://sbintuitions.github.io/flexeval/configuration_guide/) to set up your evaluation.
+
+### Alternative Perspective endpoints
+
+The Perspective adapter accepts optional `api_endpoint` (the full API base URL,
+including `/v1alpha1/`) and `discovery_service_url` (a compatible discovery JSON
+URL). Omit both to retain Google defaults. To remove the Google dependency,
+configure both URLs. Only use trusted endpoints: requests include your API key
+and text. A different model requires fresh threshold calibration; its scores
+must not be compared as though they were Google Perspective scores.
