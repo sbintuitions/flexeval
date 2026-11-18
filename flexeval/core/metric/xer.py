@@ -66,8 +66,10 @@ class XER(Metric):
             instance_details=[
                 {
                     "cer_score": cer(reference, lm_output),
-                    "wer_score": wer(reference, lm_output),
+                    "wer_score": wer(tokenized_reference, tokenized_lm_output),
                 }
-                for lm_output, reference in zip(lm_outputs, references)
+                for lm_output, reference, tokenized_lm_output, tokenized_reference in zip(
+                    lm_outputs, references, tokenized_lm_outputs, tokenized_references
+                )
             ],
         )
